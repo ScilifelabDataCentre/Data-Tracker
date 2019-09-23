@@ -19,7 +19,6 @@ import tornado
 import db
 import handlers
 import settings
-from modules.browser import utils
 
 def build_dataset_structure(dataset_version, user=None, dataset=None):
     if dataset is None:
@@ -171,7 +170,6 @@ class ListDatasets(handlers.UnsafeHandler):
 
 class GetDataset(handlers.UnsafeHandler):
     def get(self, dataset, version=None):
-        dataset, version = utils.parse_dataset(dataset, version)
         user = self.current_user
 
         future_version = False
@@ -193,7 +191,6 @@ class GetDataset(handlers.UnsafeHandler):
 
 class ListDatasetVersions(handlers.UnsafeHandler):
     def get(self, dataset):
-        dataset, _ = utils.parse_dataset(dataset)
         user = self.current_user
         dataset = db.get_dataset(dataset)
 
@@ -229,7 +226,6 @@ class ListDatasetVersions(handlers.UnsafeHandler):
 
 class GenerateTemporaryLink(handlers.AuthorizedHandler):
     def post(self, dataset, ds_version=None):
-        dataset, ds_version = utils.parse_dataset(dataset, ds_version)
         user = self.current_user
         dataset_version = db.get_dataset_version(dataset, ds_version)
         if dataset_version is None:
@@ -254,7 +250,6 @@ class GenerateTemporaryLink(handlers.AuthorizedHandler):
 
 class DatasetFiles(handlers.AuthorizedHandler):
     def get(self, dataset, ds_version=None):
-        dataset, ds_version = utils.parse_dataset(dataset, ds_version)
         dataset_version = db.get_dataset_version(dataset, ds_version)
         if dataset_version is None:
             self.send_error(status_code=404)
@@ -279,7 +274,6 @@ def format_bytes(nbytes):
 class Collection(handlers.UnsafeHandler):
     def get(self, dataset, ds_version=None):
         del ds_version
-        dataset, _ = utils.parse_dataset(dataset)
         dataset = db.get_dataset(dataset)
 
         collections = {}
@@ -378,7 +372,6 @@ class CountryList(handlers.UnsafeHandler):
 
 class RequestAccess(handlers.SafeHandler):
     def post(self, dataset):
-        dataset, _ = utils.parse_dataset(dataset)
         user = self.current_user
         dataset = db.get_dataset(dataset)
 
@@ -407,7 +400,6 @@ class RequestAccess(handlers.SafeHandler):
 
 class LogEvent(handlers.SafeHandler):
     def post(self, dataset, event, target):
-        dataset, _ = utils.parse_dataset(dataset)
         user = self.current_user
 
         if event == 'consent':
@@ -426,7 +418,6 @@ class LogEvent(handlers.SafeHandler):
 
 class ApproveUser(handlers.AdminHandler):
     def post(self, dataset, email):
-        dataset, _ = utils.parse_dataset(dataset)
         with db.database.atomic():
             dataset = db.get_dataset(dataset)
 
@@ -467,7 +458,6 @@ class ApproveUser(handlers.AdminHandler):
 
 class RevokeUser(handlers.AdminHandler):
     def post(self, dataset, email):  # pylint: disable=no-self-use
-        dataset, _ = utils.parse_dataset(dataset)
         with db.database.atomic():
             dataset = db.get_dataset(dataset)
             user = db.User.select().where(db.User.email == email).get()
@@ -501,7 +491,6 @@ def _build_json_response(query, access_for):
 
 class DatasetUsersPending(handlers.AdminHandler):
     def get(self, dataset):
-        dataset, _ = utils.parse_dataset(dataset)
         dataset = db.get_dataset(dataset)
         users = db.User.select()
         access = (db.DatasetAccessPending
@@ -514,7 +503,6 @@ class DatasetUsersPending(handlers.AdminHandler):
 
 class DatasetUsersCurrent(handlers.AdminHandler):
     def get(self, dataset):
-        dataset, _ = utils.parse_dataset(dataset)
         dataset = db.get_dataset(dataset)
         users = db.User.select()
         access = (db.DatasetAccessCurrent.select()
@@ -553,7 +541,6 @@ class UserDatasetAccess(handlers.SafeHandler):
 
 class ServeLogo(handlers.UnsafeHandler):
     def get(self, dataset):
-        dataset, _ = utils.parse_dataset(dataset)
         try:
             logo_entry = (db.DatasetLogo.select(db.DatasetLogo)
                           .join(db.Dataset)
