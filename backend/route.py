@@ -36,12 +36,6 @@ class Application(tornado.web.Application):
             # Static handlers
             (r"/static/(.*)", tornado.web.StaticFileHandler, {"path": "static/"}),
             (r'/(favicon.ico)', tornado.web.StaticFileHandler, {"path": "static/img/"}),
-            (r"/release/(?P<dataset>[^\/]+)/versions/(?P<ds_version>[^/]+)/(?P<hash_value>[^\/]+)/(?P<file>[^\/]+)",
-             handlers.TemporaryStaticNginxFileHandler,
-             {"path": "/release-files/"}),
-            (r"/release/(?P<dataset>[^\/]+)/versions/(?P<ds_version>[^/]+)/(?P<file>[^\/]+)",
-             handlers.AuthorizedStaticNginxFileHandler,
-             {"path": "/release-files/"}),
             # Authentication
             (r"/logout", auth.ElixirLogoutHandler),
             (r"/elixir/login", auth.ElixirLoginHandler),
@@ -52,23 +46,6 @@ class Application(tornado.web.Application):
             (r"/api/users/datasets", application.UserDatasetAccess),
             (r"/api/users/sftp_access", application.SFTPAccess),
             (r"/api/schema", application.GetSchema),
-            # Dataset Api
-            (r"/api/dataset", application.ListDatasets),
-            (r"/api/dataset/(?P<dataset>[^\/]+)", application.GetDataset),
-            (r"/api/dataset/(?P<dataset>[^\/]+)/log/(?P<event>[^\/]+)/(?P<target>[^\/]+)", application.LogEvent),
-            (r"/api/dataset/(?P<dataset>[^\/]+)/logo", application.ServeLogo),
-            (r"/api/dataset/(?P<dataset>[^\/]+)/(?:versions/(?P<ds_version>[^/]+)/)?files", application.DatasetFiles),
-            (r"/api/dataset/(?P<dataset>[^\/]+)/(?:versions/(?P<ds_version>[^/]+)/)?collection", application.Collection),
-            (r"/api/dataset/(?P<dataset>[^\/]+)/users_current", application.DatasetUsersCurrent),
-            (r"/api/dataset/(?P<dataset>[^\/]+)/users_pending", application.DatasetUsersPending),
-            (r"/api/dataset/(?P<dataset>[^\/]+)/(?:versions/(?P<ds_version>[^/]+)/)?temporary_link", application.GenerateTemporaryLink),
-            (r"/api/dataset/(?P<dataset>[^\/]+)/users/[^\/]+/request", application.RequestAccess),
-            (r"/api/dataset/(?P<dataset>[^\/]+)/users/(?P<email>[^\/]+)/approve", application.ApproveUser),
-            (r"/api/dataset/(?P<dataset>[^\/]+)/users/(?P<email>[^\/]+)/revoke", application.RevokeUser),
-            (r"/api/dataset/(?P<dataset>[^\/]+)/versions", application.ListDatasetVersions),
-            (r"/api/dataset/(?P<dataset>[^\/]+)/versions/(?P<version>[^\/]+)", application.GetDataset),
-            (r"/api/dataset/(?P<dataset>[^\/]+)/versions/(?P<version>[^\/]+)/files", application.DatasetFiles),
-            (r"/api/dataset/(?P<dataset>[^\/]+)/versions/(?P<version>[^\/]+)/temporary_link", application.GenerateTemporaryLink),
         ]
 
         # Adding Catch all handlers
