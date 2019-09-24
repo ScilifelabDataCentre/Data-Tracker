@@ -90,7 +90,7 @@ class DatasetTag(BaseModel):
     class Meta:
         table_name = 'dataset_tag_map'
         schema = 'dataset'
-        primary_key = CompositeKey(dataset_id, tag_id)
+        primary_key = CompositeKey('dataset_id', 'tag_id')
 
     dataset_id = ForeignKeyField(Dataset)
     tag_id = ForeignKeyField(Tag)
@@ -100,7 +100,7 @@ class DatasetDataUrl(BaseModel):
     class Meta:
         table_name = 'dataset_tag_map'
         schema = 'dataset'
-        primary_key = CompositeKey(dataset_id, data_url_id)
+        primary_key = CompositeKey('dataset_id', 'data_url_id')
 
     dataset_id = ForeignKeyField(Dataset)
     data_url_id = ForeignKeyField(DataUrl)
@@ -110,7 +110,7 @@ class UserDataset(BaseModel):
     class Meta:
         table_name = 'user_dataset_map'
         schema = 'users'
-        primary_key = CompositeKey(dataset_id, user_id)
+        primary_key = CompositeKey('dataset_id', 'user_id')
 
     dataset_id = ForeignKeyField(Dataset)
     user_id = ForeignKeyField(User)
