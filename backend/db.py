@@ -2,18 +2,16 @@
 
 import logging
 
-from peewee import (BlobField,
-                    BooleanField,
+from peewee import (CompositeKey,
                     CharField,
                     DateTimeField,
                     IntegerField,
                     Field,
-                    FloatField,
                     ForeignKeyField,
                     Model,
                     TextField,
                     fn)
-from playhouse.postgres_ext import ArrayField, BinaryJSONField, PostgresqlExtDatabase
+from playhouse.postgres_ext import PostgresqlExtDatabase
 
 import settings
 
@@ -31,104 +29,88 @@ class BaseModel(Model):
         database = database
 
 
-class EnumField(Field):
-    db_field = 'string'  # The same as for CharField
-
-    def __init__(self, choices=None, *args, **kwargs):
-        self.values = choices or []
-        super().__init__(*args, **kwargs)
-
-    def db_value(self, value):
-        if value not in self.values:
-            raise ValueError("Illegal value for '{}'".format(self.column_name))
-        return value
-
-    def python_value(self, value):
-        if value not in self.values:
-            raise ValueError("Illegal value for '{}'".format(self.column_name))
-        return value
-
-###
-# Reference Tables
-##
-
 class Dataset(BaseModel):
-    """
-    A dataset is part of a study, and usually include a certain population.
-
-    Most studies only have a single dataset, but multiple are allowed.
-    """
+    '''
+    A dataset.
+    '''
     class Meta:
         table_name = 'datasets'
-        schema = 'data'
+        schema = 'datasets'
 
-    study = ForeignKeyField(Study, column_name="study", backref='datasets')
-    short_name = CharField()
-    full_name = CharField()
-    browser_uri = CharField(null=True)
-    beacon_uri = CharField(null=True)
-    description = TextField(column_name="beacon_description", null=True)
-    avg_seq_depth = FloatField(null=True)
-    seq_type = CharField(null=True)
-    seq_tech = CharField(null=True)
-    seq_center = CharField(null=True)
-    dataset_size = IntegerField()
+    title = CharField()
+    description = TextField(null=True)
+    doi = CharField(null=True)
+    creator = CharField(null=True)
+    publication = CharField(null=True)
+    contact = CharField(null=True)
+    dmp = CharField(null=True)
 
-    def has_image(self):
-        try:
-            DatasetLogo.get(DatasetLogo.dataset == self)
-            return True
-        except DatasetLogo.DoesNotExist:
-            return False
+
+class DataUrl(BaseModel):
+    '''
+    A url to obtain data for a dataset.
+    '''
+    class Meta:
+        table_name = 'data_urls'
+        schema = 'datasets'
+
+    description = CharField()
+    url = CharField()
+
+
+class Tag(BaseModel):
+    '''
+    A tag for a dataset.
+    '''
+    class Meta:
+        table_name = 'tags'
+        schema = 'datasets'
+
+    title = CharField()
 
 
 class User(BaseModel):
+    '''
+    A user.
+    '''
     class Meta:
-        table_name = "users"
+        table_name = 'users'
         schema = 'users'
 
-    name = CharField(column_name="username", null=True)
+    name = CharField(column_name='given_name', null=True)
     email = CharField(unique=True)
-    identity = CharField(unique=True)
-    identity_type = EnumField(null=False, choices=['google', 'elixir'], default='elixir')
+    auth_identity = CharField(unique=True)
     affiliation = CharField(null=True)
     country = CharField(null=True)
 
-    def is_admin(self, dataset):
-        return (DatasetAccess.select()
-                .where(DatasetAccess.dataset == dataset,
-                       DatasetAccess.user == self,
-                       DatasetAccess.is_admin)
-                .count())
 
-    def has_access(self, dataset, ds_version=None):
-        """
-        Check whether user has permission to access a dataset.
+# Table mappings
 
-        Args:
-            dataset (Database): peewee Database object
-            ds_version (str): the dataset version
+class DatasetTag(BaseModel):
+    class Meta:
+        table_name = 'dataset_tag_map'
+        schema = 'dataset'
+        primary_key = CompositeKey(dataset_id, tag_id)
 
-        Returns:
-            bool: allowed to access
+    dataset_id = ForeignKeyField(Dataset)
+    tag_id = ForeignKeyField(Tag)
 
-        """
-        dsv = get_dataset_version(dataset.short_name, ds_version)
-        if not dsv:
-            return False
-        if dsv.file_access in ('REGISTERED', 'PUBLIC'):
-            return True
-        if dsv.file_access == 'PRIVATE':
-            return False
 
-        return (DatasetAccessCurrent.select()
-                .where(DatasetAccessCurrent.dataset == dataset,
-                       DatasetAccessCurrent.user == self)
-                .count()) > 0
+class DatasetDataUrl(BaseModel):
+    class Meta:
+        table_name = 'dataset_tag_map'
+        schema = 'dataset'
+        primary_key = CompositeKey(dataset_id, data_url_id)
 
-    def has_requested_access(self, dataset):
-        return (DatasetAccessPending.select()
-                .where(DatasetAccessPending.dataset == dataset,
-                       DatasetAccessPending.user == self)
-                .count())
+    dataset_id = ForeignKeyField(Dataset)
+    data_url_id = ForeignKeyField(DataUrl)
 
+
+class UserDataset(BaseModel):
+    class Meta:
+        table_name = 'user_dataset_map'
+        schema = 'users'
+        primary_key = CompositeKey(dataset_id, user_id)
+
+    dataset_id = ForeignKeyField(Dataset)
+    user_id = ForeignKeyField(User)
