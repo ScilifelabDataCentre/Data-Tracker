@@ -89,21 +89,21 @@ class User(BaseModel):
 class DatasetTag(BaseModel):
     class Meta:
         table_name = 'dataset_tag_map'
-        schema = 'dataset'
+        schema = 'datasets'
         primary_key = CompositeKey('dataset_id', 'tag_id')
 
-    dataset_id = ForeignKeyField(Dataset)
-    tag_id = ForeignKeyField(Tag)
+    dataset = ForeignKeyField(Dataset)
+    tag = ForeignKeyField(Tag)
 
 
 class DatasetDataUrl(BaseModel):
     class Meta:
-        table_name = 'dataset_tag_map'
-        schema = 'dataset'
+        table_name = 'dataset_data_url_map'
+        schema = 'datasets'
         primary_key = CompositeKey('dataset_id', 'data_url_id')
 
-    dataset_id = ForeignKeyField(Dataset)
-    data_url_id = ForeignKeyField(DataUrl)
+    dataset = ForeignKeyField(Dataset)
+    data_url = ForeignKeyField(DataUrl)
 
 
 class DatasetUser(BaseModel):
@@ -112,8 +112,8 @@ class DatasetUser(BaseModel):
         schema = 'users'
         primary_key = CompositeKey('dataset_id', 'user_id')
 
-    dataset_id = ForeignKeyField(Dataset)
-    user_id = ForeignKeyField(User)
+    dataset = ForeignKeyField(Dataset)
+    user = ForeignKeyField(User)
 
 
 def build_dict_from_row(row) -> dict:
