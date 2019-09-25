@@ -49,7 +49,7 @@ class GetDataset(handlers.UnsafeHandler):
                                               .select(db.DatasetDataUrl)
                                               .where(db.DatasetDataUrl.dataset == dbid))]
 
-        self.finish({'dataset': dataset})
+        self.finish(dataset)
 
 
 class GetUser(handlers.UnsafeHandler):
