@@ -106,9 +106,9 @@ class DatasetDataUrl(BaseModel):
     data_url_id = ForeignKeyField(DataUrl)
 
 
-class UserDataset(BaseModel):
+class DatasetUser(BaseModel):
     class Meta:
-        table_name = 'user_dataset_map'
+        table_name = 'dataset_user_map'
         schema = 'users'
         primary_key = CompositeKey('dataset_id', 'user_id')
 

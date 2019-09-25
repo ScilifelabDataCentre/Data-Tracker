@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS users.users (
     auth_identity       varchar(100)        NOT NULL UNIQUE
 );
 
-CREATE TABLE IF NOT EXISTS users.user_dataset_map (
+CREATE TABLE IF NOT EXISTS users.dataset_user_map (
     dataset_id      integer                 NOT NULL REFERENCES datasets.datasets,
     user_id         integer                 NOT NULL REFERENCES users.users,
     PRIMARY KEY(dataset_id, user_id)
