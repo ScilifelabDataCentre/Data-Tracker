@@ -9,20 +9,20 @@ import tornado.web
 import application
 import handlers
 import auth
-import settings as swefreq_settings
+import settings as portal_settings
 
-define("port", default=4000, help="run on the given port", type=int)
+define("port", default=5000, help="Run on the given port", type=int)
 define("develop", default=False, help="Run in develop environment", type=bool)
 
 # Setup the Tornado Application
 # pylint: disable=no-member
 tornado_settings = {"debug": False,
-                    "cookie_secret": swefreq_settings.cookie_secret,
+                    "cookie_secret": portal_settings.cookie_secret,
                     "login_url": "/login",
                     "elixir_oauth": {
-                        "id": swefreq_settings.elixir["id"],
-                        "secret": swefreq_settings.elixir["secret"],
-                        "redirect_uri": swefreq_settings.elixir["redirectUri"],
+                        "id": portal_settings.elixir["id"],
+                        "secret": portal_settings.elixir["secret"],
+                        "redirect_uri": portal_settings.elixir["redirectUri"],
                     },
                     "xsrf_cookies": True,
                     "template_path": "templates/"}
@@ -43,9 +43,9 @@ class Application(tornado.web.Application):
             # API Methods
             (r"/api/countries", application.CountryList),
             (r"/api/users/me", application.GetUser),
-            (r"/api/users/datasets", application.UserDatasetAccess),
-            (r"/api/users/sftp_access", application.SFTPAccess),
-            (r"/api/schema", application.GetSchema),
+            # Dataset methods
+            (r"/api/datasets", application.ListDatasets),
+            (r"/api/dataset/(.*)", application.GetDataset),
         ]
 
         # Adding Catch all handlers
