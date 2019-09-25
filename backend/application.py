@@ -1,14 +1,8 @@
-from datetime import datetime, timedelta
-
-import logging
-
-import peewee
 import tornado.web
 import tornado
 
 import db
 import handlers
-import settings
 
 
 class QuitHandler(handlers.UnsafeHandler):

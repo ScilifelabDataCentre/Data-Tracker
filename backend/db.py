@@ -1,16 +1,10 @@
 #!/usr/bin/env python3
 
-import logging
-
 from peewee import (CompositeKey,
                     CharField,
-                    DateTimeField,
-                    IntegerField,
-                    Field,
                     ForeignKeyField,
                     Model,
-                    TextField,
-                    fn)
+                    TextField)
 from playhouse.postgres_ext import PostgresqlExtDatabase
 
 import settings
