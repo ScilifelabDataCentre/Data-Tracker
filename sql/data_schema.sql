@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS datasets.datasets (
     creator         varchar(50)             DEFAULT NULL,
     publication     varchar(100)            DEFAULT NULL,
     contact         varchar(100)            DEFAULT NULL,
-    dmp             varchar(100)            DEFAULT NULL,
+    dmp             varchar(100)            DEFAULT NULL
 );
 
 CREATE TABLE IF NOT EXISTS datasets.tags (
