@@ -114,3 +114,14 @@ class DatasetUser(BaseModel):
 
     dataset_id = ForeignKeyField(Dataset)
     user_id = ForeignKeyField(User)
+
+
+def build_dict_from_row(row) -> dict:
+    """Build a dictionary from a row object"""
+    outdict = {}
+
+    for field, value in row.__dict__['__data__'].items():
+        if field == "id":
+            continue
+        outdict[field] = value
+    return outdict
