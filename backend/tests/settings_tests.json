@@ -1,0 +1,6 @@
+{
+    "host": "http://localhost",
+    "port": 5000,
+    "dbHost": "localhost",
+    "dbPort": 5433
+}

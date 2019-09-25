@@ -39,7 +39,6 @@ INSERT INTO datasets.dataset_tag_map VALUES (1, 5);
 INSERT INTO datasets.dataset_tag_map VALUES (1, 8);
 INSERT INTO datasets.dataset_tag_map VALUES (2, 1);
 INSERT INTO datasets.dataset_tag_map VALUES (2, 3);
-INSERT INTO datasets.dataset_tag_map VALUES (3, 4);
 INSERT INTO datasets.dataset_tag_map VALUES (4, 5);
 INSERT INTO datasets.dataset_tag_map VALUES (4, 7);
 INSERT INTO datasets.dataset_tag_map VALUES (5, 8);
@@ -63,7 +62,6 @@ INSERT INTO datasets.data_urls (url, description) VALUES ('https:www.example.com
 
 INSERT INTO datasets.dataset_data_url_map VALUES (1,1);
 INSERT INTO datasets.dataset_data_url_map VALUES (1,2);
-INSERT INTO datasets.dataset_data_url_map VALUES (2,3);
 INSERT INTO datasets.dataset_data_url_map VALUES (3,3);
 INSERT INTO datasets.dataset_data_url_map VALUES (3,4);
 INSERT INTO datasets.dataset_data_url_map VALUES (4,5);
