@@ -20,7 +20,7 @@ class QuitHandler(handlers.UnsafeHandler):
 class ListDatasets(handlers.UnsafeHandler):
     def get(self):
         ret = []
-        for dataset in db.Dataset.select().dicts():
+        for dataset in db.Dataset.select(db.Dataset.id, db.Dataset.title).dicts():
             ret.append(dataset)
 
         self.finish({'datasets': ret})
@@ -38,7 +38,18 @@ class GetDataset(handlers.UnsafeHandler):
         except ValueError:
             self.send_error(status_code=400, reason='Dataset id should be an integer')
             return
-        self.finish({'dataset': db.build_dict_from_row(dataset)})
+
+        dataset = db.build_dict_from_row(dataset)
+        dataset['tags'] = [db.build_dict_from_row(entry.tag)
+                           for entry in (db.DatasetTag
+                                         .select(db.DatasetTag)
+                                         .where(db.DatasetTag.dataset == dbid))]
+        dataset['data_urls'] = [db.build_dict_from_row(entry.data_url)
+                                for entry in (db.DatasetDataUrl
+                                              .select(db.DatasetDataUrl)
+                                              .where(db.DatasetDataUrl.dataset == dbid))]
+
+        self.finish({'dataset': dataset})
 
 
 class GetUser(handlers.UnsafeHandler):
