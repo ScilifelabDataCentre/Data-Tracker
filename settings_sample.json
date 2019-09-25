@@ -5,7 +5,7 @@
     "postgresPort" : 5432,
     "postgresUser" : "postgres",
     "postgresPass" : "",
-    "postgresName" : "swefreq",
+    "postgresName" : "portal",
 
     "replyToAddress" : "no-reply@example.com",
     "fromAddress" : "no-reply@example.com",
