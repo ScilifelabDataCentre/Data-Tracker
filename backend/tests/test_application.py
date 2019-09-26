@@ -115,3 +115,11 @@ def test_get_dataset_get():
     # bad request
     response = requests.get(f'{BASE_URL}/api/dataset/abcdef')
     assert response.status_code == 400
+
+
+def test_countrylist_get():
+    """Test CountryList.get()"""
+    response = requests.get(f'{BASE_URL}/api/countries')
+    data = json.loads(response.text)
+
+    assert len(data['countries']) == 240
