@@ -13,10 +13,10 @@ CREATE TABLE IF NOT EXISTS users.users (
     affiliation         varchar(100)        DEFAULT NULL,
     country             varchar(100)        DEFAULT NULL,
     auth_identity       varchar(100)        NOT NULL UNIQUE,
-    permission          user_permissions    NOT NULL
+    permission          user_permissions    NOT NULL DEFAULT Standard
 );
 
-CREATE TABLE IF NOT EXISTS users.dataset_user_map (
+CREATE TABLE IF NOT EXISTS users.dataset_owners (
     dataset_id      integer                 NOT NULL REFERENCES datasets.datasets,
     user_id         integer                 NOT NULL REFERENCES users.users,
     PRIMARY KEY(dataset_id, user_id)

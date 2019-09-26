@@ -122,6 +122,19 @@ class DatasetDataUrl(BaseModel):
     data_url = ForeignKeyField(DataUrl, column_name='data_url_id')
 
 
+class DatasetOwner(BaseModel):
+    """
+    Dataset owners (users)
+    """
+    class Meta:
+        table_name = 'dataset_owners'
+        schema = 'users'
+        primary_key = CompositeKey('dataset_id', 'user_id')
+
+    dataset = ForeignKeyField(Dataset, column_name='dataset_id')
+    user = ForeignKeyField(User, column_name='user_id')
+
+
 class DatasetPublication(BaseModel):
     class Meta:
         table_name = 'dataset_publication_map'
@@ -140,16 +153,6 @@ class DatasetTag(BaseModel):
 
     dataset = ForeignKeyField(Dataset, column_name='dataset_id')
     tag = ForeignKeyField(Tag, column_name='tag_id')
-
-
-class DatasetUser(BaseModel):
-    class Meta:
-        table_name = 'dataset_user_map'
-        schema = 'users'
-        primary_key = CompositeKey('dataset_id', 'user_id')
-
-    dataset = ForeignKeyField(Dataset, column_name='dataset_id')
-    user = ForeignKeyField(User, column_name='user_id')
 
 
 def build_dict_from_row(row) -> dict:
