@@ -41,13 +41,13 @@ class BaseHandler(tornado.web.RequestHandler):
 
         if identity:
             try:
-                return db.User.select().where(db.User.identity == identity).get()
+                return db.User.select().where(db.User.auth_identity == identity).get()
             except db.User.DoesNotExist:
                 # Not saved in the database yet
                 try:
                     return db.User(email=email.decode('utf-8'),
                                    name=name.decode('utf-8'),
-                                   identity=identity.decode('utf-8'))
+                                   auth_identity=identity.decode('utf-8'))
                 except peewee.OperationalError as err:
                     logging.error(f"Can't create new user: {err}")
         else:
