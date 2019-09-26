@@ -126,10 +126,10 @@ class DatasetPublication(BaseModel):
     class Meta:
         table_name = 'dataset_publication_map'
         schema = 'datasets'
-        primary_key = CompositeKey('dataset_id', 'publications_id')
+        primary_key = CompositeKey('dataset_id', 'publication_id')
 
     dataset = ForeignKeyField(Dataset, column_name='dataset_id')
-    publication = ForeignKeyField(DataUrl, column_name='publication_id')
+    publication = ForeignKeyField(Publication, column_name='publication_id')
 
 
 class DatasetTag(BaseModel):
