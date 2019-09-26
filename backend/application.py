@@ -38,6 +38,12 @@ class GetDataset(handlers.UnsafeHandler):
                            for entry in (db.DatasetTag
                                          .select(db.DatasetTag)
                                          .where(db.DatasetTag.dataset == dbid))]
+
+        dataset['publications'] = [db.build_dict_from_row(entry.publication)
+                                   for entry in (db.DatasetPublication
+                                                 .select(db.DatasetPublication)
+                                                 .where(db.DatasetPublication.dataset == dbid))]
+
         dataset['data_urls'] = [db.build_dict_from_row(entry.data_url)
                                 for entry in (db.DatasetDataUrl
                                               .select(db.DatasetDataUrl)

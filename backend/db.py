@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
-from peewee import (CompositeKey,
+from peewee import (BooleanField,
+                    CompositeKey,
                     CharField,
+                    Field,
                     ForeignKeyField,
                     Model,
                     TextField)
@@ -23,6 +25,24 @@ class BaseModel(Model):
         database = database
 
 
+class EnumField(Field):
+    db_field = 'string'  # The same as for CharField
+
+    def __init__(self, choices=None, *args, **kwargs):
+        self.values = choices or []
+        super().__init__(*args, **kwargs)
+
+    def db_value(self, value):
+        if value not in self.values:
+            raise ValueError("Illegal value for '{}'".format(self.column_name))
+        return value
+
+    def python_value(self, value):
+        if value not in self.values:
+            raise ValueError("Illegal value for '{}'".format(self.column_name))
+        return value
+
+
 class Dataset(BaseModel):
     '''
     A dataset.
@@ -31,13 +51,13 @@ class Dataset(BaseModel):
         table_name = 'datasets'
         schema = 'datasets'
 
-    title = CharField()
+    title = CharField(null=False)
     description = TextField(null=True)
     doi = CharField(null=True)
     creator = CharField(null=True)
-    publication = CharField(null=True)
     contact = CharField(null=True)
     dmp = CharField(null=True)
+    visible = BooleanField(null=False)
 
 
 class DataUrl(BaseModel):
@@ -50,6 +70,17 @@ class DataUrl(BaseModel):
 
     description = CharField()
     url = CharField()
+
+
+class Publication(BaseModel):
+    '''
+    A publication for a dataset.
+    '''
+    class Meta:
+        table_name = 'publications'
+        schema = 'datasets'
+
+    identifier = CharField()
 
 
 class Tag(BaseModel):
@@ -76,19 +107,10 @@ class User(BaseModel):
     auth_identity = CharField(unique=True)
     affiliation = CharField(null=True)
     country = CharField(null=True)
+    permission = EnumField(null=False, choices=['Standard', 'Steward', 'Admin'])
 
 
 # Table mappings
-
-class DatasetTag(BaseModel):
-    class Meta:
-        table_name = 'dataset_tag_map'
-        schema = 'datasets'
-        primary_key = CompositeKey('dataset_id', 'tag_id')
-
-    dataset = ForeignKeyField(Dataset)
-    tag = ForeignKeyField(Tag)
-
 
 class DatasetDataUrl(BaseModel):
     class Meta:
@@ -96,8 +118,28 @@ class DatasetDataUrl(BaseModel):
         schema = 'datasets'
         primary_key = CompositeKey('dataset_id', 'data_url_id')
 
-    dataset = ForeignKeyField(Dataset)
-    data_url = ForeignKeyField(DataUrl)
+    dataset = ForeignKeyField(Dataset, column_name='dataset_id')
+    data_url = ForeignKeyField(DataUrl, column_name='data_url_id')
+
+
+class DatasetPublication(BaseModel):
+    class Meta:
+        table_name = 'dataset_publication_map'
+        schema = 'datasets'
+        primary_key = CompositeKey('dataset_id', 'publications_id')
+
+    dataset = ForeignKeyField(Dataset, column_name='dataset_id')
+    publication = ForeignKeyField(DataUrl, column_name='publication_id')
+
+
+class DatasetTag(BaseModel):
+    class Meta:
+        table_name = 'dataset_tag_map'
+        schema = 'datasets'
+        primary_key = CompositeKey('dataset_id', 'tag_id')
+
+    dataset = ForeignKeyField(Dataset, column_name='dataset_id')
+    tag = ForeignKeyField(Tag, column_name='tag_id')
 
 
 class DatasetUser(BaseModel):
@@ -106,8 +148,8 @@ class DatasetUser(BaseModel):
         schema = 'users'
         primary_key = CompositeKey('dataset_id', 'user_id')
 
-    dataset = ForeignKeyField(Dataset)
-    user = ForeignKeyField(User)
+    dataset = ForeignKeyField(Dataset, column_name='dataset_id')
+    user = ForeignKeyField(User, column_name='user_id')
 
 
 def build_dict_from_row(row) -> dict:

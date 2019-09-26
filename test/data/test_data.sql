@@ -1,16 +1,16 @@
-INSERT INTO users.users (given_name, email, affiliation, country, auth_identity) VALUES ('A Name', 'user1@example.com', 'A University', 'A Country', 'user1auth');
-INSERT INTO users.users (given_name, email, affiliation, country, auth_identity) VALUES ('A Name', 'user2@example.com', 'A University', 'A Country', 'user2auth');
-INSERT INTO users.users (given_name, email, affiliation, country, auth_identity) VALUES ('A Name', 'user3@example.com', 'A University', 'A Country', 'user3auth');
-INSERT INTO users.users (given_name, email, affiliation, country, auth_identity) VALUES ('A Name', 'user4@example.com', 'A University', 'A Country', 'user4auth');
-INSERT INTO users.users (given_name, email, affiliation, country, auth_identity) VALUES ('A Name', 'user5@example.com', 'A University', 'A Country', 'user5auth');
-INSERT INTO users.users (given_name, email, affiliation, country, auth_identity) VALUES ('A Name', 'user6@example.com', 'A University', 'A Country', 'user6auth');
+INSERT INTO users.users (given_name, email, affiliation, country, auth_identity, permission) VALUES ('A Name1', 'user1@example.com', 'A University1', 'A Country1', 'user1auth', 'Standard');
+INSERT INTO users.users (given_name, email, affiliation, country, auth_identity, permission) VALUES ('A Name2', 'user2@example.com', 'A University2', 'A Country2', 'user2auth', 'Standard');
+INSERT INTO users.users (given_name, email, affiliation, country, auth_identity, permission) VALUES ('A Name3', 'user3@example.com', 'A University3', 'A Country3', 'user3auth', 'Standard');
+INSERT INTO users.users (given_name, email, affiliation, country, auth_identity, permission) VALUES ('A Name4', 'user4@example.com', 'A University4', 'A Country4', 'user4auth', 'Standard');
+INSERT INTO users.users (given_name, email, affiliation, country, auth_identity, permission) VALUES ('A Name5', 'user5@example.com', 'A University5', 'A Country5', 'user5auth', 'Steward');
+INSERT INTO users.users (given_name, email, affiliation, country, auth_identity, permission) VALUES ('A Name6', 'user6@example.com', 'A University6', 'A Country6', 'user6auth', 'Admin');
 
-INSERT INTO datasets.datasets (title, description, doi, creator, publication, contact, dmp) VALUES ('Dataset title 1', 'Dataset 1 description', 'doi.portal.1', 'A facility 1', Null, 'contact1@example.com', 'dmp url 1');
-INSERT INTO datasets.datasets (title, description, doi, creator, publication, contact, dmp) VALUES ('Dataset title 2', 'Dataset 2 description', 'doi.portal.2', 'A facility 2', 'Publication 2', 'contact2@example.com', Null);
-INSERT INTO datasets.datasets (title, description, doi, creator, publication, contact, dmp) VALUES ('Dataset title 3', 'Dataset 3 description', 'doi.portal.3', 'A facility 3', Null, 'contact3@example.com', 'dmp url 3');
-INSERT INTO datasets.datasets (title, description, doi, creator, publication, contact, dmp) VALUES ('Dataset title 4', 'Dataset 4 description', 'doi.portal.4', 'A facility 4', Null, 'contact4@example.com', 'dmp url 4');
-INSERT INTO datasets.datasets (title, description, doi, creator, publication, contact, dmp) VALUES ('Dataset title 5', 'Dataset 5 description', 'doi.portal.5', 'A facility 5', 'Publication 5', 'contact5@example.com', Null);
-INSERT INTO datasets.datasets (title, description, doi, creator, publication, contact, dmp) VALUES ('Dataset title 6', 'Dataset 6 description', 'doi.portal.6', 'A facility 6', Null, 'contact6@example.com', Null);
+INSERT INTO datasets.datasets (title, description, doi, creator, contact, dmp, visible) VALUES ('Dataset title 1', 'Dataset 1 description', 'doi.portal.1', 'A facility 1', 'contact1@example.com', 'dmp url 1', TRUE);
+INSERT INTO datasets.datasets (title, description, doi, creator, contact, dmp, visible) VALUES ('Dataset title 2', 'Dataset 2 description', 'doi.portal.2', 'A facility 2', 'contact2@example.com', Null, TRUE);
+INSERT INTO datasets.datasets (title, description, doi, creator, contact, dmp, visible) VALUES ('Dataset title 3', 'Dataset 3 description', 'doi.portal.3', 'A facility 3', 'contact3@example.com', 'dmp url 3', TRUE);
+INSERT INTO datasets.datasets (title, description, doi, creator, contact, dmp, visible) VALUES ('Dataset title 4', 'Dataset 4 description', 'doi.portal.4', 'A facility 4', 'contact4@example.com', 'dmp url 4', FALSE);
+INSERT INTO datasets.datasets (title, description, doi, creator, contact, dmp, visible) VALUES ('Dataset title 5', 'Dataset 5 description', 'doi.portal.5', 'A facility 5', 'contact5@example.com', Null, TRUE);
+INSERT INTO datasets.datasets (title, description, doi, creator, contact, dmp, visible) VALUES ('Dataset title 6', 'Dataset 6 description', 'doi.portal.6', 'A facility 6', 'contact6@example.com', Null, TRUE);
 
 INSERT INTO users.dataset_user_map VALUES (1, 1);
 INSERT INTO users.dataset_user_map VALUES (1, 2);
@@ -71,3 +71,11 @@ INSERT INTO datasets.dataset_data_url_map VALUES (5,8);
 INSERT INTO datasets.dataset_data_url_map VALUES (5,9);
 INSERT INTO datasets.dataset_data_url_map VALUES (5,10);
 INSERT INTO datasets.dataset_data_url_map VALUES (6,11);
+
+INSERT INTO datasets.publications (identifier) VALUES ('A publication1. Journal:2011');
+INSERT INTO datasets.publications (identifier) VALUES ('A publication2. Journal:2012');
+INSERT INTO datasets.publications (identifier) VALUES ('A publication3. Journal:2013');
+
+INSERT INTO datasets.dataset_publication_map VALUES (1,1);
+INSERT INTO datasets.dataset_publication_map VALUES (3,2);
+INSERT INTO datasets.dataset_publication_map VALUES (5,3);
