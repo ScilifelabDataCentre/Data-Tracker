@@ -1,3 +1,5 @@
+import logging
+
 import tornado.web
 import tornado
 
@@ -34,21 +36,23 @@ class GetDataset(handlers.UnsafeHandler):
             return
 
         dataset = db.build_dict_from_row(dataset)
-        dataset['tags'] = [db.build_dict_from_row(entry.tag)
-                           for entry in (db.DatasetTag
-                                         .select(db.DatasetTag)
-                                         .where(db.DatasetTag.dataset == dbid))]
+        dataset['tags'] = [entry for entry in (db.DatasetTag
+                                               .select(db.Tag)
+                                               .join(db.Tag)
+                                               .where(db.DatasetTag.dataset == dbid)
+                                               .dicts())]
 
-        dataset['publications'] = [db.build_dict_from_row(entry.publication)
-                                   for entry in (db.DatasetPublication
-                                                 .select(db.DatasetPublication)
-                                                 .where(db.DatasetPublication.dataset == dbid))]
+        dataset['publications'] = [entry for entry in (db.DatasetPublication
+                                                       .select(db.Publication)
+                                                       .join(db.Publication)
+                                                       .where(db.DatasetPublication.dataset == dbid)
+                                                       .dicts())]
 
-        dataset['data_urls'] = [db.build_dict_from_row(entry.data_url)
-                                for entry in (db.DatasetDataUrl
-                                              .select(db.DatasetDataUrl)
-                                              .where(db.DatasetDataUrl.dataset == dbid))]
-
+        dataset['data_urls'] = [entry for entry in (db.DatasetDataUrl
+                                                    .select(db.DataUrl)
+                                                    .join(db.DataUrl)
+                                                    .where(db.DatasetDataUrl.dataset == dbid)
+                                                    .dicts())]
         self.finish(dataset)
 
 
