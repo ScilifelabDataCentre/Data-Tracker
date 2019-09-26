@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS users.users (
     affiliation         varchar(100)        DEFAULT NULL,
     country             varchar(100)        DEFAULT NULL,
     auth_identity       varchar(100)        NOT NULL UNIQUE,
-    permission          user_permissions    NOT NULL DEFAULT Standard
+    permission          user_permissions    NOT NULL DEFAULT 'Standard'
 );
 
 CREATE TABLE IF NOT EXISTS users.dataset_owners (
