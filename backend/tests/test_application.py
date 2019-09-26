@@ -15,6 +15,13 @@ def test_list_datasets_get():
     assert len(data['datasets']) == 4
     assert data['datasets'][0]['title'] == f"Dataset title {data['datasets'][0]['id']}"
 
+    # log in as user, no extra
+    response = requests.get(f'{BASE_URL}/developer/login?userid=1')
+    cookie_jar = response.cookies
+    response = requests.get(f'{BASE_URL}/api/datasets', cookies=cookie_jar)
+    data = json.loads(response.text)
+    assert len(data['datasets']) == 4
+
     # log in as user that owns dataset and list extra
     response = requests.get(f'{BASE_URL}/developer/login?userid=4')
     cookie_jar = response.cookies
@@ -69,10 +76,37 @@ def test_get_dataset_get():
     assert len(data['publications']) == 0
 
     # publications are retrieved correctly
-    response = requests.get(f'{BASE_URL}/api/dataset/5')
+    response = requests.get(f'{BASE_URL}/api/dataset/3')
     data = json.loads(response.text)
     assert len(data['publications']) == 1
-    assert data['publications'][0]['identifier'] == 'A publication3. Journal:2013'
+    assert data['publications'][0]['identifier'] == 'A publication2. Journal:2012'
+
+    # owned by user
+    response = requests.get(f'{BASE_URL}/developer/login?userid=4')
+    cookie_jar = response.cookies
+    response = requests.get(f'{BASE_URL}/api/dataset/4', cookies=cookie_jar)
+    data = json.loads(response.text)
+    assert len(data) == 10
+
+    # steward
+    response = requests.get(f'{BASE_URL}/developer/login?userid=5')
+    cookie_jar = response.cookies
+    response = requests.get(f'{BASE_URL}/api/dataset/4', cookies=cookie_jar)
+    assert len(data) == 10
+
+    # admin
+    response = requests.get(f'{BASE_URL}/developer/login?userid=6')
+    cookie_jar = response.cookies
+    response = requests.get(f'{BASE_URL}/api/dataset/4', cookies=cookie_jar)
+    assert len(data) == 10
+
+    # forbidden
+    response = requests.get(f'{BASE_URL}/api/dataset/4')
+    assert response.status_code == 403
+    response = requests.get(f'{BASE_URL}/developer/login?userid=1')
+    cookie_jar = response.cookies
+    response = requests.get(f'{BASE_URL}/api/dataset/4', cookies=cookie_jar)
+    assert response.status_code == 403
 
     # not found
     response = requests.get(f'{BASE_URL}/api/dataset/123456')

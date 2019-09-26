@@ -19,14 +19,7 @@ class ListDatasets(handlers.UnsafeHandler):
     def get(self):
         user = self.current_user
 
-        list_all = False
-        try:
-            if user.permission in ('Steward', 'Admin'):
-                list_all = True
-        except AttributeError:
-            pass
-
-        if list_all:
+        if has_rights(user, ('Steward', 'Admin')):
             ret = [dataset for dataset in (db.Dataset
                                            .select(db.Dataset.id, db.Dataset.title)
                                            .dicts())]
@@ -43,15 +36,22 @@ class ListDatasets(handlers.UnsafeHandler):
 
 class GetDataset(handlers.UnsafeHandler):
     def get(self, ds_identifier):
+        user = self.current_user
+
         try:
             dbid = int(ds_identifier)
             try:
                 dataset = db.Dataset.get_by_id(dbid)
             except db.Dataset.DoesNotExist:
-                self.send_error(status_code=404, reason='No dataset with the provided id')
+                self.send_error(status_code=404)
                 return
         except ValueError:
             self.send_error(status_code=400, reason='Dataset id should be an integer')
+            return
+
+        if not dataset.visible and not (has_rights(user, ('Steward', 'Admin'))
+                                        or is_owner(user, dataset)):
+            self.send_error(status_code=403)
             return
 
         dataset = db.build_dict_from_row(dataset)
@@ -149,3 +149,43 @@ class CountryList(handlers.UnsafeHandler):
                 "United States", "Uruguay", "Uzbekistan", "Vanuatu", "Vatican",
                 "Venezuela", "Vietnam", "Wallis and Futuna", "Western Sahara",
                 "Yemen", "Zambia", "Zimbabwe"]
+
+
+def has_rights(user, permissions: tuple):
+    """
+    Test whether the user has the supplied permissions.
+
+    Args:
+        user: user to test
+        permissions (tuple): permissions of interest
+
+    Returns:
+        bool: whether user has Admin rights
+
+    """
+    try:
+        if user.permission in permissions:
+            return True
+    except AttributeError:
+            pass
+    return False
+
+
+def is_owner(user, dataset):
+    """
+    Test whether the user owns the provided dataset
+
+    Args:
+        user: the user to test
+        dataset: the dataset to check owners for
+
+    Returns:
+        bool: whether user owns the dataset
+
+    """
+    try:
+        db.DatasetOwner.get((db.DatasetOwner.dataset == dataset.id) &
+                            (db.DatasetOwner.user == user))
+        return True
+    except db.DatasetOwner.DoesNotExist:
+        return False
