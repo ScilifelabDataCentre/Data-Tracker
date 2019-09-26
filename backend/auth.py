@@ -8,18 +8,24 @@ import urllib.parse
 import tornado.auth
 
 from handlers import BaseHandler
+import db
 
 
 class DeveloperLoginHandler(BaseHandler):
     def get(self):
-        if not self.get_argument("user", False):
-            self.send_error(status_code=403)
-        elif not self.get_argument("email", False):
-            self.send_error(status_code=403)
+        if not self.get_argument("userid", False):
+            self.send_error(status_code=403, reason="Must provide user id (e.g. userid=1)")
+            return
 
-        self.set_secure_cookie('user', self.get_argument("user"))  # pylint: disable=no-value-for-parameter
-        self.set_secure_cookie('email', self.get_argument("email"))  # pylint: disable=no-value-for-parameter
-        self.set_secure_cookie('identity', self.get_argument("email"))  # pylint: disable=no-value-for-parameter
+        try:
+            user = db.User.get(db.User.id == int(self.get_argument("userid")))
+        except db.User.DoesNotExist:
+            self.send_error(status_code=404, reason="User not in db")
+            return
+
+        self.set_secure_cookie('user', user.name)  # pylint: disable=no-value-for-parameter
+        self.set_secure_cookie('email', user.email)  # pylint: disable=no-value-for-parameter
+        self.set_secure_cookie('identity', user.auth_identity)  # pylint: disable=no-value-for-parameter
         self.finish()
 
 
