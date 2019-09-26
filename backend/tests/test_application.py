@@ -8,44 +8,13 @@ import requests
 settings = json.loads(open(f'{os.path.dirname(os.path.realpath(__file__))}/settings_tests.json').read())
 BASE_URL=f"{settings['host']}:{settings['port']}"
 
-def test_list_datasets_get():
-    """Test ListDatasets.get()"""
-    response = requests.get(f'{BASE_URL}/api/datasets')
-    data = json.loads(response.text)
-    assert len(data['datasets']) == 4
-    assert data['datasets'][0]['title'] == f"Dataset title {data['datasets'][0]['id']}"
 
-    # log in as user, no extra
-    response = requests.get(f'{BASE_URL}/developer/login?userid=1')
-    cookie_jar = response.cookies
-    response = requests.get(f'{BASE_URL}/api/datasets', cookies=cookie_jar)
+def test_countrylist_get():
+    """Test CountryList.get()"""
+    response = requests.get(f'{BASE_URL}/api/countries')
     data = json.loads(response.text)
-    assert len(data['datasets']) == 4
 
-    # log in as user that owns dataset and list extra
-    response = requests.get(f'{BASE_URL}/developer/login?userid=4')
-    cookie_jar = response.cookies
-    response = requests.get(f'{BASE_URL}/api/datasets', cookies=cookie_jar)
-    data = json.loads(response.text)
-    assert len(data['datasets']) == 5
-    assert {"id": 4, "title": "Dataset title 4"} in data['datasets']
-
-    # log in as steward and list extra
-    response = requests.get(f'{BASE_URL}/developer/login?userid=5')
-    cookie_jar = response.cookies
-    response = requests.get(f'{BASE_URL}/api/datasets', cookies=cookie_jar)
-    data = json.loads(response.text)
-    assert len(data['datasets']) == 6
-    assert {"id": 4, "title": "Dataset title 4"} in data['datasets']
-
-    # log in as admin and list extra
-    response = requests.get(f'{BASE_URL}/developer/login?userid=6')
-    cookie_jar = response.cookies
-    response = requests.get(f'{BASE_URL}/api/datasets', cookies=cookie_jar)
-    data = json.loads(response.text)
-    assert len(data['datasets']) == 6
-    assert {"id": 4, "title": "Dataset title 4"} in data['datasets']
-    assert {"id": 5, "title": "Dataset title 5"} in data['datasets']
+    assert len(data['countries']) == 240
 
 
 def test_get_dataset_get():
@@ -117,9 +86,42 @@ def test_get_dataset_get():
     assert response.status_code == 400
 
 
-def test_countrylist_get():
-    """Test CountryList.get()"""
-    response = requests.get(f'{BASE_URL}/api/countries')
+def test_list_datasets_get():
+    """Test ListDatasets.get()"""
+    response = requests.get(f'{BASE_URL}/api/datasets')
     data = json.loads(response.text)
+    assert len(data['datasets']) == 4
+    assert data['datasets'][0]['title'] == f"Dataset title {data['datasets'][0]['id']}"
 
-    assert len(data['countries']) == 240
+    # log in as user, no extra
+    response = requests.get(f'{BASE_URL}/developer/login?userid=1')
+    cookie_jar = response.cookies
+    response = requests.get(f'{BASE_URL}/api/datasets', cookies=cookie_jar)
+    data = json.loads(response.text)
+    assert len(data['datasets']) == 4
+
+    # log in as user that owns dataset and list extra
+    response = requests.get(f'{BASE_URL}/developer/login?userid=4')
+    cookie_jar = response.cookies
+    response = requests.get(f'{BASE_URL}/api/datasets', cookies=cookie_jar)
+    data = json.loads(response.text)
+    assert len(data['datasets']) == 5
+    assert {"id": 4, "title": "Dataset title 4"} in data['datasets']
+
+    # log in as steward and list extra
+    response = requests.get(f'{BASE_URL}/developer/login?userid=5')
+    cookie_jar = response.cookies
+    response = requests.get(f'{BASE_URL}/api/datasets', cookies=cookie_jar)
+    data = json.loads(response.text)
+    assert len(data['datasets']) == 6
+    assert {"id": 4, "title": "Dataset title 4"} in data['datasets']
+
+    # log in as admin and list extra
+    response = requests.get(f'{BASE_URL}/developer/login?userid=6')
+    cookie_jar = response.cookies
+    response = requests.get(f'{BASE_URL}/api/datasets', cookies=cookie_jar)
+    data = json.loads(response.text)
+    assert len(data['datasets']) == 6
+    assert {"id": 4, "title": "Dataset title 4"} in data['datasets']
+    assert {"id": 5, "title": "Dataset title 5"} in data['datasets']
+

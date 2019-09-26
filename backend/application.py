@@ -9,86 +9,6 @@ import handlers
 from peewee import fn, JOIN
 
 
-class QuitHandler(handlers.UnsafeHandler):
-    def get(self):  # pylint: disable=no-self-use
-        ioloop = tornado.ioloop.IOLoop.instance()
-        ioloop.stop()
-
-
-class ListDatasets(handlers.UnsafeHandler):
-    def get(self):
-        user = self.current_user
-
-        if has_rights(user, ('Steward', 'Admin')):
-            ret = [dataset for dataset in (db.Dataset
-                                           .select(db.Dataset.id, db.Dataset.title)
-                                           .dicts())]
-        else:
-            ret = [dataset for dataset in (db.Dataset
-                                           .select(fn.Distinct(db.Dataset.id), db.Dataset.title)
-                                           .join(db.DatasetOwner, JOIN.LEFT_OUTER)
-                                           .where((db.Dataset.visible==True) |
-                                                  (db.DatasetOwner.user == user))
-                                           .dicts())]
-
-        self.finish({'datasets': ret})
-
-
-class GetDataset(handlers.UnsafeHandler):
-    def get(self, ds_identifier):
-        user = self.current_user
-
-        try:
-            dbid = int(ds_identifier)
-            try:
-                dataset = db.Dataset.get_by_id(dbid)
-            except db.Dataset.DoesNotExist:
-                self.send_error(status_code=404)
-                return
-        except ValueError:
-            self.send_error(status_code=400, reason='Dataset id should be an integer')
-            return
-
-        if not dataset.visible and not (has_rights(user, ('Steward', 'Admin'))
-                                        or is_owner(user, dataset)):
-            self.send_error(status_code=403)
-            return
-
-        dataset = db.build_dict_from_row(dataset)
-        dataset['tags'] = [entry for entry in (db.DatasetTag
-                                               .select(db.Tag)
-                                               .join(db.Tag)
-                                               .where(db.DatasetTag.dataset == dbid)
-                                               .dicts())]
-
-        dataset['publications'] = [entry for entry in (db.DatasetPublication
-                                                       .select(db.Publication)
-                                                       .join(db.Publication)
-                                                       .where(db.DatasetPublication.dataset == dbid)
-                                                       .dicts())]
-
-        dataset['data_urls'] = [entry for entry in (db.DatasetDataUrl
-                                                    .select(db.DataUrl)
-                                                    .join(db.DataUrl)
-                                                    .where(db.DatasetDataUrl.dataset == dbid)
-                                                    .dicts())]
-        self.finish(dataset)
-
-
-class GetUser(handlers.UnsafeHandler):
-    def get(self):
-        user = self.current_user
-
-        ret = {'user': None, 'email': None, 'login_type': 'none'}
-        if user:
-            ret = {'user': user.name,
-                   'email': user.email,
-                   'affiliation': user.affiliation,
-                   'country': user.country}
-
-        self.finish(ret)
-
-
 class CountryList(handlers.UnsafeHandler):
     def get(self):
         self.write({'countries': [{'name': c} for c in self.country_list]})
@@ -149,6 +69,86 @@ class CountryList(handlers.UnsafeHandler):
                 "United States", "Uruguay", "Uzbekistan", "Vanuatu", "Vatican",
                 "Venezuela", "Vietnam", "Wallis and Futuna", "Western Sahara",
                 "Yemen", "Zambia", "Zimbabwe"]
+
+
+class GetDataset(handlers.UnsafeHandler):
+    def get(self, ds_identifier):
+        user = self.current_user
+
+        try:
+            dbid = int(ds_identifier)
+            try:
+                dataset = db.Dataset.get_by_id(dbid)
+            except db.Dataset.DoesNotExist:
+                self.send_error(status_code=404)
+                return
+        except ValueError:
+            self.send_error(status_code=400, reason='Dataset id should be an integer')
+            return
+
+        if not dataset.visible and not (has_rights(user, ('Steward', 'Admin'))
+                                        or is_owner(user, dataset)):
+            self.send_error(status_code=403)
+            return
+
+        dataset = db.build_dict_from_row(dataset)
+        dataset['tags'] = [entry for entry in (db.DatasetTag
+                                               .select(db.Tag)
+                                               .join(db.Tag)
+                                               .where(db.DatasetTag.dataset == dbid)
+                                               .dicts())]
+
+        dataset['publications'] = [entry for entry in (db.DatasetPublication
+                                                       .select(db.Publication)
+                                                       .join(db.Publication)
+                                                       .where(db.DatasetPublication.dataset == dbid)
+                                                       .dicts())]
+
+        dataset['data_urls'] = [entry for entry in (db.DatasetDataUrl
+                                                    .select(db.DataUrl)
+                                                    .join(db.DataUrl)
+                                                    .where(db.DatasetDataUrl.dataset == dbid)
+                                                    .dicts())]
+        self.finish(dataset)
+
+
+class GetUser(handlers.UnsafeHandler):
+    def get(self):
+        user = self.current_user
+
+        ret = {'user': None, 'email': None, 'login_type': 'none'}
+        if user:
+            ret = {'user': user.name,
+                   'email': user.email,
+                   'affiliation': user.affiliation,
+                   'country': user.country}
+
+        self.finish(ret)
+
+
+class ListDatasets(handlers.UnsafeHandler):
+    def get(self):
+        user = self.current_user
+
+        if has_rights(user, ('Steward', 'Admin')):
+            ret = [dataset for dataset in (db.Dataset
+                                           .select(db.Dataset.id, db.Dataset.title)
+                                           .dicts())]
+        else:
+            ret = [dataset for dataset in (db.Dataset
+                                           .select(fn.Distinct(db.Dataset.id), db.Dataset.title)
+                                           .join(db.DatasetOwner, JOIN.LEFT_OUTER)
+                                           .where((db.Dataset.visible==True) |
+                                                  (db.DatasetOwner.user == user))
+                                           .dicts())]
+
+        self.finish({'datasets': ret})
+
+
+class QuitHandler(handlers.UnsafeHandler):
+    def get(self):  # pylint: disable=no-self-use
+        ioloop = tornado.ioloop.IOLoop.instance()
+        ioloop.stop()
 
 
 def has_rights(user, permissions: tuple):
