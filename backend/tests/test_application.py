@@ -86,6 +86,25 @@ def test_get_dataset_get():
     assert response.status_code == 400
 
 
+def test_get_user_get():
+    """Test GetUser.get()"""
+    # no user
+    response = requests.get(f'{BASE_URL}/api/users/me')
+    data = json.loads(response.text)
+    assert data == {"user": None,
+                    "email": None}
+
+    # logged in user
+    response = requests.get(f'{BASE_URL}/developer/login?userid=4')
+    cookie_jar = response.cookies
+    response = requests.get(f'{BASE_URL}/api/users/me', cookies=cookie_jar)
+    data = json.loads(response.text)
+    assert data == {"user": "A Name4",
+                    "email": "user4@example.com",
+                    "affiliation": "A University4",
+                    "country": "A Country4"}
+
+
 def test_list_datasets_get():
     """Test ListDatasets.get()"""
     response = requests.get(f'{BASE_URL}/api/datasets')

@@ -116,7 +116,7 @@ class GetUser(handlers.UnsafeHandler):
     def get(self):
         user = self.current_user
 
-        ret = {'user': None, 'email': None, 'login_type': 'none'}
+        ret = {'user': None, 'email': None}
         if user:
             ret = {'user': user.name,
                    'email': user.email,
