@@ -9,17 +9,16 @@ INSERT INTO datasets.datasets (title, description, doi, creator, contact, dmp, v
 INSERT INTO datasets.datasets (title, description, doi, creator, contact, dmp, visible) VALUES ('Dataset title 2', 'Dataset 2 description', 'doi.portal.2', 'A facility 2', 'contact2@example.com', Null, TRUE);
 INSERT INTO datasets.datasets (title, description, doi, creator, contact, dmp, visible) VALUES ('Dataset title 3', 'Dataset 3 description', 'doi.portal.3', 'A facility 3', 'contact3@example.com', 'dmp url 3', TRUE);
 INSERT INTO datasets.datasets (title, description, doi, creator, contact, dmp, visible) VALUES ('Dataset title 4', 'Dataset 4 description', 'doi.portal.4', 'A facility 4', 'contact4@example.com', 'dmp url 4', FALSE);
-INSERT INTO datasets.datasets (title, description, doi, creator, contact, dmp, visible) VALUES ('Dataset title 5', 'Dataset 5 description', 'doi.portal.5', 'A facility 5', 'contact5@example.com', Null, TRUE);
+INSERT INTO datasets.datasets (title, description, doi, creator, contact, dmp, visible) VALUES ('Dataset title 5', 'Dataset 5 description', 'doi.portal.5', 'A facility 5', 'contact5@example.com', Null, FALSE);
 INSERT INTO datasets.datasets (title, description, doi, creator, contact, dmp, visible) VALUES ('Dataset title 6', 'Dataset 6 description', 'doi.portal.6', 'A facility 6', 'contact6@example.com', Null, TRUE);
 
-INSERT INTO users.dataset_user_map VALUES (1, 1);
-INSERT INTO users.dataset_user_map VALUES (1, 2);
-INSERT INTO users.dataset_user_map VALUES (2, 2);
-INSERT INTO users.dataset_user_map VALUES (3, 3);
-INSERT INTO users.dataset_user_map VALUES (3, 4);
-INSERT INTO users.dataset_user_map VALUES (4, 5);
-INSERT INTO users.dataset_user_map VALUES (5, 6);
-INSERT INTO users.dataset_user_map VALUES (6, 4);
+INSERT INTO users.dataset_owners VALUES (1, 1);
+INSERT INTO users.dataset_owners VALUES (1, 2);
+INSERT INTO users.dataset_owners VALUES (3, 3);
+INSERT INTO users.dataset_owners VALUES (3, 4);
+INSERT INTO users.dataset_owners VALUES (4, 4);
+INSERT INTO users.dataset_owners VALUES (5, 6);
+INSERT INTO users.dataset_owners VALUES (6, 4);
 
 INSERT INTO datasets.tags (title) VALUES ('Tag Title 1');
 INSERT INTO datasets.tags (title) VALUES ('Tag Title 2');

@@ -6,6 +6,8 @@ import tornado
 import db
 import handlers
 
+from peewee import fn, JOIN
+
 
 class QuitHandler(handlers.UnsafeHandler):
     def get(self):  # pylint: disable=no-self-use
@@ -15,9 +17,26 @@ class QuitHandler(handlers.UnsafeHandler):
 
 class ListDatasets(handlers.UnsafeHandler):
     def get(self):
-        ret = []
-        for dataset in db.Dataset.select(db.Dataset.id, db.Dataset.title).dicts():
-            ret.append(dataset)
+        user = self.current_user
+
+        list_all = False
+        try:
+            if user.permission in ('Steward', 'Admin'):
+                list_all = True
+        except AttributeError:
+            pass
+
+        if list_all:
+            ret = [dataset for dataset in (db.Dataset
+                                           .select(db.Dataset.id, db.Dataset.title)
+                                           .dicts())]
+        else:
+            ret = [dataset for dataset in (db.Dataset
+                                           .select(fn.Distinct(db.Dataset.id), db.Dataset.title)
+                                           .join(db.DatasetOwner, JOIN.LEFT_OUTER)
+                                           .where((db.Dataset.visible==True) |
+                                                  (db.DatasetOwner.user == user))
+                                           .dicts())]
 
         self.finish({'datasets': ret})
 
