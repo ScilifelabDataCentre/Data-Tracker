@@ -7,7 +7,6 @@ from tornado.options import define, options
 import tornado.web
 
 import application
-import handlers
 import auth
 import settings as portal_settings
 
@@ -40,8 +39,9 @@ class Application(tornado.web.Application):
             (r"/logout", auth.ElixirLogoutHandler),
             (r"/elixir/login", auth.ElixirLoginHandler),
             (r"/elixir/logout", auth.ElixirLogoutHandler),
-            # API Methods
+            # User-related methods
             (r"/api/countries", application.CountryList),
+            (r"/api/users", application.ListUsers),
             (r"/api/users/me", application.GetUser),
             # Dataset methods
             (r"/api/datasets", application.ListDatasets),
