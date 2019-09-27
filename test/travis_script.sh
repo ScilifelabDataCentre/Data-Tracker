@@ -59,8 +59,6 @@ sleep 2 # Lets wait a little bit so the server has stopped
 echo '>>> Code evaluation'
 pylint backend
 RETURN_VALUE=$((RETURN_VALUE + $?))
-pylint scripts
-RETURN_VALUE=$((RETURN_VALUE + $?))
 
 echo '>>> Finalising: Combine coverage'
 
