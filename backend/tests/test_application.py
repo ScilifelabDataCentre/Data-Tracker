@@ -169,7 +169,8 @@ def test_list_user_get():
     response = requests.get(f'{BASE_URL}/api/users', cookies=cookie_jar)
     data = json.loads(response.text)
     assert len(data['users']) == 6
-    assert {"id": 5, "name": "A Name5",
+    assert {"id": 5,
+            "name": "A Name5",
             "email": "user5@example.com",
             "authIdentity": "user5auth",
             "affiliation": "A University5",
