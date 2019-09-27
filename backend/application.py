@@ -5,6 +5,7 @@ import tornado
 
 import db
 import handlers
+import utils
 
 from peewee import fn, JOIN
 
@@ -86,8 +87,8 @@ class GetDataset(handlers.UnsafeHandler):
             self.send_error(status_code=400, reason='Dataset id should be an integer')
             return
 
-        if not dataset.visible and not (has_rights(user, ('Steward', 'Admin'))
-                                        or is_owner(user, dataset)):
+        if not dataset.visible and not (utils.has_rights(user, ('Steward', 'Admin'))
+                                        or utils.is_owner(user, dataset)):
             self.send_error(status_code=403)
             return
 
@@ -113,6 +114,7 @@ class GetDataset(handlers.UnsafeHandler):
 
 
 class GetUser(handlers.UnsafeHandler):
+    """Retrieve basic information about the current user."""
     def get(self):
         user = self.current_user
 
@@ -130,7 +132,7 @@ class ListDatasets(handlers.UnsafeHandler):
     def get(self):
         user = self.current_user
 
-        if has_rights(user, ('Steward', 'Admin')):
+        if utils.has_rights(user, ('Steward', 'Admin')):
             ret = [dataset for dataset in (db.Dataset
                                            .select(db.Dataset.id, db.Dataset.title)
                                            .dicts())]
@@ -145,47 +147,14 @@ class ListDatasets(handlers.UnsafeHandler):
         self.finish({'datasets': ret})
 
 
+class ListUsers(handlers.AdminHandler):
+    """Retrieve a list of all users, including permissions etc."""
+    def get(self):
+        users = [user for user in db.User.select().dicts()]
+        self.finish({'users': users})
+
+
 class QuitHandler(handlers.UnsafeHandler):
     def get(self):  # pylint: disable=no-self-use
         ioloop = tornado.ioloop.IOLoop.instance()
         ioloop.stop()
-
-
-def has_rights(user, permissions: tuple):
-    """
-    Test whether the user has the supplied permissions.
-
-    Args:
-        user: user to test
-        permissions (tuple): permissions of interest
-
-    Returns:
-        bool: whether user has Admin rights
-
-    """
-    try:
-        if user.permission in permissions:
-            return True
-    except AttributeError:
-            pass
-    return False
-
-
-def is_owner(user, dataset):
-    """
-    Test whether the user owns the provided dataset
-
-    Args:
-        user: the user to test
-        dataset: the dataset to check owners for
-
-    Returns:
-        bool: whether user owns the dataset
-
-    """
-    try:
-        db.DatasetOwner.get((db.DatasetOwner.dataset == dataset.id) &
-                            (db.DatasetOwner.user == user))
-        return True
-    except db.DatasetOwner.DoesNotExist:
-        return False

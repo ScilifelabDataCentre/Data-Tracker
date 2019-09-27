@@ -144,3 +144,34 @@ def test_list_datasets_get():
     assert {"id": 4, "title": "Dataset title 4"} in data['datasets']
     assert {"id": 5, "title": "Dataset title 5"} in data['datasets']
 
+
+def test_list_user_get():
+    """Test ListUser.get()"""
+    # no user - forbidden
+    response = requests.get(f'{BASE_URL}/api/users')
+    assert response.status_code == 403
+
+    # normal user - forbidden
+    response = requests.get(f'{BASE_URL}/developer/login?userid=1')
+    cookie_jar = response.cookies
+    response = requests.get(f'{BASE_URL}/api/users', cookies=cookie_jar)
+    assert response.status_code == 403
+
+    # Steward user - forbidden
+    response = requests.get(f'{BASE_URL}/developer/login?userid=5')
+    cookie_jar = response.cookies
+    response = requests.get(f'{BASE_URL}/api/users', cookies=cookie_jar)
+    assert response.status_code == 403
+
+    # Admin user - list users
+    response = requests.get(f'{BASE_URL}/developer/login?userid=6')
+    cookie_jar = response.cookies
+    response = requests.get(f'{BASE_URL}/api/users', cookies=cookie_jar)
+    data = json.loads(response.text)
+    assert len(data['users']) == 6
+    assert {"id": 5, "name": "A Name5",
+            "email": "user5@example.com",
+            "authIdentity": "user5auth",
+            "affiliation": "A University5",
+            "country": "A Country5",
+            "permission": "Steward"} in data['users']
