@@ -118,7 +118,7 @@ class DatasetDataUrl(BaseModel):
     class Meta:
         table_name = 'dataset_data_url_map'
         schema = 'datasets'
-        primary_key = CompositeKey('dataset_id', 'data_url_id')
+        primary_key = CompositeKey('dataset', 'data_url')
 
     dataset = ForeignKeyField(Dataset, column_name='dataset_id')
     data_url = ForeignKeyField(DataUrl, column_name='data_url_id')
@@ -131,7 +131,7 @@ class DatasetOwner(BaseModel):
     class Meta:
         table_name = 'dataset_owners'
         schema = 'users'
-        primary_key = CompositeKey('dataset_id', 'user_id')
+        primary_key = CompositeKey('dataset', 'user')
 
     dataset = ForeignKeyField(Dataset, column_name='dataset_id')
     user = ForeignKeyField(User, column_name='user_id')
@@ -141,7 +141,7 @@ class DatasetPublication(BaseModel):
     class Meta:
         table_name = 'dataset_publication_map'
         schema = 'datasets'
-        primary_key = CompositeKey('dataset_id', 'publication_id')
+        primary_key = CompositeKey('dataset', 'publication')
 
     dataset = ForeignKeyField(Dataset, column_name='dataset_id')
     publication = ForeignKeyField(Publication, column_name='publication_id')
@@ -151,7 +151,7 @@ class DatasetTag(BaseModel):
     class Meta:
         table_name = 'dataset_tag_map'
         schema = 'datasets'
-        primary_key = CompositeKey('dataset_id', 'tag_id')
+        primary_key = CompositeKey('dataset', 'tag')
 
     dataset = ForeignKeyField(Dataset, column_name='dataset_id')
     tag = ForeignKeyField(Tag, column_name='tag_id')
