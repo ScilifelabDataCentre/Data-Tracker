@@ -1,5 +1,3 @@
-import logging
-
 from peewee import fn, JOIN
 import tornado.web
 import tornado
@@ -14,8 +12,52 @@ class AddDataset(handlers.StewardHandler):
     Add a new Dataset to the db.
     """
     def post(self):
+        """
+        Expects a JSON structure in the style of:
+        ```
+        {"dataset": {<dataset values>},
+         "options": {<options>}}
+        ```
+        """
         data = tornado.escape.json_decode(self.request.body)
-        logging.debug(data)
+        ds_data = data['dataset']
+        if 'title' not in ds_data or not ds_data['title']:
+            self.send_error(status_code=400, reason='Field "title" is required for dataset.')
+            return
+
+        ds_to_add = {header: ds_data[header]
+                     for header in ('title',
+                                    'description',
+                                    'doi',
+                                    'creator',
+                                    'contact',
+                                    'dmp',
+                                    'visible')
+                     if header in ds_data}
+
+        with db.database.atomic():
+            ds_id = db.Dataset.create(**ds_to_add)
+
+            for tag in ds_data['tags']:
+                tag_id, _ = db.Tag.get_or_create(**tag)
+                db.DatasetTag.create(dataset=ds_id,
+                                     tag=tag_id)
+
+            for publication in ds_data['publications']:
+                pub_id, _ = db.Publication.get_or_create(**publication)
+                db.DatasetPublication.create(dataset=ds_id,
+                                             publication=pub_id)
+
+            for data_url in ds_data['data_urls']:
+                url_id, _ = db.DataUrl.get_or_create(**data_url)
+                db.DatasetDataUrl.create(dataset=ds_id,
+                                         data_url=url_id)
+
+            for owner in ds_data['owners']:
+                user_id, _ = db.User.get_or_create(**owner)
+                db.DatasetOwner.create(dataset=ds_id,
+                                       user=user_id)
+
         self.finish()
 
 
@@ -115,6 +157,12 @@ class GetDataset(handlers.UnsafeHandler):
                                                     .join(db.DataUrl)
                                                     .where(db.DatasetDataUrl.dataset == dbid)
                                                     .dicts())]
+        dataset['owners'] = [entry for entry in (db.DatasetOwner
+                                                 .select(db.User.name)
+                                                 .join(db.User)
+                                                 .where(db.DatasetOwner.dataset == dbid)
+                                                 .dicts())]
+
         self.finish(dataset)
 
 

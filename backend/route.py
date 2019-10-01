@@ -45,7 +45,8 @@ class Application(tornado.web.Application):
             (r"/api/users/me", application.GetUser),
             # Dataset methods
             (r"/api/datasets", application.ListDatasets),
-            (r"/api/dataset/(.*)", application.GetDataset),
+            (r"/api/dataset/add", application.AddDataset),
+            (r"/api/dataset/([0-9]+)", application.GetDataset),
         ]
 
         # Adding Catch all handlers
