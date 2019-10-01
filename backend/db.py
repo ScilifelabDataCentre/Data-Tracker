@@ -57,7 +57,7 @@ class Dataset(BaseModel):
     creator = CharField(null=True)
     contact = CharField(null=True)
     dmp = CharField(null=True)
-    visible = BooleanField(null=False)
+    visible = BooleanField(null=False, default=True)
 
 
 class DataUrl(BaseModel):
