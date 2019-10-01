@@ -9,7 +9,7 @@ import tornado.httpclient
 import tornado.web
 
 import db
-import utils
+import portal_utils
 
 
 class BaseHandler(tornado.web.RequestHandler):
@@ -129,7 +129,7 @@ class StewardHandler(SafeHandler):
         Perform SafeHandler checks as well as check that user is Steward or Admin.
         """
         super().prepare()
-        if not utils.has_rights(self.current_user, ('Steward', 'Admin')):
+        if not portal_utils.has_rights(self.current_user, ('Steward', 'Admin')):
             logging.debug("User does not have Steward or higher permissions: 403")
             self.send_error(status_code=403)
 
@@ -146,7 +146,7 @@ class AdminHandler(SafeHandler):
         Perform SafeHandler checks as well as check that user is Admin.
         """
         super().prepare()
-        if not utils.has_rights(self.current_user, ('Admin')):
+        if not portal_utils.has_rights(self.current_user, ('Admin')):
             logging.debug("User does not have Admin permissions: 403")
             self.send_error(status_code=403)
 

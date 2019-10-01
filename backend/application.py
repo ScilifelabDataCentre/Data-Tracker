@@ -1,13 +1,22 @@
 import logging
 
+from peewee import fn, JOIN
 import tornado.web
 import tornado
 
 import db
 import handlers
-import utils
+import portal_utils
 
-from peewee import fn, JOIN
+
+class AddDataset(handlers.StewardHandler):
+    """
+    Add a new Dataset to the db.
+    """
+    def post(self):
+        data = tornado.escape.json_decode(self.request.body)
+        logging.debug(data)
+        self.finish()
 
 
 class CountryList(handlers.UnsafeHandler):
@@ -73,22 +82,18 @@ class CountryList(handlers.UnsafeHandler):
 
 
 class GetDataset(handlers.UnsafeHandler):
-    def get(self, ds_identifier):
+    def get(self, ds_identifier: str):
         user = self.current_user
 
+        dbid = int(ds_identifier)
         try:
-            dbid = int(ds_identifier)
-            try:
-                dataset = db.Dataset.get_by_id(dbid)
-            except db.Dataset.DoesNotExist:
-                self.send_error(status_code=404)
-                return
-        except ValueError:
-            self.send_error(status_code=400, reason='Dataset id should be an integer')
+            dataset = db.Dataset.get_by_id(dbid)
+        except db.Dataset.DoesNotExist:
+            self.send_error(status_code=404)
             return
 
-        if not dataset.visible and not (utils.has_rights(user, ('Steward', 'Admin'))
-                                        or utils.is_owner(user, dataset)):
+        if not dataset.visible and not (portal_utils.has_rights(user, ('Steward', 'Admin'))
+                                        or portal_utils.is_owner(user, dataset)):
             self.send_error(status_code=403)
             return
 
@@ -132,7 +137,7 @@ class ListDatasets(handlers.UnsafeHandler):
     def get(self):
         user = self.current_user
 
-        if utils.has_rights(user, ('Steward', 'Admin')):
+        if portal_utils.has_rights(user, ('Steward', 'Admin')):
             ret = [dataset for dataset in (db.Dataset
                                            .select(db.Dataset.id, db.Dataset.title)
                                            .dicts())]
@@ -140,7 +145,7 @@ class ListDatasets(handlers.UnsafeHandler):
             ret = [dataset for dataset in (db.Dataset
                                            .select(fn.Distinct(db.Dataset.id), db.Dataset.title)
                                            .join(db.DatasetOwner, JOIN.LEFT_OUTER)
-                                           .where((db.Dataset.visible==True) |
+                                           .where((db.Dataset.visible) |
                                                   (db.DatasetOwner.user == user))
                                            .dicts())]
 
