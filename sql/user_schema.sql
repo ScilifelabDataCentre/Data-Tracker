@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS users.users (
     email               varchar(100)        UNIQUE NOT NULL,
     affiliation         varchar(100)        DEFAULT NULL,
     country             varchar(100)        DEFAULT NULL,
-    auth_identity       varchar(100)        NOT NULL UNIQUE,
+    auth_identity       varchar(100)        UNIQUE,
     permission          user_permissions    NOT NULL DEFAULT 'Standard'
 );
 

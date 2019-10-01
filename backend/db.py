@@ -104,10 +104,12 @@ class User(BaseModel):
 
     name = CharField(column_name='given_name', null=True)
     email = CharField(unique=True)
-    auth_identity = CharField(unique=True)
+    auth_identity = CharField(unique=True, null=True)
     affiliation = CharField(null=True)
     country = CharField(null=True)
-    permission = EnumField(null=False, choices=['Standard', 'Steward', 'Admin'])
+    permission = EnumField(null=False,
+                           choices=['Standard', 'Steward', 'Admin'],
+                           default='Standard')
 
 
 # Table mappings
