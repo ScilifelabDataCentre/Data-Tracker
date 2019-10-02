@@ -120,7 +120,7 @@ class DatasetDataUrl(BaseModel):
         schema = 'datasets'
         primary_key = CompositeKey('dataset', 'data_url')
 
-    dataset = ForeignKeyField(Dataset, column_name='dataset_id')
+    dataset = ForeignKeyField(Dataset, column_name='dataset_id', on_delete='CASCADE')
     data_url = ForeignKeyField(DataUrl, column_name='data_url_id')
 
 
@@ -133,7 +133,7 @@ class DatasetOwner(BaseModel):
         schema = 'users'
         primary_key = CompositeKey('dataset', 'user')
 
-    dataset = ForeignKeyField(Dataset, column_name='dataset_id')
+    dataset = ForeignKeyField(Dataset, column_name='dataset_id', on_delete='CASCADE')
     user = ForeignKeyField(User, column_name='user_id')
 
 
@@ -143,7 +143,7 @@ class DatasetPublication(BaseModel):
         schema = 'datasets'
         primary_key = CompositeKey('dataset', 'publication')
 
-    dataset = ForeignKeyField(Dataset, column_name='dataset_id')
+    dataset = ForeignKeyField(Dataset, column_name='dataset_id', on_delete='CASCADE')
     publication = ForeignKeyField(Publication, column_name='publication_id')
 
 
@@ -153,7 +153,7 @@ class DatasetTag(BaseModel):
         schema = 'datasets'
         primary_key = CompositeKey('dataset', 'tag')
 
-    dataset = ForeignKeyField(Dataset, column_name='dataset_id')
+    dataset = ForeignKeyField(Dataset, column_name='dataset_id', on_delete='CASCADE')
     tag = ForeignKeyField(Tag, column_name='tag_id')
 
 

@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS users.users (
 );
 
 CREATE TABLE IF NOT EXISTS users.dataset_owners (
-    dataset_id      integer                 NOT NULL REFERENCES datasets.datasets,
+    dataset_id      integer                 NOT NULL REFERENCES datasets.datasets ON DELETE CASCADE,
     user_id         integer                 NOT NULL REFERENCES users.users,
     PRIMARY KEY(dataset_id, user_id)
 );

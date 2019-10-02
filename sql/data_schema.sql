@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS datasets.publications (
 );
 
 CREATE TABLE IF NOT EXISTS datasets.dataset_publication_map (
-    dataset_id      integer                 NOT NULL REFERENCES datasets.datasets,
+    dataset_id      integer                 NOT NULL REFERENCES datasets.datasets ON DELETE CASCADE,
     publication_id  integer                 NOT NULL REFERENCES datasets.publications,
     PRIMARY KEY(dataset_id, publication_id)
 );
@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS datasets.tags (
 );
 
 CREATE TABLE IF NOT EXISTS datasets.dataset_tag_map (
-    dataset_id      integer                 NOT NULL REFERENCES datasets.datasets,
+    dataset_id      integer                 NOT NULL REFERENCES datasets.datasets ON DELETE CASCADE,
     tag_id          integer                 NOT NULL REFERENCES datasets.tags,
     PRIMARY KEY(dataset_id, tag_id)
 );
@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS datasets.data_urls (
 );
 
 CREATE TABLE IF NOT EXISTS datasets.dataset_data_url_map (
-    dataset_id      integer                 NOT NULL REFERENCES datasets.datasets,
+    dataset_id      integer                 NOT NULL REFERENCES datasets.datasets ON DELETE CASCADE,
     data_url_id     integer                 NOT NULL REFERENCES datasets.data_urls,
     PRIMARY KEY(dataset_id, data_url_id)
 );
