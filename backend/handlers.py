@@ -69,7 +69,7 @@ class BaseHandler(tornado.web.RequestHandler):
         Overwrites write_error method to have custom error pages.
         http://tornado.readthedocs.org/en/latest/web.html#tornado.web.RequestHandler.write_error
         """
-        logging.info("Error do something here again")
+        logging.info("Error occured: status_code")
 
     def write(self, chunk):
         if not isinstance(chunk, dict):
