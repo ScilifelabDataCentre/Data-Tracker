@@ -163,9 +163,42 @@ class FindDataset(handlers.UnsafeHandler):
         """
         Find datasets matching the query
         """
-        accepted_arguments = ('title', 'creator', 'tag', 'publication', 'owner')
-        for argument in accepted_arguments:
-            pass
+        if portal_utils.has_rights(self.current_user, ('Steward', 'Admin')):
+            query = (db.Dataset
+                     .select(db.Dataset)
+                     .join(db.DatasetOwner, JOIN.LEFT_OUTER)
+                     .distinct()
+                     .dicts())
+        else:
+            query = (db.Dataset
+                     .select(db.Dataset)
+                     .join(db.DatasetOwner, JOIN.LEFT_OUTER)
+                     .where((db.Dataset.visible) |
+                            (db.DatasetOwner.user == self.current_user))
+                     .distinct()
+                     .dicts())
+
+        search_functions = {'title': lambda q, t: q.where(db.Dataset.title.contains(t)),
+                            'creator': lambda q, c: q.where(db.Dataset.creator.contains(c)),
+                            'tag': lambda q, t: (q.join(db.DatasetTag)
+                                                 .join(db.Tag)
+                                                 .where(db.Tag.title==t)),
+                            'publication': lambda q, p: (q.join(db.DatasetPublication)
+                                                         .join(db.Publication)
+                                                         .where(db.Publication.identifier == p)),
+                            'owner': lambda q, o: (q.join(db.User)
+                                                   .where(db.User.name == o))}
+
+        for term_type in search_functions:
+            term = self.get_argument(term_type, None)
+            if term:
+                query = search_functions[term_type](query, term)
+                logging.debug(f'term: {term}, query: {query.sql()}')
+
+        logging.debug('Made it this far')
+        logging.debug(query.sql())
+        datasets = [dataset for dataset in query]
+        self.finish({'datasets': datasets})
 
 
 class GetDataset(handlers.UnsafeHandler):

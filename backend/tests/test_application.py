@@ -212,6 +212,49 @@ def test_countrylist_get():
     assert len(data['countries']) == 240
 
 
+def test_find_dataset_get():
+    """Test FindDataset.get()"""
+    # not logged in
+    response = requests.get(f'{BASE_URL}/api/dataset/query?title=Dataset title 2')
+    data = json.loads(response.text)
+    assert len(data['datasets']) == 1
+    response = requests.get(f'{BASE_URL}/api/dataset/query?title=Dataset title')
+    data = json.loads(response.text)
+    assert len(data['datasets']) == 4
+
+    # normal user
+    response = requests.get(f'{BASE_URL}/developer/login?userid=1')
+    cookie_jar = response.cookies
+    response = requests.get(f'{BASE_URL}/api/dataset/query?title=Dataset title',
+                            cookies=cookie_jar)
+    data = json.loads(response.text)
+    assert len(data['datasets']) == 4
+
+    # owner
+    response = requests.get(f'{BASE_URL}/developer/login?userid=4')
+    cookie_jar = response.cookies
+    response = requests.get(f'{BASE_URL}/api/dataset/query?title=Dataset title',
+                            cookies=cookie_jar)
+    data = json.loads(response.text)
+    assert len(data['datasets']) == 5
+
+    # steward
+    response = requests.get(f'{BASE_URL}/developer/login?userid=5')
+    cookie_jar = response.cookies
+    response = requests.get(f'{BASE_URL}/api/dataset/query?title=Dataset title',
+                            cookies=cookie_jar)
+    data = json.loads(response.text)
+    assert len(data['datasets']) == 6
+
+    # admin
+    response = requests.get(f'{BASE_URL}/developer/login?userid=6')
+    cookie_jar = response.cookies
+    response = requests.get(f'{BASE_URL}/api/dataset/query?title=Dataset title',
+                            cookies=cookie_jar)
+    data = json.loads(response.text)
+    assert len(data['datasets']) == 6
+
+
 def test_get_dataset_get():
     """Test GetDataset.get()"""
     response = requests.get(f'{BASE_URL}/api/dataset/1')
