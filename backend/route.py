@@ -46,7 +46,9 @@ class Application(tornado.web.Application):
             # Dataset methods
             (r"/api/datasets", application.ListDatasets),
             (r"/api/dataset/add", application.AddDataset),
-            (r"/api/dataset/([0-9]+)", application.GetDataset),
+            (r"/api/dataset/delete", application.DeleteDataset),
+            (r"/api/dataset/query", application.FindDataset),
+            (r"/api/dataset/(?P<ds_identifier>[0-9]+)", application.GetDataset),
         ]
 
         # Adding Catch all handlers

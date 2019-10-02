@@ -34,7 +34,6 @@ def test_add_dataset_post():
                                   cookies=cookie_jar,
                                   headers={'X-Xsrftoken': cookie_jar['_xsrf']})
     assert response_post.status_code == 200
-
     # TODO: better approach once search is implemented
     response = requests.get(f'{BASE_URL}/api/datasets', cookies=cookie_jar)
     data = json.loads(response.text)
@@ -70,7 +69,6 @@ def test_add_dataset_post():
                                   cookies=cookie_jar,
                                   headers={'X-Xsrftoken': cookie_jar['_xsrf']})
     assert response_post.status_code == 200
-    
     # TODO: better approach once search is implemented
     response = requests.get(f'{BASE_URL}/api/datasets', cookies=cookie_jar)
     data = json.loads(response.text)
@@ -113,7 +111,78 @@ def test_add_dataset_post():
                                   cookies=cookie_jar,
                                   headers={'X-Xsrftoken': response.cookies['_xsrf']})
     assert response_post.status_code == 403
-    
+
+
+def test_delete_dataset_post():
+    """Test DeleteDataset.post()"""
+    # steward
+    ## will delete the dataset added as steward in test_add_dataset_post()
+    response = requests.get(f'{BASE_URL}/developer/login?userid=5')
+    cookie_jar = response.cookies
+    headers = {'X-Xsrftoken': cookie_jar['_xsrf']}
+
+    ## TODO: better approach once search is implemented
+    response = requests.get(f'{BASE_URL}/api/datasets', cookies=cookie_jar)
+    data = json.loads(response.text)
+    dbid = next(filter(lambda x: x['title'] == 'An added Dataset1', data['datasets']))['id']
+    payload = {'identifier': dbid}
+    response_post = requests.post(f'{BASE_URL}/api/dataset/delete',
+                                  data=json.dumps(payload),
+                                  cookies=cookie_jar,
+                                  headers=headers)
+    assert response_post.status_code == 200
+
+    ## bad requests
+    payload = {'identifier': 10**7}
+    response_post = requests.post(f'{BASE_URL}/api/dataset/delete',
+                                  data=json.dumps(payload),
+                                  cookies=cookie_jar,
+                                  headers=headers)
+    assert response_post.status_code == 400
+    payload = {'identifier': 'abc'}
+    response_post = requests.post(f'{BASE_URL}/api/dataset/delete',
+                                  data=json.dumps(payload),
+                                  cookies=cookie_jar,
+                                  headers=headers)
+    assert response_post.status_code == 400
+
+    # admin
+    ## will delete the dataset added as admin in test_add_dataset_post()
+    response = requests.get(f'{BASE_URL}/developer/login?userid=6')
+    cookie_jar = response.cookies
+    headers = {'X-Xsrftoken': cookie_jar['_xsrf']}
+
+    ## TODO: better approach once search is implemented
+    response = requests.get(f'{BASE_URL}/api/datasets', cookies=cookie_jar)
+    data = json.loads(response.text)
+    dbid = next(filter(lambda x: x['title'] == 'An added Dataset2', data['datasets']))['id']
+    payload = {'identifier': dbid}
+    response_post = requests.post(f'{BASE_URL}/api/dataset/delete',
+                                  data=json.dumps(payload),
+                                  cookies=cookie_jar,
+                                  headers=headers)
+    assert response_post.status_code == 200
+
+    # not logged in: fail
+    response = requests.get(f'{BASE_URL}/api/datasets')
+    cookie_jar = response.cookies
+    headers = {'X-Xsrftoken': cookie_jar['_xsrf']}
+    response_post = requests.post(f'{BASE_URL}/api/dataset/delete',
+                                  data=json.dumps(payload),
+                                  cookies=cookie_jar,
+                                  headers=headers)
+    assert response_post.status_code == 403
+
+    # normal user: fail
+    response = requests.get(f'{BASE_URL}/developer/login?userid=1')
+    cookie_jar = response.cookies
+    headers = {'X-Xsrftoken': cookie_jar['_xsrf']}
+    response_post = requests.post(f'{BASE_URL}/api/dataset/delete',
+                                  data=json.dumps(payload),
+                                  cookies=cookie_jar,
+                                  headers=headers)
+    assert response_post.status_code == 403
+
 
 def test_countrylist_get():
     """Test CountryList.get()"""
