@@ -4,7 +4,6 @@ import json
 import os
 import requests
 
-
 settings = json.loads(open(f'{os.path.dirname(os.path.realpath(__file__))}/settings_tests.json').read())
 BASE_URL=f"{settings['host']}:{settings['port']}"
 
@@ -30,7 +29,7 @@ def test_add_dataset_post():
     response = requests.get(f'{BASE_URL}/developer/login?userid=5')
     cookie_jar = response.cookies
     headers = {'X-Xsrftoken': cookie_jar['_xsrf']}
-    
+
     response_post = requests.post(f'{BASE_URL}/api/dataset/add',
                                   data=json.dumps(payload),
                                   cookies=cookie_jar,
