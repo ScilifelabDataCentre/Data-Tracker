@@ -69,7 +69,7 @@ class BaseHandler(tornado.web.RequestHandler):
         Overwrites write_error method to have custom error pages.
         http://tornado.readthedocs.org/en/latest/web.html#tornado.web.RequestHandler.write_error
         """
-        logging.info("Error occured: status_code")
+        logging.info(f'Error occured: {status_code}')
 
     def write(self, chunk):
         if not isinstance(chunk, dict):
@@ -129,11 +129,12 @@ class StewardHandler(SafeHandler):
         Perform SafeHandler checks as well as check that user is Steward or Admin.
         """
         super().prepare()
+        if self._finished:
+            return
+
         if not portal_utils.has_rights(self.current_user, ('Steward', 'Admin')):
             logging.debug("User does not have Steward or higher permissions: 403")
             self.send_error(status_code=403)
-
-        if self._finished:
             return
 
 
@@ -146,11 +147,12 @@ class AdminHandler(SafeHandler):
         Perform SafeHandler checks as well as check that user is Admin.
         """
         super().prepare()
+        if self._finished:
+            return
+
         if not portal_utils.has_rights(self.current_user, ('Admin')):
             logging.debug("User does not have Admin permissions: 403")
             self.send_error(status_code=403)
-
-        if self._finished:
             return
 
 
