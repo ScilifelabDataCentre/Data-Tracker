@@ -10,7 +10,7 @@ def get_dataset(ds_id: int, user) -> dict:
     Retrieve a complete dataset from database, with permission checks.
 
     Args:
-        ds_id (int): The databse id of the dataset
+        ds_id (int): The database id of the dataset
         user: The current user
 
     Returns:
