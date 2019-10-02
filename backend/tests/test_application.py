@@ -239,12 +239,34 @@ def test_find_dataset_post():
                             data=json.dumps(payload))
     data = json.loads(response.text)
     assert len(data['datasets']) == 2
+    for dataset in data['datasets']:
+        assert payload['query']['title'] in dataset['title']
+        response = session.get(f'{BASE_URL}/api/dataset/{dataset["id"]}')
+        data = json.loads(response.text)
+        assert payload['query']['owner'] in [val['name'] for val in data['owners']]
 
     payload = {'query': {'title': 'Dataset title',
-                         'owner': 'A Name4',
+                         'owner': 'A Name1',
                          'publication': 'A publication1. Journal:2011'}}
+    response = session.post(f'{BASE_URL}/api/dataset/query',
+                            data=json.dumps(payload))
     data = json.loads(response.text)
     assert len(data['datasets']) == 1
+    for dataset in data['datasets']:
+        assert payload['query']['title'] in dataset['title']
+        response = session.get(f'{BASE_URL}/api/dataset/{dataset["id"]}')
+        data = json.loads(response.text)
+        assert payload['query']['publication'] in [val['identifier'] for val in data['publications']]
+
+    payload = {'query': {'tag': 'Tag Title 7'}}
+    response = session.post(f'{BASE_URL}/api/dataset/query',
+                            data=json.dumps(payload))
+    data = json.loads(response.text)
+    assert len(data['datasets']) == 1
+    for dataset in data['datasets']:
+        response = session.get(f'{BASE_URL}/api/dataset/{dataset["id"]}')
+        data = json.loads(response.text)
+        assert payload['query']['tag'] in [val['title'] for val in data['tags']]        
 
     ## bad queries
     payload = {'query': {}}
@@ -256,64 +278,78 @@ def test_find_dataset_post():
                             data=json.dumps(payload))
     assert response.status_code == 400
 
-    
     # normal user
-    response = requests.get(f'{BASE_URL}/developer/login?userid=1')
-    cookie_jar = response.cookies
-    response = requests.get(f'{BASE_URL}/api/dataset/query?title=Dataset title',
-                            cookies=cookie_jar)
-    data = json.loads(response.text)
-    assert len(data['datasets']) == 4
-    response = requests.get(f'{BASE_URL}/api/dataset/query?title=Dataset title&owner=A Name4',
-                            cookies=cookie_jar)
-    data = json.loads(response.text)
-    assert len(data['datasets']) == 2
-
-    # owner
-    session.get(f'{BASE_URL}/developer/login?userid=4')
+    session.get(f'{BASE_URL}/developer/login?userid=1)')
     session.headers['X-Xsrftoken'] = session.cookies['_xsrf']
-    payload = {'query': {'title': 'Dataset title',
-                         'owner': 'A Name4'}}
+
+    payload = {'query': {'title': 'Dataset title'}}
     response = session.post(f'{BASE_URL}/api/dataset/query',
                             data=json.dumps(payload))
     data = json.loads(response.text)
     assert len(data['datasets']) == 4
 
-    cookie_jar = response.cookies
-    response = requests.get(f'{BASE_URL}/api/dataset/query?title=Dataset title',
-                            cookies=cookie_jar)
+    payload = {'query': {'title': 'Dataset title',
+                         'owner': 'A Name4'}}
+    response = session.post(f'{BASE_URL}/api/dataset/query',
+                            data=json.dumps(payload))
+    data = json.loads(response.text)
+    assert len(data['datasets']) == 2
+    for dataset in data['datasets']:
+        assert payload['query']['title'] in dataset['title']
+        response = session.get(f'{BASE_URL}/api/dataset/{dataset["id"]}')
+        data = json.loads(response.text)
+        assert payload['query']['owner'] in [val['name'] for val in data['owners']]
+
+    # owner
+    session.get(f'{BASE_URL}/developer/login?userid=4')
+    session.headers['X-Xsrftoken'] = session.cookies['_xsrf']
+    payload = {'query': {'title': 'Dataset title'}}
+    response = session.post(f'{BASE_URL}/api/dataset/query',
+                            data=json.dumps(payload))
     data = json.loads(response.text)
     assert len(data['datasets']) == 5
-    response = requests.get(f'{BASE_URL}/api/dataset/query?title=Dataset title&owner=A Name4',
-                            cookies=cookie_jar)
+
+    payload = {'query': {'tag': 'Tag Title 7'}}
+    response = session.post(f'{BASE_URL}/api/dataset/query',
+                            data=json.dumps(payload))
     data = json.loads(response.text)
-    assert len(data['datasets']) == 3
+    assert len(data['datasets']) == 2
+    for dataset in data['datasets']:
+        response = session.get(f'{BASE_URL}/api/dataset/{dataset["id"]}')
+        data = json.loads(response.text)
+        assert payload['query']['tag'] in [val['title'] for val in data['tags']]
 
     # steward
-    response = requests.get(f'{BASE_URL}/developer/login?userid=5')
-    cookie_jar = response.cookies
-    response = requests.get(f'{BASE_URL}/api/dataset/query?title=Dataset title',
-                            cookies=cookie_jar)
+    session.get(f'{BASE_URL}/developer/login?userid=5')
+    session.headers['X-Xsrftoken'] = session.cookies['_xsrf']
+
+    payload = {'query': {'title': 'Dataset title'}}
+    response = session.post(f'{BASE_URL}/api/dataset/query',
+                            data=json.dumps(payload))
     data = json.loads(response.text)
     assert len(data['datasets']) == 6
-    response = requests.get(f'{BASE_URL}/api/dataset/query?title=Dataset title&owner=A Name4',
-                            cookies=cookie_jar)
+    payload = {'query': {'title': 'Dataset title',
+                         'owner': 'A Name4'}}
+    response = session.post(f'{BASE_URL}/api/dataset/query',
+                            data=json.dumps(payload))
     data = json.loads(response.text)
     assert len(data['datasets']) == 3
-
 
     # admin
-    response = requests.get(f'{BASE_URL}/developer/login?userid=6')
-    cookie_jar = response.cookies
-    response = requests.get(f'{BASE_URL}/api/dataset/query?title=Dataset title',
-                            cookies=cookie_jar)
+    session.get(f'{BASE_URL}/developer/login?userid=6')
+    session.headers['X-Xsrftoken'] = session.cookies['_xsrf']
+
+    payload = {'query': {'title': 'Dataset title'}}
+    response = session.post(f'{BASE_URL}/api/dataset/query',
+                            data=json.dumps(payload))
     data = json.loads(response.text)
     assert len(data['datasets']) == 6
-    response = requests.get(f'{BASE_URL}/api/dataset/query?title=Dataset title&owner=A Name4',
-                            cookies=cookie_jar)
+    payload = {'query': {'title': 'Dataset title',
+                         'owner': 'A Name4'}}
+    response = session.post(f'{BASE_URL}/api/dataset/query',
+                            data=json.dumps(payload))
     data = json.loads(response.text)
     assert len(data['datasets']) == 3
-
 
 
 def test_get_dataset_get():
