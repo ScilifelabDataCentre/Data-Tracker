@@ -29,12 +29,14 @@ def test_add_dataset_post():
     # steward
     response = requests.get(f'{BASE_URL}/developer/login?userid=5')
     cookie_jar = response.cookies
+    headers = {'X-Xsrftoken': cookie_jar['_xsrf']}
+    
     response_post = requests.post(f'{BASE_URL}/api/dataset/add',
                                   data=json.dumps(payload),
                                   cookies=cookie_jar,
-                                  headers={'X-Xsrftoken': cookie_jar['_xsrf']})
+                                  headers=headers)
     assert response_post.status_code == 200
-    # TODO: better approach once search is implemented
+    ## TODO: better approach once search is implemented
     response = requests.get(f'{BASE_URL}/api/datasets', cookies=cookie_jar)
     data = json.loads(response.text)
     dbid = next(filter(lambda x: x['title'] == payload['dataset']['title'], data['datasets']))['id']
@@ -57,6 +59,25 @@ def test_add_dataset_post():
                         sorted([url['description'] for url in payload['dataset'][header]]))
             else:
                 assert data[header] == payload['dataset'][header]
+
+    ## bad requests
+    response_post = requests.post(f'{BASE_URL}/api/dataset/add',
+                                  data=json.dumps({'bad_request': None}),
+                                  cookies=cookie_jar,
+                                  headers=headers)
+    assert response_post.status_code == 400
+
+    response_post = requests.post(f'{BASE_URL}/api/dataset/add',
+                                  data=json.dumps({'dataset': {'title_missing': None}}),
+                                  cookies=cookie_jar,
+                                  headers=headers)
+    assert response_post.status_code == 400
+
+    response_post = requests.post(f'{BASE_URL}/api/dataset/add',
+                                  data=json.dumps({'dataset': {'title': ''}}),
+                                  cookies=cookie_jar,
+                                  headers=headers)
+    assert response_post.status_code == 400
     
     # admin
     payload['dataset']['title'] = 'An added Dataset2'

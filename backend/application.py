@@ -21,9 +21,13 @@ class AddDataset(handlers.StewardHandler):
         ```
         """
         data = tornado.escape.json_decode(self.request.body)
+        if not 'dataset' in data:
+            self.send_error(status_code=400)
+            return
+
         ds_data = data['dataset']
         if 'title' not in ds_data or not ds_data['title']:
-            self.send_error(status_code=400, reason='Field "title" is required for dataset.')
+            self.send_error(status_code=400)
             return
 
         ds_to_add = {header: ds_data[header]
