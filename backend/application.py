@@ -1,9 +1,12 @@
+import logging
+
 from peewee import fn, JOIN
 import tornado.web
 import tornado
 
 import db
 import handlers
+import portal_errors
 import portal_utils
 
 
@@ -22,11 +25,13 @@ class AddDataset(handlers.StewardHandler):
         """
         data = tornado.escape.json_decode(self.request.body)
         if not 'dataset' in data:
+            logging.info('AddDataset: bad request (dataset)')
             self.send_error(status_code=400)
             return
 
         ds_data = data['dataset']
         if 'title' not in ds_data or not ds_data['title']:
+            logging.info('AddDataset: bad request (title)')
             self.send_error(status_code=400)
             return
 
@@ -138,11 +143,13 @@ class DeleteDataset(handlers.StewardHandler):
         try:
             identifier = int(data['identifier'])
         except ValueError:
+            logging.info('DeleteDataset: bad request (input not an integer)')
             self.send_error(status_code=400, reason="The identifier should be an integer")
             return
         try:
             dataset = db.Dataset.get(db.Dataset.id == identifier)
         except db.Dataset.DoesNotExist:
+            logging.info('AddDataset: bad request (dataset does not exist)')
             self.send_error(status_code=400, reason="Dataset does not exist")
             return
         dataset.delete_instance()
@@ -154,51 +161,34 @@ class FindDataset(handlers.UnsafeHandler):
     """Find datasets matching a query"""
     def get(self):
         """
-        Delete the dataset with the provided id.
+        Find datasets matching the query
         """
-        pass
+        accepted_arguments = ('title', 'creator', 'tag', 'publication', 'owner')
+        for argument in accepted_arguments:
+            pass
 
 
 class GetDataset(handlers.UnsafeHandler):
+    """Retrieve a dataset."""
     def get(self, ds_identifier: str):
-        user = self.current_user
+        """
+        Retrieve the wanted dataset.
 
+        Args:
+            ds_identifier (str): the database id of the wanted dataset
+
+        """
         dbid = int(ds_identifier)
         try:
-            dataset = db.Dataset.get_by_id(dbid)
+            dataset = portal_utils.get_dataset(dbid, self.current_user)
         except db.Dataset.DoesNotExist:
+            logging.info('GetDataset: dataset does not exist')
             self.send_error(status_code=404)
             return
-
-        if not dataset.visible and not (portal_utils.has_rights(user, ('Steward', 'Admin'))
-                                        or portal_utils.is_owner(user, dataset)):
+        except portal_errors.InsufficientPermissions:
+            logging.info('GetDataset: insufficient permissions')
             self.send_error(status_code=403)
             return
-
-        dataset = db.build_dict_from_row(dataset)
-        dataset['tags'] = [entry for entry in (db.DatasetTag
-                                               .select(db.Tag)
-                                               .join(db.Tag)
-                                               .where(db.DatasetTag.dataset == dbid)
-                                               .dicts())]
-
-        dataset['publications'] = [entry for entry in (db.DatasetPublication
-                                                       .select(db.Publication)
-                                                       .join(db.Publication)
-                                                       .where(db.DatasetPublication.dataset == dbid)
-                                                       .dicts())]
-
-        dataset['data_urls'] = [entry for entry in (db.DatasetDataUrl
-                                                    .select(db.DataUrl)
-                                                    .join(db.DataUrl)
-                                                    .where(db.DatasetDataUrl.dataset == dbid)
-                                                    .dicts())]
-
-        dataset['owners'] = [entry for entry in (db.DatasetOwner
-                                                 .select(db.User.name)
-                                                 .join(db.User)
-                                                 .where(db.DatasetOwner.dataset == dbid)
-                                                 .dicts())]
 
         self.finish(dataset)
 
