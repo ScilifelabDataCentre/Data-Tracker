@@ -18,7 +18,7 @@ class DeveloperLoginHandler(BaseHandler):
             return
 
         try:
-            user = db.User.get(db.User.id == int(self.get_argument("userid")))
+            user = db.User.get(db.User.id == int(self.get_argument("userid")))  # pylint: disable=no-value-for-parameter
         except db.User.DoesNotExist:
             self.send_error(status_code=404, reason="User not in db")
             return
