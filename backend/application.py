@@ -159,20 +159,31 @@ class DeleteDataset(handlers.StewardHandler):
 
 class FindDataset(handlers.UnsafeHandler):
     """Find datasets matching a query"""
-    def get(self):
+    def post(self):
         """
-        Find datasets matching the query
+        Find datasets matching the query.
+
+        Bad types will be ignored. No search will be performed if there are no valid terms.
+        
+        JSON structure:
+        ```
+        {"query": {"type": "value"}}
+        ```
         """
+        data = tornado.escape.json_decode(self.request.body)
+
         if portal_utils.has_rights(self.current_user, ('Steward', 'Admin')):
             query = (db.Dataset
                      .select(db.Dataset)
                      .join(db.DatasetOwner, JOIN.LEFT_OUTER)
+                     .switch(db.Dataset)
                      .distinct()
                      .dicts())
         else:
             query = (db.Dataset
                      .select(db.Dataset)
                      .join(db.DatasetOwner, JOIN.LEFT_OUTER)
+                     .switch(db.Dataset)
                      .where((db.Dataset.visible) |
                             (db.DatasetOwner.user == self.current_user))
                      .distinct()
@@ -182,22 +193,29 @@ class FindDataset(handlers.UnsafeHandler):
                             'creator': lambda q, c: q.where(db.Dataset.creator.contains(c)),
                             'tag': lambda q, t: (q.join(db.DatasetTag)
                                                  .join(db.Tag)
+                                                 .switch(db.Dataset)
                                                  .where(db.Tag.title==t)),
                             'publication': lambda q, p: (q.join(db.DatasetPublication)
                                                          .join(db.Publication)
+                                                         .switch(db.Dataset)
                                                          .where(db.Publication.identifier == p)),
-                            'owner': lambda q, o: (q.join(db.User)
+                            'owner': lambda q, o: (q.switch(db.DatasetOwner)
+                                                   .join(db.User)
+                                                   .switch(db.Dataset)
                                                    .where(db.User.name == o))}
 
-        for term_type in search_functions:
-            term = self.get_argument(term_type, None)
-            if term:
-                query = search_functions[term_type](query, term)
-                logging.debug(f'term: {term}, query: {query.sql()}')
+        used = False
+        for search_type in data['query']:
+            if search_type in search_functions:
+                used = True
+                query = search_functions[search_type](query, data['query'][search_type])
 
-        logging.debug('Made it this far')
-        logging.debug(query.sql())
-        datasets = [dataset for dataset in query]
+        if used:
+            datasets = [dataset for dataset in query]
+        else:
+            self.send_error(status_code=400)
+            return
+
         self.finish({'datasets': datasets})
 
 

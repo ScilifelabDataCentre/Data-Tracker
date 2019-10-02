@@ -212,16 +212,51 @@ def test_countrylist_get():
     assert len(data['countries']) == 240
 
 
-def test_find_dataset_get():
-    """Test FindDataset.get()"""
+def test_find_dataset_post():
+    """Test FindDataset.post()"""
     # not logged in
-    response = requests.get(f'{BASE_URL}/api/dataset/query?title=Dataset title 2')
+    session = requests.Session()
+    session.get(f'{BASE_URL}/api/datasets')
+    session.headers['X-Xsrftoken'] = session.cookies['_xsrf']
+
+    payload = {'query': {'title': 'Dataset title 2'}}
+    response = session.post(f'{BASE_URL}/api/dataset/query',
+                            data=json.dumps(payload))
     data = json.loads(response.text)
     assert len(data['datasets']) == 1
-    response = requests.get(f'{BASE_URL}/api/dataset/query?title=Dataset title')
+
+    payload = {'query': {'title': 'Dataset title'}}
+    response = session.post(f'{BASE_URL}/api/dataset/query',
+                            data=json.dumps(payload))
     data = json.loads(response.text)
     assert len(data['datasets']) == 4
+    for dataset in data['datasets']:
+        assert len(dataset) == 8
 
+    payload = {'query': {'title': 'Dataset title',
+                         'owner': 'A Name4'}}
+    response = session.post(f'{BASE_URL}/api/dataset/query',
+                            data=json.dumps(payload))
+    data = json.loads(response.text)
+    assert len(data['datasets']) == 2
+
+    payload = {'query': {'title': 'Dataset title',
+                         'owner': 'A Name4',
+                         'publication': 'A publication1. Journal:2011'}}
+    data = json.loads(response.text)
+    assert len(data['datasets']) == 1
+
+    ## bad queries
+    payload = {'query': {}}
+    response = session.post(f'{BASE_URL}/api/dataset/query',
+                            data=json.dumps(payload))
+    assert response.status_code == 400
+    payload = {'query': {'bad_type': None}}
+    response = session.post(f'{BASE_URL}/api/dataset/query',
+                            data=json.dumps(payload))
+    assert response.status_code == 400
+
+    
     # normal user
     response = requests.get(f'{BASE_URL}/developer/login?userid=1')
     cookie_jar = response.cookies
@@ -229,14 +264,30 @@ def test_find_dataset_get():
                             cookies=cookie_jar)
     data = json.loads(response.text)
     assert len(data['datasets']) == 4
+    response = requests.get(f'{BASE_URL}/api/dataset/query?title=Dataset title&owner=A Name4',
+                            cookies=cookie_jar)
+    data = json.loads(response.text)
+    assert len(data['datasets']) == 2
 
     # owner
-    response = requests.get(f'{BASE_URL}/developer/login?userid=4')
+    session.get(f'{BASE_URL}/developer/login?userid=4')
+    session.headers['X-Xsrftoken'] = session.cookies['_xsrf']
+    payload = {'query': {'title': 'Dataset title',
+                         'owner': 'A Name4'}}
+    response = session.post(f'{BASE_URL}/api/dataset/query',
+                            data=json.dumps(payload))
+    data = json.loads(response.text)
+    assert len(data['datasets']) == 4
+
     cookie_jar = response.cookies
     response = requests.get(f'{BASE_URL}/api/dataset/query?title=Dataset title',
                             cookies=cookie_jar)
     data = json.loads(response.text)
     assert len(data['datasets']) == 5
+    response = requests.get(f'{BASE_URL}/api/dataset/query?title=Dataset title&owner=A Name4',
+                            cookies=cookie_jar)
+    data = json.loads(response.text)
+    assert len(data['datasets']) == 3
 
     # steward
     response = requests.get(f'{BASE_URL}/developer/login?userid=5')
@@ -245,6 +296,11 @@ def test_find_dataset_get():
                             cookies=cookie_jar)
     data = json.loads(response.text)
     assert len(data['datasets']) == 6
+    response = requests.get(f'{BASE_URL}/api/dataset/query?title=Dataset title&owner=A Name4',
+                            cookies=cookie_jar)
+    data = json.loads(response.text)
+    assert len(data['datasets']) == 3
+
 
     # admin
     response = requests.get(f'{BASE_URL}/developer/login?userid=6')
@@ -253,6 +309,11 @@ def test_find_dataset_get():
                             cookies=cookie_jar)
     data = json.loads(response.text)
     assert len(data['datasets']) == 6
+    response = requests.get(f'{BASE_URL}/api/dataset/query?title=Dataset title&owner=A Name4',
+                            cookies=cookie_jar)
+    data = json.loads(response.text)
+    assert len(data['datasets']) == 3
+
 
 
 def test_get_dataset_get():
