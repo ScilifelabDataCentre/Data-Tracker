@@ -219,20 +219,35 @@ class FindDataset(handlers.UnsafeHandler):
                      .distinct()
                      .dicts())
 
+        def search_publications(query, publications: list):
+            query = (query.join(db.DatasetPublication)
+                     .join(db.Publication)
+                     .switch(db.Dataset))
+            for publication in publications:
+                query = query.where(db.Publication.identifier == publication)
+            return query
+
+        def search_tags(query, tags: list):
+            query = (query.join(db.DatasetTag)
+                     .join(db.Tag)
+                     .switch(db.Dataset))
+            for tag in tags:
+                query = query.where(db.Tag.title == tag)
+            return query
+
+        def search_owners(query, owners: list):
+            query = (query.switch(db.DatasetOwner)
+                     .join(db.User)
+                     .switch(db.Dataset))
+            for owner in owners:
+                query = query.where(db.User.name == owner)
+            return query
+        
         search_functions = {'title': lambda q, t: q.where(db.Dataset.title.contains(t)),
                             'creator': lambda q, c: q.where(db.Dataset.creator.contains(c)),
-                            'tag': lambda q, t: (q.join(db.DatasetTag)
-                                                 .join(db.Tag)
-                                                 .switch(db.Dataset)
-                                                 .where(db.Tag.title==t)),
-                            'publication': lambda q, p: (q.join(db.DatasetPublication)
-                                                         .join(db.Publication)
-                                                         .switch(db.Dataset)
-                                                         .where(db.Publication.identifier == p)),
-                            'owner': lambda q, o: (q.switch(db.DatasetOwner)
-                                                   .join(db.User)
-                                                   .switch(db.Dataset)
-                                                   .where(db.User.name == o))}
+                            'tags': search_tags,
+                            'publications': search_publications,
+                            'owners': search_owners}
 
         used = False
         for search_type in data['query']:

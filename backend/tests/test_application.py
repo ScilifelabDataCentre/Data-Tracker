@@ -304,7 +304,7 @@ def test_find_dataset_post():
         assert len(dataset) == 8
 
     payload = {'query': {'title': 'Dataset title',
-                         'owner': 'A Name4'}}
+                         'owners': ['A Name4']}}
     response = session.post(f'{BASE_URL}/api/dataset/query',
                             data=json.dumps(payload))
     data = json.loads(response.text)
@@ -313,11 +313,12 @@ def test_find_dataset_post():
         assert payload['query']['title'] in dataset['title']
         response = session.get(f'{BASE_URL}/api/dataset/{dataset["id"]}')
         data = json.loads(response.text)
-        assert payload['query']['owner'] in [val['name'] for val in data['owners']]
+        for owner in payload['query']['owners']:
+            assert owner in [val['name'] for val in data['owners']]
 
     payload = {'query': {'title': 'Dataset title',
-                         'owner': 'A Name1',
-                         'publication': 'A publication1. Journal:2011'}}
+                         'owner': ['A Name1'],
+                         'publications': ['A publication1. Journal:2011']}}
     response = session.post(f'{BASE_URL}/api/dataset/query',
                             data=json.dumps(payload))
     data = json.loads(response.text)
@@ -326,9 +327,10 @@ def test_find_dataset_post():
         assert payload['query']['title'] in dataset['title']
         response = session.get(f'{BASE_URL}/api/dataset/{dataset["id"]}')
         data = json.loads(response.text)
-        assert payload['query']['publication'] in [val['identifier'] for val in data['publications']]
+        for pub in payload['query']['publications']:
+            assert pub in [val['identifier'] for val in data['publications']]
 
-    payload = {'query': {'tag': 'Tag Title 7'}}
+    payload = {'query': {'tags': ['Tag Title 7']}}
     response = session.post(f'{BASE_URL}/api/dataset/query',
                             data=json.dumps(payload))
     data = json.loads(response.text)
@@ -336,7 +338,8 @@ def test_find_dataset_post():
     for dataset in data['datasets']:
         response = session.get(f'{BASE_URL}/api/dataset/{dataset["id"]}')
         data = json.loads(response.text)
-        assert payload['query']['tag'] in [val['title'] for val in data['tags']]        
+        for tag in payload['query']['tags']:
+            assert tag in [val['title'] for val in data['tags']]
 
     ## bad queries
     payload = {'query': {}}
@@ -359,7 +362,7 @@ def test_find_dataset_post():
     assert len(data['datasets']) == 4
 
     payload = {'query': {'title': 'Dataset title',
-                         'owner': 'A Name4'}}
+                         'owners': ['A Name4']}}
     response = session.post(f'{BASE_URL}/api/dataset/query',
                             data=json.dumps(payload))
     data = json.loads(response.text)
@@ -368,7 +371,8 @@ def test_find_dataset_post():
         assert payload['query']['title'] in dataset['title']
         response = session.get(f'{BASE_URL}/api/dataset/{dataset["id"]}')
         data = json.loads(response.text)
-        assert payload['query']['owner'] in [val['name'] for val in data['owners']]
+        for owner in payload['query']['owners']:
+            assert owner in [val['name'] for val in data['owners']]
 
     # owner
     session.get(f'{BASE_URL}/developer/login?userid=4')
@@ -379,7 +383,7 @@ def test_find_dataset_post():
     data = json.loads(response.text)
     assert len(data['datasets']) == 5
 
-    payload = {'query': {'tag': 'Tag Title 7'}}
+    payload = {'query': {'tags': ['Tag Title 7']}}
     response = session.post(f'{BASE_URL}/api/dataset/query',
                             data=json.dumps(payload))
     data = json.loads(response.text)
@@ -387,7 +391,8 @@ def test_find_dataset_post():
     for dataset in data['datasets']:
         response = session.get(f'{BASE_URL}/api/dataset/{dataset["id"]}')
         data = json.loads(response.text)
-        assert payload['query']['tag'] in [val['title'] for val in data['tags']]
+        for tag in payload['query']['tags']:
+            assert tag in [val['title'] for val in data['tags']]
 
     # steward
     session.get(f'{BASE_URL}/developer/login?userid=5')
@@ -399,7 +404,7 @@ def test_find_dataset_post():
     data = json.loads(response.text)
     assert len(data['datasets']) == 6
     payload = {'query': {'title': 'Dataset title',
-                         'owner': 'A Name4'}}
+                         'owners': ['A Name4']}}
     response = session.post(f'{BASE_URL}/api/dataset/query',
                             data=json.dumps(payload))
     data = json.loads(response.text)
@@ -415,7 +420,7 @@ def test_find_dataset_post():
     data = json.loads(response.text)
     assert len(data['datasets']) == 6
     payload = {'query': {'title': 'Dataset title',
-                         'owner': 'A Name4'}}
+                         'owners': ['A Name4']}}
     response = session.post(f'{BASE_URL}/api/dataset/query',
                             data=json.dumps(payload))
     data = json.loads(response.text)
