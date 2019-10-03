@@ -194,7 +194,7 @@ class FindDataset(handlers.UnsafeHandler):
         Find datasets matching the query.
 
         Bad types will be ignored. No search will be performed if there are no valid terms.
-        
+
         JSON structure:
         ```
         {"query": {"type": "value"}}
@@ -242,7 +242,7 @@ class FindDataset(handlers.UnsafeHandler):
             for owner in owners:
                 query = query.where(db.User.name == owner)
             return query
-        
+
         search_functions = {'title': lambda q, t: q.where(db.Dataset.title.contains(t)),
                             'creator': lambda q, c: q.where(db.Dataset.creator.contains(c)),
                             'tags': search_tags,
@@ -332,7 +332,7 @@ class ListUsers(handlers.AdminHandler):
 
 class UpdateDataset(handlers.SafeHandler):
     """Update the fields of a dataset."""
-    def get(self):
+    def get(self, ds_identifier: str):
         """Data structure for POST."""
         data = {'dataset': {'title': 'Title',
                             'description': 'Description',
@@ -345,6 +345,20 @@ class UpdateDataset(handlers.SafeHandler):
                             'publications': [{'identifier': 'Publication'}],
                             'dataUrls': [{'url': 'Data Access URL', 'description': 'Description'}],
                             'owners': [{'email': 'Owner email'}]}}
+
+        try:
+            ds_id = int(ds_identifier)
+        except ValueError:
+            logging.debug('Bad integer')
+            self.send_error(status_code=400)
+            return
+        dataset = db.Dataset.get_by_id(ds_id)
+        if not (portal_utils.has_rights(self.current_user, ('Steward', 'Admin'))
+                or portal_utils.is_owner(self.current_user, dataset)):
+            self.send_error(status_code=403)
+            return
+
+        return self.finish(data)
 
     def post(self, ds_identifier: str):
         """
@@ -442,12 +456,17 @@ class UpdateDataset(handlers.SafeHandler):
                         self.send_error(status_code=400)
                         return
                     new_vals.add(val_id)
+
                 if old_vals != new_vals:
                     (val_mapdb
                      .delete()
                      .where(val_mapdb.dataset == ds_id)
                      .execute())
-                    val_mapdb.insert_many([{'dataset': ds_id, val_sing: val} for val in new_vals]).execute()
+                    (val_mapdb
+                     .insert_many([{'dataset': ds_id, val_sing: val} for val in new_vals])
+                     .execute())
+
+        self.finish()
 
 
 class QuitHandler(handlers.UnsafeHandler):
