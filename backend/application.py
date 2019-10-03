@@ -330,6 +330,106 @@ class ListUsers(handlers.AdminHandler):
         self.finish({'users': users})
 
 
+class UpdateDataset(handlers.SafeHandler):
+    """Update the fields of a dataset."""
+    def get(self):
+        """Data structure for POST."""
+        data = {'dataset': {'title': 'Title',
+                            'description': 'Description',
+                            'doi': 'DOI',
+                            'creator': 'Creator',
+                            'contact': 'Contact',
+                            'dmp': 'Data Management Plan',
+                            'visible': True,
+                            'tags': [{'title': 'Tag1'}, {'title': 'Tag2'}],
+                            'publications': [{'identifier': 'Publication'}],
+                            'dataUrls': [{'url': 'Data Access URL', 'description': 'Description'}],
+                            'owners': [{'email': 'Owner email'}]}}
+
+    def post(self, dataset_id: str):
+        """
+        Update the fields of a dataset.
+
+        Args:
+            ds_id (str): the id of a dataset, int(ds_id) must work
+
+        """
+        try:
+            ds_id = int(dataset_id)
+        except ValueError:
+            self.send_error(status_code=400)
+            return
+
+        try:
+            dataset = db.Dataset.get_by_id(ds_id)
+        except db.Data.DoesNotExist:
+            self.send_error(status_code=404, reason='Dataset not found')
+            return
+
+        if not (has_rights(user, ('Steward', 'Admin'))
+                or is_owner(user, dataset)):
+            self.send_error(status_code=403)
+            return
+
+        data = tornado.escape.json_decode(self.request.body)
+        try:
+            indata = data['dataset']
+        except KeyError:
+            self.send_error(status_code=400)
+            return
+
+        for header in indata:
+            if header not in ('title',
+                              'description',
+                              'doi',
+                              'creator',
+                              'contact',
+                              'dmp',
+                              'visible',
+                              'tags',
+                              'publications',
+                              'dataUrls'
+                              'owners'):
+                self.send_error(status_code=400)
+                return
+
+        with db.database.atomic():
+            for header in ('title',
+                           'description',
+                           'doi',
+                           'creator',
+                           'contact',
+                           'dmp',
+                           'visible'):
+                if header in indata:
+                    setattr(dataset, header, indata[header])
+            dataset.save()
+
+            for value in ('tags', 'publications', 'dataUrls', 'owners'):
+                val_dbname = value.capitalize().rstrip('s')
+                val_sing = value.rstrip('s')
+                if value == 'dataUrls':
+                    val_dbname = 'DataUrl'
+
+                val_db = getattr(db, val_dbname)
+                val_mapdb = getattr(db, 'Dataset' + cap_val)
+
+                old_vals = {tag.id for tag in (val_db.select(val_db)
+                                               .join(val_mapdb)
+                                               .where(val_mapdb.dataset == ds_id))}
+
+                new_vals = set()
+                for value in indata[value]:
+                    val_id, _ = db.Tag.get_or_create(**value)
+                    new_vals.add(val_id)
+                if old_vals != new_vals:
+                    val_maps = (val_dbmap
+                                .select()
+                                .where(dataset == ds_id))
+                    val_maps.delete_instance()
+                    db.DatasetTag.insert_many([{'dataset': ds_id, val_sing: val} for val in new_tags])
+
+
 class QuitHandler(handlers.UnsafeHandler):
     def get(self):  # pylint: disable=no-self-use
         ioloop = tornado.ioloop.IOLoop.instance()
