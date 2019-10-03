@@ -8,6 +8,43 @@ settings = json.loads(open(f'{os.path.dirname(os.path.realpath(__file__))}/setti
 BASE_URL=f"{settings['host']}:{settings['port']}"
 
 
+def test_add_dataset_get():
+    """Test AddDataset.get()"""
+    session = requests.Session()
+    session.get(f'{BASE_URL}/api/datasets')
+    expected = {'dataset': {'title': 'Title',
+                            'description': 'Description',
+                            'doi': 'DOI',
+                            'creator': 'Creator',
+                            'contact': 'Contact',
+                            'dmp': 'Data Management Plan',
+                            'visible': True,
+                            'tags': [{'title': 'Tag1'}, {'title': 'Tag2'}],
+                            'publications': [{'identifier': 'Publication'}],
+                            'dataUrls': [{'url': 'Data Access URL', 'description': 'Description'}],
+                            'owners': [{'email': 'Owner email'}]}}
+
+    # not logged in
+    response = session.get(f'{BASE_URL}/api/dataset/add')
+    assert response.status_code == 403
+    assert not response.text
+    # normal user
+    session.get(f'{BASE_URL}/developer/login?userid=1')
+    response = session.get(f'{BASE_URL}/api/dataset/add')
+    assert response.status_code == 403
+    assert not response.text
+    # steward
+    session.get(f'{BASE_URL}/developer/login?userid=5')
+    response = session.get(f'{BASE_URL}/api/dataset/add')
+    data = json.loads(response.text)
+    assert data == expected
+    # admin
+    session.get(f'{BASE_URL}/developer/login?userid=6')
+    response = session.get(f'{BASE_URL}/api/dataset/add')
+    data = json.loads(response.text)
+    assert data == expected
+
+
 def test_add_dataset_post():
     """Test AddDataset.post()"""
     payload = {'dataset': {'title': 'An added Dataset1',
@@ -20,7 +57,7 @@ def test_add_dataset_post():
                                     {'title': 'Tag Title 1'},
                                     {'title': 'Tag Title 5'}],
                            'publications': [{'identifier': 'Publication title1. Journal:Year'}],
-                           'data_urls': [{'description': 'Part I', 'url': 'Data url 1a'},
+                           'dataUrls': [{'description': 'Part I', 'url': 'Data url 1a'},
                                          {'description': 'Part II', 'url': 'Data url 1b'}],
                            'owners': [{'email': 'user1@example.com'}],
                            'visible': True}}
@@ -51,7 +88,7 @@ def test_add_dataset_post():
             elif header == 'tags':
                 assert (sorted([tag['title'] for tag in data[header]]) ==
                         sorted([tag['title'] for tag in payload['dataset'][header]]))
-            elif header == 'data_urls':
+            elif header == 'dataUrls':
                 assert (sorted([url['url'] for url in data['dataUrls']]) ==
                         sorted([url['url'] for url in payload['dataset'][header]]))
                 assert (sorted([url['description'] for url in data['dataUrls']]) ==
@@ -106,7 +143,7 @@ def test_add_dataset_post():
             elif header == 'tags':
                 assert (sorted([tag['title'] for tag in data[header]]) ==
                         sorted([tag['title'] for tag in payload['dataset'][header]]))
-            elif header == 'data_urls':
+            elif header == 'dataUrls':
                 assert (sorted([url['url'] for url in data['dataUrls']]) ==
                         sorted([url['url'] for url in payload['dataset'][header]]))
                 assert (sorted([url['description'] for url in data['dataUrls']]) ==
@@ -279,7 +316,7 @@ def test_find_dataset_post():
     assert response.status_code == 400
 
     # normal user
-    session.get(f'{BASE_URL}/developer/login?userid=1)')
+    session.get(f'{BASE_URL}/developer/login?userid=1')
     session.headers['X-Xsrftoken'] = session.cookies['_xsrf']
 
     payload = {'query': {'title': 'Dataset title'}}
