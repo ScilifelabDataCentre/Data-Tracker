@@ -346,16 +346,16 @@ class UpdateDataset(handlers.SafeHandler):
                             'dataUrls': [{'url': 'Data Access URL', 'description': 'Description'}],
                             'owners': [{'email': 'Owner email'}]}}
 
-    def post(self, dataset_id: str):
+    def post(self, ds_identifier: str):
         """
         Update the fields of a dataset.
 
         Args:
-            ds_id (str): the id of a dataset, int(ds_id) must work
+            ds_identifier (str): the id of a dataset, int(ds_id) must work
 
         """
         try:
-            ds_id = int(dataset_id)
+            ds_id = int(ds_identifier)
         except ValueError:
             self.send_error(status_code=400)
             return
