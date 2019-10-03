@@ -159,6 +159,7 @@ def test_add_dataset_post():
                                   cookies=cookie_jar,
                                   headers={'X-Xsrftoken': cookie_jar['_xsrf']})
     assert response_post.status_code == 403
+    assert not response.text
 
     # normal user: fail
     response = requests.get(f'{BASE_URL}/developer/login?userid=1')
@@ -168,6 +169,7 @@ def test_add_dataset_post():
                                   cookies=cookie_jar,
                                   headers={'X-Xsrftoken': response.cookies['_xsrf']})
     assert response_post.status_code == 403
+    assert not response.text
 
 def test_countrylist_get():
     """Test CountryList.get()"""
@@ -263,6 +265,7 @@ def test_delete_dataset_post():
                                   cookies=cookie_jar,
                                   headers=headers)
     assert response_post.status_code == 403
+    assert not response.text
 
     # normal user: fail
     response = requests.get(f'{BASE_URL}/developer/login?userid=1')
@@ -273,6 +276,7 @@ def test_delete_dataset_post():
                                   cookies=cookie_jar,
                                   headers=headers)
     assert response_post.status_code == 403
+    assert not response.text
 
 
 def test_find_dataset_get():
@@ -501,14 +505,17 @@ def test_get_dataset_get():
     # forbidden
     response = requests.get(f'{BASE_URL}/api/dataset/4')
     assert response.status_code == 403
+    assert not response.text
     response = requests.get(f'{BASE_URL}/developer/login?userid=1')
     cookie_jar = response.cookies
     response = requests.get(f'{BASE_URL}/api/dataset/4', cookies=cookie_jar)
     assert response.status_code == 403
+    assert not response.text
 
     # not found
     response = requests.get(f'{BASE_URL}/api/dataset/123456')
     assert response.status_code == 404
+    assert not response.text
 
 
 def test_get_user_get():
@@ -575,18 +582,21 @@ def test_list_user_get():
     # no user - forbidden
     response = requests.get(f'{BASE_URL}/api/users')
     assert response.status_code == 403
+    assert not response.text
 
     # normal user - forbidden
     response = requests.get(f'{BASE_URL}/developer/login?userid=1')
     cookie_jar = response.cookies
     response = requests.get(f'{BASE_URL}/api/users', cookies=cookie_jar)
     assert response.status_code == 403
+    assert not response.text
 
     # Steward user - forbidden
     response = requests.get(f'{BASE_URL}/developer/login?userid=5')
     cookie_jar = response.cookies
     response = requests.get(f'{BASE_URL}/api/users', cookies=cookie_jar)
     assert response.status_code == 403
+    assert not response.text
 
     # Admin user - list users
     response = requests.get(f'{BASE_URL}/developer/login?userid=6')
