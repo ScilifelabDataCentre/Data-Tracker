@@ -588,3 +588,134 @@ def test_list_user_get():
             "affiliation": "A University5",
             "country": "A Country5",
             "permission": "Steward"} in data['users']
+
+
+def test_update_dataset_get():
+    """Test UpdateDataset.get()"""
+    pass
+
+
+def test_update_dataset_post():
+    """Test UpdateDataset.post()"""
+    session = requests.Session()
+    session.get(f'{BASE_URL}/developer/login?userid=5')
+    session.headers['X-Xsrftoken'] = session.cookies['_xsrf']
+
+    payload = {'dataset': {'title': 'A Unique Title',
+                           'description': 'Description',
+                           'doi': 'DOI',
+                           'creator': 'Creator',
+                           'contact': 'Contact',
+                           'dmp': 'Data Management Plan',
+                           'visible': True,
+                           'tags': [{'title': 'Tag1'}, {'title': 'Tag2'}],
+                           'publications': [{'identifier': 'Publication'}],
+                           'dataUrls': [{'url': 'Data Access URL', 'description': 'Description'}],
+                           'owners': [{'email': 'user3@example.com'}]}}
+    # prepare
+    response = session.post(f'{BASE_URL}/api/dataset/add',
+                            data=json.dumps(payload))
+
+    response = session.post(f'{BASE_URL}/api/dataset/query',
+                            data=json.dumps({'query': {'title': 'A Unique Title'}}))
+    ds_id = json.loads(response.text)['datasets'][0]['id']
+    
+    # not logged in
+    session.get(f'{BASE_URL}/logout')
+    session.get(f'{BASE_URL}/api/dataset/1')
+    session.headers['X-Xsrftoken'] = session.cookies['_xsrf']
+
+    update_payload = {'dataset': {'title': 'New title'}}
+    response = session.post(f'{BASE_URL}/api/dataset/{ds_id}/update',
+                            data=json.dumps(update_payload))
+    assert response.status_code == 403
+
+    # standard user
+    session.get(f'{BASE_URL}/developer/login?userid=1')
+    session.headers['X-Xsrftoken'] = session.cookies['_xsrf']
+
+    update_payload = {'dataset': {'title': 'New title'}}
+    response = session.post(f'{BASE_URL}/api/dataset/{ds_id}/update',
+                            data=json.dumps(update_payload))
+    assert response.status_code == 403
+
+    # owner
+    session.get(f'{BASE_URL}/logout')
+    session.get(f'{BASE_URL}/developer/login?userid=3')
+    session.headers['X-Xsrftoken'] = session.cookies['_xsrf']
+
+    update_payload = {'dataset': {'title': 'New title'}}
+    response = session.post(f'{BASE_URL}/api/dataset/{ds_id}/update',
+                            data=json.dumps(update_payload))
+    assert response.status_code == 200
+    response = session.get(f'{BASE_URL}/api/dataset/{ds_id}')
+    data = json.loads(response.text)
+    assert data['title'] == 'New title'
+
+    update_payload = {'dataset': {'contact': 'New contact'}}
+    response = session.post(f'{BASE_URL}/api/dataset/{ds_id}/update',
+                            data=json.dumps(update_payload))
+    assert response.status_code == 200
+    response = session.get(f'{BASE_URL}/api/dataset/{ds_id}')
+    data = json.loads(response.text)
+    assert data['contact'] == 'New contact'
+
+    update_payload = {'dataset': {'contact': 'New contact'}}
+    response = session.post(f'{BASE_URL}/api/dataset/{ds_id}/update',
+                            data=json.dumps(update_payload))
+    assert response.status_code == 200
+    response = session.get(f'{BASE_URL}/api/dataset/{ds_id}')
+    data = json.loads(response.text)
+    assert data['contact'] == 'New contact'
+
+    update_payload = {'dataset': {'contact': 'New contact'}}
+    response = session.post(f'{BASE_URL}/api/dataset/{ds_id}/update',
+                            data=json.dumps(update_payload))
+    assert response.status_code == 200
+    response = session.get(f'{BASE_URL}/api/dataset/{ds_id}')
+    data = json.loads(response.text)
+    assert data['contact'] == 'New contact'
+
+    update_payload = {'dataset': {'contact': 'New contact2',
+                                  'tags': [{'title': 'Tag1'},
+                                           {'title': 'NewTag1'},
+                                           {'title': 'NewTag2'}]}}                   
+    response = session.post(f'{BASE_URL}/api/dataset/{ds_id}/update',
+                            data=json.dumps(update_payload))
+    assert response.status_code == 200
+
+    response = session.get(f'{BASE_URL}/api/dataset/{ds_id}')
+    data = json.loads(response.text)
+    assert data['contact'] == 'New contact2'
+    tags = [tag['title'] for tag in data['tags']]
+    for tag in ('Tag1', 'NewTag1', 'NewTag2'):
+        assert tag in tags
+
+    ## bad requests
+    update_payload = {'dat': ''}
+    response = session.post(f'{BASE_URL}/api/dataset/{ds_id}/update',
+                            data=json.dumps(update_payload))
+    assert response.status_code == 400
+
+    update_payload = {'dataset': {'title': 'A title'}}
+    response = session.post(f'{BASE_URL}/api/dataset/{10**9}/update',
+                            data=json.dumps(update_payload))
+    assert response.status_code == 404
+
+    update_payload = {'dataset': {'tags': 'asd'}}
+    response = session.post(f'{BASE_URL}/api/dataset/{ds_id}/update',
+                            data=json.dumps(update_payload))
+    assert response.status_code == 400    
+
+    update_payload = {'dataset': {'tags': [{'bad_tag': 'asd'}]}}
+    response = session.post(f'{BASE_URL}/api/dataset/{ds_id}/update',
+                            data=json.dumps(update_payload))
+    assert response.status_code == 400
+    
+    # cleanup
+    response = session.post(f'{BASE_URL}/api/dataset/query',
+                            data=json.dumps({'query': {'title': 'New title'}}))
+    dbid = json.loads(response.text)['datasets'][0]['id']
+    payload = {'identifier': dbid}
+    response = session.post(f'{BASE_URL}/api/dataset/delete',
+                            data=json.dumps(payload))

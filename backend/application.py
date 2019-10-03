@@ -357,17 +357,20 @@ class UpdateDataset(handlers.SafeHandler):
         try:
             ds_id = int(ds_identifier)
         except ValueError:
+            logging.debug('Bad integer')
             self.send_error(status_code=400)
             return
 
         try:
             dataset = db.Dataset.get_by_id(ds_id)
-        except db.Data.DoesNotExist:
+        except db.Dataset.DoesNotExist:
+            logging.debug('Dataset not found')
             self.send_error(status_code=404, reason='Dataset not found')
             return
 
-        if not (has_rights(user, ('Steward', 'Admin'))
-                or is_owner(user, dataset)):
+        if not (portal_utils.has_rights(self.current_user, ('Steward', 'Admin'))
+                or portal_utils.is_owner(self.current_user, dataset)):
+            logging.debug(f'Not permitted; {self.current_user.id}, {ds_id}')
             self.send_error(status_code=403)
             return
 
@@ -393,7 +396,7 @@ class UpdateDataset(handlers.SafeHandler):
                 self.send_error(status_code=400)
                 return
 
-        with db.database.atomic():
+        with db.database.atomic() as transaction:
             for header in ('title',
                            'description',
                            'doi',
@@ -405,29 +408,40 @@ class UpdateDataset(handlers.SafeHandler):
                     setattr(dataset, header, indata[header])
             dataset.save()
 
-            for value in ('tags', 'publications', 'dataUrls', 'owners'):
-                val_dbname = value.capitalize().rstrip('s')
-                val_sing = value.rstrip('s')
-                if value == 'dataUrls':
+            for value_type in ('tags', 'publications', 'dataUrls', 'owners'):
+                if value_type not in indata:
+                    continue
+                val_dbname = value_type.capitalize().rstrip('s')
+                val_sing = value_type.rstrip('s')
+                if value_type == 'dataUrls':
                     val_dbname = 'DataUrl'
 
                 val_db = getattr(db, val_dbname)
-                val_mapdb = getattr(db, 'Dataset' + cap_val)
+                val_mapdb = getattr(db, 'Dataset' + val_dbname)
 
                 old_vals = {tag.id for tag in (val_db.select(val_db)
                                                .join(val_mapdb)
                                                .where(val_mapdb.dataset == ds_id))}
 
                 new_vals = set()
-                for value in indata[value]:
-                    val_id, _ = db.Tag.get_or_create(**value)
+                for value in indata[value_type]:
+                    try:
+                        val_id, _ = val_db.get_or_create(**value)
+                    except TypeError:
+                        transaction.rollback()
+                        self.send_error(status_code=400)
+                        return
+                    except AttributeError:
+                        transaction.rollback()
+                        self.send_error(status_code=400)
+                        return
                     new_vals.add(val_id)
                 if old_vals != new_vals:
-                    val_maps = (val_dbmap
-                                .select()
-                                .where(dataset == ds_id))
-                    val_maps.delete_instance()
-                    db.DatasetTag.insert_many([{'dataset': ds_id, val_sing: val} for val in new_tags])
+                    (val_mapdb
+                     .delete()
+                     .where(val_mapdb.dataset == ds_id)
+                     .execute())
+                    val_mapdb.insert_many([{'dataset': ds_id, val_sing: val} for val in new_vals]).execute()
 
 
 class QuitHandler(handlers.UnsafeHandler):
