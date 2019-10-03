@@ -34,11 +34,11 @@ def get_dataset(ds_id: int, user) -> dict:
                            .where(db.DatasetTag.dataset == ds_id)
                            .dicts())
 
-    dataset['publications'] = list(entry for entry in (db.DatasetPublication
-                                                   .select(db.Publication)
-                                                   .join(db.Publication)
-                                                   .where(db.DatasetPublication.dataset == ds_id)
-                                                   .dicts()))
+    dataset['publications'] = list(db.DatasetPublication
+                                   .select(db.Publication)
+                                   .join(db.Publication)
+                                   .where(db.DatasetPublication.dataset == ds_id)
+                                   .dicts())
 
     dataset['data_urls'] = list(db.DatasetDataUrl
                                 .select(db.DataUrl)
@@ -47,10 +47,10 @@ def get_dataset(ds_id: int, user) -> dict:
                                 .dicts())
 
     dataset['owners'] = list(db.DatasetOwner
-                              .select(db.User.name)
-                              .join(db.User)
-                              .where(db.DatasetOwner.dataset == ds_id)
-                              .dicts())
+                             .select(db.User.name)
+                             .join(db.User)
+                             .where(db.DatasetOwner.dataset == ds_id)
+                             .dicts())
 
     return dataset
 
