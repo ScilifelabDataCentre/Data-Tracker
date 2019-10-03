@@ -47,6 +47,7 @@ def test_add_dataset_get():
 
 def test_add_dataset_post():
     """Test AddDataset.post()"""
+    session = requests.Session()    
     payload = {'dataset': {'title': 'An added Dataset1',
                            'description': 'Description of added dataset1',
                            'doi': 'A doi for added dataset1',
@@ -63,20 +64,17 @@ def test_add_dataset_post():
                            'visible': True}}
 
     # steward
-    response = requests.get(f'{BASE_URL}/developer/login?userid=5')
-    cookie_jar = response.cookies
-    headers = {'X-Xsrftoken': cookie_jar['_xsrf']}
+    session.get(f'{BASE_URL}/developer/login?userid=5')
+    session.headers['X-Xsrftoken'] = session.cookies['_xsrf']
 
-    response_post = requests.post(f'{BASE_URL}/api/dataset/add',
-                                  data=json.dumps(payload),
-                                  cookies=cookie_jar,
-                                  headers=headers)
-    assert response_post.status_code == 200
-    ## TODO: better approach once search is implemented
-    response = requests.get(f'{BASE_URL}/api/datasets', cookies=cookie_jar)
-    data = json.loads(response.text)
-    dbid = next(filter(lambda x: x['title'] == payload['dataset']['title'], data['datasets']))['id']
-    response = requests.get(f'{BASE_URL}/api/dataset/{dbid}', cookies=cookie_jar)
+    response = session.post(f'{BASE_URL}/api/dataset/add',
+                                  data=json.dumps(payload))
+    assert response.status_code == 200
+
+    response = session.post(f'{BASE_URL}/api/dataset/query',
+                            data=json.dumps({'query': {'title': payload['dataset']['title']}}))
+    dbid = json.loads(response.text)['datasets'][0]['id']
+    response = session.get(f'{BASE_URL}/api/dataset/{dbid}')
     data = json.loads(response.text)
     for header in payload['dataset']:
         if header == 'owners':
@@ -97,42 +95,35 @@ def test_add_dataset_post():
                 assert data[header] == payload['dataset'][header]
 
     ## bad requests
-    response_post = requests.post(f'{BASE_URL}/api/dataset/add',
-                                  data=json.dumps({'bad_request': None}),
-                                  cookies=cookie_jar,
-                                  headers=headers)
-    assert response_post.status_code == 400
+    response = session.post(f'{BASE_URL}/api/dataset/add',
+                                  data=json.dumps({'bad_request': None}))
+    assert response.status_code == 400
+    assert not response.text
 
-    response_post = requests.post(f'{BASE_URL}/api/dataset/add',
-                                  data=json.dumps({'dataset': {'title_missing': None}}),
-                                  cookies=cookie_jar,
-                                  headers=headers)
-    assert response_post.status_code == 400
+    response = session.post(f'{BASE_URL}/api/dataset/add',
+                                  data=json.dumps({'dataset': {'title_missing': None}}))
+    assert response.status_code == 400
+    assert not response.text
 
-    response_post = requests.post(f'{BASE_URL}/api/dataset/add',
-                                  data=json.dumps({'dataset': {'title': ''}}),
-                                  cookies=cookie_jar,
-                                  headers=headers)
-    assert response_post.status_code == 400
+    response = session.post(f'{BASE_URL}/api/dataset/add',
+                                  data=json.dumps({'dataset': {'title': ''}}))
+    assert response.status_code == 400
+    assert not response.text
     
     # admin
     payload['dataset']['title'] = 'An added Dataset2'
     payload['dataset']['owners'].append({'email': 'user2@example.com'})
 
-    response = requests.get(f'{BASE_URL}/developer/login?userid=6')
-    cookie_jar = response.cookies
-    response_post = requests.post(f'{BASE_URL}/api/dataset/add',
-                                  data=json.dumps(payload),
-                                  cookies=cookie_jar,
-                                  headers={'X-Xsrftoken': cookie_jar['_xsrf']})
-    assert response_post.status_code == 200
-    # TODO: better approach once search is implemented
-    response = requests.get(f'{BASE_URL}/api/datasets', cookies=cookie_jar)
+    session.get(f'{BASE_URL}/developer/login?userid=6')
+    session.headers['X-Xsrftoken'] = session.cookies['_xsrf']
+    response = session.post(f'{BASE_URL}/api/dataset/add',
+                            data=json.dumps(payload))
+    assert response.status_code == 200
+    response = session.post(f'{BASE_URL}/api/dataset/query',
+                            data=json.dumps({'query': {'title': payload['dataset']['title']}}))
+    dbid = json.loads(response.text)['datasets'][0]['id']
+    response = session.get(f'{BASE_URL}/api/dataset/{dbid}')
     data = json.loads(response.text)
-    dbid = next(filter(lambda x: x['title'] == payload['dataset']['title'], data['datasets']))['id']
-    response = requests.get(f'{BASE_URL}/api/dataset/{dbid}', cookies=cookie_jar)
-    data = json.loads(response.text)
-
     for header in payload['dataset']:
         if header == 'owners':
             assert sorted([owner['name'] for owner in data[header]]) == ['A Name1', 'A Name2']
@@ -152,24 +143,22 @@ def test_add_dataset_post():
                 assert data[header] == payload['dataset'][header]
 
     # not logged in: fail
-    response = requests.get(f'{BASE_URL}/api/datasets')
-    cookie_jar = response.cookies
-    response_post = requests.post(f'{BASE_URL}/api/dataset/add',
-                                  data=json.dumps(payload),
-                                  cookies=cookie_jar,
-                                  headers={'X-Xsrftoken': cookie_jar['_xsrf']})
-    assert response_post.status_code == 403
+    session.get(f'{BASE_URL}/logout')
+    session.get(f'{BASE_URL}/api/dataset/1')
+    session.headers['X-Xsrftoken'] = session.cookies['_xsrf']
+    response = session.post(f'{BASE_URL}/api/dataset/add',
+                            data=json.dumps(payload))
+    assert response.status_code == 403
     assert not response.text
 
     # normal user: fail
-    response = requests.get(f'{BASE_URL}/developer/login?userid=1')
-    cookie_jar = response.cookies
-    response_post = requests.post(f'{BASE_URL}/api/dataset/add',
-                                  data=json.dumps(payload),
-                                  cookies=cookie_jar,
-                                  headers={'X-Xsrftoken': response.cookies['_xsrf']})
-    assert response_post.status_code == 403
+    session.get(f'{BASE_URL}/developer/login?userid=1')
+    session.headers['X-Xsrftoken'] = session.cookies['_xsrf']
+    response = session.post(f'{BASE_URL}/api/dataset/add',
+                            data=json.dumps(payload))
+    assert response.status_code == 403
     assert not response.text
+
 
 def test_countrylist_get():
     """Test CountryList.get()"""
@@ -260,11 +249,11 @@ def test_delete_dataset_post():
     response = requests.get(f'{BASE_URL}/api/datasets')
     cookie_jar = response.cookies
     headers = {'X-Xsrftoken': cookie_jar['_xsrf']}
-    response_post = requests.post(f'{BASE_URL}/api/dataset/delete',
-                                  data=json.dumps(payload),
-                                  cookies=cookie_jar,
-                                  headers=headers)
-    assert response_post.status_code == 403
+    response = requests.post(f'{BASE_URL}/api/dataset/delete',
+                             data=json.dumps(payload),
+                             cookies=cookie_jar,
+                             headers=headers)
+    assert response.status_code == 403
     assert not response.text
 
     # normal user: fail
