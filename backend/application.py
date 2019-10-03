@@ -256,7 +256,7 @@ class FindDataset(handlers.UnsafeHandler):
                 query = search_functions[search_type](query, data['query'][search_type])
 
         if used:
-            datasets = [dataset for dataset in query]
+            datasets = list(query)
         else:
             self.send_error(status_code=400)
             return
@@ -309,16 +309,16 @@ class ListDatasets(handlers.UnsafeHandler):
         user = self.current_user
 
         if portal_utils.has_rights(user, ('Steward', 'Admin')):
-            ret = [dataset for dataset in (db.Dataset
-                                           .select(db.Dataset.id, db.Dataset.title)
-                                           .dicts())]
+            ret = list(db.Dataset
+                       .select(db.Dataset.id, db.Dataset.title)
+                       .dicts())
         else:
-            ret = [dataset for dataset in (db.Dataset
-                                           .select(fn.Distinct(db.Dataset.id), db.Dataset.title)
-                                           .join(db.DatasetOwner, JOIN.LEFT_OUTER)
-                                           .where((db.Dataset.visible) |
-                                                  (db.DatasetOwner.user == user))
-                                           .dicts())]
+            ret = list(db.Dataset
+                       .select(fn.Distinct(db.Dataset.id), db.Dataset.title)
+                       .join(db.DatasetOwner, JOIN.LEFT_OUTER)
+                       .where((db.Dataset.visible) |
+                              (db.DatasetOwner.user == user))
+                       .dicts())
 
         self.finish({'datasets': ret})
 
@@ -326,7 +326,7 @@ class ListDatasets(handlers.UnsafeHandler):
 class ListUsers(handlers.AdminHandler):
     """Retrieve a list of all users, including permissions etc."""
     def get(self):
-        users = [user for user in db.User.select().dicts()]
+        users = list(db.User.select().dicts())
         self.finish({'users': users})
 
 
