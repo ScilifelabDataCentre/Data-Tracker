@@ -14,6 +14,22 @@ class AddDataset(handlers.StewardHandler):
     """
     Add a new Dataset to the db.
     """
+    def get(self):
+        """The intended data structure for POST."""
+        data = {'dataset': {'title': 'Title',
+                            'description': 'Description',
+                            'doi': 'DOI',
+                            'creator': 'Creator',
+                            'contact': 'Contact',
+                            'dmp': 'Data Management Plan',
+                            'visible': True,
+                            'tags': [{'title': 'Tag1'}, {'title': 'Tag2'}],
+                            'publications': [{'identifier': 'Publication'}],
+                            'dataUrls': [{'url': 'Data Access URL', 'description': 'Description'}],
+                            'owners': [{'email': 'Owner email'}]}}
+
+        self.finish(data)
+
     def post(self):
         """
         Add a dataset.
@@ -58,7 +74,7 @@ class AddDataset(handlers.StewardHandler):
                 db.DatasetPublication.create(dataset=ds_id,
                                              publication=pub_id)
 
-            for data_url in ds_data['data_urls']:
+            for data_url in ds_data['dataUrls']:
                 url_id, _ = db.DataUrl.get_or_create(**data_url)
                 db.DatasetDataUrl.create(dataset=ds_id,
                                          data_url=url_id)
@@ -130,6 +146,11 @@ class CountryList(handlers.UnsafeHandler):
 
 class DeleteDataset(handlers.StewardHandler):
     """Delete a dataset"""
+    def get(self):
+        """Data structure for POST."""
+        data = {'identifier': 1}
+        self.finish(data)
+
     def post(self):
         """
         Delete the dataset with the provided id.
@@ -159,6 +180,15 @@ class DeleteDataset(handlers.StewardHandler):
 
 class FindDataset(handlers.UnsafeHandler):
     """Find datasets matching a query"""
+    def get(self):
+        """Data structure for POST"""
+        data = {'query': {'title': 'Title',
+                          'creator': 'Creator',
+                          'tags': ['Tag1'],
+                          'publications': ['Title. Journal:Year'],
+                          'owners': ['Name1']}}
+        self.finish(ret)
+
     def post(self):
         """
         Find datasets matching the query.
