@@ -187,7 +187,7 @@ class FindDataset(handlers.UnsafeHandler):
                           'tags': ['Tag1'],
                           'publications': ['Title. Journal:Year'],
                           'owners': ['Name1']}}
-        self.finish(ret)
+        self.finish(data)
 
     def post(self):
         """

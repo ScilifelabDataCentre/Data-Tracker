@@ -169,6 +169,40 @@ def test_add_dataset_post():
                                   headers={'X-Xsrftoken': response.cookies['_xsrf']})
     assert response_post.status_code == 403
 
+def test_countrylist_get():
+    """Test CountryList.get()"""
+    response = requests.get(f'{BASE_URL}/api/countries')
+    data = json.loads(response.text)
+
+    assert len(data['countries']) == 240
+
+
+def test_delete_dataset_get():
+    """Test DeleteDataset.get()"""
+    session = requests.Session()
+    session.get(f'{BASE_URL}/api/datasets')
+    expected = {'identifier': 1}
+
+    # not logged in
+    response = session.get(f'{BASE_URL}/api/dataset/delete')
+    assert response.status_code == 403
+    assert not response.text
+    # normal user
+    session.get(f'{BASE_URL}/developer/login?userid=1')
+    response = session.get(f'{BASE_URL}/api/dataset/delete')
+    assert response.status_code == 403
+    assert not response.text
+    # steward
+    session.get(f'{BASE_URL}/developer/login?userid=5')
+    response = session.get(f'{BASE_URL}/api/dataset/delete')
+    data = json.loads(response.text)
+    assert data == expected
+    # admin
+    session.get(f'{BASE_URL}/developer/login?userid=6')
+    response = session.get(f'{BASE_URL}/api/dataset/delete')
+    data = json.loads(response.text)
+    assert data == expected
+
 
 def test_delete_dataset_post():
     """Test DeleteDataset.post()"""
@@ -241,12 +275,35 @@ def test_delete_dataset_post():
     assert response_post.status_code == 403
 
 
-def test_countrylist_get():
-    """Test CountryList.get()"""
-    response = requests.get(f'{BASE_URL}/api/countries')
-    data = json.loads(response.text)
+def test_find_dataset_get():
+    """Test DeleteDataset.get()"""
+    session = requests.Session()
+    session.get(f'{BASE_URL}/api/datasets')
+    expected = {'query': {'title': 'Title',
+                          'creator': 'Creator',
+                          'tags': ['Tag1'],
+                          'publications': ['Title. Journal:Year'],
+                          'owners': ['Name1']}}
 
-    assert len(data['countries']) == 240
+    # not logged in
+    response = session.get(f'{BASE_URL}/api/dataset/query')
+    data = json.loads(response.text)
+    assert data == expected
+    # normal user
+    session.get(f'{BASE_URL}/developer/login?userid=1')
+    response = session.get(f'{BASE_URL}/api/dataset/query')
+    data = json.loads(response.text)
+    assert data == expected
+    # steward
+    session.get(f'{BASE_URL}/developer/login?userid=5')
+    response = session.get(f'{BASE_URL}/api/dataset/query')
+    data = json.loads(response.text)
+    assert data == expected
+    # admin
+    session.get(f'{BASE_URL}/developer/login?userid=6')
+    response = session.get(f'{BASE_URL}/api/dataset/query')
+    data = json.loads(response.text)
+    assert data == expected
 
 
 def test_find_dataset_post():
