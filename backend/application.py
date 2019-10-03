@@ -370,7 +370,7 @@ class UpdateDataset(handlers.SafeHandler):
 
         if not (portal_utils.has_rights(self.current_user, ('Steward', 'Admin'))
                 or portal_utils.is_owner(self.current_user, dataset)):
-            logging.debug(f'Not permitted; {self.current_user.id}, {ds_id}')
+            logging.debug(f'Not permitted; user_id:{self.current_user.id}, ds_id:{ds_id}')
             self.send_error(status_code=403)
             return
 
@@ -378,6 +378,7 @@ class UpdateDataset(handlers.SafeHandler):
         try:
             indata = data['dataset']
         except KeyError:
+            logging.debug('"dataset" missing')
             self.send_error(status_code=400)
             return
 
@@ -391,8 +392,10 @@ class UpdateDataset(handlers.SafeHandler):
                               'visible',
                               'tags',
                               'publications',
-                              'dataUrls'
+                              'dataUrls',
                               'owners'):
+                logging.debug('Bad header')
+                logging.debug(indata)
                 self.send_error(status_code=400)
                 return
 
@@ -415,6 +418,7 @@ class UpdateDataset(handlers.SafeHandler):
                 val_sing = value_type.rstrip('s')
                 if value_type == 'dataUrls':
                     val_dbname = 'DataUrl'
+                    val_sing = 'data_url'
 
                 val_db = getattr(db, val_dbname)
                 val_mapdb = getattr(db, 'Dataset' + val_dbname)
@@ -427,11 +431,13 @@ class UpdateDataset(handlers.SafeHandler):
                 for value in indata[value_type]:
                     try:
                         val_id, _ = val_db.get_or_create(**value)
-                    except TypeError:
+                    except TypeError as err:
+                        logging.debug(err)
                         transaction.rollback()
                         self.send_error(status_code=400)
                         return
-                    except AttributeError:
+                    except AttributeError as err:
+                        logging.debug(err)
                         transaction.rollback()
                         self.send_error(status_code=400)
                         return

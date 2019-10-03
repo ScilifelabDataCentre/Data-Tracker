@@ -688,8 +688,29 @@ def test_update_dataset_post():
     data = json.loads(response.text)
     assert data['contact'] == 'New contact2'
     tags = [tag['title'] for tag in data['tags']]
+    assert len(tags) == 3
     for tag in ('Tag1', 'NewTag1', 'NewTag2'):
         assert tag in tags
+
+    update_payload = {'dataset': {'doi': 'new doi',
+                                  'dataUrls': [{'description': 'Some kinda data1', 'url': 'http://example.com/1'},
+                                               {'description': 'Some kinda data2', 'url': 'http://example.com/2'}]}}
+
+    response = session.post(f'{BASE_URL}/api/dataset/{ds_id}/update',
+                        data=json.dumps(update_payload))
+    assert response.status_code == 200
+
+    response = session.get(f'{BASE_URL}/api/dataset/{ds_id}')
+    data = json.loads(response.text)
+    assert data['doi'] == 'new doi'
+    data_descs = [url['description'] for url in data['dataUrls']]
+    data_urls = [url['url'] for url in data['dataUrls']]
+    assert len(data_descs) == 2
+    assert len(data_urls) == 2
+    for data_desc in ('Some kinda data1', 'Some kinda data2'):
+        assert data_desc in data_descs
+    for data_url in ('http://example.com/1', 'http://example.com/2'):
+        assert data_url in data_urls
 
     ## bad requests
     update_payload = {'dat': ''}
