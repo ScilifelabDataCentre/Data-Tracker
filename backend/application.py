@@ -383,6 +383,7 @@ class UpdateDataset(handlers.SafeHandler):
             ds_identifier (str): the id of a dataset, int(ds_id) must work
 
         """
+        user = self.current_user
         ds_id = int(ds_identifier)
 
         try:
@@ -392,8 +393,8 @@ class UpdateDataset(handlers.SafeHandler):
             self.send_error(status_code=404, reason='Dataset not found')
             return
 
-        if not (portal_utils.has_rights(self.current_user, ('Steward', 'Admin'))
-                or portal_utils.is_owner(self.current_user, dataset)):
+        if not (portal_utils.has_rights(user, ('Steward', 'Admin'))
+                or portal_utils.is_owner(user, dataset)):
             logging.debug(f'Not permitted; user_id:{self.current_user.id}, ds_id:{ds_id}')
             self.send_error(status_code=403)
             return
@@ -404,6 +405,10 @@ class UpdateDataset(handlers.SafeHandler):
         except KeyError:
             logging.debug('"dataset" missing')
             self.send_error(status_code=400)
+            return
+
+        if 'owners' in indata and not portal_utils.has_rights(user, ('Steward', 'Admin')):
+            self.send_error(status_code=403)
             return
 
         for header in indata:
@@ -464,9 +469,15 @@ class UpdateDataset(handlers.SafeHandler):
                 if value_type == 'dataUrls':
                     val_dbname = 'DataUrl'
                     val_sing = 'data_url'
+                elif value_type == 'owners':
+                    val_dbname = 'User'
+                    val_sing = 'user'
 
                 val_db = getattr(db, val_dbname)
-                val_mapdb = getattr(db, 'Dataset' + val_dbname)
+                if value_type == 'owners':
+                    val_mapdb = getattr(db, 'DatasetOwner')
+                else:
+                    val_mapdb = getattr(db, 'Dataset' + val_dbname)
 
                 old_vals = {tag.id for tag in (val_db.select(val_db)
                                                .join(val_mapdb)

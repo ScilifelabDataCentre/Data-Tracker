@@ -705,7 +705,6 @@ def test_update_dataset_post(dataset_for_tests):
 
     # owner
     as_user(session, 3)
-
     update_payload = {'dataset': {'title': 'New title'}}
     data, status_code = make_request(session,
                                      f'/api/dataset/{ds_id}/update',
@@ -765,13 +764,22 @@ def test_update_dataset_post(dataset_for_tests):
     for data_url in ('http://example.com/1', 'http://example.com/2'):
         assert data_url in data_urls
 
-    ## bad requests
-    update_payload = {'dat': ''}
+    update_payload = {'dataset': {'owners': [{'email': 'user2@example.com'}]}}
     data, status_code = make_request(session,
                                      f'/api/dataset/{ds_id}/update',
                                      update_payload)
-    assert status_code == 400
+    assert status_code == 403
     assert not data
+
+    ## bad requests
+    for update_payload in ({'dataset': {'tags': [{'bad_tag': 'asd'}]}},
+                           {'dat': ''},
+                           {'dataset': {'tags': 'asd'}}):
+        data, status_code = make_request(session,
+                                         f'/api/dataset/{ds_id}/update',
+                                         update_payload)
+        assert status_code == 400
+        assert not data
 
     update_payload = {'dataset': {'title': 'A title'}}
     data, status_code = make_request(session,
@@ -780,17 +788,15 @@ def test_update_dataset_post(dataset_for_tests):
     assert status_code == 404
     assert not data
 
-    update_payload = {'dataset': {'tags': 'asd'}}
+    # admin
+    as_user(session, 6)
+    update_payload = {'dataset': {'owners': [{'email': 'user2@example.com'}]}}
     data, status_code = make_request(session,
                                      f'/api/dataset/{ds_id}/update',
                                      update_payload)
-    assert status_code == 400
+    assert status_code == 200
     assert not data
 
-
-    update_payload = {'dataset': {'tags': [{'bad_tag': 'asd'}]}}
-    data, status_code = make_request(session,
-                                     f'/api/dataset/{ds_id}/update',
-                                     update_payload)
-    assert status_code == 400
-    assert not data
+    data, status_code = make_request(session, f'/api/dataset/{ds_id}')
+    assert status_code == 200
+    assert data['owners'][0]['name'] == 'A Name2'
