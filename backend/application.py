@@ -375,7 +375,7 @@ class UpdateDataset(handlers.SafeHandler):
 
         self.finish(data)
 
-    def post(self, ds_identifier: str):  # pylint: disable=too-many-return-statements,too-many-branches,too-many-statements,too-many-locals
+    def post(self, ds_identifier: str):
         """
         Update the fields of a dataset.
 
@@ -423,6 +423,27 @@ class UpdateDataset(handlers.SafeHandler):
                 self.send_error(status_code=400)
                 return
 
+        status_code = self.update_db(dataset, indata)
+        if status_code != 200:
+            self.send_error(status_code=status_code)
+            return
+
+        self.finish()
+
+    def update_db(self, dataset, indata: dict) -> int:  # pylint: disable=no-self-use,too-many-locals
+        """
+        Perform the database update.
+
+        The method exists to make sure that atomic() does not cause trouble.
+
+        Args:
+            dataset: Dataset model
+            indata (dict): The incoming dataset fields
+
+        Returns:
+            int: Recommended status_code
+
+        """
         with db.database.atomic() as transaction:
             for header in ('title',
                            'description',
@@ -449,7 +470,7 @@ class UpdateDataset(handlers.SafeHandler):
 
                 old_vals = {tag.id for tag in (val_db.select(val_db)
                                                .join(val_mapdb)
-                                               .where(val_mapdb.dataset == ds_id))}
+                                               .where(val_mapdb.dataset == dataset.id))}
 
                 new_vals = set()
                 for value in indata[value_type]:
@@ -458,25 +479,22 @@ class UpdateDataset(handlers.SafeHandler):
                     except TypeError as err:
                         logging.debug(err)
                         transaction.rollback()
-                        self.send_error(status_code=400)
-                        return
+                        return 400
                     except AttributeError as err:
                         logging.debug(err)
                         transaction.rollback()
-                        self.send_error(status_code=400)
-                        return
+                        return 400
                     new_vals.add(val_id)
 
                 if old_vals != new_vals:
                     (val_mapdb
                      .delete()
-                     .where(val_mapdb.dataset == ds_id)
+                     .where(val_mapdb.dataset == dataset.id)
                      .execute())
                     (val_mapdb # pylint: disable=no-value-for-parameter
-                     .insert_many([{'dataset': ds_id, val_sing: val} for val in new_vals])
+                     .insert_many([{'dataset': dataset.id, val_sing: val} for val in new_vals])
                      .execute())
-
-        self.finish()
+        return 200
 
 
 class QuitHandler(handlers.UnsafeHandler):
