@@ -293,12 +293,11 @@ def test_delete_dataset_get(dataset_for_tests):
     data, status_code = make_request(session, '/api/dataset/delete')
     assert status_code == 200
     data, status_code = make_request(session, f'/api/dataset/{dataset_for_tests}/delete')
-    assert status_code == 404
+    assert status_code == 400
     assert not data
-    assert data == expected
 
 
-def test_delete_dataset_post():
+def test_delete_dataset_post(dataset_for_tests):
     """Test DeleteDataset.post()"""
     session = requests.Session()
     # steward
@@ -336,6 +335,13 @@ def test_delete_dataset_post():
     payload = {'identifier': dbid}
     data, status_code = make_request(session,
                                      '/api/dataset/delete',
+                                     payload)
+    assert status_code == 200
+    assert not data
+
+    payload = {'identifier': 9876543210}
+    data, status_code = make_request(session,
+                                     f'/api/dataset/{dataset_for_tests}/delete',
                                      payload)
     assert status_code == 200
     assert not data
@@ -780,7 +786,7 @@ def test_update_dataset_post(dataset_for_tests):
     for update_payload in ({'dataset': {'tags': [{'bad_tag': 'asd'}]}},
                            {'dat': ''},
                            {'dataset': {'tags': 'asd'}},
-                           {'dataset': {'bad_field': 'value'}}}):
+                           {'dataset': {'bad_field': 'value'}}):
         data, status_code = make_request(session,
                                          f'/api/dataset/{ds_id}/update',
                                          update_payload)
