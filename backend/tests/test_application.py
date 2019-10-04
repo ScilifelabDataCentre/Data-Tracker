@@ -278,6 +278,7 @@ def test_delete_dataset_get(dataset_for_tests):
         data, status_code = make_request(session, '/api/dataset/4/delete')
         assert status_code == 403
         assert not data
+
     # steward
     as_user(session, 5)
     data, status_code = make_request(session, '/api/dataset/delete')
@@ -286,10 +287,14 @@ def test_delete_dataset_get(dataset_for_tests):
     data, status_code = make_request(session, f'/api/dataset/{dataset_for_tests}/delete')
     assert status_code == 200
     assert not data
+
     # admin
     as_user(session, 6)
     data, status_code = make_request(session, '/api/dataset/delete')
     assert status_code == 200
+    data, status_code = make_request(session, f'/api/dataset/{dataset_for_tests}/delete')
+    assert status_code == 404
+    assert not data
     assert data == expected
 
 
