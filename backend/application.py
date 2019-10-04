@@ -352,7 +352,7 @@ class ListUsers(handlers.AdminHandler):
 
 class UpdateDataset(handlers.SafeHandler):
     """Update the fields of a dataset."""
-    def get(self, ds_identifier: str):  # pylint: disable=inconsistent-return-statements
+    def get(self, ds_identifier: str):
         """Data structure for POST."""
         data = {'dataset': {'title': 'Title',
                             'description': 'Description',
@@ -373,7 +373,7 @@ class UpdateDataset(handlers.SafeHandler):
             self.send_error(status_code=403)
             return
 
-        return self.finish(data)
+        self.finish(data)
 
     def post(self, ds_identifier: str):  # pylint: disable=too-many-return-statements,too-many-branches,too-many-statements,too-many-locals
         """
