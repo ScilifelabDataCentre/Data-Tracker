@@ -224,6 +224,7 @@ def test_add_dataset_post():
 def test_countrylist_get():
     """Test CountryList.get()"""
     response = requests.get(f'{BASE_URL}/api/countries')
+    assert response.status_code == 200
     data = json.loads(response.text)
 
     assert len(data['countries']) == 240
@@ -232,27 +233,27 @@ def test_countrylist_get():
 def test_delete_dataset_get():
     """Test DeleteDataset.get()"""
     session = requests.Session()
-    session.get(f'{BASE_URL}/api/datasets')
     expected = {'identifier': 1}
 
     # not logged in
-    response = session.get(f'{BASE_URL}/api/dataset/delete')
-    assert response.status_code == 403
-    assert not response.text
+    as_user(session, 0)
+    data, status_code = make_request(session, '/api/dataset/delete')
+    assert status_code == 403
+    assert not data
     # normal user
-    session.get(f'{BASE_URL}/developer/login?userid=1')
-    response = session.get(f'{BASE_URL}/api/dataset/delete')
-    assert response.status_code == 403
-    assert not response.text
+    as_user(session, 1)
+    data, status_code = make_request(session, '/api/dataset/delete')
+    assert status_code == 403
+    assert not data
     # steward
-    session.get(f'{BASE_URL}/developer/login?userid=5')
-    response = session.get(f'{BASE_URL}/api/dataset/delete')
-    data = json.loads(response.text)
+    as_user(session, 5)
+    data, status_code = make_request(session, '/api/dataset/delete')
+    assert status_code == 200
     assert data == expected
     # admin
-    session.get(f'{BASE_URL}/developer/login?userid=6')
-    response = session.get(f'{BASE_URL}/api/dataset/delete')
-    data = json.loads(response.text)
+    as_user(session, 6)
+    data, status_code = make_request(session, '/api/dataset/delete')
+    assert status_code == 200
     assert data == expected
 
 
@@ -261,114 +262,104 @@ def test_delete_dataset_post():
     session = requests.Session()
     # steward
     ## will delete the dataset added as steward in test_add_dataset_post()
-    response = session.get(f'{BASE_URL}/developer/login?userid=5')
-    session.headers['X-Xsrftoken'] = session.cookies['_xsrf']
-
-    response = session.post(f'{BASE_URL}/api/dataset/query',
-                            data=json.dumps({'query': {'title': 'An added Dataset1'}}))
-    dbid = json.loads(response.text)['datasets'][0]['id']
+    as_user(session, 5)
+    data, status_code = make_request(session,
+                                     '/api/dataset/query',
+                                     {'query': {'title': 'An added Dataset1'}})
+    assert status_code == 200
+    dbid = data['datasets'][0]['id']
     payload = {'identifier': dbid}
-    response = session.post(f'{BASE_URL}/api/dataset/delete',
-                            data=json.dumps(payload))
-    assert response.status_code == 200
+    data, status_code = make_request(session,
+                                     '/api/dataset/delete',
+                                     payload)
+    assert status_code == 200
+    assert not data
 
     ## bad requests
-    payload = {'identifier': 10**7}
-    response = session.post(f'{BASE_URL}/api/dataset/delete',
-                            data=json.dumps(payload))
-    assert response.status_code == 400
-    payload = {'identifier': 'abc'}
-    response = session.post(f'{BASE_URL}/api/dataset/delete',
-                                  data=json.dumps(payload))
-    assert response.status_code == 400
+    for payload in ({'identifier': 'abc'},
+                    {'identifier': 10**7}):
+        data, status_code = make_request(session,
+                                         '/api/dataset/delete',
+                                         payload)
+    assert status_code == 400
+    assert not data
 
     # admin
     ## will delete the dataset added as admin in test_add_dataset_post()
-    session.get(f'{BASE_URL}/developer/login?userid=5')
-    session.headers['X-Xsrftoken'] = session.cookies['_xsrf']
-    response = session.post(f'{BASE_URL}/api/dataset/query',
-                            data=json.dumps({'query': {'title': 'An added Dataset2'}}))
-    dbid = json.loads(response.text)['datasets'][0]['id']
+    as_user(session, 6)
+    data, status_code = make_request(session,
+                                     '/api/dataset/query',
+                                     {'query': {'title': 'An added Dataset2'}})
+    assert status_code == 200
+    dbid = data['datasets'][0]['id']
     payload = {'identifier': dbid}
-    response = session.post(f'{BASE_URL}/api/dataset/delete',
-                            data=json.dumps(payload))
-    assert response.status_code == 200
-
+    data, status_code = make_request(session,
+                                     '/api/dataset/delete',
+                                     payload)
+    assert status_code == 200
+    assert not data
+    
     # not logged in: fail
-    session.get(f'{BASE_URL}/logout')
-    response = session.get(f'{BASE_URL}/api/datasets')
-    session.headers['X-Xsrftoken'] = session.cookies['_xsrf']
-    response = session.post(f'{BASE_URL}/api/dataset/delete',
-                             data=json.dumps(payload))
-    assert response.status_code == 403
-    assert not response.text
+    as_user(session, 0)
+    data, status_code = make_request(session,
+                                     '/api/dataset/delete',
+                                     payload)
+    assert status_code == 403
+    assert not data
 
     # normal user: fail
-    session.get(f'{BASE_URL}/developer/login?userid=1')
-    session.headers['X-Xsrftoken'] = session.cookies['_xsrf']
-    response = session.post(f'{BASE_URL}/api/dataset/delete',
-                                  data=json.dumps(payload))
-    assert response.status_code == 403
-    assert not response.text
+    as_user(session, 1)
+    data, status_code = make_request(session,
+                                     '/api/dataset/delete',
+                                     payload)
+    assert status_code == 403
+    assert not data
 
 
 def test_find_dataset_get():
     """Test DeleteDataset.get()"""
     session = requests.Session()
-    session.get(f'{BASE_URL}/api/datasets')
     expected = {'query': {'title': 'Title',
                           'creator': 'Creator',
                           'tags': ['Tag1'],
                           'publications': ['Title. Journal:Year'],
                           'owners': ['Name1']}}
 
-    # not logged in
-    response = session.get(f'{BASE_URL}/api/dataset/query')
-    data = json.loads(response.text)
-    assert data == expected
-    # normal user
-    session.get(f'{BASE_URL}/developer/login?userid=1')
-    response = session.get(f'{BASE_URL}/api/dataset/query')
-    data = json.loads(response.text)
-    assert data == expected
-    # steward
-    session.get(f'{BASE_URL}/developer/login?userid=5')
-    response = session.get(f'{BASE_URL}/api/dataset/query')
-    data = json.loads(response.text)
-    assert data == expected
-    # admin
-    session.get(f'{BASE_URL}/developer/login?userid=6')
-    response = session.get(f'{BASE_URL}/api/dataset/query')
-    data = json.loads(response.text)
-    assert data == expected
+    for user in (0, 1, 5, 6):
+        as_user(session, user)
+        data, status_code = make_request(session,
+                                         '/api/dataset/query')
+        assert status_code == 200
+        assert data == expected
 
 
 def test_find_dataset_post():
     """Test FindDataset.post()"""
-    # not logged in
     session = requests.Session()
-    session.get(f'{BASE_URL}/api/datasets')
-    session.headers['X-Xsrftoken'] = session.cookies['_xsrf']
-
+    # not logged in
+    as_user(session, 0)
     payload = {'query': {'title': 'Dataset title 2'}}
-    response = session.post(f'{BASE_URL}/api/dataset/query',
-                            data=json.dumps(payload))
-    data = json.loads(response.text)
+    data, status_code = make_request(session,
+                                     '/api/dataset/query',
+                                     payload)
+    assert status_code == 200
     assert len(data['datasets']) == 1
 
     payload = {'query': {'title': 'Dataset title'}}
-    response = session.post(f'{BASE_URL}/api/dataset/query',
-                            data=json.dumps(payload))
-    data = json.loads(response.text)
+    data, status_code = make_request(session,
+                                     '/api/dataset/query',
+                                     payload)
+    assert status_code == 200
     assert len(data['datasets']) == 4
     for dataset in data['datasets']:
         assert len(dataset) == 8
 
     payload = {'query': {'title': 'Dataset title',
                          'owners': ['A Name4']}}
-    response = session.post(f'{BASE_URL}/api/dataset/query',
-                            data=json.dumps(payload))
-    data = json.loads(response.text)
+    data, status_code = make_request(session,
+                                     '/api/dataset/query',
+                                     payload)
+    assert status_code == 200
     assert len(data['datasets']) == 2
     for dataset in data['datasets']:
         assert payload['query']['title'] in dataset['title']
@@ -380,9 +371,10 @@ def test_find_dataset_post():
     payload = {'query': {'title': 'Dataset title',
                          'owner': ['A Name1'],
                          'publications': ['A publication1. Journal:2011']}}
-    response = session.post(f'{BASE_URL}/api/dataset/query',
-                            data=json.dumps(payload))
-    data = json.loads(response.text)
+    data, status_code = make_request(session,
+                                     '/api/dataset/query',
+                                     payload)
+    assert status_code == 200
     assert len(data['datasets']) == 1
     for dataset in data['datasets']:
         assert payload['query']['title'] in dataset['title']
@@ -392,9 +384,10 @@ def test_find_dataset_post():
             assert pub in [val['identifier'] for val in data['publications']]
 
     payload = {'query': {'tags': ['Tag Title 7']}}
-    response = session.post(f'{BASE_URL}/api/dataset/query',
-                            data=json.dumps(payload))
-    data = json.loads(response.text)
+    data, status_code = make_request(session,
+                                     '/api/dataset/query',
+                                     payload)
+    assert status_code == 200
     assert len(data['datasets']) == 1
     for dataset in data['datasets']:
         response = session.get(f'{BASE_URL}/api/dataset/{dataset["id"]}')
@@ -403,30 +396,29 @@ def test_find_dataset_post():
             assert tag in [val['title'] for val in data['tags']]
 
     ## bad queries
-    payload = {'query': {}}
-    response = session.post(f'{BASE_URL}/api/dataset/query',
-                            data=json.dumps(payload))
-    assert response.status_code == 400
-    payload = {'query': {'bad_type': None}}
-    response = session.post(f'{BASE_URL}/api/dataset/query',
-                            data=json.dumps(payload))
-    assert response.status_code == 400
+    for payload in ({'query': {}},
+                    {'query': {'bad_type': None}}):
+        data, status_code = make_request(session,
+                                         '/api/dataset/query',
+                                         payload)
+        assert status_code == 400
+        assert not data
 
     # normal user
-    session.get(f'{BASE_URL}/developer/login?userid=1')
-    session.headers['X-Xsrftoken'] = session.cookies['_xsrf']
-
+    as_user(session, 1)
     payload = {'query': {'title': 'Dataset title'}}
-    response = session.post(f'{BASE_URL}/api/dataset/query',
-                            data=json.dumps(payload))
-    data = json.loads(response.text)
+    data, status_code = make_request(session,
+                                     '/api/dataset/query',
+                                     payload)
+    assert status_code == 200
     assert len(data['datasets']) == 4
 
     payload = {'query': {'title': 'Dataset title',
                          'owners': ['A Name4']}}
-    response = session.post(f'{BASE_URL}/api/dataset/query',
-                            data=json.dumps(payload))
-    data = json.loads(response.text)
+    data, status_code = make_request(session,
+                                     '/api/dataset/query',
+                                     payload)
+    assert status_code == 200
     assert len(data['datasets']) == 2
     for dataset in data['datasets']:
         assert payload['query']['title'] in dataset['title']
@@ -436,18 +428,19 @@ def test_find_dataset_post():
             assert owner in [val['name'] for val in data['owners']]
 
     # owner
-    session.get(f'{BASE_URL}/developer/login?userid=4')
-    session.headers['X-Xsrftoken'] = session.cookies['_xsrf']
+    as_user(session, 4)
     payload = {'query': {'title': 'Dataset title'}}
-    response = session.post(f'{BASE_URL}/api/dataset/query',
-                            data=json.dumps(payload))
-    data = json.loads(response.text)
+    data, status_code = make_request(session,
+                                     '/api/dataset/query',
+                                     payload)
+    assert status_code == 200
     assert len(data['datasets']) == 5
 
     payload = {'query': {'tags': ['Tag Title 7']}}
-    response = session.post(f'{BASE_URL}/api/dataset/query',
-                            data=json.dumps(payload))
-    data = json.loads(response.text)
+    data, status_code = make_request(session,
+                                     '/api/dataset/query',
+                                     payload)
+    assert status_code == 200
     assert len(data['datasets']) == 2
     for dataset in data['datasets']:
         response = session.get(f'{BASE_URL}/api/dataset/{dataset["id"]}')
@@ -456,35 +449,37 @@ def test_find_dataset_post():
             assert tag in [val['title'] for val in data['tags']]
 
     # steward
-    session.get(f'{BASE_URL}/developer/login?userid=5')
-    session.headers['X-Xsrftoken'] = session.cookies['_xsrf']
-
+    as_user(session, 5)
     payload = {'query': {'title': 'Dataset title'}}
-    response = session.post(f'{BASE_URL}/api/dataset/query',
-                            data=json.dumps(payload))
-    data = json.loads(response.text)
+    data, status_code = make_request(session,
+                                     '/api/dataset/query',
+                                     payload)
+    assert status_code == 200
     assert len(data['datasets']) == 6
+
     payload = {'query': {'title': 'Dataset title',
                          'owners': ['A Name4']}}
-    response = session.post(f'{BASE_URL}/api/dataset/query',
-                            data=json.dumps(payload))
-    data = json.loads(response.text)
+    data, status_code = make_request(session,
+                                     '/api/dataset/query',
+                                     payload)
+    assert status_code == 200
     assert len(data['datasets']) == 3
 
     # admin
-    session.get(f'{BASE_URL}/developer/login?userid=6')
-    session.headers['X-Xsrftoken'] = session.cookies['_xsrf']
-
+    as_user(session, 6)
     payload = {'query': {'title': 'Dataset title'}}
-    response = session.post(f'{BASE_URL}/api/dataset/query',
-                            data=json.dumps(payload))
-    data = json.loads(response.text)
+    data, status_code = make_request(session,
+                                     '/api/dataset/query',
+                                     payload)
+    assert status_code == 200
     assert len(data['datasets']) == 6
+
     payload = {'query': {'title': 'Dataset title',
                          'owners': ['A Name4']}}
-    response = session.post(f'{BASE_URL}/api/dataset/query',
-                            data=json.dumps(payload))
-    data = json.loads(response.text)
+    data, status_code = make_request(session,
+                                     '/api/dataset/query',
+                                     payload)
+    assert status_code == 200
     assert len(data['datasets']) == 3
 
 
