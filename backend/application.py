@@ -346,12 +346,7 @@ class UpdateDataset(handlers.SafeHandler):
                             'dataUrls': [{'url': 'Data Access URL', 'description': 'Description'}],
                             'owners': [{'email': 'Owner email'}]}}
 
-        try:
-            ds_id = int(ds_identifier)
-        except ValueError:
-            logging.debug('Bad integer')
-            self.send_error(status_code=400)
-            return
+        ds_id = int(ds_identifier)
         dataset = db.Dataset.get_by_id(ds_id)
         if not (portal_utils.has_rights(self.current_user, ('Steward', 'Admin'))
                 or portal_utils.is_owner(self.current_user, dataset)):
@@ -368,12 +363,7 @@ class UpdateDataset(handlers.SafeHandler):
             ds_identifier (str): the id of a dataset, int(ds_id) must work
 
         """
-        try:
-            ds_id = int(ds_identifier)
-        except ValueError:
-            logging.debug('Bad integer')
-            self.send_error(status_code=400)
-            return
+        ds_id = int(ds_identifier)
 
         try:
             dataset = db.Dataset.get_by_id(ds_id)
