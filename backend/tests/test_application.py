@@ -27,7 +27,6 @@ def make_request(session, url: str, data: dict=None) -> dict:
         response = session.get(f'{BASE_URL}{url}')
 
     if response.text:
-        print(f'stuff: {response.text}')
         data = json.loads(response.text)
     else:
         data = {}
@@ -127,9 +126,7 @@ def test_add_dataset_post():
                                      '/api/dataset/query',
                                      {'query': {'title': payload['dataset']['title']}})
     assert status_code == 200
-    print(data)
     dbid = data['datasets'][0]['id']
-    print(dbid)
     data, status_code = make_request(session, f'/api/dataset/{dbid}')
     assert status_code == 200
     for header in payload['dataset']:
@@ -363,8 +360,9 @@ def test_find_dataset_post():
     assert len(data['datasets']) == 2
     for dataset in data['datasets']:
         assert payload['query']['title'] in dataset['title']
-        response = session.get(f'{BASE_URL}/api/dataset/{dataset["id"]}')
-        data = json.loads(response.text)
+        data, status_code = make_request(session,
+                                         f'/api/dataset/{dataset["id"]}')
+        assert status_code == 200
         for owner in payload['query']['owners']:
             assert owner in [val['name'] for val in data['owners']]
 
@@ -485,8 +483,10 @@ def test_find_dataset_post():
 
 def test_get_dataset_get():
     """Test GetDataset.get()"""
-    response = requests.get(f'{BASE_URL}/api/dataset/1')
-    data = json.loads(response.text)
+    session = requests.Session()
+    # not logged in
+    data, status_code = make_request(session, '/api/dataset/1')
+    assert status_code == 200
     assert len(data) == 11
     assert len(data['tags']) == 5
 
@@ -498,72 +498,63 @@ def test_get_dataset_get():
     for i in [1, 2]:
         assert f'https:www.example.com/url{i}' in data_urls
 
-    # tags should be empty list if no tags
-    response = requests.get(f'{BASE_URL}/api/dataset/3')
-    data = json.loads(response.text)
+    data, status_code = make_request(session, '/api/dataset/3')
+    assert status_code == 200
     assert len(data['tags']) == 0
-
-    # data_urls should be empty list if no urls
-    response = requests.get(f'{BASE_URL}/api/dataset/2')
-    data = json.loads(response.text)
-    assert len(data['dataUrls']) == 0
-    # publications should be empty list if none
-    assert len(data['publications']) == 0
-
-    # publications are retrieved correctly
-    response = requests.get(f'{BASE_URL}/api/dataset/3')
-    data = json.loads(response.text)
     assert len(data['publications']) == 1
     assert data['publications'][0]['identifier'] == 'A publication2. Journal:2012'
 
+    data, status_code = make_request(session, '/api/dataset/2')
+    assert status_code == 200
+    assert len(data['dataUrls']) == 0
+    assert len(data['publications']) == 0
+
+
     # owned by user
-    response = requests.get(f'{BASE_URL}/developer/login?userid=4')
-    cookie_jar = response.cookies
-    response = requests.get(f'{BASE_URL}/api/dataset/4', cookies=cookie_jar)
-    data = json.loads(response.text)
+    as_user(session, 4)
+    data, status_code = make_request(session, '/api/dataset/4')
+    assert status_code == 200
     assert len(data) == 11
 
     # steward
-    response = requests.get(f'{BASE_URL}/developer/login?userid=5')
-    cookie_jar = response.cookies
-    response = requests.get(f'{BASE_URL}/api/dataset/4', cookies=cookie_jar)
+    as_user(session, 5)
+    data, status_code = make_request(session, '/api/dataset/4')
+    assert status_code == 200
     assert len(data) == 11
 
     # admin
-    response = requests.get(f'{BASE_URL}/developer/login?userid=6')
-    cookie_jar = response.cookies
-    response = requests.get(f'{BASE_URL}/api/dataset/4', cookies=cookie_jar)
+    as_user(session, 6)
+    data, status_code = make_request(session, '/api/dataset/4')
+    assert status_code == 200
     assert len(data) == 11
 
     # forbidden
-    response = requests.get(f'{BASE_URL}/api/dataset/4')
-    assert response.status_code == 403
-    assert not response.text
-    response = requests.get(f'{BASE_URL}/developer/login?userid=1')
-    cookie_jar = response.cookies
-    response = requests.get(f'{BASE_URL}/api/dataset/4', cookies=cookie_jar)
-    assert response.status_code == 403
-    assert not response.text
+    for user in (0, 1):
+        as_user(session, user)
+        data, status_code = make_request(session, '/api/dataset/4')
+        assert status_code == 403
+        assert not data
 
     # not found
-    response = requests.get(f'{BASE_URL}/api/dataset/123456')
-    assert response.status_code == 404
-    assert not response.text
+    data, status_code = make_request(session, '/api/dataset/1234567')
+    assert status_code == 404
+    assert not data
 
 
 def test_get_user_get():
     """Test GetUser.get()"""
-    # no user
-    response = requests.get(f'{BASE_URL}/api/users/me')
-    data = json.loads(response.text)
+    session = requests.Session()
+    # not logged in
+    as_user(session, 0)
+    data, status_code = make_request(session, '/api/users/me')
+    assert status_code == 200
     assert data == {"user": None,
                     "email": None}
 
     # logged in user
-    response = requests.get(f'{BASE_URL}/developer/login?userid=4')
-    cookie_jar = response.cookies
-    response = requests.get(f'{BASE_URL}/api/users/me', cookies=cookie_jar)
-    data = json.loads(response.text)
+    as_user(session, 4)
+    data, status_code = make_request(session, '/api/users/me')
+    assert status_code == 200
     assert data == {"user": "A Name4",
                     "email": "user4@example.com",
                     "affiliation": "A University4",
@@ -572,70 +563,54 @@ def test_get_user_get():
 
 def test_list_datasets_get():
     """Test ListDatasets.get()"""
-    response = requests.get(f'{BASE_URL}/api/datasets')
-    data = json.loads(response.text)
+    session = requests.Session()
+    as_user(session, 0)
+    data, status_code = make_request(session, '/api/datasets')
+    assert status_code == 200
     assert len(data['datasets']) == 4
     assert data['datasets'][0]['title'] == f"Dataset title {data['datasets'][0]['id']}"
 
     # log in as user, no extra
-    response = requests.get(f'{BASE_URL}/developer/login?userid=1')
-    cookie_jar = response.cookies
-    response = requests.get(f'{BASE_URL}/api/datasets', cookies=cookie_jar)
-    data = json.loads(response.text)
+    as_user(session, 1)
+    data, status_code = make_request(session, '/api/datasets')
+    assert status_code == 200
     assert len(data['datasets']) == 4
 
     # log in as user that owns dataset and list extra
-    response = requests.get(f'{BASE_URL}/developer/login?userid=4')
-    cookie_jar = response.cookies
-    response = requests.get(f'{BASE_URL}/api/datasets', cookies=cookie_jar)
-    data = json.loads(response.text)
+    as_user(session, 4)
+    data, status_code = make_request(session, '/api/datasets')
+    assert status_code == 200
     assert len(data['datasets']) == 5
     assert {"id": 4, "title": "Dataset title 4"} in data['datasets']
 
     # log in as steward and list extra
-    response = requests.get(f'{BASE_URL}/developer/login?userid=5')
-    cookie_jar = response.cookies
-    response = requests.get(f'{BASE_URL}/api/datasets', cookies=cookie_jar)
-    data = json.loads(response.text)
+    as_user(session, 5)
+    data, status_code = make_request(session, '/api/datasets')
+    assert status_code == 200
     assert len(data['datasets']) == 6
     assert {"id": 4, "title": "Dataset title 4"} in data['datasets']
 
     # log in as admin and list extra
-    response = requests.get(f'{BASE_URL}/developer/login?userid=6')
-    cookie_jar = response.cookies
-    response = requests.get(f'{BASE_URL}/api/datasets', cookies=cookie_jar)
-    data = json.loads(response.text)
+    as_user(session, 6)
+    data, status_code = make_request(session, '/api/datasets')
+    assert status_code == 200
     assert len(data['datasets']) == 6
     assert {"id": 4, "title": "Dataset title 4"} in data['datasets']
-    assert {"id": 5, "title": "Dataset title 5"} in data['datasets']
 
 
 def test_list_user_get():
     """Test ListUser.get()"""
-    # no user - forbidden
-    response = requests.get(f'{BASE_URL}/api/users')
-    assert response.status_code == 403
-    assert not response.text
-
-    # normal user - forbidden
-    response = requests.get(f'{BASE_URL}/developer/login?userid=1')
-    cookie_jar = response.cookies
-    response = requests.get(f'{BASE_URL}/api/users', cookies=cookie_jar)
-    assert response.status_code == 403
-    assert not response.text
-
-    # Steward user - forbidden
-    response = requests.get(f'{BASE_URL}/developer/login?userid=5')
-    cookie_jar = response.cookies
-    response = requests.get(f'{BASE_URL}/api/users', cookies=cookie_jar)
-    assert response.status_code == 403
-    assert not response.text
+    session = requests.Session()
+    for user in (0, 1, 5):
+        as_user(session, user)
+        data, status_code = make_request(session, '/api/users')
+        assert status_code == 403
+        assert not data
 
     # Admin user - list users
-    response = requests.get(f'{BASE_URL}/developer/login?userid=6')
-    cookie_jar = response.cookies
-    response = requests.get(f'{BASE_URL}/api/users', cookies=cookie_jar)
-    data = json.loads(response.text)
+    as_user(session, 6)
+    data, status_code = make_request(session, '/api/users')
+    assert status_code == 200
     assert len(data['users']) == 6
     assert {"id": 5,
             "name": "A Name5",
@@ -648,15 +623,35 @@ def test_list_user_get():
 
 def test_update_dataset_get():
     """Test UpdateDataset.get()"""
-    pass
+    session = requests.Session()
+    expected = {'dataset': {'title': 'Title',
+                            'description': 'Description',
+                            'doi': 'DOI',
+                            'creator': 'Creator',
+                            'contact': 'Contact',
+                            'dmp': 'Data Management Plan',
+                            'visible': True,
+                            'tags': [{'title': 'Tag1'}, {'title': 'Tag2'}],
+                            'publications': [{'identifier': 'Publication'}],
+                            'dataUrls': [{'url': 'Data Access URL', 'description': 'Description'}],
+                            'owners': [{'email': 'Owner email'}]}}
 
+    for user in (0,1):
+        as_user(session, user)
+        data, status_code = make_request(session, '/api/dataset/4/update')
+        assert status_code == 403
+        assert not data
+
+    for user in (4, 5, 6):
+        as_user(session, user)
+        data, status_code = make_request(session, '/api/dataset/4/update')
+        assert status_code == 200
+        assert data == expected
+    
 
 def test_update_dataset_post():
     """Test UpdateDataset.post()"""
     session = requests.Session()
-    session.get(f'{BASE_URL}/developer/login?userid=5')
-    session.headers['X-Xsrftoken'] = session.cookies['_xsrf']
-
     payload = {'dataset': {'title': 'A Unique Title',
                            'description': 'Description',
                            'doi': 'DOI',
@@ -669,79 +664,62 @@ def test_update_dataset_post():
                            'dataUrls': [{'url': 'Data Access URL', 'description': 'Description'}],
                            'owners': [{'email': 'user3@example.com'}]}}
     # prepare
-    response = session.post(f'{BASE_URL}/api/dataset/add',
-                            data=json.dumps(payload))
+    as_user(session, 5)
+    _, status_code = make_request(session,
+                                  '/api/dataset/add',
+                                  payload)
+    assert status_code == 200
 
-    response = session.post(f'{BASE_URL}/api/dataset/query',
-                            data=json.dumps({'query': {'title': 'A Unique Title'}}))
-    ds_id = json.loads(response.text)['datasets'][0]['id']
-    
-    # not logged in
-    session.get(f'{BASE_URL}/logout')
-    session.get(f'{BASE_URL}/api/dataset/1')
-    session.headers['X-Xsrftoken'] = session.cookies['_xsrf']
+    data, status_code = make_request(session,
+                                  '/api/dataset/query',
+                                  {'query': {'title': 'A Unique Title'}})
+    assert status_code == 200
+    ds_id = data['datasets'][0]['id']
 
-    update_payload = {'dataset': {'title': 'New title'}}
-    response = session.post(f'{BASE_URL}/api/dataset/{ds_id}/update',
-                            data=json.dumps(update_payload))
-    assert response.status_code == 403
-
-    # standard user
-    session.get(f'{BASE_URL}/developer/login?userid=1')
-    session.headers['X-Xsrftoken'] = session.cookies['_xsrf']
-
-    update_payload = {'dataset': {'title': 'New title'}}
-    response = session.post(f'{BASE_URL}/api/dataset/{ds_id}/update',
-                            data=json.dumps(update_payload))
-    assert response.status_code == 403
+    # not logged in, normal user
+    for user in (0, 1):
+        as_user(session, user)
+        update_payload = {'dataset': {'title': 'New title'}}
+        data, status_code = make_request(session,
+                                         f'/api/dataset/{ds_id}/update',
+                                         update_payload)
+        assert status_code == 403
+        assert not data
 
     # owner
-    session.get(f'{BASE_URL}/logout')
-    session.get(f'{BASE_URL}/developer/login?userid=3')
-    session.headers['X-Xsrftoken'] = session.cookies['_xsrf']
+    as_user(session, 3)
 
     update_payload = {'dataset': {'title': 'New title'}}
-    response = session.post(f'{BASE_URL}/api/dataset/{ds_id}/update',
-                            data=json.dumps(update_payload))
-    assert response.status_code == 200
-    response = session.get(f'{BASE_URL}/api/dataset/{ds_id}')
-    data = json.loads(response.text)
+    data, status_code = make_request(session,
+                                     f'/api/dataset/{ds_id}/update',
+                                     update_payload)
+    assert status_code == 200
+    assert not data
+    data, status_code = make_request(session, f'/api/dataset/{ds_id}')
+    assert status_code == 200
     assert data['title'] == 'New title'
 
     update_payload = {'dataset': {'contact': 'New contact'}}
-    response = session.post(f'{BASE_URL}/api/dataset/{ds_id}/update',
-                            data=json.dumps(update_payload))
-    assert response.status_code == 200
-    response = session.get(f'{BASE_URL}/api/dataset/{ds_id}')
-    data = json.loads(response.text)
-    assert data['contact'] == 'New contact'
-
-    update_payload = {'dataset': {'contact': 'New contact'}}
-    response = session.post(f'{BASE_URL}/api/dataset/{ds_id}/update',
-                            data=json.dumps(update_payload))
-    assert response.status_code == 200
-    response = session.get(f'{BASE_URL}/api/dataset/{ds_id}')
-    data = json.loads(response.text)
-    assert data['contact'] == 'New contact'
-
-    update_payload = {'dataset': {'contact': 'New contact'}}
-    response = session.post(f'{BASE_URL}/api/dataset/{ds_id}/update',
-                            data=json.dumps(update_payload))
-    assert response.status_code == 200
-    response = session.get(f'{BASE_URL}/api/dataset/{ds_id}')
-    data = json.loads(response.text)
+    data, status_code = make_request(session,
+                                     f'/api/dataset/{ds_id}/update',
+                                     update_payload)
+    assert status_code == 200
+    assert not data
+    data, status_code = make_request(session, f'/api/dataset/{ds_id}')
+    assert status_code == 200
     assert data['contact'] == 'New contact'
 
     update_payload = {'dataset': {'contact': 'New contact2',
                                   'tags': [{'title': 'Tag1'},
                                            {'title': 'NewTag1'},
-                                           {'title': 'NewTag2'}]}}                   
-    response = session.post(f'{BASE_URL}/api/dataset/{ds_id}/update',
-                            data=json.dumps(update_payload))
-    assert response.status_code == 200
-
-    response = session.get(f'{BASE_URL}/api/dataset/{ds_id}')
-    data = json.loads(response.text)
+                                           {'title': 'NewTag2'}]}}
+    data, status_code = make_request(session,
+                                     f'/api/dataset/{ds_id}/update',
+                                     update_payload)
+    assert status_code == 200
+    assert not data
+    data, status_code = make_request(session, f'/api/dataset/{ds_id}')
+    assert status_code == 200
     assert data['contact'] == 'New contact2'
     tags = [tag['title'] for tag in data['tags']]
     assert len(tags) == 3
@@ -751,13 +729,13 @@ def test_update_dataset_post():
     update_payload = {'dataset': {'doi': 'new doi',
                                   'dataUrls': [{'description': 'Some kinda data1', 'url': 'http://example.com/1'},
                                                {'description': 'Some kinda data2', 'url': 'http://example.com/2'}]}}
-
-    response = session.post(f'{BASE_URL}/api/dataset/{ds_id}/update',
-                        data=json.dumps(update_payload))
-    assert response.status_code == 200
-
-    response = session.get(f'{BASE_URL}/api/dataset/{ds_id}')
-    data = json.loads(response.text)
+    data, status_code = make_request(session,
+                                     f'/api/dataset/{ds_id}/update',
+                                     update_payload)
+    assert status_code == 200
+    assert not data
+    data, status_code = make_request(session, f'/api/dataset/{ds_id}')
+    assert status_code == 200
     assert data['doi'] == 'new doi'
     data_descs = [url['description'] for url in data['dataUrls']]
     data_urls = [url['url'] for url in data['dataUrls']]
@@ -770,29 +748,41 @@ def test_update_dataset_post():
 
     ## bad requests
     update_payload = {'dat': ''}
-    response = session.post(f'{BASE_URL}/api/dataset/{ds_id}/update',
-                            data=json.dumps(update_payload))
-    assert response.status_code == 400
+    data, status_code = make_request(session,
+                                     f'/api/dataset/{ds_id}/update',
+                                     update_payload)
+    assert status_code == 400
+    assert not data
 
     update_payload = {'dataset': {'title': 'A title'}}
-    response = session.post(f'{BASE_URL}/api/dataset/{10**9}/update',
-                            data=json.dumps(update_payload))
-    assert response.status_code == 404
+    data, status_code = make_request(session,
+                                     f'/api/dataset/{10**9}/update',
+                                     update_payload)
+    assert status_code == 404
+    assert not data
 
     update_payload = {'dataset': {'tags': 'asd'}}
-    response = session.post(f'{BASE_URL}/api/dataset/{ds_id}/update',
-                            data=json.dumps(update_payload))
-    assert response.status_code == 400    
+    data, status_code = make_request(session,
+                                     f'/api/dataset/{ds_id}/update',
+                                     update_payload)
+    assert status_code == 400
+    assert not data
+
 
     update_payload = {'dataset': {'tags': [{'bad_tag': 'asd'}]}}
-    response = session.post(f'{BASE_URL}/api/dataset/{ds_id}/update',
-                            data=json.dumps(update_payload))
-    assert response.status_code == 400
+    data, status_code = make_request(session,
+                                     f'/api/dataset/{ds_id}/update',
+                                     update_payload)
+    assert status_code == 400
+    assert not data
     
     # cleanup
-    response = session.post(f'{BASE_URL}/api/dataset/query',
-                            data=json.dumps({'query': {'title': 'New title'}}))
-    dbid = json.loads(response.text)['datasets'][0]['id']
+    data, status_code = make_request(session,
+                                     '/api/dataset/query',
+                                     {'query': {'title': 'New title'}})
+    assert status_code == 200
+    dbid = data['datasets'][0]['id']
     payload = {'identifier': dbid}
-    response = session.post(f'{BASE_URL}/api/dataset/delete',
-                            data=json.dumps(payload))
+    _, status_code = make_request(session,
+                                  '/api/dataset/delete',
+                                  payload)
