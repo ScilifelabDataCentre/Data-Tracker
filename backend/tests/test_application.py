@@ -27,23 +27,23 @@ def dataset_for_tests():
                            'dataUrls': [{'url': 'Data Access URL', 'description': 'Description'}],
                            'owners': [{'email': 'user3@example.com'}]}}
 
-    _, status_code = make_request(session,
-                                  '/api/dataset/add',
-                                  payload)
+    make_request(session,
+                 '/api/dataset/add',
+                 payload)
 
-    data, status_code = make_request(session,
-                                     '/api/dataset/query',
-                                     {'query': {'title': 'A Unique Title'}})
+    data, _ = make_request(session,
+                           '/api/dataset/query',
+                           {'query': {'title': 'A Unique Title'}})
     ds_id = data['datasets'][0]['id']
 
     yield ds_id
 
     # cleanup
     payload = {'identifier': ds_id}
-    _, status_code = make_request(session,
-                                  '/api/dataset/delete',
-                                  payload)
-    
+    make_request(session,
+                 '/api/dataset/delete',
+                 payload)
+
 
 def make_request(session, url: str, data: dict = None) -> dict:
     """
