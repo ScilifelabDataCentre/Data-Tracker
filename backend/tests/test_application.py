@@ -779,7 +779,8 @@ def test_update_dataset_post(dataset_for_tests):
     ## bad requests
     for update_payload in ({'dataset': {'tags': [{'bad_tag': 'asd'}]}},
                            {'dat': ''},
-                           {'dataset': {'tags': 'asd'}}):
+                           {'dataset': {'tags': 'asd'}},
+                           {'dataset': {'bad_field': 'value'}}}):
         data, status_code = make_request(session,
                                          f'/api/dataset/{ds_id}/update',
                                          update_payload)
@@ -793,6 +794,18 @@ def test_update_dataset_post(dataset_for_tests):
     assert status_code == 404
     assert not data
 
+    # steward
+    as_user(session, 5)
+    update_payload = {'dataset': {'owners': [{'email': 'user1@example.com'}]}}
+    data, status_code = make_request(session,
+                                     f'/api/dataset/{ds_id}/update',
+                                     update_payload)
+    assert status_code == 200
+    assert not data
+    data, status_code = make_request(session, f'/api/dataset/{ds_id}')
+    assert status_code == 200
+    assert data['owners'][0]['name'] == 'A Name1'
+
     # admin
     as_user(session, 6)
     update_payload = {'dataset': {'owners': [{'email': 'user2@example.com'}]}}
@@ -801,7 +814,6 @@ def test_update_dataset_post(dataset_for_tests):
                                      update_payload)
     assert status_code == 200
     assert not data
-
     data, status_code = make_request(session, f'/api/dataset/{ds_id}')
     assert status_code == 200
     assert data['owners'][0]['name'] == 'A Name2'
