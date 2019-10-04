@@ -4,11 +4,12 @@ import json
 import os
 import requests
 
-settings = json.loads(open(f'{os.path.dirname(os.path.realpath(__file__))}/settings_tests.json').read())
-BASE_URL=f'{settings["host"]}:{settings["port"]}'
+curr_dir = os.path.realpath(__file__)
+settings = json.loads(open(f'{os.path.dirname(curr_dir)}/settings_tests.json').read())
+BASE_URL = f'{settings["host"]}:{settings["port"]}'
 
 
-def make_request(session, url: str, data: dict=None) -> dict:
+def make_request(session, url: str, data: dict = None) -> dict:
     """
     Helper method for using get/post to a url.
 
@@ -98,7 +99,7 @@ def test_add_dataset_get():
 
 def test_add_dataset_post():
     """Test AddDataset.post()"""
-    session = requests.Session()    
+    session = requests.Session()
     payload = {'dataset': {'title': 'An added Dataset1',
                            'description': 'Description of added dataset1',
                            'doi': 'A doi for added dataset1',
@@ -110,7 +111,7 @@ def test_add_dataset_post():
                                     {'title': 'Tag Title 5'}],
                            'publications': [{'identifier': 'Publication title1. Journal:Year'}],
                            'dataUrls': [{'description': 'Part I', 'url': 'Data url 1a'},
-                                         {'description': 'Part II', 'url': 'Data url 1b'}],
+                                        {'description': 'Part II', 'url': 'Data url 1b'}],
                            'owners': [{'email': 'user1@example.com'}],
                            'visible': True}}
 
@@ -163,7 +164,7 @@ def test_add_dataset_post():
                                      {'dataset': {'title': ''}})
     assert status_code == 400
     assert not data
-    
+
     # admin
     as_user(session, 6)
     payload['dataset']['title'] = 'An added Dataset2'
@@ -295,7 +296,7 @@ def test_delete_dataset_post():
                                      payload)
     assert status_code == 200
     assert not data
-    
+
     # not logged in: fail
     as_user(session, 0)
     data, status_code = make_request(session,
@@ -500,14 +501,14 @@ def test_get_dataset_get():
 
     data, status_code = make_request(session, '/api/dataset/3')
     assert status_code == 200
-    assert len(data['tags']) == 0
+    assert not data['tags']
     assert len(data['publications']) == 1
     assert data['publications'][0]['identifier'] == 'A publication2. Journal:2012'
 
     data, status_code = make_request(session, '/api/dataset/2')
     assert status_code == 200
-    assert len(data['dataUrls']) == 0
-    assert len(data['publications']) == 0
+    assert not data['dataUrls']
+    assert not data['publications']
 
 
     # owned by user
@@ -636,7 +637,7 @@ def test_update_dataset_get():
                             'dataUrls': [{'url': 'Data Access URL', 'description': 'Description'}],
                             'owners': [{'email': 'Owner email'}]}}
 
-    for user in (0,1):
+    for user in (0, 1):
         as_user(session, user)
         data, status_code = make_request(session, '/api/dataset/4/update')
         assert status_code == 403
@@ -647,7 +648,7 @@ def test_update_dataset_get():
         data, status_code = make_request(session, '/api/dataset/4/update')
         assert status_code == 200
         assert data == expected
-    
+
 
 def test_update_dataset_post():
     """Test UpdateDataset.post()"""
@@ -671,8 +672,8 @@ def test_update_dataset_post():
     assert status_code == 200
 
     data, status_code = make_request(session,
-                                  '/api/dataset/query',
-                                  {'query': {'title': 'A Unique Title'}})
+                                     '/api/dataset/query',
+                                     {'query': {'title': 'A Unique Title'}})
     assert status_code == 200
     ds_id = data['datasets'][0]['id']
 
@@ -727,8 +728,10 @@ def test_update_dataset_post():
         assert tag in tags
 
     update_payload = {'dataset': {'doi': 'new doi',
-                                  'dataUrls': [{'description': 'Some kinda data1', 'url': 'http://example.com/1'},
-                                               {'description': 'Some kinda data2', 'url': 'http://example.com/2'}]}}
+                                  'dataUrls': [{'description': 'Some kinda data1',
+                                                'url': 'http://example.com/1'},
+                                               {'description': 'Some kinda data2',
+                                                'url': 'http://example.com/2'}]}}
     data, status_code = make_request(session,
                                      f'/api/dataset/{ds_id}/update',
                                      update_payload)
@@ -775,7 +778,7 @@ def test_update_dataset_post():
                                      update_payload)
     assert status_code == 400
     assert not data
-    
+
     # cleanup
     data, status_code = make_request(session,
                                      '/api/dataset/query',
