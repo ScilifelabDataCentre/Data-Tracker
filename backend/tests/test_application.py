@@ -4,10 +4,46 @@ import json
 import os
 import requests
 
+import pytest
+
 curr_dir = os.path.realpath(__file__)
 settings = json.loads(open(f'{os.path.dirname(curr_dir)}/settings_tests.json').read())
 BASE_URL = f'{settings["host"]}:{settings["port"]}'
 
+@pytest.fixture
+def dataset_for_tests():
+    # prepare
+    session = requests.Session()
+    as_user(session, 5)
+    payload = {'dataset': {'title': 'A Unique Title',
+                           'description': 'Description',
+                           'doi': 'DOI',
+                           'creator': 'Creator',
+                           'contact': 'Contact',
+                           'dmp': 'Data Management Plan',
+                           'visible': True,
+                           'tags': [{'title': 'Tag1'}, {'title': 'Tag2'}],
+                           'publications': [{'identifier': 'Publication'}],
+                           'dataUrls': [{'url': 'Data Access URL', 'description': 'Description'}],
+                           'owners': [{'email': 'user3@example.com'}]}}
+
+    _, status_code = make_request(session,
+                                  '/api/dataset/add',
+                                  payload)
+
+    data, status_code = make_request(session,
+                                     '/api/dataset/query',
+                                     {'query': {'title': 'A Unique Title'}})
+    ds_id = data['datasets'][0]['id']
+
+    yield ds_id
+
+    # cleanup
+    payload = {'identifier': ds_id}
+    _, status_code = make_request(session,
+                                  '/api/dataset/delete',
+                                  payload)
+    
 
 def make_request(session, url: str, data: dict = None) -> dict:
     """
@@ -228,26 +264,28 @@ def test_countrylist_get():
     assert len(data['countries']) == 240
 
 
-def test_delete_dataset_get():
+def test_delete_dataset_get(dataset_for_tests):
     """Test DeleteDataset.get()"""
     session = requests.Session()
-    expected = {'identifier': 1}
+    expected = {'identifier': 9876543210}
 
-    # not logged in
-    as_user(session, 0)
-    data, status_code = make_request(session, '/api/dataset/delete')
-    assert status_code == 403
-    assert not data
-    # normal user
-    as_user(session, 1)
-    data, status_code = make_request(session, '/api/dataset/delete')
-    assert status_code == 403
-    assert not data
+    # not logged in/normal user
+    for user in (0, 1):
+        as_user(session, user)
+        data, status_code = make_request(session, '/api/dataset/delete')
+        assert status_code == 403
+        assert not data
+        data, status_code = make_request(session, '/api/dataset/4/delete')
+        assert status_code == 403
+        assert not data
     # steward
     as_user(session, 5)
     data, status_code = make_request(session, '/api/dataset/delete')
     assert status_code == 200
     assert data == expected
+    data, status_code = make_request(session, f'/api/dataset/{dataset_for_tests}/delete')
+    assert status_code == 200
+    assert not data
     # admin
     as_user(session, 6)
     data, status_code = make_request(session, '/api/dataset/delete')
@@ -650,32 +688,10 @@ def test_update_dataset_get():
         assert data == expected
 
 
-def test_update_dataset_post():
+def test_update_dataset_post(dataset_for_tests):
     """Test UpdateDataset.post()"""
+    ds_id = dataset_for_tests
     session = requests.Session()
-    payload = {'dataset': {'title': 'A Unique Title',
-                           'description': 'Description',
-                           'doi': 'DOI',
-                           'creator': 'Creator',
-                           'contact': 'Contact',
-                           'dmp': 'Data Management Plan',
-                           'visible': True,
-                           'tags': [{'title': 'Tag1'}, {'title': 'Tag2'}],
-                           'publications': [{'identifier': 'Publication'}],
-                           'dataUrls': [{'url': 'Data Access URL', 'description': 'Description'}],
-                           'owners': [{'email': 'user3@example.com'}]}}
-    # prepare
-    as_user(session, 5)
-    _, status_code = make_request(session,
-                                  '/api/dataset/add',
-                                  payload)
-    assert status_code == 200
-
-    data, status_code = make_request(session,
-                                     '/api/dataset/query',
-                                     {'query': {'title': 'A Unique Title'}})
-    assert status_code == 200
-    ds_id = data['datasets'][0]['id']
 
     # not logged in, normal user
     for user in (0, 1):
@@ -778,14 +794,3 @@ def test_update_dataset_post():
                                      update_payload)
     assert status_code == 400
     assert not data
-
-    # cleanup
-    data, status_code = make_request(session,
-                                     '/api/dataset/query',
-                                     {'query': {'title': 'New title'}})
-    assert status_code == 200
-    dbid = data['datasets'][0]['id']
-    payload = {'identifier': dbid}
-    _, status_code = make_request(session,
-                                  '/api/dataset/delete',
-                                  payload)

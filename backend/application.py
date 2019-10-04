@@ -146,12 +146,28 @@ class CountryList(handlers.UnsafeHandler):
 
 class DeleteDataset(handlers.StewardHandler):
     """Delete a dataset"""
-    def get(self):
-        """Data structure for POST."""
-        data = {'identifier': 1}
+    def get(self, ds_identifier: int = None):
+        """
+        Delete dataset or get data structure for POST.
+
+        Args:
+            ds_identifier (int): dataset identifier; if present the dataset will be deleted
+        """
+        if not ds_identifier:
+            data = {'identifier': 9876543210}
+        else:
+            try:
+                dataset = db.Dataset.get_by_id(ds_identifier)
+            except db.Dataset.DoesNotExist:
+                logging.info('Bad request (dataset does not exist)')
+                self.send_error(status_code=400, reason="Dataset does not exist")
+                return
+            dataset.delete_instance()
+            data = None
         self.finish(data)
 
-    def post(self):
+
+    def post(self, ds_identifier: int = None):
         """
         Delete the dataset with the provided id.
 
@@ -160,7 +176,11 @@ class DeleteDataset(handlers.StewardHandler):
         {"identifier": <ds_identifier> (int)}
         ```
         """
-        data = tornado.escape.json_decode(self.request.body)
+        if ds_identifier:
+            data = {'identifier': ds_identifier}
+        else:
+            data = tornado.escape.json_decode(self.request.body)
+
         try:
             identifier = int(data['identifier'])
         except ValueError:
@@ -168,7 +188,7 @@ class DeleteDataset(handlers.StewardHandler):
             self.send_error(status_code=400, reason="The identifier should be an integer")
             return
         try:
-            dataset = db.Dataset.get(db.Dataset.id == identifier)
+            dataset = db.Dataset.get_by_id(identifier)
         except db.Dataset.DoesNotExist:
             logging.info('AddDataset: bad request (dataset does not exist)')
             self.send_error(status_code=400, reason="Dataset does not exist")
