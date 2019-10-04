@@ -5,13 +5,61 @@ import os
 import requests
 
 settings = json.loads(open(f'{os.path.dirname(os.path.realpath(__file__))}/settings_tests.json').read())
-BASE_URL=f"{settings['host']}:{settings['port']}"
+BASE_URL=f'{settings["host"]}:{settings["port"]}'
+
+
+def make_request(session, url: str, data: dict=None) -> dict:
+    """
+    Helper method for using get/post to a url.
+
+    Args:
+        session: A requests.Session()
+        url: The url to get without {BASE_URL} prefix (but with leading /)
+        data: The data to POST; no data means GET
+
+    Returns:
+        tuple: (data: dict, status_code: int)
+    """
+    if data:
+        response = session.post(f'{BASE_URL}{url}',
+                                data=json.dumps(data))
+    else:
+        response = session.get(f'{BASE_URL}{url}')
+
+    if response.text:
+        print(f'stuff: {response.text}')
+        data = json.loads(response.text)
+    else:
+        data = {}
+    return (data, response.status_code)
+
+
+def as_user(session, user_id: int) -> int:
+    """
+    Helper method to log in as requested user.
+
+    Session changed in-place.
+
+    Args:
+        session: a requests.Session()
+        user_id: the id of the user, 0 means log out
+
+    Returns:
+        int: status_code
+    """
+    if user_id != 0:
+        code = session.get(f'{BASE_URL}/developer/login?userid={user_id}').status_code
+        session.headers['X-Xsrftoken'] = session.cookies['_xsrf']
+    else:
+        code = session.get(f'{BASE_URL}/logout').status_code
+        session.get(f'{BASE_URL}/api/datasets')  # reset cookies
+        session.headers['X-Xsrftoken'] = session.cookies['_xsrf']
+    return code
 
 
 def test_add_dataset_get():
     """Test AddDataset.get()"""
     session = requests.Session()
-    session.get(f'{BASE_URL}/api/datasets')
     expected = {'dataset': {'title': 'Title',
                             'description': 'Description',
                             'doi': 'DOI',
@@ -25,23 +73,27 @@ def test_add_dataset_get():
                             'owners': [{'email': 'Owner email'}]}}
 
     # not logged in
-    response = session.get(f'{BASE_URL}/api/dataset/add')
-    assert response.status_code == 403
-    assert not response.text
+    as_user(session, 0)
+    data, status_code = make_request(session, '/api/dataset/add')
+    assert status_code == 403
+    assert not data
+
     # normal user
-    session.get(f'{BASE_URL}/developer/login?userid=1')
-    response = session.get(f'{BASE_URL}/api/dataset/add')
-    assert response.status_code == 403
-    assert not response.text
+    as_user(session, 1)
+    data, status_code = make_request(session, '/api/dataset/add')
+    assert status_code == 403
+    assert not data
+
     # steward
-    session.get(f'{BASE_URL}/developer/login?userid=5')
-    response = session.get(f'{BASE_URL}/api/dataset/add')
-    data = json.loads(response.text)
+    as_user(session, 5)
+    data, status_code = make_request(session, '/api/dataset/add')
+    assert status_code == 200
     assert data == expected
+
     # admin
-    session.get(f'{BASE_URL}/developer/login?userid=6')
-    response = session.get(f'{BASE_URL}/api/dataset/add')
-    data = json.loads(response.text)
+    as_user(session, 5)
+    data, status_code = make_request(session, '/api/dataset/add')
+    assert status_code == 200
     assert data == expected
 
 
@@ -64,18 +116,22 @@ def test_add_dataset_post():
                            'visible': True}}
 
     # steward
-    session.get(f'{BASE_URL}/developer/login?userid=5')
-    session.headers['X-Xsrftoken'] = session.cookies['_xsrf']
+    as_user(session, 5)
+    data, status_code = make_request(session,
+                                     '/api/dataset/add',
+                                     payload)
+    assert status_code == 200
+    assert not data
 
-    response = session.post(f'{BASE_URL}/api/dataset/add',
-                                  data=json.dumps(payload))
-    assert response.status_code == 200
-
-    response = session.post(f'{BASE_URL}/api/dataset/query',
-                            data=json.dumps({'query': {'title': payload['dataset']['title']}}))
-    dbid = json.loads(response.text)['datasets'][0]['id']
-    response = session.get(f'{BASE_URL}/api/dataset/{dbid}')
-    data = json.loads(response.text)
+    data, status_code = make_request(session,
+                                     '/api/dataset/query',
+                                     {'query': {'title': payload['dataset']['title']}})
+    assert status_code == 200
+    print(data)
+    dbid = data['datasets'][0]['id']
+    print(dbid)
+    data, status_code = make_request(session, f'/api/dataset/{dbid}')
+    assert status_code == 200
     for header in payload['dataset']:
         if header == 'owners':
             assert sorted([owner['name'] for owner in data[header]]) == ['A Name1']
@@ -95,35 +151,41 @@ def test_add_dataset_post():
                 assert data[header] == payload['dataset'][header]
 
     ## bad requests
-    response = session.post(f'{BASE_URL}/api/dataset/add',
-                                  data=json.dumps({'bad_request': None}))
-    assert response.status_code == 400
-    assert not response.text
-
-    response = session.post(f'{BASE_URL}/api/dataset/add',
-                                  data=json.dumps({'dataset': {'title_missing': None}}))
-    assert response.status_code == 400
-    assert not response.text
-
-    response = session.post(f'{BASE_URL}/api/dataset/add',
-                                  data=json.dumps({'dataset': {'title': ''}}))
-    assert response.status_code == 400
-    assert not response.text
+    data, status_code = make_request(session,
+                                     '/api/dataset/add',
+                                     {'bad_request': None})
+    assert status_code == 400
+    assert not data
+    data, status_code = make_request(session,
+                                     '/api/dataset/add',
+                                     {'dataset': {'title_missing': None}})
+    assert status_code == 400
+    assert not data
+    data, status_code = make_request(session,
+                                     '/api/dataset/add',
+                                     {'dataset': {'title': ''}})
+    assert status_code == 400
+    assert not data
     
     # admin
+    as_user(session, 6)
     payload['dataset']['title'] = 'An added Dataset2'
     payload['dataset']['owners'].append({'email': 'user2@example.com'})
 
-    session.get(f'{BASE_URL}/developer/login?userid=6')
-    session.headers['X-Xsrftoken'] = session.cookies['_xsrf']
-    response = session.post(f'{BASE_URL}/api/dataset/add',
-                            data=json.dumps(payload))
-    assert response.status_code == 200
-    response = session.post(f'{BASE_URL}/api/dataset/query',
-                            data=json.dumps({'query': {'title': payload['dataset']['title']}}))
-    dbid = json.loads(response.text)['datasets'][0]['id']
-    response = session.get(f'{BASE_URL}/api/dataset/{dbid}')
-    data = json.loads(response.text)
+    data, status_code = make_request(session,
+                                     '/api/dataset/add',
+                                     payload)
+    assert status_code == 200
+    assert not data
+
+    data, status_code = make_request(session,
+                                     '/api/dataset/query',
+                                     {'query': {'title': payload['dataset']['title']}})
+    assert status_code == 200
+    dbid = data['datasets'][0]['id']
+    data, status_code = make_request(session,
+                                     f'/api/dataset/{dbid}')
+    assert status_code == 200
     for header in payload['dataset']:
         if header == 'owners':
             assert sorted([owner['name'] for owner in data[header]]) == ['A Name1', 'A Name2']
@@ -143,21 +205,20 @@ def test_add_dataset_post():
                 assert data[header] == payload['dataset'][header]
 
     # not logged in: fail
-    session.get(f'{BASE_URL}/logout')
-    session.get(f'{BASE_URL}/api/dataset/1')
-    session.headers['X-Xsrftoken'] = session.cookies['_xsrf']
-    response = session.post(f'{BASE_URL}/api/dataset/add',
-                            data=json.dumps(payload))
-    assert response.status_code == 403
-    assert not response.text
+    as_user(session, 0)
+    data, status_code = make_request(session,
+                                     f'/api/dataset/add',
+                                     payload)
+    assert status_code == 403
+    assert not data
 
     # normal user: fail
-    session.get(f'{BASE_URL}/developer/login?userid=1')
-    session.headers['X-Xsrftoken'] = session.cookies['_xsrf']
-    response = session.post(f'{BASE_URL}/api/dataset/add',
-                            data=json.dumps(payload))
-    assert response.status_code == 403
-    assert not response.text
+    as_user(session, 1)
+    data, status_code = make_request(session,
+                                     f'/api/dataset/add',
+                                     payload)
+    assert status_code == 403
+    assert not data
 
 
 def test_countrylist_get():
