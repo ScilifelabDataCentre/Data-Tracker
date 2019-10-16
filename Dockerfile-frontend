@@ -4,6 +4,5 @@ ADD . /code
 WORKDIR /code/frontend
 
 RUN npm install -g yarn
-RUN yarn install
 
 CMD ["yarn", "run", "serve"]
