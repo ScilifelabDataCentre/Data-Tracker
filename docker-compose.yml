@@ -9,16 +9,34 @@ services:
       - ./postgres-data:/var/lib/postgresql/data
     ports:
       - 5433:5432
-  web:
+  backend:
     build:
       context: ./
       dockerfile: Dockerfile-backend
     depends_on:
       - db
-    ports:
-      - 5000:5000
     restart: on-failure
     volumes:
       - type: bind
         source: .
         target: /code
+  frontend:
+    build:
+      context: ./
+      dockerfile: Dockerfile-frontend
+    depends_on:
+      - backend
+    restart: on-failure
+    volumes:
+      - type: bind
+        source: .
+        target: /code
+  proxy:
+    build:
+      context: ./
+      dockerfile: Dockerfile-proxy
+    ports:
+      - 5000:80
+    depends_on:
+      - backend
+      - frontend
