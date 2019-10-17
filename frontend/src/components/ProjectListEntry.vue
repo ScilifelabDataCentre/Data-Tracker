@@ -1,6 +1,8 @@
 <template>
 <div class="project-list-entry">
-  {{ projectData.title }}
+  <router-link :to="`/project/${projectData.id}`">
+    <span class="project-list-entry-title">{{ projectData.title }}</span>
+  </router-link>
 </div>
 </template>
 
