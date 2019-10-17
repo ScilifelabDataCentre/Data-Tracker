@@ -1,5 +1,5 @@
 <template>
-<div class="project-list">
+<div class="project-list-entry">
   {{ projectData.title }}
 </div>
 </template>
