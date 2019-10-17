@@ -5,28 +5,32 @@
   </div>
   <div v-if="projectInfo != null">
     <h1>{{ projectInfo.title }}</h1>
-    <p class="description">{{ projectInfo.description }}</p>
-    <p class="doi"><span class="field-header">DOI: </span>{{ projectInfo.doi }}</p>
-    <p class="owners">
+    <div class="description">{{ projectInfo.description }}</div>
+    <div class="doi"><span class="field-header">DOI: </span>{{ projectInfo.doi }}</div>
+    <div class="owners">
       <span class="field-header">Owners: </span>
       <div class="owner" v-for="owner in projectInfo.owners" :key="owner.name">
         {{ owner.name }}
       </div>
-    <p class="creator"><span class="field-header">Data creator: </span>{{ projectInfo.creator }}</p>
-    <p class="tags">
+    </div>
+    <div class="creator"><span class="field-header">Data creator: </span>{{ projectInfo.creator }}</div>
+    <div class="tags">
       <span class="field-header">Tags: </span>
       <tag-entry v-for="tag in projectInfo.tags" :key="tag.id" :tagData="tag"></tag-entry>
-    </p>
-    <p class="dmp">
+    </div>
+    <div class="dmp">
       <span class="field-header">Data management plan: </span>{{ projectInfo.dmp }}
-    </p>
-    <p class="publications">
+    </div>
+    <div class="publications">
       <span class="field-header">Publications: </span>
-    </p>
-    <p>
+      <div class="publication" v-for="pub in projectInfo.publications" :key="pub.identifier">
+        <span>{{ pub.identifier }}</span>
+      </div>
+    </div>
+    <div class="data-access">
       <span class="field-header">Data access URLs: </span>
       <url-entry v-for="url in projectInfo.dataUrls" :key="url.id" :urlData="url"></url-entry>
-    </p>
+    </div>
   </div>
 </div>
 </template>
