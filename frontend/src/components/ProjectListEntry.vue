@@ -1,12 +1,13 @@
 <template>
-<div class="start-page">
-  The Project Portal start page.
+<div class="project-list">
+  {{ projectData.title }}
 </div>
 </template>
 
 <script>
 export default {
-  name: 'StartPageComponent',
+  name: 'ProjectListEntry',
+  props: ['projectData'],
   data () {
     return {
     }
