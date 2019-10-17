@@ -309,17 +309,18 @@ class GetDataset(handlers.UnsafeHandler):
         self.finish(dataset)
 
 
-class GetUser(handlers.UnsafeHandler):
+class GetCurrentUser(handlers.UnsafeHandler):
     """Retrieve basic information about the current user."""
     def get(self):
         user = self.current_user
 
-        ret = {'user': None, 'email': None}
+        ret = {'user': None, 'email': None, 'permission': None}
         if user:
             ret = {'user': user.name,
                    'email': user.email,
                    'affiliation': user.affiliation,
-                   'country': user.country}
+                   'country': user.country,
+                   'permission': user.permission}
 
         self.finish(ret)
 

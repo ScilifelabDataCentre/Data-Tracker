@@ -42,7 +42,7 @@ class Application(tornado.web.Application):
             # User-related methods
             (r"/api/countries", application.CountryList),
             (r"/api/users", application.ListUsers),
-            (r"/api/users/me", application.GetUser),
+            (r"/api/users/me", application.GetCurrentUser),
             # Dataset methods
             (r"/api/datasets", application.ListDatasets),
             (r"/api/dataset/add", application.AddDataset),

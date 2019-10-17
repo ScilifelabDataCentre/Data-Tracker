@@ -591,24 +591,26 @@ def test_get_dataset_get():
     assert not data
 
 
-def test_get_user_get():
-    """Test GetUser.get()"""
+def test_get_current_user_get():
+    """Test GetCurrentUser.get()"""
     session = requests.Session()
     # not logged in
     as_user(session, 0)
     data, status_code = make_request(session, '/api/users/me')
     assert status_code == 200
-    assert data == {"user": None,
-                    "email": None}
+    assert data == {'user': None,
+                    'email': None,
+                    'permission': None}
 
     # logged in user
     as_user(session, 4)
     data, status_code = make_request(session, '/api/users/me')
     assert status_code == 200
-    assert data == {"user": "A Name4",
-                    "email": "user4@example.com",
-                    "affiliation": "A University4",
-                    "country": "A Country4"}
+    assert data == {'user': 'A Name4',
+                    'email': 'user4@example.com',
+                    'affiliation': 'A University4',
+                    'country': 'A Country4',
+                    'permission': 'Standard'}
 
 
 def test_list_datasets_get():
