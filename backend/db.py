@@ -43,13 +43,25 @@ class EnumField(Field):
         return value
 
 
+class AuthKey(BaseModel):
+    '''
+    A dataset.
+    '''
+    class Meta:
+        table_name = 'auth_keys'
+        schema = 'users'
+
+    system_name = CharField(null=False)
+    key_value = CharField(null=False)
+
+
 class Dataset(BaseModel):
     '''
     A dataset.
     '''
     class Meta:
         table_name = 'datasets'
-        schema = 'datasets'
+        schema = 'project_data'
 
     title = CharField(null=False)
     description = TextField(null=True)
@@ -66,7 +78,7 @@ class DataUrl(BaseModel):
     '''
     class Meta:
         table_name = 'data_urls'
-        schema = 'datasets'
+        schema = 'project_data'
 
     description = CharField()
     url = CharField()
@@ -78,7 +90,7 @@ class Publication(BaseModel):
     '''
     class Meta:
         table_name = 'publications'
-        schema = 'datasets'
+        schema = 'project_data'
 
     identifier = CharField()
 
@@ -89,7 +101,7 @@ class Tag(BaseModel):
     '''
     class Meta:
         table_name = 'tags'
-        schema = 'datasets'
+        schema = 'project_data'
 
     title = CharField()
 
@@ -117,30 +129,17 @@ class User(BaseModel):
 class DatasetDataUrl(BaseModel):
     class Meta:
         table_name = 'dataset_data_url_map'
-        schema = 'datasets'
+        schema = 'project_data'
         primary_key = CompositeKey('dataset', 'data_url')
 
     dataset = ForeignKeyField(Dataset, column_name='dataset_id', on_delete='CASCADE')
     data_url = ForeignKeyField(DataUrl, column_name='data_url_id')
 
 
-class DatasetOwner(BaseModel):
-    """
-    Dataset owners (users)
-    """
-    class Meta:
-        table_name = 'dataset_owners'
-        schema = 'users'
-        primary_key = CompositeKey('dataset', 'user')
-
-    dataset = ForeignKeyField(Dataset, column_name='dataset_id', on_delete='CASCADE')
-    user = ForeignKeyField(User, column_name='user_id')
-
-
 class DatasetPublication(BaseModel):
     class Meta:
         table_name = 'dataset_publication_map'
-        schema = 'datasets'
+        schema = 'project_data'
         primary_key = CompositeKey('dataset', 'publication')
 
     dataset = ForeignKeyField(Dataset, column_name='dataset_id', on_delete='CASCADE')
@@ -150,11 +149,34 @@ class DatasetPublication(BaseModel):
 class DatasetTag(BaseModel):
     class Meta:
         table_name = 'dataset_tag_map'
-        schema = 'datasets'
+        schema = 'project_data'
         primary_key = CompositeKey('dataset', 'tag')
 
     dataset = ForeignKeyField(Dataset, column_name='dataset_id', on_delete='CASCADE')
     tag = ForeignKeyField(Tag, column_name='tag_id')
+
+
+class ProjectOwner(BaseModel):
+    """
+    Project owners (users)
+    """
+    class Meta:
+        table_name = 'project_owners'
+        schema = 'users'
+        primary_key = CompositeKey('dataset', 'user')
+
+    dataset = ForeignKeyField(Dataset, column_name='dataset_id', on_delete='CASCADE')
+    user = ForeignKeyField(User, column_name='user_id')
+
+
+class UserAuthKey(BaseModel):
+    class Meta:
+        table_name = 'user_auth_key_map'
+        schema = 'users'
+        primary_key = CompositeKey('user', 'auth_key')
+
+    user = ForeignKeyField(User, column_name='user_id', on_delete='CASCADE')
+    auth_key = ForeignKeyField(AuthKey, column_name='auth_key_id')
 
 
 def build_dict_from_row(row) -> dict:
