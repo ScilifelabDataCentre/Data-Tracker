@@ -20,7 +20,7 @@ SET row_security = off;
 -- Data for Name: data_urls; Type: TABLE DATA; Schema: datasets; Owner: postgres
 --
 
-COPY datasets.data_urls (id, url, description) FROM stdin;
+COPY project_data.data_urls (id, url, description) FROM stdin;
 1	https:www.example.com/url1	URL description 1
 2	https:www.example.com/url2	URL description 2
 3	https:www.example.com/url3	URL description 3
@@ -39,21 +39,30 @@ COPY datasets.data_urls (id, url, description) FROM stdin;
 -- Data for Name: datasets; Type: TABLE DATA; Schema: datasets; Owner: postgres
 --
 
-COPY datasets.datasets (id, title, description, doi, creator, contact, dmp, visible) FROM stdin;
-1	Dataset title 1	Dataset 1 description	doi.portal.1	A facility 1	contact1@example.com	dmp url 1	t
-2	Dataset title 2	Dataset 2 description	doi.portal.2	A facility 2	contact2@example.com	\N	t
-3	Dataset title 3	Dataset 3 description	doi.portal.3	A facility 3	contact3@example.com	dmp url 3	t
-4	Dataset title 4	Dataset 4 description	doi.portal.4	A facility 4	contact4@example.com	dmp url 4	f
-5	Dataset title 5	Dataset 5 description	doi.portal.5	A facility 5	contact5@example.com	\N	f
-6	Dataset title 6	Dataset 6 description	doi.portal.6	A facility 6	contact6@example.com	\N	t
+COPY project_data.datasets (id, title, description, doi, creator, dmp, visible) FROM stdin;
+1	Dataset title 1	Dataset 1 description	doi.portal.1	A facility 1	dmp url 1	t
+2	Dataset title 2	Dataset 2 description	doi.portal.2	A facility 2	\N	t
+3	Dataset title 3	Dataset 3 description	doi.portal.3	A facility 3	dmp url 3	t
+4	Dataset title 4	Dataset 4 description	doi.portal.4	A facility 4	dmp url 4	f
+5	Dataset title 5	Dataset 5 description	doi.portal.5	A facility 5	\N	f
+6	Dataset title 6	Dataset 6 description	doi.portal.6	A facility 6	\N	t
 \.
 
+
+COPY project_data.projects (id, title, description, contact) FROM stdin;
+1	Project title 1	Project 1 description	Contact@place1
+2	Project title 2	Project 2 description	Contact@place2
+3	Project title 3	Project 3 description	Contact@place3
+4	Project title 4	Project 4 description	Contact@place4
+5	Project title 5	Project 5 description	Contact@place5
+6	Project title 6	Project 6 description	Contact@place6
+\.
 
 --
 -- Data for Name: dataset_data_url_map; Type: TABLE DATA; Schema: datasets; Owner: postgres
 --
 
-COPY datasets.dataset_data_url_map (dataset_id, data_url_id) FROM stdin;
+COPY project_data.dataset_data_url_map (dataset_id, data_url_id) FROM stdin;
 1	1
 1	2
 3	3
@@ -72,7 +81,7 @@ COPY datasets.dataset_data_url_map (dataset_id, data_url_id) FROM stdin;
 -- Data for Name: publications; Type: TABLE DATA; Schema: datasets; Owner: postgres
 --
 
-COPY datasets.publications (id, identifier) FROM stdin;
+COPY project_data.publications (id, identifier) FROM stdin;
 1	A publication1. Journal:2011
 2	A publication2. Journal:2012
 3	A publication3. Journal:2013
@@ -83,7 +92,7 @@ COPY datasets.publications (id, identifier) FROM stdin;
 -- Data for Name: dataset_publication_map; Type: TABLE DATA; Schema: datasets; Owner: postgres
 --
 
-COPY datasets.dataset_publication_map (dataset_id, publication_id) FROM stdin;
+COPY project_data.dataset_publication_map (dataset_id, publication_id) FROM stdin;
 1	1
 3	2
 5	3
@@ -94,7 +103,7 @@ COPY datasets.dataset_publication_map (dataset_id, publication_id) FROM stdin;
 -- Data for Name: tags; Type: TABLE DATA; Schema: datasets; Owner: postgres
 --
 
-COPY datasets.tags (id, title) FROM stdin;
+COPY project_data.tags (id, title) FROM stdin;
 1	Tag Title 1
 2	Tag Title 2
 3	Tag Title 3
@@ -112,7 +121,7 @@ COPY datasets.tags (id, title) FROM stdin;
 -- Data for Name: dataset_tag_map; Type: TABLE DATA; Schema: datasets; Owner: postgres
 --
 
-COPY datasets.dataset_tag_map (dataset_id, tag_id) FROM stdin;
+COPY project_data.dataset_tag_map (dataset_id, tag_id) FROM stdin;
 1	2
 1	3
 1	4
@@ -149,7 +158,7 @@ COPY users.users (id, given_name, email, affiliation, country, auth_identity, pe
 -- Data for Name: dataset_owners; Type: TABLE DATA; Schema: users; Owner: postgres
 --
 
-COPY users.dataset_owners (dataset_id, user_id) FROM stdin;
+COPY users.project_owners (project_id, user_id) FROM stdin;
 1	1
 1	2
 3	3
@@ -160,32 +169,47 @@ COPY users.dataset_owners (dataset_id, user_id) FROM stdin;
 \.
 
 
+
+COPY users.auth_keys (id, system_name, key_value) FROM stdin;
+1	Order Portal	01234556789ABCDEF
+2	Order Portal	1234556789ABCDEF0
+\.
+
+COPY users.user_auth_key_map (user_id, authkey_id) FROM stdin;
+1	1
+2	2
+\.
+
+
 --
 -- Name: data_urls_id_seq; Type: SEQUENCE SET; Schema: datasets; Owner: postgres
 --
 
-SELECT pg_catalog.setval('datasets.data_urls_id_seq', 11, true);
+SELECT pg_catalog.setval('project_data.data_urls_id_seq', 11, true);
+
+
+SELECT pg_catalog.setval('project_data.auth_keys_id_seq', 2, true);
 
 
 --
 -- Name: datasets_id_seq; Type: SEQUENCE SET; Schema: datasets; Owner: postgres
 --
 
-SELECT pg_catalog.setval('datasets.datasets_id_seq', 6, true);
+SELECT pg_catalog.setval('project_data.datasets_id_seq', 6, true);
 
 
 --
 -- Name: publications_id_seq; Type: SEQUENCE SET; Schema: datasets; Owner: postgres
 --
 
-SELECT pg_catalog.setval('datasets.publications_id_seq', 3, true);
+SELECT pg_catalog.setval('project_data.publications_id_seq', 3, true);
 
 
 --
 -- Name: tags_id_seq; Type: SEQUENCE SET; Schema: datasets; Owner: postgres
 --
 
-SELECT pg_catalog.setval('datasets.tags_id_seq', 10, true);
+SELECT pg_catalog.setval('project_data.tags_id_seq', 10, true);
 
 
 --

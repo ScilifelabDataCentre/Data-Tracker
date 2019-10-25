@@ -25,11 +25,11 @@ CREATE TABLE IF NOT EXISTS users.auth_keys (
 CREATE TABLE IF NOT EXISTS users.user_auth_key_map (
     user_id         integer                 NOT NULL REFERENCES users.users ON DELETE CASCADE,
     authkey_id      integer                 NOT NULL REFERENCES users.authkeys,
-    PRIMARY KEY(dataset_id, user_id)
+    PRIMARY KEY(authkey_id_id, user_id)
 );
 
 CREATE TABLE IF NOT EXISTS users.project_owners (
-    dataset_id      integer                 NOT NULL REFERENCES datasets.datasets ON DELETE CASCADE,
+    project_id      integer                 NOT NULL REFERENCES project_data.datasets ON DELETE CASCADE,
     user_id         integer                 NOT NULL REFERENCES users.users,
     PRIMARY KEY(dataset_id, user_id)
 );
