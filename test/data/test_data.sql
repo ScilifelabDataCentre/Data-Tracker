@@ -188,7 +188,7 @@ COPY users.user_auth_key_map (user_id, authkey_id) FROM stdin;
 SELECT pg_catalog.setval('project_data.data_urls_id_seq', 11, true);
 
 
-SELECT pg_catalog.setval('project_data.auth_keys_id_seq', 2, true);
+SELECT pg_catalog.setval('users.auth_keys_id_seq', 2, true);
 
 
 --
