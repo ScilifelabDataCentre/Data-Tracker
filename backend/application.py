@@ -344,6 +344,15 @@ class ListDatasets(handlers.UnsafeHandler):
         self.finish({'datasets': ret})
 
 
+class ListProjects(handlers.UnsafeHandler):
+    def get(self):
+        ret = list(db.Project
+                   .select()
+                   .dicts())
+
+        self.finish({'projects': ret})
+
+
 class ListUsers(handlers.AdminHandler):
     """Retrieve a list of all users, including permissions etc."""
     def get(self):

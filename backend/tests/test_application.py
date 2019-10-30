@@ -650,6 +650,16 @@ def test_list_datasets_get():
     assert {"id": 4, "title": "Dataset title 4"} in data['datasets']
 
 
+def test_list_projects_get():
+    """Test ListProjects.get()"""
+    session = requests.Session()
+    as_user(session, 0)
+    data, status_code = make_request(session, '/api/projects')
+    assert status_code == 200
+    assert len(data['projects']) == 6
+    assert data['projects'][0]['title'] == f"Dataset title {data['projects'][0]['id']}"
+
+
 def test_list_user_get():
     """Test ListUser.get()"""
     session = requests.Session()
