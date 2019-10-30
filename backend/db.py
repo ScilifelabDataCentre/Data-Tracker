@@ -67,7 +67,6 @@ class Dataset(BaseModel):
     description = TextField(null=True)
     doi = CharField(null=True)
     creator = CharField(null=True)
-    contact = CharField(null=True)
     dmp = CharField(null=True)
     visible = BooleanField(null=False, default=True)
 
@@ -82,6 +81,19 @@ class DataUrl(BaseModel):
 
     description = CharField()
     url = CharField()
+
+
+class Project(BaseModel):
+    '''
+    A project.
+    '''
+    class Meta:
+        table_name = 'projects'
+        schema = 'project_data'
+
+    title = CharField(null=False)
+    description = TextField(null=True)
+    contact = CharField(null=True)
 
 
 class Publication(BaseModel):
@@ -163,9 +175,9 @@ class ProjectOwner(BaseModel):
     class Meta:
         table_name = 'project_owners'
         schema = 'users'
-        primary_key = CompositeKey('dataset', 'user')
+        primary_key = CompositeKey('projet', 'user')
 
-    dataset = ForeignKeyField(Dataset, column_name='dataset_id', on_delete='CASCADE')
+    project = ForeignKeyField(Dataset, column_name='project_id', on_delete='CASCADE')
     user = ForeignKeyField(User, column_name='user_id')
 
 
@@ -176,7 +188,7 @@ class UserAuthKey(BaseModel):
         primary_key = CompositeKey('user', 'auth_key')
 
     user = ForeignKeyField(User, column_name='user_id', on_delete='CASCADE')
-    auth_key = ForeignKeyField(AuthKey, column_name='auth_key_id')
+    auth_key = ForeignKeyField(AuthKey, column_name='auth_key_id', on_delete='CASCADE')
 
 
 def build_dict_from_row(row) -> dict:
