@@ -39,13 +39,13 @@ COPY project_data.data_urls (id, url, description) FROM stdin;
 -- Data for Name: datasets; Type: TABLE DATA; Schema: datasets; Owner: postgres
 --
 
-COPY project_data.datasets (id, title, description, doi, creator, dmp, visible) FROM stdin;
-1	Dataset title 1	Dataset 1 description	doi.portal.1	A facility 1	dmp url 1	t
-2	Dataset title 2	Dataset 2 description	doi.portal.2	A facility 2	\N	t
-3	Dataset title 3	Dataset 3 description	doi.portal.3	A facility 3	dmp url 3	t
-4	Dataset title 4	Dataset 4 description	doi.portal.4	A facility 4	dmp url 4	f
-5	Dataset title 5	Dataset 5 description	doi.portal.5	A facility 5	\N	f
-6	Dataset title 6	Dataset 6 description	doi.portal.6	A facility 6	\N	t
+COPY project_data.datasets (id, title, description, doi, creator, dmp) FROM stdin;
+1	Dataset title 1	Dataset 1 description	doi.portal.1	A facility 1	dmp url 1
+2	Dataset title 2	Dataset 2 description	doi.portal.2	A facility 2	\N
+3	Dataset title 3	Dataset 3 description	doi.portal.3	A facility 3	dmp url 3
+4	Dataset title 4	Dataset 4 description	doi.portal.4	A facility 4	dmp url 4
+5	Dataset title 5	Dataset 5 description	doi.portal.5	A facility 5	\N
+6	Dataset title 6	Dataset 6 description	doi.portal.6	A facility 6	\N
 \.
 
 

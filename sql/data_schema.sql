@@ -6,8 +6,7 @@ CREATE TABLE IF NOT EXISTS project_data.datasets (
     description     text                    DEFAULT NULL,
     doi             varchar(60)             DEFAULT NULL,
     creator         varchar(50)             DEFAULT NULL,
-    dmp             varchar(100)            DEFAULT NULL,
-    visible         boolean                 NOT NULL
+    dmp             varchar(100)            DEFAULT NULL
 );
 
 CREATE TABLE IF NOT EXISTS project_data.data_urls (
@@ -18,7 +17,7 @@ CREATE TABLE IF NOT EXISTS project_data.data_urls (
 
 CREATE TABLE IF NOT EXISTS project_data.dataset_data_url_map (
     dataset_id      integer                 NOT NULL REFERENCES project_data.datasets ON DELETE CASCADE,
-    data_url_id     integer                 NOT NULL REFERENCES project_data.data_urls,
+    data_url_id     integer                 NOT NULL REFERENCES project_data.data_urls ON DELETE CASCADE,
     PRIMARY KEY(dataset_id, data_url_id)
 );
 
@@ -30,7 +29,7 @@ CREATE TABLE IF NOT EXISTS project_data.projects (
 );
 
 CREATE TABLE IF NOT EXISTS project_data.project_dataset_map (
-    project_id      integer                 NOT NULL REFERENCES project_data.projects,
+    project_id      integer                 NOT NULL REFERENCES project_data.projects ON DELETE CASCADE,
     dataset_id      integer                 NOT NULL REFERENCES project_data.datasets ON DELETE CASCADE,
     PRIMARY KEY(dataset_id, project_id)
 );
@@ -42,7 +41,7 @@ CREATE TABLE IF NOT EXISTS project_data.publications (
 
 CREATE TABLE IF NOT EXISTS project_data.dataset_publication_map (
     dataset_id      integer                 NOT NULL REFERENCES project_data.datasets ON DELETE CASCADE,
-    publication_id  integer                 NOT NULL REFERENCES project_data.publications,
+    publication_id  integer                 NOT NULL REFERENCES project_data.publications ON DELETE CASCADE,
     PRIMARY KEY(dataset_id, publication_id)
 );
 
@@ -53,7 +52,7 @@ CREATE TABLE IF NOT EXISTS project_data.tags (
 
 CREATE TABLE IF NOT EXISTS project_data.dataset_tag_map (
     dataset_id      integer                 NOT NULL REFERENCES project_data.datasets ON DELETE CASCADE,
-    tag_id          integer                 NOT NULL REFERENCES project_data.tags,
+    tag_id          integer                 NOT NULL REFERENCES project_data.tags ON DELETE CASCADE,
     PRIMARY KEY(dataset_id, tag_id)
 );
 

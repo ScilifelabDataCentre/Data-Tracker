@@ -68,7 +68,6 @@ class Dataset(BaseModel):
     doi = CharField(null=True)
     creator = CharField(null=True)
     dmp = CharField(null=True)
-    visible = BooleanField(null=False, default=True)
 
 
 class DataUrl(BaseModel):
