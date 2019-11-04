@@ -19,21 +19,22 @@ def dataset_for_tests():
                            'description': 'Description',
                            'doi': 'DOI',
                            'creator': 'Creator',
-                           'contact': 'Contact',
                            'dmp': 'Data Management Plan',
-                           'visible': True,
                            'tags': [{'title': 'Tag1'}, {'title': 'Tag2'}],
                            'publications': [{'identifier': 'Publication'}],
                            'dataUrls': [{'url': 'Data Access URL', 'description': 'Description'}],
-                           'owners': [{'email': 'user3@example.com'}]}}
+                           'project': 2}}
 
-    make_request(session,
-                 '/api/dataset/add',
-                 payload)
+    _ , status_code = make_request(session,
+                           '/api/dataset/add',
+                           payload)
+    assert status_code == 200
 
-    data, _ = make_request(session,
+    data, status_code = make_request(session,
                            '/api/dataset/query',
                            {'query': {'title': 'A Unique Title'}})
+    assert status_code == 200
+
     ds_id = data['datasets'][0]['id']
 
     yield ds_id
@@ -100,13 +101,11 @@ def test_add_dataset_get():
                             'description': 'Description',
                             'doi': 'DOI',
                             'creator': 'Creator',
-                            'contact': 'Contact',
                             'dmp': 'Data Management Plan',
-                            'visible': True,
                             'tags': [{'title': 'Tag1'}, {'title': 'Tag2'}],
                             'publications': [{'identifier': 'Publication'}],
                             'dataUrls': [{'url': 'Data Access URL', 'description': 'Description'}],
-                            'owners': [{'email': 'Owner email'}]}}
+                            'project': 'project_id'}}
 
     # not logged in
     as_user(session, 0)
@@ -140,7 +139,6 @@ def test_add_dataset_post():
                            'description': 'Description of added dataset1',
                            'doi': 'A doi for added dataset1',
                            'creator': 'The facility that created dataset1',
-                           'contact': 'Contact for added dataset1',
                            'dmp': 'Url to dmp for added dataset1',
                            'tags': [{'title': 'Tag Title 7'},
                                     {'title': 'Tag Title 1'},
@@ -148,8 +146,7 @@ def test_add_dataset_post():
                            'publications': [{'identifier': 'Publication title1. Journal:Year'}],
                            'dataUrls': [{'description': 'Part I', 'url': 'Data url 1a'},
                                         {'description': 'Part II', 'url': 'Data url 1b'}],
-                           'owners': [{'email': 'user1@example.com'}],
-                           'visible': True}}
+                           'project': 2}}
 
     # steward
     as_user(session, 5)
@@ -167,22 +164,19 @@ def test_add_dataset_post():
     data, status_code = make_request(session, f'/api/dataset/{dbid}')
     assert status_code == 200
     for header in payload['dataset']:
-        if header == 'owners':
-            assert sorted([owner['name'] for owner in data[header]]) == ['A Name1']
+        if header == 'publications':
+            assert (sorted([pub['identifier'] for pub in data[header]]) ==
+                    sorted([pub['identifier'] for pub in payload['dataset'][header]]))
+        elif header == 'tags':
+            assert (sorted([tag['title'] for tag in data[header]]) ==
+                    sorted([tag['title'] for tag in payload['dataset'][header]]))
+        elif header == 'dataUrls':
+            assert (sorted([url['url'] for url in data['dataUrls']]) ==
+                    sorted([url['url'] for url in payload['dataset'][header]]))
+            assert (sorted([url['description'] for url in data['dataUrls']]) ==
+                    sorted([url['description'] for url in payload['dataset'][header]]))
         else:
-            if header == 'publications':
-                assert (sorted([pub['identifier'] for pub in data[header]]) ==
-                        sorted([pub['identifier'] for pub in payload['dataset'][header]]))
-            elif header == 'tags':
-                assert (sorted([tag['title'] for tag in data[header]]) ==
-                        sorted([tag['title'] for tag in payload['dataset'][header]]))
-            elif header == 'dataUrls':
-                assert (sorted([url['url'] for url in data['dataUrls']]) ==
-                        sorted([url['url'] for url in payload['dataset'][header]]))
-                assert (sorted([url['description'] for url in data['dataUrls']]) ==
-                        sorted([url['description'] for url in payload['dataset'][header]]))
-            else:
-                assert data[header] == payload['dataset'][header]
+            assert data[header] == payload['dataset'][header]
 
     ## bad requests
     data, status_code = make_request(session,
@@ -204,7 +198,6 @@ def test_add_dataset_post():
     # admin
     as_user(session, 6)
     payload['dataset']['title'] = 'An added Dataset2'
-    payload['dataset']['owners'].append({'email': 'user2@example.com'})
 
     data, status_code = make_request(session,
                                      '/api/dataset/add',
@@ -221,22 +214,19 @@ def test_add_dataset_post():
                                      f'/api/dataset/{dbid}')
     assert status_code == 200
     for header in payload['dataset']:
-        if header == 'owners':
-            assert sorted([owner['name'] for owner in data[header]]) == ['A Name1', 'A Name2']
+        if header == 'publications':
+            assert (sorted([pub['identifier'] for pub in data[header]]) ==
+                    sorted([pub['identifier'] for pub in payload['dataset'][header]]))
+        elif header == 'tags':
+            assert (sorted([tag['title'] for tag in data[header]]) ==
+                    sorted([tag['title'] for tag in payload['dataset'][header]]))
+        elif header == 'dataUrls':
+            assert (sorted([url['url'] for url in data['dataUrls']]) ==
+                    sorted([url['url'] for url in payload['dataset'][header]]))
+            assert (sorted([url['description'] for url in data['dataUrls']]) ==
+                    sorted([url['description'] for url in payload['dataset'][header]]))
         else:
-            if header == 'publications':
-                assert (sorted([pub['identifier'] for pub in data[header]]) ==
-                        sorted([pub['identifier'] for pub in payload['dataset'][header]]))
-            elif header == 'tags':
-                assert (sorted([tag['title'] for tag in data[header]]) ==
-                        sorted([tag['title'] for tag in payload['dataset'][header]]))
-            elif header == 'dataUrls':
-                assert (sorted([url['url'] for url in data['dataUrls']]) ==
-                        sorted([url['url'] for url in payload['dataset'][header]]))
-                assert (sorted([url['description'] for url in data['dataUrls']]) ==
-                        sorted([url['description'] for url in payload['dataset'][header]]))
-            else:
-                assert data[header] == payload['dataset'][header]
+            assert data[header] == payload['dataset'][header]
 
     # not logged in: fail
     as_user(session, 0)
@@ -364,13 +354,12 @@ def test_delete_dataset_post(dataset_for_tests):
 
 
 def test_find_dataset_get():
-    """Test DeleteDataset.get()"""
+    """Tests for DeleteDataset.get()."""
     session = requests.Session()
     expected = {'query': {'title': 'Title',
                           'creator': 'Creator',
                           'tags': ['Tag1'],
-                          'publications': ['Title. Journal:Year'],
-                          'owners': ['Name1']}}
+                          'publications': ['Title. Journal:Year']}}
 
     for user in (0, 1, 5, 6):
         as_user(session, user)
@@ -381,7 +370,7 @@ def test_find_dataset_get():
 
 
 def test_find_dataset_post():
-    """Test FindDataset.post()"""
+    """Tests for FindDataset.post()."""
     session = requests.Session()
     # not logged in
     as_user(session, 0)
@@ -397,27 +386,25 @@ def test_find_dataset_post():
                                      '/api/dataset/query',
                                      payload)
     assert status_code == 200
-    assert len(data['datasets']) == 4
+    assert len(data['datasets']) == 6
     for dataset in data['datasets']:
-        assert len(dataset) == 8
+        for header in ('id', 'title', 'description', 'dmp'):
+            assert header in dataset
+        assert len(dataset) == 9
 
-    payload = {'query': {'title': 'Dataset title',
-                         'owners': ['A Name4']}}
+    payload = {'query': {'title': 'Dataset title'}}
     data, status_code = make_request(session,
                                      '/api/dataset/query',
                                      payload)
     assert status_code == 200
-    assert len(data['datasets']) == 2
+    assert len(data['datasets']) == 6
     for dataset in data['datasets']:
         assert payload['query']['title'] in dataset['title']
         data, status_code = make_request(session,
                                          f'/api/dataset/{dataset["id"]}')
         assert status_code == 200
-        for owner in payload['query']['owners']:
-            assert owner in [val['name'] for val in data['owners']]
 
     payload = {'query': {'title': 'Dataset title',
-                         'owner': ['A Name1'],
                          'publications': ['A publication1. Journal:2011']}}
     data, status_code = make_request(session,
                                      '/api/dataset/query',
@@ -436,7 +423,7 @@ def test_find_dataset_post():
                                      '/api/dataset/query',
                                      payload)
     assert status_code == 200
-    assert len(data['datasets']) == 1
+    assert len(data['datasets']) == 2
     for dataset in data['datasets']:
         response = session.get(f'{BASE_URL}/api/dataset/{dataset["id"]}')
         data = json.loads(response.text)
@@ -459,21 +446,18 @@ def test_find_dataset_post():
                                      '/api/dataset/query',
                                      payload)
     assert status_code == 200
-    assert len(data['datasets']) == 4
+    assert len(data['datasets']) == 6
 
-    payload = {'query': {'title': 'Dataset title',
-                         'owners': ['A Name4']}}
+    payload = {'query': {'title': 'Dataset title'}}
     data, status_code = make_request(session,
                                      '/api/dataset/query',
                                      payload)
     assert status_code == 200
-    assert len(data['datasets']) == 2
+    assert len(data['datasets']) == 6
     for dataset in data['datasets']:
         assert payload['query']['title'] in dataset['title']
         response = session.get(f'{BASE_URL}/api/dataset/{dataset["id"]}')
         data = json.loads(response.text)
-        for owner in payload['query']['owners']:
-            assert owner in [val['name'] for val in data['owners']]
 
     # owner
     as_user(session, 4)
@@ -482,7 +466,7 @@ def test_find_dataset_post():
                                      '/api/dataset/query',
                                      payload)
     assert status_code == 200
-    assert len(data['datasets']) == 5
+    assert len(data['datasets']) == 6
 
     payload = {'query': {'tags': ['Tag Title 7']}}
     data, status_code = make_request(session,
@@ -505,14 +489,6 @@ def test_find_dataset_post():
     assert status_code == 200
     assert len(data['datasets']) == 6
 
-    payload = {'query': {'title': 'Dataset title',
-                         'owners': ['A Name4']}}
-    data, status_code = make_request(session,
-                                     '/api/dataset/query',
-                                     payload)
-    assert status_code == 200
-    assert len(data['datasets']) == 3
-
     # admin
     as_user(session, 6)
     payload = {'query': {'title': 'Dataset title'}}
@@ -522,14 +498,6 @@ def test_find_dataset_post():
     assert status_code == 200
     assert len(data['datasets']) == 6
 
-    payload = {'query': {'title': 'Dataset title',
-                         'owners': ['A Name4']}}
-    data, status_code = make_request(session,
-                                     '/api/dataset/query',
-                                     payload)
-    assert status_code == 200
-    assert len(data['datasets']) == 3
-
 
 def test_get_dataset_get():
     """Test GetDataset.get()"""
@@ -537,7 +505,7 @@ def test_get_dataset_get():
     # not logged in
     data, status_code = make_request(session, '/api/dataset/1')
     assert status_code == 200
-    assert len(data) == 11
+    assert len(data) == 9
     assert len(data['tags']) == 5
 
     tag_titles = [tag['title'] for tag in data['tags']]
@@ -564,26 +532,19 @@ def test_get_dataset_get():
     as_user(session, 4)
     data, status_code = make_request(session, '/api/dataset/4')
     assert status_code == 200
-    assert len(data) == 11
+    assert len(data) == 9
 
     # steward
     as_user(session, 5)
     data, status_code = make_request(session, '/api/dataset/4')
     assert status_code == 200
-    assert len(data) == 11
+    assert len(data) == 9
 
     # admin
     as_user(session, 6)
     data, status_code = make_request(session, '/api/dataset/4')
     assert status_code == 200
-    assert len(data) == 11
-
-    # forbidden
-    for user in (0, 1):
-        as_user(session, user)
-        data, status_code = make_request(session, '/api/dataset/4')
-        assert status_code == 403
-        assert not data
+    assert len(data) == 9
 
     # not found
     data, status_code = make_request(session, '/api/dataset/1234567')
@@ -616,38 +577,32 @@ def test_get_current_user_get():
 def test_list_datasets_get():
     """Test ListDatasets.get()"""
     session = requests.Session()
+    # not logged in
     as_user(session, 0)
     data, status_code = make_request(session, '/api/datasets')
     assert status_code == 200
-    assert len(data['datasets']) == 4
+    assert len(data['datasets']) == 6
     assert data['datasets'][0]['title'] == f"Dataset title {data['datasets'][0]['id']}"
 
-    # log in as user, no extra
+    # normal user
     as_user(session, 1)
     data, status_code = make_request(session, '/api/datasets')
     assert status_code == 200
-    assert len(data['datasets']) == 4
+    assert len(data['datasets']) == 6
 
-    # log in as user that owns dataset and list extra
-    as_user(session, 4)
-    data, status_code = make_request(session, '/api/datasets')
-    assert status_code == 200
-    assert len(data['datasets']) == 5
-    assert {"id": 4, "title": "Dataset title 4"} in data['datasets']
-
-    # log in as steward and list extra
+    # steward
     as_user(session, 5)
     data, status_code = make_request(session, '/api/datasets')
     assert status_code == 200
     assert len(data['datasets']) == 6
-    assert {"id": 4, "title": "Dataset title 4"} in data['datasets']
+    assert 'Dataset title 4' in [dataset['title'] for dataset in data['datasets']]
 
-    # log in as admin and list extra
+    # admin
     as_user(session, 6)
     data, status_code = make_request(session, '/api/datasets')
     assert status_code == 200
     assert len(data['datasets']) == 6
-    assert {"id": 4, "title": "Dataset title 4"} in data['datasets']
+    assert 'Dataset title 4' in [dataset['title'] for dataset in data['datasets']]
 
 
 def test_list_projects_get():
@@ -657,7 +612,7 @@ def test_list_projects_get():
     data, status_code = make_request(session, '/api/projects')
     assert status_code == 200
     assert len(data['projects']) == 6
-    assert data['projects'][0]['title'] == f"Dataset title {data['projects'][0]['id']}"
+    assert data['projects'][0]['title'] == f"Project title {data['projects'][0]['id']}"
 
 
 def test_list_user_get():
@@ -690,13 +645,10 @@ def test_update_dataset_get():
                             'description': 'Description',
                             'doi': 'DOI',
                             'creator': 'Creator',
-                            'contact': 'Contact',
                             'dmp': 'Data Management Plan',
-                            'visible': True,
                             'tags': [{'title': 'Tag1'}, {'title': 'Tag2'}],
                             'publications': [{'identifier': 'Publication'}],
-                            'dataUrls': [{'url': 'Data Access URL', 'description': 'Description'}],
-                            'owners': [{'email': 'Owner email'}]}}
+                            'dataUrls': [{'url': 'Data Access URL', 'description': 'Description'}]}}
 
     for user in (0, 1):
         as_user(session, user)
@@ -727,7 +679,7 @@ def test_update_dataset_post(dataset_for_tests):
         assert not data
 
     # owner
-    as_user(session, 3)
+    as_user(session, 2)
     update_payload = {'dataset': {'title': 'New title'}}
     data, status_code = make_request(session,
                                      f'/api/dataset/{ds_id}/update',
