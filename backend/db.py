@@ -164,7 +164,17 @@ class DatasetTag(BaseModel):
         primary_key = CompositeKey('dataset', 'tag')
 
     dataset = ForeignKeyField(Dataset, column_name='dataset_id', on_delete='CASCADE')
-    tag = ForeignKeyField(Tag, column_name='tag_id')
+    tag = ForeignKeyField(Tag, column_name='tag_id', on_delete='CASCADE')
+
+
+class ProjectDataset(BaseModel):
+    class Meta:
+        table_name = 'project_dataset_map'
+        schema = 'project_data'
+        primary_key = CompositeKey('project', 'dataset')
+
+    project = ForeignKeyField(Project, column_name='project_id', on_delete='CASCADE')
+    dataset = ForeignKeyField(Dataset, column_name='dataset_id', on_delete='CASCADE')
 
 
 class ProjectOwner(BaseModel):
@@ -174,7 +184,7 @@ class ProjectOwner(BaseModel):
     class Meta:
         table_name = 'project_owners'
         schema = 'users'
-        primary_key = CompositeKey('projet', 'user')
+        primary_key = CompositeKey('project', 'user')
 
     project = ForeignKeyField(Dataset, column_name='project_id', on_delete='CASCADE')
     user = ForeignKeyField(User, column_name='user_id')
