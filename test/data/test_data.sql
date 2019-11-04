@@ -173,6 +173,7 @@ COPY users.users (id, given_name, email, affiliation, country, auth_identity, pe
 COPY users.project_owners (project_id, user_id) FROM stdin;
 1	1
 1	2
+2	2
 3	3
 3	4
 4	4

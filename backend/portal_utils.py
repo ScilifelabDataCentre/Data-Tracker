@@ -44,6 +44,9 @@ def get_dataset(ds_id: int, user) -> dict:
                                 .where(db.DatasetDataUrl.dataset == ds_id)
                                 .dicts())
 
+    dataset['projects'] = [entry.project_id for entry in (db.ProjectDataset
+                                                    .select()
+                                                    .where(db.ProjectDataset.dataset == ds_id))]
     return dataset
 
 

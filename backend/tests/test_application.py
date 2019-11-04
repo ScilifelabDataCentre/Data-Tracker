@@ -23,7 +23,7 @@ def dataset_for_tests():
                            'tags': [{'title': 'Tag1'}, {'title': 'Tag2'}],
                            'publications': [{'identifier': 'Publication'}],
                            'dataUrls': [{'url': 'Data Access URL', 'description': 'Description'}],
-                           'project': 2}}
+                           'projects': [2]}}
 
     _ , status_code = make_request(session,
                            '/api/dataset/add',
@@ -105,7 +105,7 @@ def test_add_dataset_get():
                             'tags': [{'title': 'Tag1'}, {'title': 'Tag2'}],
                             'publications': [{'identifier': 'Publication'}],
                             'dataUrls': [{'url': 'Data Access URL', 'description': 'Description'}],
-                            'project': 'project_id'}}
+                            'projects': ['project_id']}}
 
     # not logged in
     as_user(session, 0)
@@ -146,7 +146,7 @@ def test_add_dataset_post():
                            'publications': [{'identifier': 'Publication title1. Journal:Year'}],
                            'dataUrls': [{'description': 'Part I', 'url': 'Data url 1a'},
                                         {'description': 'Part II', 'url': 'Data url 1b'}],
-                           'project': 2}}
+                           'projects': [2]}}
 
     # steward
     as_user(session, 5)
@@ -390,7 +390,7 @@ def test_find_dataset_post():
     for dataset in data['datasets']:
         for header in ('id', 'title', 'description', 'dmp'):
             assert header in dataset
-        assert len(dataset) == 9
+        assert len(dataset) == 10
 
     payload = {'query': {'title': 'Dataset title'}}
     data, status_code = make_request(session,
@@ -425,6 +425,7 @@ def test_find_dataset_post():
     assert status_code == 200
     assert len(data['datasets']) == 2
     for dataset in data['datasets']:
+        assert len(dataset) == 10
         response = session.get(f'{BASE_URL}/api/dataset/{dataset["id"]}')
         data = json.loads(response.text)
         for tag in payload['query']['tags']:
@@ -505,8 +506,9 @@ def test_get_dataset_get():
     # not logged in
     data, status_code = make_request(session, '/api/dataset/1')
     assert status_code == 200
-    assert len(data) == 9
+    assert len(data) == 10
     assert len(data['tags']) == 5
+    assert data['projects'] == [1]
 
     tag_titles = [tag['title'] for tag in data['tags']]
     for i in [2, 3, 4, 5, 8]:
@@ -532,19 +534,19 @@ def test_get_dataset_get():
     as_user(session, 4)
     data, status_code = make_request(session, '/api/dataset/4')
     assert status_code == 200
-    assert len(data) == 9
+    assert len(data) == 10
 
     # steward
     as_user(session, 5)
     data, status_code = make_request(session, '/api/dataset/4')
     assert status_code == 200
-    assert len(data) == 9
+    assert len(data) == 10
 
     # admin
     as_user(session, 6)
     data, status_code = make_request(session, '/api/dataset/4')
     assert status_code == 200
-    assert len(data) == 9
+    assert len(data) == 10
 
     # not found
     data, status_code = make_request(session, '/api/dataset/1234567')
@@ -690,18 +692,10 @@ def test_update_dataset_post(dataset_for_tests):
     assert status_code == 200
     assert data['title'] == 'New title'
 
-    update_payload = {'dataset': {'contact': 'New contact'}}
-    data, status_code = make_request(session,
-                                     f'/api/dataset/{ds_id}/update',
-                                     update_payload)
-    assert status_code == 200
-    assert not data
     data, status_code = make_request(session, f'/api/dataset/{ds_id}')
     assert status_code == 200
-    assert data['contact'] == 'New contact'
 
-    update_payload = {'dataset': {'contact': 'New contact2',
-                                  'tags': [{'title': 'Tag1'},
+    update_payload = {'dataset': {'tags': [{'title': 'Tag1'},
                                            {'title': 'NewTag1'},
                                            {'title': 'NewTag2'}]}}
     data, status_code = make_request(session,
@@ -711,7 +705,6 @@ def test_update_dataset_post(dataset_for_tests):
     assert not data
     data, status_code = make_request(session, f'/api/dataset/{ds_id}')
     assert status_code == 200
-    assert data['contact'] == 'New contact2'
     tags = [tag['title'] for tag in data['tags']]
     assert len(tags) == 3
     for tag in ('Tag1', 'NewTag1', 'NewTag2'):
@@ -739,13 +732,6 @@ def test_update_dataset_post(dataset_for_tests):
     for data_url in ('http://example.com/1', 'http://example.com/2'):
         assert data_url in data_urls
 
-    update_payload = {'dataset': {'owners': [{'email': 'user2@example.com'}]}}
-    data, status_code = make_request(session,
-                                     f'/api/dataset/{ds_id}/update',
-                                     update_payload)
-    assert status_code == 403
-    assert not data
-
     ## bad requests
     for update_payload in ({'dataset': {'tags': [{'bad_tag': 'asd'}]}},
                            {'dat': ''},
@@ -766,7 +752,7 @@ def test_update_dataset_post(dataset_for_tests):
 
     # steward
     as_user(session, 5)
-    update_payload = {'dataset': {'owners': [{'email': 'user1@example.com'}]}}
+    update_payload = {'dataset': {'doi': 'special doi'}}
     data, status_code = make_request(session,
                                      f'/api/dataset/{ds_id}/update',
                                      update_payload)
@@ -774,11 +760,11 @@ def test_update_dataset_post(dataset_for_tests):
     assert not data
     data, status_code = make_request(session, f'/api/dataset/{ds_id}')
     assert status_code == 200
-    assert data['owners'][0]['name'] == 'A Name1'
+    assert data['doi'] == 'special doi'
 
     # admin
     as_user(session, 6)
-    update_payload = {'dataset': {'owners': [{'email': 'user2@example.com'}]}}
+    update_payload = {'dataset': {'doi': 'special doi2'}}
     data, status_code = make_request(session,
                                      f'/api/dataset/{ds_id}/update',
                                      update_payload)
@@ -786,4 +772,4 @@ def test_update_dataset_post(dataset_for_tests):
     assert not data
     data, status_code = make_request(session, f'/api/dataset/{ds_id}')
     assert status_code == 200
-    assert data['owners'][0]['name'] == 'A Name2'
+    assert data['doi'] == 'special doi2'

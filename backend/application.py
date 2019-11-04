@@ -24,7 +24,7 @@ class AddDataset(handlers.StewardHandler):
                             'tags': [{'title': 'Tag1'}, {'title': 'Tag2'}],
                             'publications': [{'identifier': 'Publication'}],
                             'dataUrls': [{'url': 'Data Access URL', 'description': 'Description'}],
-                            'project': 'project_id'}}
+                            'projects': ['project_id']}}
 
         self.finish(data)
 
@@ -39,7 +39,7 @@ class AddDataset(handlers.StewardHandler):
         """
         data = tornado.escape.json_decode(self.request.body)
         
-        if not 'dataset' in data or not 'project' in data['dataset']:
+        if not 'dataset' in data or not 'projects' in data['dataset']:
             logging.debug(f'add dataset failed: {data}')
             logging.info('AddDataset: bad request (dataset)')
             self.send_error(status_code=400)
@@ -63,7 +63,8 @@ class AddDataset(handlers.StewardHandler):
 
         with db.database.atomic():
             ds_id = db.Dataset.create(**ds_to_add)
-            db.ProjectDataset.create(project=ds_data['project'],
+            for project in ds_data['projects']:
+                db.ProjectDataset.create(project=project,
                                      dataset=ds_id)
 
             for tag in ds_data['tags']:
@@ -389,13 +390,11 @@ class UpdateDataset(handlers.SafeHandler):
                               'description',
                               'doi',
                               'creator',
-                              'contact',
                               'dmp',
-                              'visible',
                               'tags',
                               'publications',
                               'dataUrls',
-                              'owners'):
+                              'projects'):
                 logging.debug('Bad header')
                 logging.debug(indata)
                 self.send_error(status_code=400)
@@ -427,9 +426,7 @@ class UpdateDataset(handlers.SafeHandler):
                            'description',
                            'doi',
                            'creator',
-                           'contact',
-                           'dmp',
-                           'visible'):
+                           'dmp'):
                 if header in indata:
                     setattr(dataset, header, indata[header])
             dataset.save()
@@ -442,13 +439,13 @@ class UpdateDataset(handlers.SafeHandler):
                 if value_type == 'dataUrls':
                     val_dbname = 'DataUrl'
                     val_sing = 'data_url'
-                elif value_type == 'owners':
+                elif value_type == 'projects':
                     val_dbname = 'User'
                     val_sing = 'user'
 
                 val_db = getattr(db, val_dbname)
-                if value_type == 'owners':
-                    val_mapdb = getattr(db, 'DatasetOwner')
+                if value_type == 'projects':
+                    val_mapdb = getattr(db, 'ProjectDataset')
                 else:
                     val_mapdb = getattr(db, 'Dataset' + val_dbname)
 
