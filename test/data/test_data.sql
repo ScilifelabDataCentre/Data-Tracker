@@ -58,6 +58,18 @@ COPY project_data.projects (id, title, description, contact) FROM stdin;
 6	Project title 6	Project 6 description	Contact@place6
 \.
 
+
+COPY project_data.project_dataset_map (project_id, dataset_id) FROM stdin;
+1	1
+1	2
+3	3
+3	4
+4	4
+5	6
+6	4
+\.
+
+
 --
 -- Data for Name: dataset_data_url_map; Type: TABLE DATA; Schema: datasets; Owner: postgres
 --
