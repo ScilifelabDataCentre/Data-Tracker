@@ -45,7 +45,7 @@ class EnumField(Field):
 
 class AuthKey(BaseModel):
     '''
-    Auth keys for e.g. Order Portal.
+    Authentication keys for e.g. Order Portal.
     '''
     class Meta:
         table_name = 'auth_keys'
