@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
-from peewee import (BooleanField,
-                    CompositeKey,
+from peewee import (CompositeKey,
                     CharField,
                     Field,
                     ForeignKeyField,

@@ -1,6 +1,5 @@
 import logging
 
-from peewee import fn, JOIN
 import tornado.web
 import tornado
 
@@ -38,7 +37,7 @@ class AddDataset(handlers.StewardHandler):
         ```
         """
         data = tornado.escape.json_decode(self.request.body)
-        
+
         if not 'dataset' in data or not 'projects' in data['dataset']:
             logging.debug(f'add dataset failed: {data}')
             logging.info('AddDataset: bad request (dataset)')
@@ -65,7 +64,7 @@ class AddDataset(handlers.StewardHandler):
             ds_id = db.Dataset.create(**ds_to_add)
             for project in ds_data['projects']:
                 db.ProjectDataset.create(project=project,
-                                     dataset=ds_id)
+                                         dataset=ds_id)
 
             for tag in ds_data['tags']:
                 tag_id, _ = db.Tag.get_or_create(**tag)
@@ -302,8 +301,6 @@ class GetCurrentUser(handlers.UnsafeHandler):
 
 class ListDatasets(handlers.UnsafeHandler):
     def get(self):
-        user = self.current_user
-
         ret = list(db.Dataset
                    .select()
                    .dicts())
@@ -472,7 +469,7 @@ class UpdateDataset(handlers.SafeHandler):
                      .delete()
                      .where(val_mapdb.dataset == dataset.id)
                      .execute())
-                    (val_mapdb # pylint: disable=no-value-for-parameter
+                    (val_mapdb  # pylint: disable=no-value-for-parameter
                      .insert_many([{'dataset': dataset.id, val_sing: val} for val in new_vals])
                      .execute())
         return 200

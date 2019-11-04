@@ -2,10 +2,9 @@
 Helper functions
 """
 import db
-import portal_errors
 
 
-def get_dataset(ds_id: int, user) -> dict:
+def get_dataset(ds_id: int, user) -> dict:  # pylint: disable=unused-argument
     """
     Retrieve a complete dataset.
     Args:
@@ -44,9 +43,10 @@ def get_dataset(ds_id: int, user) -> dict:
                                 .where(db.DatasetDataUrl.dataset == ds_id)
                                 .dicts())
 
-    dataset['projects'] = [entry.project_id for entry in (db.ProjectDataset
-                                                    .select()
-                                                    .where(db.ProjectDataset.dataset == ds_id))]
+    dataset['projects'] = [entry.project_id
+                           for entry in (db.ProjectDataset
+                                         .select()
+                                         .where(db.ProjectDataset.dataset == ds_id))]
     return dataset
 
 
