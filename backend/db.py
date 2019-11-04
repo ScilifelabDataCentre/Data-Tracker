@@ -45,7 +45,7 @@ class EnumField(Field):
 
 class AuthKey(BaseModel):
     '''
-    A dataset.
+    Auth keys for e.g. Order Portal.
     '''
     class Meta:
         table_name = 'auth_keys'
@@ -186,7 +186,7 @@ class ProjectOwner(BaseModel):
         schema = 'users'
         primary_key = CompositeKey('project', 'user')
 
-    project = ForeignKeyField(Dataset, column_name='project_id', on_delete='CASCADE')
+    project = ForeignKeyField(Project, column_name='project_id', on_delete='CASCADE')
     user = ForeignKeyField(User, column_name='user_id')
 
 
