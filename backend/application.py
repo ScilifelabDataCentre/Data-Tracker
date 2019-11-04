@@ -20,13 +20,11 @@ class AddDataset(handlers.StewardHandler):
                             'description': 'Description',
                             'doi': 'DOI',
                             'creator': 'Creator',
-                            'contact': 'Contact',
                             'dmp': 'Data Management Plan',
-                            'visible': True,
                             'tags': [{'title': 'Tag1'}, {'title': 'Tag2'}],
                             'publications': [{'identifier': 'Publication'}],
                             'dataUrls': [{'url': 'Data Access URL', 'description': 'Description'}],
-                            'owners': [{'email': 'Owner email'}]}}
+                            'project': 'project_id'}}
 
         self.finish(data)
 
@@ -40,7 +38,9 @@ class AddDataset(handlers.StewardHandler):
         ```
         """
         data = tornado.escape.json_decode(self.request.body)
-        if not 'dataset' in data:
+        
+        if not 'dataset' in data or not 'project' in data['dataset']:
+            logging.debug(f'add dataset failed: {data}')
             logging.info('AddDataset: bad request (dataset)')
             self.send_error(status_code=400)
             return
@@ -63,6 +63,8 @@ class AddDataset(handlers.StewardHandler):
 
         with db.database.atomic():
             ds_id = db.Dataset.create(**ds_to_add)
+            db.ProjectDataset.create(project=ds_data['project'],
+                                     dataset=ds_id)
 
             for tag in ds_data['tags']:
                 tag_id, _ = db.Tag.get_or_create(**tag)
@@ -78,12 +80,6 @@ class AddDataset(handlers.StewardHandler):
                 url_id, _ = db.DataUrl.get_or_create(**data_url)
                 db.DatasetDataUrl.create(dataset=ds_id,
                                          data_url=url_id)
-
-            for owner in ds_data['owners']:
-                user_id, _ = db.User.get_or_create(**owner)
-                db.DatasetOwner.create(dataset=ds_id,
-                                       user=user_id)
-
         self.finish()
 
 
@@ -205,8 +201,7 @@ class FindDataset(handlers.UnsafeHandler):
         data = {'query': {'title': 'Title',
                           'creator': 'Creator',
                           'tags': ['Tag1'],
-                          'publications': ['Title. Journal:Year'],
-                          'owners': ['Name1']}}
+                          'publications': ['Title. Journal:Year']}}
         self.finish(data)
 
     def post(self):
@@ -222,22 +217,9 @@ class FindDataset(handlers.UnsafeHandler):
         """
         data = tornado.escape.json_decode(self.request.body)
 
-        if portal_utils.has_rights(self.current_user, ('Steward', 'Admin')):
-            query = (db.Dataset
-                     .select(db.Dataset)
-                     .join(db.DatasetOwner, JOIN.LEFT_OUTER)
-                     .switch(db.Dataset)
-                     .distinct()
-                     .dicts())
-        else:
-            query = (db.Dataset
-                     .select(db.Dataset)
-                     .join(db.DatasetOwner, JOIN.LEFT_OUTER)
-                     .switch(db.Dataset)
-                     .where((db.Dataset.visible) |
-                            (db.DatasetOwner.user == self.current_user))
-                     .distinct()
-                     .dicts())
+        query = (db.Dataset
+                 .select(db.Dataset.id)
+                 .distinct())
 
         def search_publications(query, publications: list):
             query = (query.join(db.DatasetPublication)
@@ -255,19 +237,10 @@ class FindDataset(handlers.UnsafeHandler):
                 query = query.where(db.Tag.title == tag)
             return query
 
-        def search_owners(query, owners: list):
-            query = (query.switch(db.DatasetOwner)
-                     .join(db.User)
-                     .switch(db.Dataset))
-            for owner in owners:
-                query = query.where(db.User.name == owner)
-            return query
-
         search_functions = {'title': lambda q, t: q.where(db.Dataset.title.contains(t)),
                             'creator': lambda q, c: q.where(db.Dataset.creator.contains(c)),
                             'tags': search_tags,
-                            'publications': search_publications,
-                            'owners': search_owners}
+                            'publications': search_publications}
 
         used = False
         for search_type in data['query']:
@@ -275,11 +248,12 @@ class FindDataset(handlers.UnsafeHandler):
                 used = True
                 query = search_functions[search_type](query, data['query'][search_type])
 
-        if used:
-            datasets = list(query)
-        else:
+        if not used:
             self.send_error(status_code=400)
             return
+
+        # feels a bit bad, but is needed to get the complete dataset information
+        datasets = [portal_utils.get_dataset(dataset.id, self.current_user) for dataset in query]
 
         self.finish({'datasets': datasets})
 
@@ -329,17 +303,9 @@ class ListDatasets(handlers.UnsafeHandler):
     def get(self):
         user = self.current_user
 
-        if portal_utils.has_rights(user, ('Steward', 'Admin')):
-            ret = list(db.Dataset
-                       .select(db.Dataset.id, db.Dataset.title)
-                       .dicts())
-        else:
-            ret = list(db.Dataset
-                       .select(fn.Distinct(db.Dataset.id), db.Dataset.title)
-                       .join(db.DatasetOwner, JOIN.LEFT_OUTER)
-                       .where((db.Dataset.visible) |
-                              (db.DatasetOwner.user == user))
-                       .dicts())
+        ret = list(db.Dataset
+                   .select()
+                   .dicts())
 
         self.finish({'datasets': ret})
 
@@ -368,13 +334,10 @@ class UpdateDataset(handlers.SafeHandler):
                             'description': 'Description',
                             'doi': 'DOI',
                             'creator': 'Creator',
-                            'contact': 'Contact',
                             'dmp': 'Data Management Plan',
-                            'visible': True,
                             'tags': [{'title': 'Tag1'}, {'title': 'Tag2'}],
                             'publications': [{'identifier': 'Publication'}],
-                            'dataUrls': [{'url': 'Data Access URL', 'description': 'Description'}],
-                            'owners': [{'email': 'Owner email'}]}}
+                            'dataUrls': [{'url': 'Data Access URL', 'description': 'Description'}]}}
 
         ds_id = int(ds_identifier)
         dataset = db.Dataset.get_by_id(ds_id)
