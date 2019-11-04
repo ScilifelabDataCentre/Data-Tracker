@@ -7,8 +7,7 @@ import portal_errors
 
 def get_dataset(ds_id: int, user) -> dict:
     """
-    Retrieve a complete dataset from database, with permission checks.
-
+    Retrieve a complete dataset.
     Args:
         ds_id (int): The database id of the dataset
         user: The current user
@@ -21,13 +20,12 @@ def get_dataset(ds_id: int, user) -> dict:
         portal_errors.InsufficientPermissions: Current user does not have the required permissions
 
     """
-    dataset = db.Dataset.get_by_id(ds_id)
+    dataset = (db.Dataset
+               .select()
+               .where(db.Dataset.id == ds_id)
+               .dicts()
+               .get())
 
-    if not dataset.visible and not (has_rights(user, ('Steward', 'Admin'))
-                                    or is_owner(user, dataset)):
-        raise portal_errors.InsufficientPermissions("Dataset not available for the current user.")
-
-    dataset = db.build_dict_from_row(dataset)
     dataset['tags'] = list(db.DatasetTag
                            .select(db.Tag)
                            .join(db.Tag)
@@ -46,12 +44,6 @@ def get_dataset(ds_id: int, user) -> dict:
                                 .where(db.DatasetDataUrl.dataset == ds_id)
                                 .dicts())
 
-    dataset['owners'] = list(db.DatasetOwner
-                             .select(db.User.name)
-                             .join(db.User)
-                             .where(db.DatasetOwner.dataset == ds_id)
-                             .dicts())
-
     return dataset
 
 
@@ -60,7 +52,7 @@ def has_rights(user, permissions: tuple) -> bool:
     Test whether the user has the supplied permissions.
 
     Args:
-        user: user to test
+        user (User): user to test
         permissions (tuple): permissions of interest
 
     Returns:
@@ -80,16 +72,16 @@ def is_owner(user, dataset) -> bool:
     Test whether the user owns the provided dataset
 
     Args:
-        user: the user to test
-        dataset: the dataset to check owners for
+        user (db.User): the user to test
+        dataset (db.Dataset): the dataset to check owners for
 
     Returns:
         bool: whether user owns the dataset
 
     """
-    try:
-        db.DatasetOwner.get((db.DatasetOwner.dataset == dataset.id) &
-                            (db.DatasetOwner.user == user))
-        return True
-    except db.DatasetOwner.DoesNotExist:
-        return False
+    query = (db.ProjectOwner
+             .select(db.ProjectOwner.project)
+             .join(db.ProjectDataset, on=(db.ProjectOwner.project == db.ProjectDataset.project))
+             .where((db.ProjectDataset.dataset == dataset.id) &
+                    (db.ProjectOwner.user == user)))
+    return bool(list(query))
