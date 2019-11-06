@@ -1,22 +1,23 @@
 <template>
 <div class="project-list-entry">
-  <router-link :to="`/project/${projectData.id}`">
-    <span class="project-list-entry-title">{{ projectData.title }}</span>
-  </router-link>
+  <div class="project-title"><router-link :to="'/project/' + project.id + '/about'"> {{ project.title }}</router-link></div>
+  <div class="project-description">{{ project.description }}</div>
+  <div class="project-contact">{{ project.contact }}a</div>
 </div>
 </template>
 
 <script>
 export default {
   name: 'ProjectListEntry',
-  props: ['projectData'],
-  data () {
-    return {
-    }
-  },
+  props: ['project'],
 }
 </script>
 
 <style scoped>
-
+.project-title {
+    font-weight: bold;
+}
+.project-list-entry {
+    padding: 10px 0px;
+}
 </style>

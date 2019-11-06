@@ -1,7 +1,8 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import ProjectInfo from '../components/ProjectInfo.vue'
+import ProjectAbout from '../components/projectInfo/ProjectAbout.vue'
 import ProjectBrowser from '../components/ProjectBrowser.vue'
+import AdminUserBrowser from '../components/AdminUserBrowser.vue'
 import NotFound from '../components/NotFound.vue'
 import StartPageComponent from '../components/StartPageComponent.vue'
 
@@ -16,17 +17,28 @@ const router = new VueRouter({
       component: ProjectBrowser,
     },
     {
-      path: '/project/:id',
-      component: ProjectInfo,
+      path: '/project/:id/',
+      component: ProjectAbout,
+      alias: ['/project/:id/about'],
       props: true,
+      children: [
+        {
+          path: 'edit',
+          component: ProjectAbout,
+        }
+      ],
     },
     {
       path: '/',
-      component:  StartPageComponent,
+      component: StartPageComponent,
+    },
+    {
+      path: '/admin/users',
+      component: AdminUserBrowser,
     },
     {
       path: '*',
-      component:  NotFound
+      component: NotFound
     },
   ]
 });

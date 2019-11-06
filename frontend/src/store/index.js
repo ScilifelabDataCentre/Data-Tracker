@@ -40,10 +40,10 @@ const actions = {
     axios
       .get('/api/project/' + id)
       .then((response) => {
-        commit('UPDATE_PROJECT', response.data.project);
+        commit('UPDATE_PROJECT', response.data);
       })
       .catch(function (err) {
-        commit('UPDATE_ERROR', err);
+        commit('UPDATE_ERRORS', err);
       });
   },
   getProjects ({ commit }) {
@@ -53,13 +53,14 @@ const actions = {
         commit('UPDATE_PROJECTS', response.data.projects);
       })
       .catch(function (err) {
-        commit('UPDATE_ERROR', err);
+        commit('UPDATE_ERRORS', err);
       });
   }
 }
 
 const getters = {
   user: state => state.user,
+  project: state => state.project,
   projects: state => state.projects,
   errorCode: state => state.errorCode,
   errorText: state => state.errorText,

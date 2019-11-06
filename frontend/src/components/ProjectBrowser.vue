@@ -17,7 +17,7 @@ export default {
     'project-list': ProjectList
   },
   created () {
-    this.$store.dispatch('getProjects', this.datasetName);
+    this.$store.dispatch('getProjects');
   }
 }
 </script>
