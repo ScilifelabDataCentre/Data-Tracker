@@ -1,9 +1,14 @@
 <template>
 <div class="project-info">
-  <div class="warning" v-if="projectInfo == null">
+  <div class="warning" v-if="!project">
     <span>Unable to retrieve project</span>
   </div>
-  
+  <div v-id="project">
+    <div class="project-title">{{ project.title }}</div>
+    <div class="project-description">{{ project.description }}</div>
+    <div class="project-contact"><span class="field-header">Contact:</span> {{ project.contact }}</div>
+    <div class="project-datasets"><span class="field-header">Datasets:</span> <div class="project-dataset" v-for="dataset in project.datasets" :key="dataset">{{ dataset }}</div></div>
+  </div>
 </div>
 </template>
 
@@ -37,8 +42,8 @@ h1 {
     text-align: center;
 }
 
-.project-info {
-    text-align: left;
+.project-title {
+    font-weight: bold;
 }
 
 .field-header {
