@@ -1,24 +1,13 @@
 <template>
-<div class="project-info">
-  <div class="warning" v-if="projectInfo == null">
-    <span>Unable to retrieve project</span>
-  </div>
-  
+<div class="project-container">
 </div>
 </template>
 
 <script>
-import {mapGetters} from 'vuex';
 
 export default {
-  name: 'ProjectAbout',
+  name: 'ProjectContainer',
   props: ['id'],
-  components: {
-  },
-  computed: {
-    ...mapGetters(['project']),
-  },
-
   data () {
     return {
       projectInfo: null,
@@ -27,8 +16,13 @@ export default {
     }
   },
   created () {
-    this.$store.dispatch('getProject', this.id);
+    axios
+      .get('http://localhost:5000/api/dataset/' + this.id)
+      .then((response) => (this.projectInfo = response.data))
+      .catch(function (err) {this.errorCode = err.status;
+                             this.errorText = err.statusText});
   }
+
 }
 </script>
 
