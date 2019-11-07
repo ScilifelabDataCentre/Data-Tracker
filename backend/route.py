@@ -53,6 +53,7 @@ class Application(tornado.web.Application):
             (r"/api/dataset/(?P<ds_identifier>[0-9]+)/update", application.UpdateDataset),
             # Project methods
             (r"/api/projects", application.ListProjects),
+            (r"/api/project/(?P<project_id>[0-9]+)", application.GetProject),
         ]
 
         # Adding Catch all handlers

@@ -50,6 +50,34 @@ def get_dataset(ds_id: int, user) -> dict:  # pylint: disable=unused-argument
     return dataset
 
 
+def get_project(proj_id: int, user) -> dict:  # pylint: disable=unused-argument
+    """
+    Retrieve a complete dataset.
+    Args:
+        ds_id (int): The database id of the dataset
+        user: The current user
+
+    Returns:
+        dict: The complete dataset, including e.g. tags
+
+    Raises:
+        db.Dataset.DoesNotExist: No dataset with id ds_id exists in the db
+        portal_errors.InsufficientPermissions: Current user does not have the required permissions
+
+    """
+    project = (db.Project
+               .select()
+               .where(db.Project.id == proj_id)
+               .dicts()
+               .get())
+
+    project['datasets'] = [entry.dataset_id
+                          for entry in (db.ProjectDataset
+                                        .select()
+                                        .where(db.ProjectDataset.project == proj_id))]
+    return project
+
+
 def has_rights(user, permissions: tuple) -> bool:
     """
     Test whether the user has the supplied permissions.

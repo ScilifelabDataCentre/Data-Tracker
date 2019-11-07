@@ -299,6 +299,31 @@ class GetCurrentUser(handlers.UnsafeHandler):
         self.finish(ret)
 
 
+class GetProject(handlers.UnsafeHandler):
+    """Retrieve a dataset."""
+    def get(self, project_id: str):
+        """
+        Retrieve the wanted dataset.
+
+        Args:
+            ds_identifier (str): the database id of the wanted dataset
+
+        """
+        dbid = int(project_id)
+        try:
+            dataset = portal_utils.get_project(dbid, self.current_user)
+        except db.Dataset.DoesNotExist:
+            logging.info('GetDataset: dataset does not exist')
+            self.send_error(status_code=404)
+            return
+        except portal_errors.InsufficientPermissions:
+            logging.info('GetDataset: insufficient permissions')
+            self.send_error(status_code=403)
+            return
+
+        self.finish(dataset)
+
+
 class ListDatasets(handlers.UnsafeHandler):
     def get(self):
         ret = list(db.Dataset
