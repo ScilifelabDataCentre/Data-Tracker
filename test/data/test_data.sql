@@ -88,6 +88,13 @@ COPY project_data.dataset_data_url_map (dataset_id, data_url_id) FROM stdin;
 6	11
 \.
 
+COPY project_data.related_projects (project_id, project_id2, relation_type) FROM stdin;
+2	1	PART_OF
+3	2	SUPERSEEDED_BY
+1	4	DEPENDS_ON
+5	6	FOLLOWS
+\.
+
 
 --
 -- Data for Name: publications; Type: TABLE DATA; Schema: datasets; Owner: postgres
@@ -183,9 +190,9 @@ COPY users.project_owners (project_id, user_id) FROM stdin;
 
 
 
-COPY users.auth_keys (id, system_name, key_value) FROM stdin;
-1	Order Portal	01234556789ABCDEF
-2	Order Portal	1234556789ABCDEF0
+COPY users.auth_keys (id, system_name, system_url, key_value) FROM stdin;
+1	http://order1.portal	Order Portal	01234556789ABCDEF
+2	http://order2.portal	Order Portal	1234556789ABCDEF0
 \.
 
 COPY users.user_auth_key_map (user_id, authkey_id) FROM stdin;
