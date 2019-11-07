@@ -31,9 +31,6 @@ export default {
       errorText: null
     }
   },
-  created () {
-    this.$store.dispatch('getProject', this.id);
-  }
 }
 </script>
 

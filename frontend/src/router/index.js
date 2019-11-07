@@ -2,6 +2,7 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import ProjectAbout from '../components/projectInfo/ProjectAbout.vue'
 import ProjectBrowser from '../components/ProjectBrowser.vue'
+import ProjectContainer from '../components/projectInfo/ProjectContainer.vue'
 import AdminUserBrowser from '../components/AdminUserBrowser.vue'
 import NotFound from '../components/NotFound.vue'
 import StartPageComponent from '../components/StartPageComponent.vue'
@@ -18,7 +19,7 @@ const router = new VueRouter({
     },
     {
       path: '/project/:id/',
-      component: ProjectAbout,
+      component: ProjectContainer,
       props: true,
       children: [
         {
