@@ -16,8 +16,8 @@ CREATE TABLE IF NOT EXISTS project_data.data_urls (
 );
 
 CREATE TABLE IF NOT EXISTS project_data.dataset_data_url_map (
-    dataset_id      integer                 NOT NULL REFERENCES project_data.datasets ON DELETE CASCADE,
-    data_url_id     integer                 NOT NULL REFERENCES project_data.data_urls ON DELETE CASCADE,
+    dataset_id      integer                 NOT NULL REFERENCES project_data.datasets ON DELETE CASCADE ON UPDATE CASCADE,
+    data_url_id     integer                 NOT NULL REFERENCES project_data.data_urls ON DELETE CASCADE ON UPDATE CASCADE,
     PRIMARY KEY(dataset_id, data_url_id)
 );
 
@@ -28,9 +28,19 @@ CREATE TABLE IF NOT EXISTS project_data.projects (
     contact         varchar(100)            DEFAULT NULL
 );
 
+
+
+CREATE TYPE relation_type AS enum('SUPERSEEDED_BY', 'FOLLOWS', 'PART_OF', 'DEPENDS_ON');
+CREATE TABLE IF NOT EXISTS project_data.related_projects (
+    project_id      integer                 NOT NULL REFERENCES project_data.projects ON DELETE CASCADE ON UPDATE CASCADE,
+    project_id2     integer                 NOT NULL REFERENCES project_data.projects ON DELETE CASCADE ON UPDATE CASCADE,
+    relation_type   relation_type	    NOT NULL DEFAULT 'PART_OF',
+    PRIMARY KEY(project_id, project_id2, relation_type)
+);
+
 CREATE TABLE IF NOT EXISTS project_data.project_dataset_map (
-    project_id      integer                 NOT NULL REFERENCES project_data.projects ON DELETE CASCADE,
-    dataset_id      integer                 NOT NULL REFERENCES project_data.datasets ON DELETE CASCADE,
+    project_id      integer                 NOT NULL REFERENCES project_data.projects ON DELETE CASCADE ON UPDATE CASCADE,
+    dataset_id      integer                 NOT NULL REFERENCES project_data.datasets ON DELETE CASCADE ON UPDATE CASCADE,
     PRIMARY KEY(dataset_id, project_id)
 );
 
@@ -40,8 +50,8 @@ CREATE TABLE IF NOT EXISTS project_data.publications (
 );
 
 CREATE TABLE IF NOT EXISTS project_data.dataset_publication_map (
-    dataset_id      integer                 NOT NULL REFERENCES project_data.datasets ON DELETE CASCADE,
-    publication_id  integer                 NOT NULL REFERENCES project_data.publications ON DELETE CASCADE,
+    dataset_id      integer                 NOT NULL REFERENCES project_data.datasets ON DELETE CASCADE ON UPDATE CASCADE,
+    publication_id  integer                 NOT NULL REFERENCES project_data.publications ON DELETE CASCADE ON UPDATE CASCADE,
     PRIMARY KEY(dataset_id, publication_id)
 );
 
@@ -51,8 +61,8 @@ CREATE TABLE IF NOT EXISTS project_data.tags (
 );
 
 CREATE TABLE IF NOT EXISTS project_data.dataset_tag_map (
-    dataset_id      integer                 NOT NULL REFERENCES project_data.datasets ON DELETE CASCADE,
-    tag_id          integer                 NOT NULL REFERENCES project_data.tags ON DELETE CASCADE,
+    dataset_id      integer                 NOT NULL REFERENCES project_data.datasets ON DELETE CASCADE ON UPDATE CASCADE,
+    tag_id          integer                 NOT NULL REFERENCES project_data.tags ON DELETE CASCADE ON UPDATE CASCADE,
     PRIMARY KEY(dataset_id, tag_id)
 );
 
