@@ -72,9 +72,9 @@ def get_project(proj_id: int, user) -> dict:  # pylint: disable=unused-argument
                .get())
 
     project['datasets'] = [entry.dataset_id
-                          for entry in (db.ProjectDataset
-                                        .select()
-                                        .where(db.ProjectDataset.project == proj_id))]
+                           for entry in (db.ProjectDataset
+                                         .select()
+                                         .where(db.ProjectDataset.project == proj_id))]
     return project
 
 
