@@ -19,9 +19,16 @@ const router = new VueRouter({
     {
       path: '/project/:id/',
       component: ProjectAbout,
-      alias: ['/project/:id/about'],
       props: true,
       children: [
+        {
+          path: '',
+          redirect: 'about',
+        },
+        {
+          path: 'about',
+          component: ProjectAbout,
+        },
         {
           path: 'edit',
           component: ProjectAbout,
