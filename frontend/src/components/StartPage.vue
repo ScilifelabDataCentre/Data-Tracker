@@ -6,7 +6,7 @@
 
 <script>
 export default {
-  name: 'StartPageComponent',
+  name: 'StartPage',
   data () {
     return {
     }
