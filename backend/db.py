@@ -51,6 +51,7 @@ class AuthKey(BaseModel):
         schema = 'users'
 
     system_name = CharField(null=False)
+    system_url = CharField(null=False)
     key_value = CharField(null=False)
 
 
@@ -142,8 +143,14 @@ class DatasetDataUrl(BaseModel):
         schema = 'project_data'
         primary_key = CompositeKey('dataset', 'data_url')
 
-    dataset = ForeignKeyField(Dataset, column_name='dataset_id', on_delete='CASCADE')
-    data_url = ForeignKeyField(DataUrl, column_name='data_url_id')
+    dataset = ForeignKeyField(Dataset,
+                              column_name='dataset_id',
+                              on_delete='CASCADE',
+                              on_update='CASCADE')
+    data_url = ForeignKeyField(DataUrl,
+                               column_name='data_url_id',
+                               on_delete='CASCADE',
+                               on_update='CASCADE')
 
 
 class DatasetPublication(BaseModel):
@@ -152,8 +159,15 @@ class DatasetPublication(BaseModel):
         schema = 'project_data'
         primary_key = CompositeKey('dataset', 'publication')
 
-    dataset = ForeignKeyField(Dataset, column_name='dataset_id', on_delete='CASCADE')
-    publication = ForeignKeyField(Publication, column_name='publication_id')
+    dataset = ForeignKeyField(Dataset,
+                              column_name='dataset_id',
+                              on_delete='CASCADE',
+                              on_update='CASCADE')
+    publication = ForeignKeyField(Publication,
+                                  column_name='publication_id',
+                                  on_delete='CASCADE',
+                                  on_update='CASCADE')
+
 
 
 class DatasetTag(BaseModel):
@@ -162,8 +176,14 @@ class DatasetTag(BaseModel):
         schema = 'project_data'
         primary_key = CompositeKey('dataset', 'tag')
 
-    dataset = ForeignKeyField(Dataset, column_name='dataset_id', on_delete='CASCADE')
-    tag = ForeignKeyField(Tag, column_name='tag_id', on_delete='CASCADE')
+    dataset = ForeignKeyField(Dataset,
+                              column_name='dataset_id',
+                              on_delete='CASCADE',
+                              on_update='CASCADE')
+    tag = ForeignKeyField(Tag,
+                          column_name='tag_id',
+                          on_delete='CASCADE',
+                          on_update='CASCADE')
 
 
 class ProjectDataset(BaseModel):
@@ -172,8 +192,13 @@ class ProjectDataset(BaseModel):
         schema = 'project_data'
         primary_key = CompositeKey('project', 'dataset')
 
-    project = ForeignKeyField(Project, column_name='project_id', on_delete='CASCADE')
-    dataset = ForeignKeyField(Dataset, column_name='dataset_id', on_delete='CASCADE')
+    project = ForeignKeyField(Project,
+                              column_name='project_id',
+                              on_delete='CASCADE')
+    dataset = ForeignKeyField(Dataset,
+                              column_name='dataset_id',
+                              on_delete='CASCADE',
+                              on_update='CASCADE')
 
 
 class ProjectOwner(BaseModel):
@@ -185,8 +210,33 @@ class ProjectOwner(BaseModel):
         schema = 'users'
         primary_key = CompositeKey('project', 'user')
 
-    project = ForeignKeyField(Project, column_name='project_id', on_delete='CASCADE')
-    user = ForeignKeyField(User, column_name='user_id')
+    project = ForeignKeyField(Project,
+                              column_name='project_id',
+                              on_delete='CASCADE',
+                              on_update='CASCADE')
+    user = ForeignKeyField(User,
+                           column_name='user_id',
+                           on_delete='CASCADE',
+                           on_update='CASCADE')
+
+
+class RelatedProject(BaseModel):
+    class Meta:
+        table_name = 'related_projects'
+        schema = 'project_data'
+        primary_key = CompositeKey('project', 'project2')
+
+    project = ForeignKeyField(Project,
+                              column_name='project_id',
+                              on_delete='CASCADE',
+                              on_update='CASCADE')
+    project2 = ForeignKeyField(Project,
+                               column_name='project_id',
+                               on_delete='CASCADE',
+                               on_update='CASCADE')
+    relation_type = EnumField(null=False,
+                              choices=['SUPERSEEDED_BY', 'FOLLOWS', 'PART_OF', 'DEPENDS_ON'],
+                              default='PART_OF')
 
 
 class UserAuthKey(BaseModel):
@@ -195,8 +245,14 @@ class UserAuthKey(BaseModel):
         schema = 'users'
         primary_key = CompositeKey('user', 'auth_key')
 
-    user = ForeignKeyField(User, column_name='user_id', on_delete='CASCADE')
-    auth_key = ForeignKeyField(AuthKey, column_name='auth_key_id', on_delete='CASCADE')
+    user = ForeignKeyField(User,
+                           column_name='user_id',
+                           on_delete='CASCADE',
+                           on_update='CASCADE')
+    auth_key = ForeignKeyField(AuthKey,
+                               column_name='auth_key_id',
+                               on_delete='CASCADE',
+                               on_update='CASCADE')
 
 
 def build_dict_from_row(row) -> dict:
