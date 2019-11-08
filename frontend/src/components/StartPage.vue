@@ -1,6 +1,6 @@
 <template>
 <div class="start-page">
-  The Project Portal start page.
+  Welcome to the SciLifeLab Data Tracker.
 </div>
 </template>
 
