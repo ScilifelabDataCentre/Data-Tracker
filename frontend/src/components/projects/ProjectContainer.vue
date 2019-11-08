@@ -5,23 +5,14 @@
 </template>
 
 <script>
-import {mapGetters} from 'vuex';
-
 export default {
   name: 'ProjectContainer',
-  props: ['id'],
   components: {
-  },
-  computed: {
-    ...mapGetters(['project']),
   },
   data () {
     return {
     }
   },
-  created () {
-    this.$store.dispatch('getProject', this.id);
-  }
 }
 </script>
 

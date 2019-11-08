@@ -3,7 +3,6 @@ import VueRouter from 'vue-router';
 import ProjectAbout from '../components/projects/ProjectAbout.vue'
 import ProjectBrowser from '../components/projects/ProjectBrowser.vue'
 import ProjectContainer from '../components/projects/ProjectContainer.vue'
-import ProjectViewer from '../components/projects/ProjectContainer.vue'
 import DatasetAbout from '../components/projects/ProjectAbout.vue'
 import DatasetBrowser from '../components/projects/ProjectBrowser.vue'
 import DatasetContainer from '../components/projects/ProjectContainer.vue'
@@ -36,23 +35,19 @@ const router = new VueRouter({
         },
         {
           path: ':id',
-          component: ProjectViewer,
+          redirect: ':id/about',
           props: true,
-          children: [
-            {
-              path: '',
-              redirect: 'about',
-            },
-            {
-              path: 'about',
-              component: ProjectAbout,
-            },
-            {
-              path: 'edit',
-              component: ProjectAbout,
-            }
-          ],
-        }
+        },
+        {
+          path: ':id/about',
+          component: ProjectAbout,
+          props: true,
+        },
+        {
+          path: ':id/edit',
+          component: ProjectAbout,
+          props: true,
+        },
       ],
     },
     {

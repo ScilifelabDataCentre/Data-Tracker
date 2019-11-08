@@ -1,11 +1,14 @@
 <template>
 <div class="project-browser">
-  <project-list></project-list>
+  <h4>Projects</h4>
+  <project-entry v-for="project in projects" :key="project.id" :project="project">
+  </project-entry>
 </div>
 </template>
 
 <script>
-import ProjectList from './ProjectList.vue';
+import {mapGetters} from 'vuex';
+import ProjectEntry from './ProjectEntry.vue';
 
 export default {
   name: 'ProjectBrowser',
@@ -13,12 +16,15 @@ export default {
     return {
     }
   },
+  computed: {
+    ...mapGetters(['projects']),
+  },
   components: {
-    'project-list': ProjectList
+    'project-entry': ProjectEntry
   },
   created () {
     this.$store.dispatch('getProjects');
-  }
+  },
 }
 </script>
 
