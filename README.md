@@ -7,7 +7,7 @@ A system for tracking datasets.
 
 The code is based on [SweFreq](https://github.com/NBISweden/swefreq).
 
-[travis-badge]: https://travis-ci.org/ScilifelabDataCentre/project_portal.svg?branch=develop
-[travis-link]: https://travis-ci.org/ScilifelabDataCentre/project_portal
-[coveralls-badge]: https://coveralls.io/repos/github/ScilifelabDataCentre/project_portal/badge.svg?branch=develop
-[coveralls-link]: https://coveralls.io/github/ScilifelabDataCentre/project_portal?branch=develop
+[travis-badge]: https://travis-ci.org/ScilifelabDataCentre/SciLifeLab-Data-Tracker.svg?branch=develop
+[travis-link]: https://travis-ci.org/ScilifelabDataCentre/SciLifeLab-Data-Tracker
+[coveralls-badge]: https://coveralls.io/github/ScilifelabDataCentre/SciLifeLab-Data-Tracker/badge.svg?branch=develop
+[coveralls-link]: https://coveralls.io/github/ScilifelabDataCentre/SciLifeLab-Data-Tracker
