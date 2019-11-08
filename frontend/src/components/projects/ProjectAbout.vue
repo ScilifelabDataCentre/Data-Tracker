@@ -10,6 +10,7 @@
     <div class="project-datasets field">
       <span class="field-header">Datasets:</span> <div class="project-dataset" v-for="dataset in project.datasets" :key="dataset">{{ dataset }}</div></div>
   </div>
+  <router-link to="edit">Edit</router-link>
 </div>
 </template>
 

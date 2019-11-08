@@ -4,6 +4,22 @@ import axios from 'axios';
 
 Vue.use(Vuex);
 
+function getXsrf() {
+  let name = "_xsrf=";
+  let decodedCookie = decodeURIComponent(document.cookie);
+  let ca = decodedCookie.split(';');
+  for(let i = 0; i <ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
+
 const state = {
   user: {},
   users: {},
@@ -69,14 +85,18 @@ const actions = {
       });
   },
   getProject ({ commit }, id) {
-    axios
-      .get('/api/project/' + id)
-      .then((response) => {
-        commit('UPDATE_PROJECT', response.data);
-      })
-      .catch(function (err) {
-        commit('UPDATE_ERRORS', err);
-      });
+    return new Promise((resolve, reject) => {
+      axios
+        .get('/api/project/' + id)
+        .then((response) => {
+          commit('UPDATE_PROJECT', response.data);
+          resolve(response);
+        })
+        .catch(function (err) {
+          commit('UPDATE_ERRORS', err);
+          reject(err);
+        });
+    });
   },
   getProjects ({ commit }) {
     axios
@@ -98,6 +118,25 @@ const actions = {
         commit('UPDATE_ERRORS', err);
       });
   },
+  saveProject (context, payload) {
+    return new Promise((resolve, reject) => {
+      const newProject = {'project': payload};
+      state.tmp=axios;
+      axios
+        .post('/api/project/' + newProject.project.id + '/update',
+              newProject,
+             {
+               headers: {'X-Xsrftoken': getXsrf()},
+             })
+        .then((response) => {
+          resolve(response);
+        })
+        .catch(function (err) {
+          context.commit('UPDATE_ERRORS', err);
+          reject(err);
+        });
+    });
+  }
 }
 
 const getters = {

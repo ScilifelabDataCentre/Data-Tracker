@@ -11,6 +11,7 @@ import NotFound from '../components/NotFound.vue'
 
 import ProjectAbout from '../components/projects/ProjectAbout.vue'
 import ProjectBrowser from '../components/projects/ProjectBrowser.vue'
+import ProjectEdit from '../components/projects/ProjectEdit.vue'
 import ProjectContainer from '../components/projects/ProjectContainer.vue'
 
 import StartPage from '../components/StartPage.vue'
@@ -52,7 +53,7 @@ const router = new VueRouter({
         },
         {
           path: ':id/edit',
-          component: ProjectAbout,
+          component: ProjectEdit,
           props: true,
         },
       ],
@@ -111,7 +112,6 @@ const router = new VueRouter({
           path: '',
           redirect: 'stats',
         },
-
         {
           path: 'stats',
           component: AdminUserBrowser,
