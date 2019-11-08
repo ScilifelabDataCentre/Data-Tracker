@@ -6,6 +6,7 @@ Vue.use(Vuex);
 
 const state = {
   user: {},
+  users: {},
   project: {},
   projects: {},
   dataset: {},
@@ -17,6 +18,9 @@ const state = {
 const mutations = {
   UPDATE_USER (state, payload) {
     state.user = payload;
+  },
+  UPDATE_USERS (state, payload) {
+    state.users = payload;
   },
   UPDATE_DATASET (state, payload) {
     state.dataset = payload;
@@ -84,10 +88,21 @@ const actions = {
         commit('UPDATE_ERRORS', err);
       });
   },
+  getUsers ({ commit }) {
+    axios
+      .get('/api/users')
+      .then((response) => {
+        commit('UPDATE_USERS', response.data.users);
+      })
+      .catch(function (err) {
+        commit('UPDATE_ERRORS', err);
+      });
+  },
 }
 
 const getters = {
   user: state => state.user,
+  users: state => state.users,
   dataset: state => state.dataset,
   datasets: state => state.datasets,
   project: state => state.project,
