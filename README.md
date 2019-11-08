@@ -1,4 +1,4 @@
-# Project portal
+# Data Tracker
 [![Travis Status][travis-badge]][travis-link]
 [![Coverage Status][coveralls-badge]][coveralls-link]
 
