@@ -98,21 +98,33 @@ def has_rights(user, permissions: tuple) -> bool:
     return False
 
 
-def is_owner(user, dataset) -> bool:
+def is_owner(user, entity, entity_type='dataset') -> bool:
     """
     Test whether the user owns the provided dataset
 
     Args:
         user (db.User): the user to test
-        dataset (db.Dataset): the dataset to check owners for
+        entity (db.BaseModel): the dataset or project to check owners for
+        entity_type (str): dataset or project
 
     Returns:
         bool: whether user owns the dataset
 
+    Raises:
+        ValueError: bad type of entity
+
     """
-    query = (db.ProjectOwner
-             .select(db.ProjectOwner.project)
-             .join(db.ProjectDataset, on=(db.ProjectOwner.project == db.ProjectDataset.project))
-             .where((db.ProjectDataset.dataset == dataset.id) &
-                    (db.ProjectOwner.user == user)))
-    return bool(list(query))
+    if entity_type == 'dataset':
+        query = (db.ProjectOwner
+                 .select(db.ProjectOwner.project)
+                 .join(db.ProjectDataset, on=(db.ProjectOwner.project == db.ProjectDataset.project))
+                 .where((db.ProjectDataset.dataset == entity.id) &
+                        (db.ProjectOwner.user == user)))
+        return bool(list(query))
+    if entity_type == 'project':
+        query = (db.ProjectOwner
+                 .select(db.ProjectOwner.project)
+                 .where((db.ProjectOwner.project == entity.id) &
+                        (db.ProjectOwner.user == user)))
+        return bool(list(query))
+    raise ValueError('Only supports Project and Dataset')
