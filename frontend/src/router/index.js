@@ -1,14 +1,23 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import ProjectAbout from '../components/projects/ProjectAbout.vue'
-import ProjectBrowser from '../components/projects/ProjectBrowser.vue'
-import ProjectContainer from '../components/projects/ProjectContainer.vue'
+
+import AdminUserBrowser from '../components/admin/AdminUserBrowser.vue'
+
 import DatasetAbout from '../components/datasets/DatasetAbout.vue'
 import DatasetBrowser from '../components/datasets/DatasetBrowser.vue'
 import DatasetContainer from '../components/datasets/DatasetContainer.vue'
-import AdminUserBrowser from '../components/admin/AdminUserBrowser.vue'
+
 import NotFound from '../components/NotFound.vue'
+
+import ProjectAbout from '../components/projects/ProjectAbout.vue'
+import ProjectBrowser from '../components/projects/ProjectBrowser.vue'
+import ProjectContainer from '../components/projects/ProjectContainer.vue'
+
 import StartPage from '../components/StartPage.vue'
+
+import UserAbout from '../components/user/UserAbout.vue'
+import UserContainer from '../components/user/UserContainer.vue'
+
 
 Vue.use(VueRouter);
 
@@ -78,7 +87,7 @@ const router = new VueRouter({
     },
     {
       path: '/user',
-      component: AdminUserBrowser,
+      component: UserContainer,
       children: [   
         {
           path: '',
@@ -86,11 +95,11 @@ const router = new VueRouter({
         },
         {
           path: 'about',
-          component: AdminUserBrowser,
+          component: UserAbout,
         },
         {
           path: 'edit',
-          component: AdminUserBrowser,
+          component: UserAbout,
         },
       ],
     },
