@@ -3,10 +3,9 @@ import VueRouter from 'vue-router';
 import ProjectAbout from '../components/projects/ProjectAbout.vue'
 import ProjectBrowser from '../components/projects/ProjectBrowser.vue'
 import ProjectContainer from '../components/projects/ProjectContainer.vue'
-import DatasetAbout from '../components/projects/ProjectAbout.vue'
-import DatasetBrowser from '../components/projects/ProjectBrowser.vue'
-import DatasetContainer from '../components/projects/ProjectContainer.vue'
-import DatasetViewer from '../components/projects/ProjectContainer.vue'
+import DatasetAbout from '../components/datasets/DatasetAbout.vue'
+import DatasetBrowser from '../components/datasets/DatasetBrowser.vue'
+import DatasetContainer from '../components/datasets/DatasetContainer.vue'
 import AdminUserBrowser from '../components/admin/AdminUserBrowser.vue'
 import NotFound from '../components/NotFound.vue'
 import StartPage from '../components/StartPage.vue'
@@ -36,7 +35,6 @@ const router = new VueRouter({
         {
           path: ':id',
           redirect: ':id/about',
-          props: true,
         },
         {
           path: ':id/about',
@@ -64,23 +62,18 @@ const router = new VueRouter({
         },
         {
           path: ':id',
-          component: DatasetViewer,
+          redirect: ':id/about',
+        },
+        {
+          path: ':id/about',
+          component: DatasetAbout,
           props: true,
-          children: [
-            {
-              path: '',
-              redirect: 'about',
-            },
-            {
-              path: 'about',
-              component: DatasetAbout,
-            },
-            {
-              path: 'edit',
-              component: DatasetAbout,
-            }
-          ],
-        }
+        },
+        {
+          path: ':id/edit',
+          component: DatasetAbout,
+          props: true,
+        },
       ],
     },
     {

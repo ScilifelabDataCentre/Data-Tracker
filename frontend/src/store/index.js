@@ -8,6 +8,8 @@ const state = {
   user: {},
   project: {},
   projects: {},
+  dataset: {},
+  datasets: {},
   errorCode: undefined,
   errorText: undefined,
 }
@@ -15,6 +17,12 @@ const state = {
 const mutations = {
   UPDATE_USER (state, payload) {
     state.user = payload;
+  },
+  UPDATE_DATASET (state, payload) {
+    state.dataset = payload;
+  },
+  UPDATE_DATASETS (state, payload) {
+    state.datasets = payload;
   },
   UPDATE_PROJECT (state, payload) {
     state.project = payload;
@@ -36,6 +44,26 @@ const actions = {
         commit('UPDATE_USER', response.data);
       });
   },
+  getDataset ({ commit }, id) {
+    axios
+      .get('/api/dataset/' + id)
+      .then((response) => {
+        commit('UPDATE_DATASET', response.data);
+      })
+      .catch(function (err) {
+        commit('UPDATE_ERRORS', err);
+      });
+  },
+  getDatasets ({ commit }) {
+    axios
+      .get('/api/datasets')
+      .then((response) => {
+        commit('UPDATE_DATASETS', response.data.datasets);
+      })
+      .catch(function (err) {
+        commit('UPDATE_ERRORS', err);
+      });
+  },
   getProject ({ commit }, id) {
     axios
       .get('/api/project/' + id)
@@ -55,11 +83,13 @@ const actions = {
       .catch(function (err) {
         commit('UPDATE_ERRORS', err);
       });
-  }
+  },
 }
 
 const getters = {
   user: state => state.user,
+  dataset: state => state.dataset,
+  datasets: state => state.datasets,
   project: state => state.project,
   projects: state => state.projects,
   errorCode: state => state.errorCode,
