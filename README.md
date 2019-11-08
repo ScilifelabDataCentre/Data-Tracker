@@ -7,6 +7,11 @@ A system for tracking datasets.
 
 The code is based on [SweFreq](https://github.com/NBISweden/swefreq).
 
+## Quick development mode:
+```
+docker-compose up
+psql -h localhost -U postgres -p 5433 portal -f test/data/test_data.sql
+```
 [travis-badge]: https://travis-ci.org/ScilifelabDataCentre/SciLifeLab-Data-Tracker.svg?branch=develop
 [travis-link]: https://travis-ci.org/ScilifelabDataCentre/SciLifeLab-Data-Tracker
 [coveralls-badge]: https://coveralls.io/repos/github/ScilifelabDataCentre/SciLifeLab-Data-Tracker/badge.svg?branch=develop
