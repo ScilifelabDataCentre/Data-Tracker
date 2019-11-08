@@ -8,7 +8,7 @@ import DatasetAbout from '../components/projects/ProjectAbout.vue'
 import DatasetBrowser from '../components/projects/ProjectBrowser.vue'
 import DatasetContainer from '../components/projects/ProjectContainer.vue'
 import DatasetViewer from '../components/projects/ProjectContainer.vue'
-import AdminUserBrowser from '../components/AdminUserBrowser.vue'
+import AdminUserBrowser from '../components/admin/AdminUserBrowser.vue'
 import NotFound from '../components/NotFound.vue'
 import StartPage from '../components/StartPage.vue'
 
