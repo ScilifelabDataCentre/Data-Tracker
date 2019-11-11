@@ -132,7 +132,7 @@ def test_add_dataset_get():
     assert data == expected
 
 
-def test_add_dataset_post():
+def test_add_dataset_post_steward():
     """Test AddDataset.post()"""
     session = requests.Session()
     payload = {'dataset': {'title': 'An added Dataset1',
@@ -178,7 +178,25 @@ def test_add_dataset_post():
         else:
             assert data[header] == payload['dataset'][header]
 
+
+def test_add_dataset_post_bad():
+    """Test AddDataset.post()"""
+    session = requests.Session()
+    payload = {'dataset': {'title': 'An added Dataset1',
+                           'description': 'Description of added dataset1',
+                           'doi': 'A doi for added dataset1',
+                           'creator': 'The facility that created dataset1',
+                           'dmp': 'Url to dmp for added dataset1',
+                           'tags': [{'title': 'Tag Title 7'},
+                                    {'title': 'Tag Title 1'},
+                                    {'title': 'Tag Title 5'}],
+                           'publications': [{'identifier': 'Publication title1. Journal:Year'}],
+                           'dataUrls': [{'description': 'Part I', 'url': 'Data url 1a'},
+                                        {'description': 'Part II', 'url': 'Data url 1b'}],
+                           'projects': [2]}}
+
     ## bad requests
+    as_user(session, 5)
     data, status_code = make_request(session,
                                      '/api/dataset/add',
                                      {'bad_request': None})
@@ -195,6 +213,39 @@ def test_add_dataset_post():
     assert status_code == 400
     assert not data
 
+    # not logged in: fail
+    as_user(session, 0)
+    data, status_code = make_request(session,
+                                     f'/api/dataset/add',
+                                     payload)
+    assert status_code == 403
+    assert not data
+
+    # normal user: fail
+    as_user(session, 1)
+    data, status_code = make_request(session,
+                                     f'/api/dataset/add',
+                                     payload)
+    assert status_code == 403
+    assert not data
+
+
+
+def test_add_dataset_post_admin():
+    """Test AddDataset.post()"""
+    session = requests.Session()
+    payload = {'dataset': {'title': 'An added Dataset1',
+                           'description': 'Description of added dataset1',
+                           'doi': 'A doi for added dataset1',
+                           'creator': 'The facility that created dataset1',
+                           'dmp': 'Url to dmp for added dataset1',
+                           'tags': [{'title': 'Tag Title 7'},
+                                    {'title': 'Tag Title 1'},
+                                    {'title': 'Tag Title 5'}],
+                           'publications': [{'identifier': 'Publication title1. Journal:Year'}],
+                           'dataUrls': [{'description': 'Part I', 'url': 'Data url 1a'},
+                                        {'description': 'Part II', 'url': 'Data url 1b'}],
+                           'projects': [2]}}
     # admin
     as_user(session, 6)
     payload['dataset']['title'] = 'An added Dataset2'
@@ -227,22 +278,6 @@ def test_add_dataset_post():
                     sorted([url['description'] for url in payload['dataset'][header]]))
         else:
             assert data[header] == payload['dataset'][header]
-
-    # not logged in: fail
-    as_user(session, 0)
-    data, status_code = make_request(session,
-                                     f'/api/dataset/add',
-                                     payload)
-    assert status_code == 403
-    assert not data
-
-    # normal user: fail
-    as_user(session, 1)
-    data, status_code = make_request(session,
-                                     f'/api/dataset/add',
-                                     payload)
-    assert status_code == 403
-    assert not data
 
 
 def test_countrylist_get():
