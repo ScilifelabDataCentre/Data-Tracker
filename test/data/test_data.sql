@@ -34,6 +34,7 @@ COPY project_data.data_urls (id, url, description) FROM stdin;
 11	https:www.example.com/url11	URL description 11
 \.
 
+SELECT pg_catalog.setval('project_data.data_urls_id_seq', 11, true);
 
 --
 -- Data for Name: datasets; Type: TABLE DATA; Schema: datasets; Owner: postgres
@@ -48,6 +49,7 @@ COPY project_data.datasets (id, title, description, doi, creator, dmp) FROM stdi
 6	Dataset title 6	Dataset 6 description	doi.portal.6	A facility 6	\N
 \.
 
+SELECT pg_catalog.setval('project_data.datasets_id_seq', 6, true);
 
 COPY project_data.projects (id, title, description, contact) FROM stdin;
 1	Project title 1	Project 1 description	Contact@place1
@@ -58,6 +60,7 @@ COPY project_data.projects (id, title, description, contact) FROM stdin;
 6	Project title 6	Project 6 description	Contact@place6
 \.
 
+SELECT pg_catalog.setval('project_data.projects_id_seq', 6, true);
 
 COPY project_data.project_dataset_map (project_id, dataset_id) FROM stdin;
 1	1
@@ -106,6 +109,7 @@ COPY project_data.publications (id, identifier) FROM stdin;
 3	A publication3. Journal:2013
 \.
 
+SELECT pg_catalog.setval('project_data.publications_id_seq', 3, true);
 
 --
 -- Data for Name: dataset_publication_map; Type: TABLE DATA; Schema: datasets; Owner: postgres
@@ -134,6 +138,8 @@ COPY project_data.tags (id, title) FROM stdin;
 9	Tag Title 9
 10	Tag Title 10
 \.
+
+SELECT pg_catalog.setval('project_data.tags_id_seq', 10, true);
 
 
 --
@@ -172,7 +178,7 @@ COPY users.users (id, given_name, email, affiliation, country, auth_identity, pe
 6	A Name6	user6@example.com	A University6	A Country6	user6auth	Admin
 \.
 
-
+SELECT pg_catalog.setval('users.users_id_seq', 6, true);
 --
 -- Data for Name: dataset_owners; Type: TABLE DATA; Schema: users; Owner: postgres
 --
@@ -195,51 +201,12 @@ COPY users.auth_keys (id, system_name, system_url, key_value) FROM stdin;
 2	http://order2.portal	Order Portal	1234556789ABCDEF0
 \.
 
+SELECT pg_catalog.setval('users.auth_keys_id_seq', 2, true);
+
 COPY users.user_auth_key_map (user_id, authkey_id) FROM stdin;
 1	1
 2	2
 \.
 
 
---
--- Name: data_urls_id_seq; Type: SEQUENCE SET; Schema: datasets; Owner: postgres
---
-
-SELECT pg_catalog.setval('project_data.data_urls_id_seq', 11, true);
-
-
-SELECT pg_catalog.setval('users.auth_keys_id_seq', 2, true);
-
-
---
--- Name: datasets_id_seq; Type: SEQUENCE SET; Schema: datasets; Owner: postgres
---
-
-SELECT pg_catalog.setval('project_data.datasets_id_seq', 6, true);
-
-
---
--- Name: publications_id_seq; Type: SEQUENCE SET; Schema: datasets; Owner: postgres
---
-
-SELECT pg_catalog.setval('project_data.publications_id_seq', 3, true);
-
-
---
--- Name: tags_id_seq; Type: SEQUENCE SET; Schema: datasets; Owner: postgres
---
-
-SELECT pg_catalog.setval('project_data.tags_id_seq', 10, true);
-
-
---
--- Name: users_id_seq; Type: SEQUENCE SET; Schema: users; Owner: postgres
---
-
-SELECT pg_catalog.setval('users.users_id_seq', 6, true);
-
-
---
--- PostgreSQL database dump complete
---
 
