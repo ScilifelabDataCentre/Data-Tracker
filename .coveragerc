@@ -1,5 +1,5 @@
 [run]
-omit = /usr/local/*,/home/travis/virtualenv/*,*venv*
+omit = /usr/local/*,/home/travis/virtualenv/*,*venv*, */test/*
 
 [report]
-omit = */__init__.py, */test.py, */test_*.py
+omit = */__init__.py, */test.py, */test_*.py, */test/*
