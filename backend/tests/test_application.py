@@ -1,97 +1,9 @@
 """Tests for the handlers in application.py."""
 
 import json
-import os
 import requests
 
-import pytest
-
-curr_dir = os.path.realpath(__file__)
-settings = json.loads(open(f'{os.path.dirname(curr_dir)}/settings_tests.json').read())
-BASE_URL = f'{settings["host"]}:{settings["port"]}'
-
-@pytest.fixture
-def dataset_for_tests():
-    # prepare
-    session = requests.Session()
-    as_user(session, 5)
-    payload = {'dataset': {'title': 'A Unique Title',
-                           'description': 'Description',
-                           'doi': 'DOI',
-                           'creator': 'Creator',
-                           'dmp': 'Data Management Plan',
-                           'tags': [{'title': 'Tag1'}, {'title': 'Tag2'}],
-                           'publications': [{'identifier': 'Publication'}],
-                           'dataUrls': [{'url': 'Data Access URL', 'description': 'Description'}],
-                           'projects': [2]}}
-
-    _ , status_code = make_request(session,
-                           '/api/dataset/add',
-                           payload)
-    assert status_code == 200
-
-    data, status_code = make_request(session,
-                           '/api/dataset/query',
-                           {'query': {'title': 'A Unique Title'}})
-    assert status_code == 200
-
-    ds_id = data['datasets'][0]['id']
-
-    yield ds_id
-
-    # cleanup
-    payload = {'identifier': ds_id}
-    make_request(session,
-                 '/api/dataset/delete',
-                 payload)
-
-
-def make_request(session, url: str, data: dict = None) -> dict:
-    """
-    Helper method for using get/post to a url.
-
-    Args:
-        session: A requests.Session()
-        url: The url to get without {BASE_URL} prefix (but with leading /)
-        data: The data to POST; no data means GET
-
-    Returns:
-        tuple: (data: dict, status_code: int)
-    """
-    if data:
-        response = session.post(f'{BASE_URL}{url}',
-                                data=json.dumps(data))
-    else:
-        response = session.get(f'{BASE_URL}{url}')
-
-    if response.text:
-        data = json.loads(response.text)
-    else:
-        data = {}
-    return (data, response.status_code)
-
-
-def as_user(session, user_id: int) -> int:
-    """
-    Helper method to log in as requested user.
-
-    Session changed in-place.
-
-    Args:
-        session: a requests.Session()
-        user_id: the id of the user, 0 means log out
-
-    Returns:
-        int: status_code
-    """
-    if user_id != 0:
-        code = session.get(f'{BASE_URL}/developer/login?userid={user_id}').status_code
-        session.headers['X-Xsrftoken'] = session.cookies['_xsrf']
-    else:
-        code = session.get(f'{BASE_URL}/logout').status_code
-        session.get(f'{BASE_URL}/api/datasets')  # reset cookies
-        session.headers['X-Xsrftoken'] = session.cookies['_xsrf']
-    return code
+from helpers import as_user, dataset_for_tests, make_request
 
 
 def test_add_dataset_get():
@@ -282,10 +194,9 @@ def test_add_dataset_post_admin():
 
 def test_countrylist_get():
     """Test CountryList.get()"""
-    response = requests.get(f'{BASE_URL}/api/countries')
-    assert response.status_code == 200
-    data = json.loads(response.text)
-
+    session = requests.Session()
+    data, status_code = make_request(session, '/api/countries')
+    assert status_code == 200
     assert len(data['countries']) == 240
 
 
@@ -448,8 +359,7 @@ def test_find_dataset_post():
     assert len(data['datasets']) == 1
     for dataset in data['datasets']:
         assert payload['query']['title'] in dataset['title']
-        response = session.get(f'{BASE_URL}/api/dataset/{dataset["id"]}')
-        data = json.loads(response.text)
+        data, status_code = make_request(session, f'/api/dataset/{dataset["id"]}')
         for pub in payload['query']['publications']:
             assert pub in [val['identifier'] for val in data['publications']]
 
@@ -461,8 +371,7 @@ def test_find_dataset_post():
     assert len(data['datasets']) == 2
     for dataset in data['datasets']:
         assert len(dataset) == 10
-        response = session.get(f'{BASE_URL}/api/dataset/{dataset["id"]}')
-        data = json.loads(response.text)
+        data, status_code = make_request(session, f'/api/dataset/{dataset["id"]}')
         for tag in payload['query']['tags']:
             assert tag in [val['title'] for val in data['tags']]
 
@@ -492,8 +401,7 @@ def test_find_dataset_post():
     assert len(data['datasets']) == 6
     for dataset in data['datasets']:
         assert payload['query']['title'] in dataset['title']
-        response = session.get(f'{BASE_URL}/api/dataset/{dataset["id"]}')
-        data = json.loads(response.text)
+        data, status_code = make_request(session, f'/api/dataset/{dataset["id"]}')
 
     # owner
     as_user(session, 4)
@@ -511,8 +419,7 @@ def test_find_dataset_post():
     assert status_code == 200
     assert len(data['datasets']) == 2
     for dataset in data['datasets']:
-        response = session.get(f'{BASE_URL}/api/dataset/{dataset["id"]}')
-        data = json.loads(response.text)
+        data, status_code = make_request(session, f'/api/dataset/{dataset["id"]}')
         for tag in payload['query']['tags']:
             assert tag in [val['title'] for val in data['tags']]
 
