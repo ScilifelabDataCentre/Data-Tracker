@@ -8,7 +8,11 @@
     <div class="project-description field">{{ project.description }}</div>
     <div class="project-contact field"><span class="field-header">Contact:</span> {{ project.contact }}</div>
     <div class="project-datasets field">
-      <span class="field-header">Datasets:</span> <div class="project-dataset" v-for="dataset in project.datasets" :key="dataset">{{ dataset }}</div></div>
+      <span class="field-header">Datasets:</span>
+      <div class="project-dataset" v-for="dataset in project.datasets" :key="dataset">
+	<router-link :to="'/dataset/' + dataset + '/about'">{{ dataset }}</router-link>
+      </div>
+    </div>
   </div>
   <router-link to="edit">Edit</router-link>
 </div>
