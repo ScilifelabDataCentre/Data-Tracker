@@ -56,8 +56,10 @@ class Application(tornado.web.Application):
             # Project methods
             (r"/api/projects", hp.ListProjects),
             (r"/api/project/add", hp.AddProject),
+            (r"/api/project/delete", hp.DeleteProject),
             (r"/api/project/(?P<project_id>[0-9]+)", hp.GetProject),
             (r"/api/project/(?P<project_id>[0-9]+)/update", hp.UpdateProject),
+            (r"/api/project/(?P<project_id>[0-9]+)/delete", hp.DeleteProject),
         ]
 
         # Adding Catch all handlers

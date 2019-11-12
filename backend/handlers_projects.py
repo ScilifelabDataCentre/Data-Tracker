@@ -54,7 +54,7 @@ class AddProject(handlers.StewardHandler):
                        if header in proj_data}
 
         with db.database.atomic():
-            dbproject = db.Dataset.create(**proj_to_add)
+            dbproject = db.Project.create(**proj_to_add)
             if 'datasets' in proj_data:
                 for dataset_id in proj_data['datasets']:
                     db.ProjectDataset.create(project=dbproject,
@@ -62,25 +62,79 @@ class AddProject(handlers.StewardHandler):
         self.finish({'id': dbproject.id})
 
 
+class DeleteProject(handlers.StewardHandler):
+    """Delete a project"""
+    def get(self, project_id: int = None):
+        """
+        Delete project or get data structure for POST.
+
+        Args:
+            project_id (int): project identifier; if present the project will be deleted
+        """
+        if not project_id:
+            data = {'id': 9876543210}
+        else:
+            try:
+                project = db.Project.get_by_id(project_id)
+            except db.Project.DoesNotExist:
+                logging.info('Bad request (project does not exist)')
+                self.send_error(status_code=400, reason="Project does not exist")
+                return
+            project.delete_instance()
+            data = None
+        self.finish(data)
+
+
+    def post(self, project_id: int = None):
+        """
+        Delete the project with the provided id.
+
+        JSON structure:
+        ```
+        {"id": <project_id> (int)}
+        ```
+        """
+        if project_id:
+            data = {'id': project_id}
+        else:
+            data = tornado.escape.json_decode(self.request.body)
+
+        try:
+            identifier = int(data['id'])
+        except ValueError:
+            logging.info('DeleteProject: bad request (input not an integer)')
+            self.send_error(status_code=400, reason="The identifier should be an integer")
+            return
+        try:
+            project = db.Project.get_by_id(identifier)
+        except db.Project.DoesNotExist:
+            logging.info('DeleteProject: bad request (project does not exist)')
+            self.send_error(status_code=400, reason="Project does not exist")
+            return
+        project.delete_instance()
+        
+        self.finish()
+
+
 class GetProject(handlers.UnsafeHandler):
     """Retrieve a dataset."""
     def get(self, project_id: str):
         """
-        Retrieve the wanted dataset.
+        Retrieve the wanted project.
 
         Args:
-            project_id (str): the database id of the wanted dataset
+            project_id (str): the database id of the wanted project
 
         """
         dbid = int(project_id)
         try:
             dataset = portal_utils.get_project(dbid, self.current_user)
         except db.Dataset.DoesNotExist:
-            logging.info('GetDataset: dataset does not exist')
+            logging.info('GetProject: project does not exist')
             self.send_error(status_code=404)
             return
         except portal_errors.InsufficientPermissions:
-            logging.info('GetDataset: insufficient permissions')
+            logging.info('GetProject: insufficient permissions')
             self.send_error(status_code=403)
             return
 
