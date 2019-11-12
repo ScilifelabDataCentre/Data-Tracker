@@ -19,7 +19,7 @@ class AddProject(handlers.StewardHandler):
         """The intended data structure for POST."""
         data = {'project': {'title': 'Title',
                             'description': 'Description',
-                            'creator': 'Creator',
+                            'contact': 'Contact',
                             'datasets': []}}
 
         self.finish(data)
@@ -50,7 +50,7 @@ class AddProject(handlers.StewardHandler):
         proj_to_add = {header: proj_data[header]
                        for header in ('title',
                                       'description',
-                                      'creator')
+                                      'contact')
                        if header in proj_data}
 
         with db.database.atomic():
