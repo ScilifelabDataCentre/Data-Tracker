@@ -55,6 +55,7 @@ class Application(tornado.web.Application):
             (r"/api/dataset/(?P<ds_identifier>[0-9]+)/update", hds.UpdateDataset),
             # Project methods
             (r"/api/projects", hp.ListProjects),
+            (r"/api/project/add", hp.AddProject),
             (r"/api/project/(?P<project_id>[0-9]+)", hp.GetProject),
             (r"/api/project/(?P<project_id>[0-9]+)/update", hp.UpdateProject),
         ]
@@ -62,7 +63,8 @@ class Application(tornado.web.Application):
         # Adding Catch all handlers
         self.declared_handlers += [
             (r"/api/.*", tornado.web.ErrorHandler, {"status_code": 404}),
-            (r'().*', tornado.web.StaticFileHandler, {"path": "static/templates/", "default_filename": "index.html"}),
+            (r"/elixir/.*", tornado.web.ErrorHandler, {"status_code": 404}),
+            (r"/developer/.*", tornado.web.ErrorHandler, {"status_code": 404}),
             ]
 
         # Adding developer login handler

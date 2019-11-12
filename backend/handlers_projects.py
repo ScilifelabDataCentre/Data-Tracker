@@ -1,3 +1,5 @@
+"""Project handlers."""
+
 import logging
 
 import tornado.web
@@ -9,6 +11,57 @@ import portal_errors
 import portal_utils
 
 
+class AddProject(handlers.StewardHandler):
+    """
+    Add a new Project to the db.
+    """
+    def get(self):
+        """The intended data structure for POST."""
+        data = {'project': {'title': 'Title',
+                            'description': 'Description',
+                            'creator': 'Creator',
+                            'datasets': []}}
+
+        self.finish(data)
+
+    def post(self):
+        """
+        Add a project.
+
+        Expects a JSON structure:
+        ```
+        {"project": {<project values>}}
+        ```
+        """
+        data = tornado.escape.json_decode(self.request.body)
+
+        if not 'project' in data:
+            logging.debug(f'add project failed: {data}')
+            logging.info('AddProject: bad request (project)')
+            self.send_error(status_code=400)
+            return
+
+        proj_data = data['project']
+        if 'title' not in proj_data or not proj_data['title']:
+            logging.info('AddProject: bad request (title)')
+            self.send_error(status_code=400)
+            return
+
+        proj_to_add = {header: proj_data[header]
+                       for header in ('title',
+                                      'description',
+                                      'creator')
+                       if header in proj_data}
+
+        with db.database.atomic():
+            dbproject = db.Dataset.create(**proj_to_add)
+            if 'datasets' in proj_data:
+                for dataset_id in proj_data['datasets']:
+                    db.ProjectDataset.create(project=dbproject,
+                                             dataset=dataset_id)
+        self.finish({'id': dbproject.id})
+
+
 class GetProject(handlers.UnsafeHandler):
     """Retrieve a dataset."""
     def get(self, project_id: str):
@@ -16,7 +69,7 @@ class GetProject(handlers.UnsafeHandler):
         Retrieve the wanted dataset.
 
         Args:
-            ds_identifier (str): the database id of the wanted dataset
+            project_id (str): the database id of the wanted dataset
 
         """
         dbid = int(project_id)
@@ -68,7 +121,7 @@ class UpdateProject(handlers.SafeHandler):
         Update the fields of a dataset.
 
         Args:
-            ds_identifier (str): the id of a dataset, int(ds_id) must work
+            project_id (str): the id of a dataset, int(proj_id) must work
 
         """
         proj_id = int(project_id)
