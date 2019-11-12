@@ -7,6 +7,8 @@ from tornado.options import define, options
 import tornado.web
 
 import application
+import handlers_datasets as hds
+import handlers_projects as hp
 import auth
 import settings as portal_settings
 
@@ -44,17 +46,17 @@ class Application(tornado.web.Application):
             (r"/api/users", application.ListUsers),
             (r"/api/users/me", application.GetCurrentUser),
             # Dataset methods
-            (r"/api/datasets", application.ListDatasets),
-            (r"/api/dataset/add", application.AddDataset),
-            (r"/api/dataset/delete", application.DeleteDataset),
-            (r"/api/dataset/query", application.FindDataset),
-            (r"/api/dataset/(?P<ds_identifier>[0-9]+)", application.GetDataset),
-            (r"/api/dataset/(?P<ds_identifier>[0-9]+)/delete", application.DeleteDataset),
-            (r"/api/dataset/(?P<ds_identifier>[0-9]+)/update", application.UpdateDataset),
+            (r"/api/datasets", hds.ListDatasets),
+            (r"/api/dataset/add", hds.AddDataset),
+            (r"/api/dataset/delete", hds.DeleteDataset),
+            (r"/api/dataset/query", hds.FindDataset),
+            (r"/api/dataset/(?P<ds_identifier>[0-9]+)", hds.GetDataset),
+            (r"/api/dataset/(?P<ds_identifier>[0-9]+)/delete", hds.DeleteDataset),
+            (r"/api/dataset/(?P<ds_identifier>[0-9]+)/update", hds.UpdateDataset),
             # Project methods
-            (r"/api/projects", application.ListProjects),
-            (r"/api/project/(?P<project_id>[0-9]+)", application.GetProject),
-            (r"/api/project/(?P<project_id>[0-9]+)/update", application.UpdateProject),
+            (r"/api/projects", hp.ListProjects),
+            (r"/api/project/(?P<project_id>[0-9]+)", hp.GetProject),
+            (r"/api/project/(?P<project_id>[0-9]+)/update", hp.UpdateProject),
         ]
 
         # Adding Catch all handlers
