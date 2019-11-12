@@ -66,13 +66,9 @@ def test_add_dataset_post_steward():
                                      '/api/dataset/add',
                                      payload)
     assert status_code == 200
-    assert not data
+    assert data['id']
 
-    data, status_code = make_request(session,
-                                     '/api/dataset/query',
-                                     {'query': {'title': payload['dataset']['title']}})
-    assert status_code == 200
-    dbid = data['datasets'][0]['id']
+    dbid = data['id']
     data, status_code = make_request(session, f'/api/dataset/{dbid}')
     assert status_code == 200
     for header in payload['dataset']:
@@ -166,13 +162,9 @@ def test_add_dataset_post_admin():
                                      '/api/dataset/add',
                                      payload)
     assert status_code == 200
-    assert not data
+    assert data['id']
 
-    data, status_code = make_request(session,
-                                     '/api/dataset/query',
-                                     {'query': {'title': payload['dataset']['title']}})
-    assert status_code == 200
-    dbid = data['datasets'][0]['id']
+    dbid = data['id']
     data, status_code = make_request(session,
                                      f'/api/dataset/{dbid}')
     assert status_code == 200
@@ -195,7 +187,7 @@ def test_add_dataset_post_admin():
 def test_delete_dataset_get(dataset_for_tests):
     """Test DeleteDataset.get()"""
     session = requests.Session()
-    expected = {'identifier': 9876543210}
+    expected = {'id': 9876543210}
 
     # not logged in/normal user
     for user in (0, 1):
@@ -236,7 +228,7 @@ def test_delete_dataset_post(dataset_for_tests):
                                      {'query': {'title': 'An added Dataset1'}})
     assert status_code == 200
     dbid = data['datasets'][0]['id']
-    payload = {'identifier': dbid}
+    payload = {'id': dbid}
     data, status_code = make_request(session,
                                      '/api/dataset/delete',
                                      payload)
@@ -251,14 +243,14 @@ def test_delete_dataset_post(dataset_for_tests):
                                      {'query': {'title': 'An added Dataset2'}})
     assert status_code == 200
     dbid = data['datasets'][0]['id']
-    payload = {'identifier': dbid}
+    payload = {'id': dbid}
     data, status_code = make_request(session,
                                      '/api/dataset/delete',
                                      payload)
     assert status_code == 200
     assert not data
 
-    payload = {'identifier': 9876543210}
+    payload = {'id': 9876543210}
     data, status_code = make_request(session,
                                      f'/api/dataset/{dataset_for_tests}/delete',
                                      payload)
@@ -272,8 +264,8 @@ def test_delete_dataset_post_fail(dataset_for_tests):  # pylint: disable=unused-
 
     # bad requests
     as_user(session, 5)
-    for payload in ({'identifier': 'abc'},
-                    {'identifier': 10**7}):
+    for payload in ({'id': 'abc'},
+                    {'id': 10**7}):
         data, status_code = make_request(session,
                                          '/api/dataset/delete',
                                          payload)

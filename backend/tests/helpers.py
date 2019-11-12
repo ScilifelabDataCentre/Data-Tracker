@@ -48,25 +48,20 @@ def dataset_for_tests():
                            'dataUrls': [{'url': 'Data Access URL', 'description': 'Description'}],
                            'projects': [2]}}
 
-    _, status_code = make_request(session,
+    data, status_code = make_request(session,
                                   '/api/dataset/add',
                                   payload)
     assert status_code == 200
-
-    data, status_code = make_request(session,
-                                     '/api/dataset/query',
-                                     {'query': {'title': 'A Unique Title'}})
-    assert status_code == 200
-
-    ds_id = data['datasets'][0]['id']
+    ds_id = data['id']
 
     yield ds_id
 
     # cleanup
-    payload = {'identifier': ds_id}
-    make_request(session,
-                 '/api/dataset/delete',
-                 payload)
+    payload = {'id': ds_id}
+    print(payload)
+    _, status_code = make_request(session,
+                                  '/api/dataset/delete',
+                                  payload)
 
 
 def make_request(session, url: str, data: dict = None) -> dict:
@@ -103,22 +98,17 @@ def project_for_tests():
                            'description': 'Description for a project.',
                            'creator': 'Creator'}}
 
-    _, status_code = make_request(session,
+    data, status_code = make_request(session,
                                   '/api/project/add',
                                   payload)
     assert status_code == 200
 
-    data, status_code = make_request(session,
-                                     '/api/project/query',
-                                     {'query': {'title': 'A Unique Title'}})
-    assert status_code == 200
-
-    ds_id = data['datasets'][0]['id']
-
-    yield ds_id
+    proj_id = data['id']
+    print(proj_id)
+    yield proj_id
 
     # cleanup
-    payload = {'identifier': ds_id}
+    payload = {'id': proj_id}
     make_request(session,
                  '/api/dataset/delete',
                  payload)

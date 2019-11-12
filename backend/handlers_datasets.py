@@ -80,7 +80,7 @@ class AddDataset(handlers.StewardHandler):
                 url_id, _ = db.DataUrl.get_or_create(**data_url)
                 db.DatasetDataUrl.create(dataset=ds_id,
                                          data_url=url_id)
-        self.finish()
+        self.finish({'id': ds_id.id})
 
 
 class DeleteDataset(handlers.StewardHandler):
@@ -93,7 +93,7 @@ class DeleteDataset(handlers.StewardHandler):
             ds_identifier (int): dataset identifier; if present the dataset will be deleted
         """
         if not ds_identifier:
-            data = {'identifier': 9876543210}
+            data = {'id': 9876543210}
         else:
             try:
                 dataset = db.Dataset.get_by_id(ds_identifier)
@@ -112,16 +112,16 @@ class DeleteDataset(handlers.StewardHandler):
 
         JSON structure:
         ```
-        {"identifier": <ds_identifier> (int)}
+        {"id": <ds_identifier> (int)}
         ```
         """
         if ds_identifier:
-            data = {'identifier': ds_identifier}
+            data = {'id': ds_identifier}
         else:
             data = tornado.escape.json_decode(self.request.body)
 
         try:
-            identifier = int(data['identifier'])
+            identifier = int(data['id'])
         except ValueError:
             logging.info('DeleteDataset: bad request (input not an integer)')
             self.send_error(status_code=400, reason="The identifier should be an integer")
@@ -129,7 +129,7 @@ class DeleteDataset(handlers.StewardHandler):
         try:
             dataset = db.Dataset.get_by_id(identifier)
         except db.Dataset.DoesNotExist:
-            logging.info('AddDataset: bad request (dataset does not exist)')
+            logging.info('DeleteDataset: bad request (dataset does not exist)')
             self.send_error(status_code=400, reason="Dataset does not exist")
             return
         dataset.delete_instance()
