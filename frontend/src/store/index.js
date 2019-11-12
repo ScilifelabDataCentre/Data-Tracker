@@ -98,6 +98,7 @@ const actions = {
         });
     });
   },
+
   getProjects ({ commit }) {
     axios
       .get('/api/projects')
@@ -108,6 +109,7 @@ const actions = {
         commit('UPDATE_ERRORS', err);
       });
   },
+
   getUsers ({ commit }) {
     axios
       .get('/api/users')
@@ -118,16 +120,23 @@ const actions = {
         commit('UPDATE_ERRORS', err);
       });
   },
+
   saveProject (context, payload) {
     return new Promise((resolve, reject) => {
       const newProject = {'project': payload};
-      state.tmp=axios;
+      let url = '';
+      if (newProject.project.id === -1) {
+        url = '/api/project/add';
+      }
+      else {
+        url = '/api/project/' + newProject.project.id + '/update';
+      }
       axios
-        .post('/api/project/' + newProject.project.id + '/update',
+        .post(url,
               newProject,
-             {
-               headers: {'X-Xsrftoken': getXsrf()},
-             })
+              {
+                headers: {'X-Xsrftoken': getXsrf()},
+              })
         .then((response) => {
           resolve(response);
         })
@@ -136,7 +145,7 @@ const actions = {
           reject(err);
         });
     });
-  }
+  },
 }
 
 const getters = {

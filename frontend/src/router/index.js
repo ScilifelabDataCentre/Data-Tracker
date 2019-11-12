@@ -43,6 +43,11 @@ const router = new VueRouter({
           component: ProjectBrowser
         },
         {
+          path: 'add',
+          component: ProjectEdit,
+        },
+
+        {
           path: ':id',
           redirect: ':id/about',
         },

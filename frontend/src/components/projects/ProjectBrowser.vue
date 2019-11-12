@@ -1,6 +1,7 @@
 <template>
 <div class="project-browser">
   <h4>Projects</h4>
+  <router-link v-if="user.permission === 'Steward' || user.permission === 'Admin'" to="add" class="add-entry">Add</router-link>
   <project-entry v-for="project in projects" :key="project.id" :project="project">
   </project-entry>
 </div>
@@ -17,7 +18,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['projects']),
+    ...mapGetters(['projects', 'user']),
   },
   components: {
     'project-entry': ProjectEntry
