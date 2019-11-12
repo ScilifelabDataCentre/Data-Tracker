@@ -2,7 +2,9 @@
 
 import requests
 
-from helpers import as_user, dataset_for_tests, make_request
+from helpers import as_user, dataset_for_tests, make_request  # pylint: disable=unused-import
+
+# pylint: disable=redefined-outer-name
 
 
 def test_add_dataset_get():
@@ -59,7 +61,6 @@ def test_add_dataset_post_steward():
                                         {'description': 'Part II', 'url': 'Data url 1b'}],
                            'projects': [2]}}
 
-    # steward
     as_user(session, 5)
     data, status_code = make_request(session,
                                      '/api/dataset/add',
@@ -90,7 +91,7 @@ def test_add_dataset_post_steward():
             assert data[header] == payload['dataset'][header]
 
 
-def test_add_dataset_post_bad():
+def test_add_dataset_post_fail():
     """Test AddDataset.post()"""
     session = requests.Session()
     payload = {'dataset': {'title': 'An added Dataset1',
@@ -157,7 +158,7 @@ def test_add_dataset_post_admin():
                            'dataUrls': [{'description': 'Part I', 'url': 'Data url 1a'},
                                         {'description': 'Part II', 'url': 'Data url 1b'}],
                            'projects': [2]}}
-    # admin
+
     as_user(session, 6)
     payload['dataset']['title'] = 'An added Dataset2'
 
@@ -242,15 +243,6 @@ def test_delete_dataset_post(dataset_for_tests):
     assert status_code == 200
     assert not data
 
-    ## bad requests
-    for payload in ({'identifier': 'abc'},
-                    {'identifier': 10**7}):
-        data, status_code = make_request(session,
-                                         '/api/dataset/delete',
-                                         payload)
-    assert status_code == 400
-    assert not data
-
     # admin
     ## will delete the dataset added as admin in test_add_dataset_post()
     as_user(session, 6)
@@ -272,6 +264,21 @@ def test_delete_dataset_post(dataset_for_tests):
                                      payload)
     assert status_code == 200
     assert not data
+
+
+def test_delete_dataset_post_fail(dataset_for_tests):  # pylint: disable=unused-argument
+    """Test DeleteDataset.post()"""
+    session = requests.Session()
+
+    # bad requests
+    as_user(session, 5)
+    for payload in ({'identifier': 'abc'},
+                    {'identifier': 10**7}):
+        data, status_code = make_request(session,
+                                         '/api/dataset/delete',
+                                         payload)
+        assert status_code == 400
+        assert not data
 
     # not logged in: fail
     as_user(session, 0)
@@ -306,10 +313,10 @@ def test_find_dataset_get():
         assert data == expected
 
 
-def test_find_dataset_post():
+def test_find_dataset_post_no_login():
     """Tests for FindDataset.post()."""
     session = requests.Session()
-    # not logged in
+
     as_user(session, 0)
     payload = {'query': {'title': 'Dataset title 2'}}
     data, status_code = make_request(session,
@@ -366,6 +373,11 @@ def test_find_dataset_post():
         for tag in payload['query']['tags']:
             assert tag in [val['title'] for val in data['tags']]
 
+
+def test_find_dataset_post():
+    """Tests for FindDataset.post()."""
+    session = requests.Session()
+    as_user(session, 0)
     ## bad queries
     for payload in ({'query': {}},
                     {'query': {'bad_type': None}}):
@@ -462,7 +474,6 @@ def test_get_dataset_get():
     assert not data['dataUrls']
     assert not data['publications']
 
-
     # owned by user
     as_user(session, 4)
     data, status_code = make_request(session, '/api/dataset/4')
@@ -543,7 +554,7 @@ def test_update_dataset_get():
         assert data == expected
 
 
-def test_update_dataset_post(dataset_for_tests):
+def test_update_dataset_post_nologin(dataset_for_tests):
     """Test UpdateDataset.post()"""
     ds_id = dataset_for_tests
     session = requests.Session()
@@ -558,6 +569,11 @@ def test_update_dataset_post(dataset_for_tests):
         assert status_code == 403
         assert not data
 
+
+def test_update_dataset_post_user(dataset_for_tests):
+    """Test UpdateDataset.post()"""
+    ds_id = dataset_for_tests
+    session = requests.Session()
     # owner
     as_user(session, 2)
     update_payload = {'dataset': {'title': 'New title'}}
@@ -610,7 +626,13 @@ def test_update_dataset_post(dataset_for_tests):
     for data_url in ('http://example.com/1', 'http://example.com/2'):
         assert data_url in data_urls
 
-    ## bad requests
+
+def test_update_dataset_post_fail(dataset_for_tests):
+    """Test UpdateDataset.post()"""
+    ds_id = dataset_for_tests
+    session = requests.Session()
+
+    as_user(session, 2)
     for update_payload in ({'dataset': {'tags': [{'bad_tag': 'asd'}]}},
                            {'dat': ''},
                            {'dataset': {'tags': 'asd'}},
@@ -628,6 +650,12 @@ def test_update_dataset_post(dataset_for_tests):
     assert status_code == 404
     assert not data
 
+
+def test_update_dataset_post_steward(dataset_for_tests):
+    """Test UpdateDataset.post()"""
+    ds_id = dataset_for_tests
+    session = requests.Session()
+
     # steward
     as_user(session, 5)
     update_payload = {'dataset': {'doi': 'special doi'}}
@@ -640,6 +668,10 @@ def test_update_dataset_post(dataset_for_tests):
     assert status_code == 200
     assert data['doi'] == 'special doi'
 
+def test_update_dataset_post_admin(dataset_for_tests):
+    """Test UpdateDataset.post()"""
+    ds_id = dataset_for_tests
+    session = requests.Session()
     # admin
     as_user(session, 6)
     update_payload = {'dataset': {'doi': 'special doi2'}}

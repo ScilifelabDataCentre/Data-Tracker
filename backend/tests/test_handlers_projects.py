@@ -2,7 +2,7 @@
 
 import requests
 
-from helpers import as_user, dataset_for_tests, make_request
+from helpers import as_user, make_request
 
 
 def test_list_projects_get():

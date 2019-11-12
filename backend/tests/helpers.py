@@ -46,14 +46,14 @@ def dataset_for_tests():
                            'dataUrls': [{'url': 'Data Access URL', 'description': 'Description'}],
                            'projects': [2]}}
 
-    _ , status_code = make_request(session,
-                           '/api/dataset/add',
-                           payload)
+    _, status_code = make_request(session,
+                                  '/api/dataset/add',
+                                  payload)
     assert status_code == 200
 
     data, status_code = make_request(session,
-                           '/api/dataset/query',
-                           {'query': {'title': 'A Unique Title'}})
+                                     '/api/dataset/query',
+                                     {'query': {'title': 'A Unique Title'}})
     assert status_code == 200
 
     ds_id = data['datasets'][0]['id']
