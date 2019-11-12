@@ -112,7 +112,7 @@ class DeleteProject(handlers.StewardHandler):
             self.send_error(status_code=400, reason="Project does not exist")
             return
         project.delete_instance()
-        
+
         self.finish()
 
 
