@@ -121,6 +121,25 @@ const actions = {
       });
   },
 
+  deleteProject (context, project_id) {
+    return new Promise((resolve, reject) => {
+      axios
+        .post('/api/project/delete',
+              {
+                'id': project_id,
+              },
+              {
+                headers: {'X-Xsrftoken': getXsrf()},
+              })
+        .then((response) => {
+          resolve(response);
+        })
+        .catch(function (err) {
+          context.commit('UPDATE_ERRORS', err);
+          reject(err);
+        });
+    });
+  },
   saveProject (context, payload) {
     return new Promise((resolve, reject) => {
       const newProject = {'project': payload};

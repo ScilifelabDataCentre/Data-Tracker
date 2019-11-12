@@ -19,6 +19,9 @@
              type="text" placeholder="Contact information" />
     </div>
     <button>Submit</button>
+    <div>
+      <button v-if="newProject.id != -1" @click="deleteProject" class="delete-entry">Delete</button>
+    </div>
   </form>
 </div>
 </template>
@@ -42,7 +45,8 @@ export default {
         description: '',
         contact: '',
         datasets: [],
-      }
+      },
+      value: null,
     }
   },
   created () {
@@ -52,11 +56,29 @@ export default {
       });
   },
   methods: {
+    deleteProject(event) {
+      event.preventDefault();
+      this.$store.dispatch('deleteProject', this.newProject.id)
+        .then(() => {
+          this.$router.push("/project/browser");
+        });
+    },
     submitProjectForm(event) {
       event.preventDefault();
       this.$store.dispatch('saveProject', this.newProject)
-    }
-  }
+        .then((response) => {
+          // add performed
+          let id = -1;
+          if (response.data) {
+            id = response.data.id;
+          }
+          else {
+            id = this.newProject.id
+          }
+          this.$router.push("/project/" + id + "/about");
+        });
+    },
+  },
 }
 </script>
 
