@@ -6,10 +6,15 @@
   <div v-if="Object.keys(dataset).length > 0">
     <div class="dataset-title">{{ dataset.title }}</div>
     <div class="dataset-description field">{{ dataset.description }}</div>
-    <div class="dataset-contact field"><span class="field-header">Contact:</span> {{ dataset.contact }}</div>
-    <div class="dataset-datasets field">
-      <span class="field-header">Datasets:</span> <div class="dataset-dataset" v-for="dataset in dataset.datasets" :key="dataset">{{ dataset }}</div></div>
+    <div class="dataset-creator field"><span class="field-header">Creator:</span> {{ dataset.creator }}</div>
+    <div>
+      <span class="field-header">Projects:</span>
+      <div class="dataset-project" v-for="project in dataset.projects" :key="project">
+	<router-link :to="'/project/' + project + '/about'">{{ project }}</router-link>
+      </div>
+    </div>
   </div>
+  <router-link to="edit">Edit</router-link>
 </div>
 </template>
 

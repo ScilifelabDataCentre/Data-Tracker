@@ -1,6 +1,7 @@
 <template>
 <div class="dataset-browser">
   <h4>Datasets</h4>
+  <router-link v-if="user.permission === 'Steward' || user.permission === 'Admin'" to="add" class="add-entry">Add</router-link>
   <dataset-entry v-for="dataset in datasets" :key="dataset.id" :dataset="dataset">
   </dataset-entry>
 </div>
@@ -17,7 +18,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['datasets']),
+    ...mapGetters(['datasets', 'user']),
   },
   components: {
     'dataset-entry': DatasetEntry

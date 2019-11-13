@@ -4,6 +4,7 @@ import VueRouter from 'vue-router';
 import AdminUserBrowser from '../components/admin/AdminUserBrowser.vue'
 
 import DatasetAbout from '../components/datasets/DatasetAbout.vue'
+import DatasetEdit from '../components/datasets/DatasetEdit.vue'
 import DatasetBrowser from '../components/datasets/DatasetBrowser.vue'
 import DatasetContainer from '../components/datasets/DatasetContainer.vue'
 
@@ -46,18 +47,17 @@ const router = new VueRouter({
           path: 'add',
           component: ProjectEdit,
         },
-
         {
-          path: ':id',
+          path: ':id(\\d+)',
           redirect: ':id/about',
         },
         {
-          path: ':id/about',
+          path: ':id(\\d+)/about',
           component: ProjectAbout,
           props: true,
         },
         {
-          path: ':id/edit',
+          path: ':id(\\d+)/edit',
           component: ProjectEdit,
           props: true,
         },
@@ -76,17 +76,22 @@ const router = new VueRouter({
           component: DatasetBrowser
         },
         {
-          path: ':id',
+          path: 'add',
+          component: DatasetEdit,
+        },
+
+        {
+          path: ':id(\\d+)',
           redirect: ':id/about',
         },
         {
-          path: ':id/about',
+          path: ':id(\\d+)/about',
           component: DatasetAbout,
           props: true,
         },
         {
-          path: ':id/edit',
-          component: DatasetAbout,
+          path: ':id(\\d+)/edit',
+          component: DatasetEdit,
           props: true,
         },
       ],

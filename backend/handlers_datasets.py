@@ -66,20 +66,23 @@ class AddDataset(handlers.StewardHandler):
                 db.ProjectDataset.create(project=project,
                                          dataset=ds_id)
 
-            for tag in ds_data['tags']:
-                tag_id, _ = db.Tag.get_or_create(**tag)
-                db.DatasetTag.create(dataset=ds_id,
-                                     tag=tag_id)
+            if ds_data.get('tags'):
+                for tag in ds_data['tags']:
+                    tag_id, _ = db.Tag.get_or_create(**tag)
+                    db.DatasetTag.create(dataset=ds_id,
+                                         tag=tag_id)
 
-            for publication in ds_data['publications']:
-                pub_id, _ = db.Publication.get_or_create(**publication)
-                db.DatasetPublication.create(dataset=ds_id,
-                                             publication=pub_id)
+            if ds_data.get('publications'):
+                for publication in ds_data['publications']:
+                    pub_id, _ = db.Publication.get_or_create(**publication)
+                    db.DatasetPublication.create(dataset=ds_id,
+                                                 publication=pub_id)
 
-            for data_url in ds_data['dataUrls']:
-                url_id, _ = db.DataUrl.get_or_create(**data_url)
-                db.DatasetDataUrl.create(dataset=ds_id,
-                                         data_url=url_id)
+            if ds_data.get('dataUrls'):
+                for data_url in ds_data['dataUrls']:
+                    url_id, _ = db.DataUrl.get_or_create(**data_url)
+                    db.DatasetDataUrl.create(dataset=ds_id,
+                                             data_url=url_id)
         self.finish({'id': ds_id.id})
 
 
@@ -294,7 +297,8 @@ class UpdateDataset(handlers.SafeHandler):
             return
 
         for header in indata:
-            if header not in ('title',
+            if header not in ('id',
+                              'title',
                               'description',
                               'doi',
                               'creator',
