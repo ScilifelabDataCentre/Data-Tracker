@@ -1,5 +1,5 @@
 <template>
-<div class="project-entry">
+<div class="project-entry box">
   <div class="project-title"><router-link :to="'/project/' + project.id"> {{ project.title }}</router-link></div>
   <div class="project-description" v-html="project.description.substring(0, 300) + '...'"></div>
   <div class="project-contact">{{ project.contact }}a</div>
