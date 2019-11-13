@@ -1,7 +1,7 @@
 <template>
 <div class="dataset-entry box">
   <div class="dataset-title"><router-link :to="'/dataset/' + dataset.id"> {{ dataset.title }}</router-link></div>
-  <div class="dataset-description" v-html="dataset.description.substring(0, 300) + '...'"></div>
+  <div class="dataset-description" v-html="dataset.description"></div>
 </div>
 </template>
 
