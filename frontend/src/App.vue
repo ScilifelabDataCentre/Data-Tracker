@@ -1,6 +1,5 @@
 <template>
 <div id="app">
-  <h1 class="title is-1">SciLifeLab Data Tracker</h1>
   <nav-bar></nav-bar>
   <router-view class="container"></router-view>
   <footer class="footer">
@@ -29,14 +28,12 @@ export default {
 
 <style>
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
 }
 img.logo {
-    height: 100px;
+    height: 70px;
 }
 </style>
