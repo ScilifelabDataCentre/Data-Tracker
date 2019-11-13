@@ -2,33 +2,55 @@
 <div class="project-edit">
   <form @submit="submitProjectForm">
     <div class="field" v-if="newProject.id !== -1">
-      <label for="PROJECT_ID" class="field-label">Id:</label>
-      <input name="PROJECT_ID"
-             type="text"
-             placeholder="id"
-             v-model="newProject.id"
-             disabled="true"/>
+      <label for="project-id" class="label">Project ID</label>
+      <div class="control">
+        <input id="project-id"
+               class="input"
+               name="PROJECT_ID"
+               type="text"
+               placeholder="id"
+               v-model="newProject.id"
+               disabled="true"/>
+      </div>
     </div>
     <div class="field">
-      <label class="field-label">Title:</label>
-      <input name="PROJECT_TITLE"
+      <label class="label" for="project-title">Title</label>
+      <input id="project-title"
+             class="input"
+             name="PROJECT_TITLE"
              type="text"
              placeholder="Title"
              v-model="newProject.title"/>
     </div>
     <div class="field">
-      <label class="field-label">Description:</label>
-      <input v-model="newProject.description" name="PROJECT_DESCRIPTION"
-             type="text" placeholder="Description" />
+      <label class="label" for="project-description">Description</label>
+      <input id="project-description"
+             class="input"
+             v-model="newProject.description"
+             name="PROJECT_DESCRIPTION"
+             type="text"
+             placeholder="Description" />
     </div>
     <div class="field">
-      <label class="field-label">Contact information:</label>
-      <input v-model="newProject.contact" name="PROJECT_CONTACT"
-             type="text" placeholder="Contact information" />
+      <label class="label" for="project-contact">Contact information</label>
+      <input id="project-contact"
+             class="input"
+             v-model="newProject.contact"
+             name="PROJECT_CONTACT"
+             type="text"
+             placeholder="Contact information" />
     </div>
-    <button>Submit</button>
-    <div>
-      <button v-if="newProject.id != -1 && (user.permission === 'Steward' || user.permission === 'Admin')" @click="deleteProject" class="delete-entry">Delete</button>
+
+    <div class="field is-grouped">
+      <div class="control">
+        <button class="button is-link">Submit</button>
+      </div>
+      <div class="control">
+        <button class="button is-light @click=cancelChanges">Cancel</button>
+      </div>
+      <div class="control">
+        <button class="button is-danger" v-if="newProject.id != -1 && (user.permission === 'Steward' || user.permission === 'Admin')" @click="deleteProject">Delete</button>
+      </div>
     </div>
   </form>
 </div>
@@ -43,7 +65,7 @@ export default {
   components: {
   },
   computed: {
-    ...mapGetters(['project']),
+    ...mapGetters(['project', 'user']),
   },
   data () {
     return {
@@ -64,6 +86,16 @@ export default {
       });
   },
   methods: {
+    cancelChanges(event) {
+      event.preventDefault();
+      if (this.newProject.id === -1) {
+        this.$router.push("/project/browser");
+      }
+      else {
+        this.$router.push("/project/" + this.newProject.id + "/about");
+      }
+    },
+
     deleteProject(event) {
       event.preventDefault();
       this.$store.dispatch('deleteProject', this.newProject.id)
@@ -91,21 +123,6 @@ export default {
 </script>
 
 <style scoped>
-.project-title {
-    font-weight: bold;
-    font-size: 2em;
-    text-align: center;
-    margin: 0em 0em 0.4em 0em;
-}
-
-.field-label {
-    font-weight: bold;
-}
-
-.field {
-    margin: 0.4em 0em;
-}
-
 .warning {
     font-weight: bold;
     text-align: center;
