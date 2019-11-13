@@ -1,7 +1,11 @@
 <template>
-<div id="app" class="container">
+<div id="app">
+  <h1 class="title is-1">SciLifeLab Data Tracker</h1>
   <nav-bar></nav-bar>
-  <router-view></router-view>
+  <router-view class="container"></router-view>
+  <footer class="footer">
+    <img class="logo" :src="require('./assets/img/data-centre-logo.png')" alt="SciLife Data Centre logo"/>
+  </footer>
 </div>
 </template>
 
@@ -31,5 +35,8 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+img.logo {
+    height: 100px;
 }
 </style>

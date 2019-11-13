@@ -1,6 +1,6 @@
 <template>
 <div class="start-page">
-  Welcome to the SciLifeLab Data Tracker.
+  Welcome to the SciLifeLab Data Tracker, a system for tracking datasets generated at SciLifeLab.
 </div>
 </template>
 
