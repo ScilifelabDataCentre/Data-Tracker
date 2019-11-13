@@ -1,6 +1,8 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 
+import AboutPage from '../components/AboutPage.vue'
+
 import AdminUserBrowser from '../components/admin/AdminUserBrowser.vue'
 
 import DatasetAbout from '../components/datasets/DatasetAbout.vue'
@@ -30,6 +32,10 @@ const router = new VueRouter({
     {
       path: '/',
       component: StartPage,
+    },
+    {
+      path: '/about',
+      component: AboutPage,
     },
     {
       path: '/project',
