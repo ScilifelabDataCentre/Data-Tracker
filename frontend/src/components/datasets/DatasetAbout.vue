@@ -5,7 +5,7 @@
   </div>
   <div v-if="Object.keys(dataset).length > 0">
     <div class="dataset-title">{{ dataset.title }}</div>
-    <div class="dataset-description field">{{ dataset.description }}</div>
+    <div class="dataset-description field" v-html="dataset.description"></div>
     <div class="dataset-creator field"><span class="field-header">Creator:</span> {{ dataset.creator }}</div>
     <div>
       <span class="field-header">Projects:</span>

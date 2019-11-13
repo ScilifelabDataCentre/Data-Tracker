@@ -5,7 +5,7 @@
   </div>
   <div v-id="project">
     <div class="project-title">{{ project.title }}</div>
-    <div class="project-description field">{{ project.description }}</div>
+    <div class="project-description field" v-html="project.description"></div>
     <div class="project-contact field"><span class="field-header">Contact:</span> {{ project.contact }}</div>
     <div class="project-datasets field">
       <span class="field-header">Datasets:</span>
@@ -27,7 +27,7 @@ export default {
   components: {
   },
   computed: {
-    ...mapGetters(['project']),
+    ...mapGetters(['project', 'user']),
   },
   data () {
     return {

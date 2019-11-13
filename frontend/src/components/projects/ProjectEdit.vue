@@ -1,14 +1,13 @@
 <template>
 <div class="project-edit">
   <form @submit="submitProjectForm">
-    <div class="field">
+    <div class="field" v-if="newProject.id !== -1">
       <label for="PROJECT_ID" class="field-label">Id:</label>
-      <input v-if="newProject.id !== -1" name="PROJECT_ID"
+      <input name="PROJECT_ID"
              type="text"
              placeholder="id"
              v-model="newProject.id"
              disabled="true"/>
-
     </div>
     <div class="field">
       <label class="field-label">Title:</label>
@@ -29,7 +28,7 @@
     </div>
     <button>Submit</button>
     <div>
-      <button v-if="newProject.id != -1" @click="deleteProject" class="delete-entry">Delete</button>
+      <button v-if="newProject.id != -1 && (user.permission === 'Steward' || user.permission === 'Admin')" @click="deleteProject" class="delete-entry">Delete</button>
     </div>
   </form>
 </div>

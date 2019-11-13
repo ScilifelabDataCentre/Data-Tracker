@@ -9,7 +9,6 @@
     <div>Email: {{user.email}}</div>
     <div>Country: {{user.country}}</div>
     <div>User type: {{user.permission}}</div>
-    
   </div>
 </div>
 </template>
