@@ -24,12 +24,14 @@
     </div>
     <div class="field">
       <label class="label" for="dataset-description">Description</label>
-      <input id="dataset-description"
-             class="input"
-             v-model="newDataset.description"
-             name="DATASET_DESCRIPTION"
-             type="text"
-             placeholder="Description" />
+      <textarea class="textarea"
+		id="dataset-description"
+		v-model="newDataset.description"
+		name="DATASET_DESCRIPTION"
+		type="text"
+		placeholder="Dataset Description"
+		rows="10">
+      </textarea>
     </div>
     <div class="field">
       <label class="label" for="dataset-creator">Dataset creator</label>

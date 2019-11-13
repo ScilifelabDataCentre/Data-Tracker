@@ -1,6 +1,7 @@
 <template>
 <div class="project-edit">
   <form @submit="submitProjectForm">
+
     <div class="field" v-if="newProject.id !== -1">
       <label for="project-id" class="label">Project ID</label>
       <div class="control">
@@ -10,9 +11,10 @@
                type="text"
                placeholder="id"
                v-model="newProject.id"
-               disabled="true"/>
+               disabled />
       </div>
     </div>
+
     <div class="field">
       <label class="label" for="project-title">Title</label>
       <input id="project-title"
@@ -22,15 +24,19 @@
              placeholder="Title"
              v-model="newProject.title"/>
     </div>
+
     <div class="field">
       <label class="label" for="project-description">Description</label>
-      <input id="project-description"
-             class="input"
-             v-model="newProject.description"
-             name="PROJECT_DESCRIPTION"
-             type="text"
-             placeholder="Description" />
+      <textarea class="textarea"
+		id="project-description"
+		v-model="newProject.description"
+		name="PROJECT_DESCRIPTION"
+		type="text"
+		placeholder="Project Description"
+		rows="10">
+      </textarea>
     </div>
+
     <div class="field">
       <label class="label" for="project-contact">Contact information</label>
       <input id="project-contact"
@@ -40,7 +46,7 @@
              type="text"
              placeholder="Contact information" />
     </div>
-
+    
     <div class="field is-grouped">
       <div class="control">
         <button class="button is-link">Submit</button>
