@@ -4,12 +4,14 @@
     You do not have the permissions to view this page.
   </div>
   <div v-if="user.permission === 'Admin'">
-    <table class="user-table" v-if="users.length > 0">
-      <tr class="user-table-header">
-        <th v-for="header in Object.keys(users[0])" :key="header">
-          {{ header }}
-        </th>
-      </tr>
+    <table class="table" v-if="users.length > 0">
+      <thead>
+	<tr class="user-table-header">
+          <th v-for="header in Object.keys(users[0])" :key="header">
+            {{ header }}
+          </th>
+	</tr>
+      </thead>
       <tr class="user-table-entry" v-for="user in users" :key="user.id">
         <td v-for="value in user" :key="value">
           {{value}}
