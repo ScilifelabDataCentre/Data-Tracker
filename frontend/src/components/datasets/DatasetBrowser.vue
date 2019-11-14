@@ -1,7 +1,9 @@
 <template>
 <div class="dataset-browser">
   <h3 class="subtitle is-3">Datasets</h3>
-  <router-link v-if="user.permission === 'Steward' || user.permission === 'Admin'" to="add" class="add-entry">Add</router-link>
+  <button class="button is-link" v-if="user.permission === 'Steward' || user.permission === 'Admin'" @click="addDataset">
+    Add
+  </button>
   <dataset-entry v-for="dataset in datasets" :key="dataset.id" :dataset="dataset">
   </dataset-entry>
 </div>
@@ -26,6 +28,13 @@ export default {
   created () {
     this.$store.dispatch('getDatasets');
   },
+  methods: {
+    addDataset(event) {
+      event.preventDefault();
+      this.$router.push("/dataset/add");
+    },
+  },
+
 }
 </script>
 
