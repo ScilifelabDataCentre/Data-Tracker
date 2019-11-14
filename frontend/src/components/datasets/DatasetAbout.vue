@@ -9,7 +9,7 @@
     <table class="table">
       <tr v-if="dataset.creator"><td class="data-header">Creator</td><td>{{ dataset.creator }}</td></tr>
       <tr v-if="dataset.doi"><td class="data-header">DOI</td><td>{{ dataset.doi }}</td></tr>
-      <tr v-if="dataset.dmp"><td class="data-header">DMP</td><td>{{ dataset.dmp }}</td></tr>
+      <tr v-if="dataset.dmp"><td class="data-header"><abbr title="Data management plan">DMP</abbr></td><td>{{ dataset.dmp }}</td></tr>
     </table>
     
     <div v-if="dataset.dataUrls">
