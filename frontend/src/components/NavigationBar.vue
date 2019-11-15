@@ -1,5 +1,10 @@
 <template>
 <nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar-start">
+    <div class="navbar-item">
+      SciLifeLab Data Tracker
+    </div>
+  </div>
   <router-link to="/" class="navbar-item"><img id="home-icon" :src="require('../assets/open-iconic/svg/home.svg')" alt="home"></router-link>
   <router-link to="/project" class="navbar-item">Projects</router-link>
   <router-link to="/dataset" class="navbar-item">Datasets</router-link>
