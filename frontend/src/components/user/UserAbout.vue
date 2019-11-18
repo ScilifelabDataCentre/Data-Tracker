@@ -3,12 +3,14 @@
   <div v-if="!user.user">
     You need to log in before viewing this page.
   </div>
-  <div v-if="user.user">
-    <div>Name: {{user.user}}</div>
-    <div>Affiliation: {{user.affiliation}}</div>
-    <div>Email: {{user.email}}</div>
-    <div>Country: {{user.country}}</div>
-    <div>User type: {{user.permission}}</div>
+  <div v-else>
+    <table class="table">
+      <tr><td class="data-header">Name</td> <td>{{user.user}}</td></tr>
+      <tr><td class="data-header">Affiliation</td><td>{{user.affiliation}}</td></tr>
+      <tr><td class="data-header">Email</td> <td>{{user.email}}</td></tr>
+      <tr><td class="data-header">Country</td> <td>{{user.country}}</td></tr>
+      <tr><td class="data-header">User type</td> <td>{{user.permission}}</td></tr>
+    </table>
   </div>
 </div>
 </template>
@@ -32,5 +34,8 @@ export default {
 </script>
 
 <style scoped>
-
+.data-header {
+    text-align: right;
+    font-weight: bold;
+}
 </style>
