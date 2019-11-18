@@ -4,7 +4,6 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile-database
-    restart: on-failure
     volumes:
       - ./mongo-data:/data/db
     ports:
@@ -26,7 +25,6 @@ services:
       dockerfile: Dockerfile-frontend
     depends_on:
       - backend
-    restart: on-failure
     volumes:
       - type: bind
         source: .
