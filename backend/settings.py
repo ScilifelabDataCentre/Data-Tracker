@@ -1,40 +1,34 @@
+#!/usr/bin/env python3
+"""Read settings from settings.yaml"""
+
 import os
-import sys
-import json
-import logging
+import yaml
 
-ARG = "--settings_file"
-SETTINGS_FILE = "settings.json"
-if ARG in sys.argv:
-    try:
-        SETTINGS_FILE = sys.argv[sys.argv.index(ARG)+1]
-    except IndexError:
-        logging.error("No argument for --settings_file")
-        sys.exit(1)
+def read_settings(path:str =''):
+    """
+    Look for settings.yaml and parse the settings from there.
 
-try:
-    current_dir = os.path.dirname(os.path.realpath(__file__))
-    json_settings_fh = open(os.path.join(current_dir, SETTINGS_FILE))
-except FileNotFoundError:
-    parent_dir = os.path.join(current_dir, os.pardir)
-    json_settings_fh = open(os.path.join(parent_dir, SETTINGS_FILE))
+    The file is expected to be found in the current, parent or provided folder.
 
-json_settings = json.load(json_settings_fh)
-json_settings_fh.close()
+    Args:
+        path (str): The yaml file to use
 
-elixir = json_settings["elixir"]
+    Returns:
+        dict: The loaded settings
 
-# Generated with base64.b64encode(uuid.uuid4().bytes + uuid.uuid4().bytes)
-cookie_secret = json_settings["cookieSecret"]
+    Raises:
+        FileNotFoundError: No settings file found
 
-# PostgreSQL settings
-psql_host = json_settings["postgresHost"]
-psql_port = json_settings["postgresPort"]
-psql_name = json_settings["postgresName"]
-psql_user = json_settings["postgresUser"]
-psql_pass = json_settings["postgresPass"]
+    """
 
-# e-mail config
-mail_server = json_settings["mailServer"]
-from_address = json_settings["fromAddress"]
-reply_to_address = json_settings["replyToAddress"]
+    file_locations = [os.getcwd(),
+                      os.pardir]
+    if not path:
+        for location in file_locations:
+            fpath = os.path.join(yloc, "settings.yaml")
+            if os.path.exists(fpath):
+                path = fpath
+                break
+
+    with open(path, "r") as in_file:
+        return yaml.load(in_file, Loader=yaml.FullLoader)

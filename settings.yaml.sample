@@ -1,0 +1,7 @@
+mongo_url: "url"
+mongo_port: 27017
+mongo_user: "user"
+mongo_password: "password"
+
+# Activate autoreload etc
+development_mode: true
