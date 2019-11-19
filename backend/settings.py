@@ -1,8 +1,14 @@
 #!/usr/bin/env python3
-"""Read settings from settings.yaml"""
+"""
+Settings manager for the data tracker.
 
+Read settings from `./settings.yaml`, `../settings.yaml` or from the provided path.
+"""
+
+import sys
 import os
 import yaml
+
 
 def read_settings(path:str =''):
     """
@@ -25,10 +31,23 @@ def read_settings(path:str =''):
                       os.pardir]
     if not path:
         for location in file_locations:
-            fpath = os.path.join(yloc, "settings.yaml")
+            fpath = os.path.join(location, "settings.yaml")
             if os.path.exists(fpath):
                 path = fpath
                 break
 
-    with open(path, "r") as in_file:
-        return yaml.load(in_file, Loader=yaml.FullLoader)
+    if path:
+        with open(path, "r") as in_file:
+            return yaml.load(in_file, Loader=yaml.FullLoader)
+
+
+settings_file = ''
+ARG = "--settings_file"
+if ARG in sys.argv:
+    try:
+        settings_file = sys.argv[sys.argv.index(ARG)+1]
+    except IndexError:
+        logging.error("No argument for --settings_file")
+        sys.exit(1)
+
+SETTINGS = read_settings(settings_file)

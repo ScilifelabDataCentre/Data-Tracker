@@ -1,7 +1,12 @@
-mongo_url: "url"
-mongo_port: 27017
-mongo_user: "user"
-mongo_password: "password"
+mongo:
+  url: "url"
+  port: 27017
+  user: "mongoadmin"
+  password: "mongopassword"
+  db: "tracker"
 
-# Activate autoreload etc
+flask:
+  port: 5000
+  secret: "secret"
+
 development_mode: true
