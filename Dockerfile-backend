@@ -9,11 +9,11 @@ RUN apt-get update && apt-get install -y \
 ADD . /code
 COPY settings.yaml.sample /settings.yaml
 RUN sed -i 's/mongo_host:.*/mongo_host: "db"/' /settings.yaml
-WORKDIR /code
+WORKDIR /code/backend
 
-ENV FLASK_APP backend/app.py
-ENV FLASK_DEBUG 1
+ENV FLASK_APP app.py
+ENV FLASK_ENV development
 
-RUN pip3 install -r backend/requirements.txt
+RUN pip3 install -r requirements.txt
 
 CMD ["flask", "run", "--host", "0.0.0.0"]
