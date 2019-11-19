@@ -10,7 +10,7 @@ if SETTINGS['development_mode']:
     logging.getLogger().setLevel(logging.DEBUG)
     app.config['TESTING'] = True
 
-app.config['SECRET_KEY'] = SETTINGS['flask']['flask_secret']
+app.config['SECRET_KEY'] = SETTINGS['flask']['secret']
 
 @app.route('/api/hello')
 def api_hello():
