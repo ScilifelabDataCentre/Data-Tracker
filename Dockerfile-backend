@@ -11,8 +11,9 @@ COPY settings.yaml.sample /settings.yaml
 RUN sed -i 's/mongo_host:.*/mongo_host: "db"/' /settings.yaml
 WORKDIR /code/backend
 
-ENV FLASK_APP app.py
+ENV FLASK_APP app
 ENV FLASK_ENV development
+ENV PYTHONPATH /code/backend
 
 RUN pip3 install -r requirements.txt
 
