@@ -1,5 +1,5 @@
 mongo:
-  url: "url"
+  host: "db"
   port: 27017
   user: "mongoadmin"
   password: "mongopassword"

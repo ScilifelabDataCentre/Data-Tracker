@@ -4,10 +4,6 @@ import os
 import flask
 
 from settings import SETTINGS
-
-logging.warning(os.getcwd())
-logging.warning(os.listdir('.'))
-
 import handlers_datasets as hds
 
 app = flask.Flask(__name__)
@@ -24,11 +20,4 @@ def api_hello():
     return flask.jsonify({'test': 'value'})
 
 
-def list_datasets():
-    """
-    Provide a simplified list of all available datasets.
-    """
-
-    return flask.jsonify()
-
-app.register_blueprint(hds.blueprint, url_prefix='/api/datasets')
+app.register_blueprint(hds.blueprint, url_prefix='/api/dataset')
