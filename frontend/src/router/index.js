@@ -5,23 +5,22 @@ import AboutPage from '../components/AboutPage.vue'
 
 import AdminUserBrowser from '../components/admin/AdminUserBrowser.vue'
 
-import DatasetAbout from '../components/datasets/DatasetAbout.vue'
-import DatasetEdit from '../components/datasets/DatasetEdit.vue'
-import DatasetBrowser from '../components/datasets/DatasetBrowser.vue'
-import DatasetContainer from '../components/datasets/DatasetContainer.vue'
-
 import NotFound from '../components/NotFound.vue'
-
-import ProjectAbout from '../components/projects/ProjectAbout.vue'
-import ProjectBrowser from '../components/projects/ProjectBrowser.vue'
-import ProjectEdit from '../components/projects/ProjectEdit.vue'
-import ProjectContainer from '../components/projects/ProjectContainer.vue'
 
 import StartPage from '../components/StartPage.vue'
 
 import UserAbout from '../components/user/UserAbout.vue'
 import UserContainer from '../components/user/UserContainer.vue'
 
+const DatasetAbout = () => import(/* webpackChunkName: "dataset" */ '../components/datasets/DatasetAbout.vue')
+const DatasetBrowser = () => import(/* webpackChunkName: "dataset" */ '../components/datasets/DatasetBrowser.vue')
+const DatasetContainer = () => import(/* webpackChunkName: "dataset" */ '../components/datasets/DatasetContainer.vue')
+const DatasetEdit = () => import(/* webpackChunkName: "dataset" */ '../components/datasets/DatasetEdit.vue')
+
+const ProjectAbout = () => import(/* webpackChunkName: "project" */ '../components/projects/ProjectAbout.vue')
+const ProjectBrowser = () => import(/* webpackChunkName: "project" */ '../components/projects/ProjectBrowser.vue')
+const ProjectContainer = () => import(/* webpackChunkName: "project" */ '../components/projects/ProjectContainer.vue')
+const ProjectEdit = () => import(/* webpackChunkName: "project" */ '../components/projects/ProjectEdit.vue')
 
 Vue.use(VueRouter);
 
