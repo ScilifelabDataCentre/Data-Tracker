@@ -3,8 +3,10 @@ import os
 
 import flask
 
+import datasets
+import projects
 from settings import SETTINGS
-import handlers_datasets as hds
+
 
 app = flask.Flask(__name__)
 
@@ -20,4 +22,5 @@ def api_hello():
     return flask.jsonify({'test': 'value'})
 
 
-app.register_blueprint(hds.blueprint, url_prefix='/api/dataset')
+app.register_blueprint(datasets.blueprint, url_prefix='/api/dataset')
+app.register_blueprint(projects.blueprint, url_prefix='/api/project')
