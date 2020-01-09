@@ -49,7 +49,7 @@ def init(app):
         app: the Flask app
 
     """
-    settings_file = ''
+    config_file = ''
     ARG = "--config_file"
     if ARG in sys.argv:
         try:
@@ -63,6 +63,7 @@ def init(app):
         config['TESTING'] = True
         logging.getLogger().setLevel(logging.DEBUG)
         del config['dev_mode']
+
+    app.config.update(config)
     app.config['SECRET_KEY'] = config['flask']['secret']
-    app.config.update(read_config(config_file))
     app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
