@@ -34,7 +34,7 @@ const actions = {
   getDatasets ({ commit }) {
     return new Promise((resolve, reject) => {
       axios
-        .get('/api/datasets')
+        .get('/api/dataset/all')
         .then((response) => {
           commit('UPDATE_DATASETS', response.data.datasets);
           resolve(response);
@@ -63,6 +63,7 @@ const actions = {
         });
     });
   },
+
   saveDataset (context, payload) {
     return new Promise((resolve, reject) => {
       const newDataset = {'dataset': payload};
