@@ -2,7 +2,6 @@ import logging
 
 import flask
 
-import db
 import utils
 
 blueprint = flask.Blueprint('projects', __name__)
