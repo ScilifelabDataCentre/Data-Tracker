@@ -31,14 +31,13 @@ def read_config(path: str = ''):
                       os.pardir]
     if not path:
         for location in file_locations:
-            fpath = os.path.join(location, "settings.yaml")
+            fpath = os.path.join(location, "config.yaml")
             if os.path.exists(fpath):
                 path = fpath
                 break
 
-    if path:
-        with open(path, "r") as in_file:
-            return yaml.load(in_file, Loader=yaml.FullLoader)
+    with open(path, "r") as in_file:
+        return yaml.load(in_file, Loader=yaml.FullLoader)
 
 
 def init(app):
