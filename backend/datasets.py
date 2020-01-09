@@ -2,23 +2,25 @@ import logging
 
 import flask
 
-import db
 import utils
+
+import user
 
 blueprint = flask.Blueprint('datasets', __name__)
 
 
-@blueprint.route('/list')
+@blueprint.route('/all')
 def list_dataset():
     """
     Provide a simplified list of all available datasets.
     """
-    result = db.get_datasets()
-    utils.clean_mongo(result)
-    return flask.jsonify({'datasets': result})
+    results = list(flask.g.db['datasets'].find())
+    utils.clean_mongo(results)
+    return flask.jsonify({'datasets': results})
 
 
-@blueprint.route('/add', methods=['PUSH'])
+@blueprint.route('/add', methods=['POST'])
+
 def add_dataset():
     """
     Add a dataset.
@@ -28,9 +30,9 @@ def add_dataset():
 
 @blueprint.route('/<identifier>')
 def get_dataset(identifier):
-    result = db.get_dataset(identifier)
+    result = flask.g.db['datasets'].find_one({'id': int(identifier)})
     utils.clean_mongo(result)
-    return flask.jsonify(result)
+    return flask.jsonify({'dataset': result})
 
 
 @blueprint.route('/<identifier>/delete', methods=['PUT'])

@@ -12,6 +12,10 @@ import utils
 app = flask.Flask(__name__)
 config.init(app)
 
+if app.config.get('dev_mode'):
+    user.add_dev_login()
+
+
 @app.before_request
 def prepare():
     "Open the database connection; get the current user."
@@ -20,6 +24,8 @@ def prepare():
     flask.g.current_user = user.get_current_user()
     flask.g.is_admin = flask.g.current_user and \
                        flask.g.current_user['role'] == constants.ADMIN
+    flask.session['asd'] = 'asd'
+    flask.session.permanent = True
 
 @app.after_request
 def finalize(response):
@@ -29,9 +35,12 @@ def finalize(response):
 
 @app.route('/api/hello')
 def api_hello():
-    logging.error('wtf')
+    logging.debug(f'request: {flask.request}')
+    logging.debug(f'g: {flask.g}')
+    logging.debug(f'session: {flask.session}')
     return flask.jsonify({'test': 'value'})
 
 
 app.register_blueprint(datasets.blueprint, url_prefix='/api/dataset')
 app.register_blueprint(projects.blueprint, url_prefix='/api/project')
+#app.register_blueprint(user.blueprint, url_prefix='/api/user')
