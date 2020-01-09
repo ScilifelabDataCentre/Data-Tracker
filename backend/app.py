@@ -11,8 +11,6 @@ import utils
 
 app = flask.Flask(__name__)
 config.init(app)
-logging.debug(app.config)
-logging.error(app.config)
 
 @app.before_request
 def prepare():
@@ -26,7 +24,7 @@ def prepare():
 @app.after_request
 def finalize(response):
     "Close the database connection."
-#    flask.g.mongo.close()
+    flask.g.dbserver.close()
     return response
 
 @app.route('/api/hello')
