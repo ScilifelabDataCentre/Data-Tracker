@@ -3,22 +3,35 @@ import os
 
 import flask
 
+import config
 import datasets
 import projects
-from settings import SETTINGS
-
+import user
+import utils
 
 app = flask.Flask(__name__)
+config.init(app)
+logging.debug(app.config)
+logging.error(app.config)
 
-if SETTINGS['development_mode']:
-    logging.getLogger().setLevel(logging.DEBUG)
-    app.config['TESTING'] = True
+@app.before_request
+def prepare():
+    "Open the database connection; get the current user."
+    flask.g.dbserver = utils.get_dbserver()
+    flask.g.db = utils.get_db(flask.g.dbserver)
+    flask.g.current_user = user.get_current_user()
+    flask.g.is_admin = flask.g.current_user and \
+                       flask.g.current_user['role'] == constants.ADMIN
 
-app.config['SECRET_KEY'] = SETTINGS['flask']['secret']
-
+@app.after_request
+def finalize(response):
+    "Close the database connection."
+#    flask.g.mongo.close()
+    return response
 
 @app.route('/api/hello')
 def api_hello():
+    logging.error('wtf')
     return flask.jsonify({'test': 'value'})
 
 
