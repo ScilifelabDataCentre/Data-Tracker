@@ -1,14 +1,8 @@
-FROM ubuntu:18.04
-
-ENV LANG C.UTF-8
-
-RUN apt-get update && apt-get install -y \
-        python3 \
-        python3-pip
+FROM python:latest
 
 ADD . /code
-COPY settings.yaml.sample /settings.yaml
-RUN sed -i 's/mongo_host:.*/mongo_host: "db"/' /settings.yaml
+COPY config.yaml.sample /config.yaml
+RUN sed -i 's/mongo_host:.*/mongo_host: "db"/' /config.yaml
 WORKDIR /code/backend
 
 ENV FLASK_APP app
