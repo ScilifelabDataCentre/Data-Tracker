@@ -36,7 +36,7 @@ def finalize(response):
 @app.route('/api/hello')
 def api_hello():
     logging.debug(f'request: {flask.request}')
-    logging.debug(f'g: {flask.g}')
+    logging.debug(f'g: {list(flask.g)}')
     logging.debug(f'session: {flask.session}')
     return flask.jsonify({'test': 'value'})
 

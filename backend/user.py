@@ -3,6 +3,7 @@
 import functools
 import http.client
 import json
+import logging
 import re
 
 import flask
@@ -171,6 +172,7 @@ def profile(username):
                                  enable_disable=is_admin_and_not_self(user),
                                  deletable=is_empty(user))
 
+
 @blueprint.route('/profile/<name:username>/edit',
                  methods=['GET', 'POST', 'DELETE'])
 @login_required
@@ -212,6 +214,7 @@ def edit(username):
         else:
             return flask.redirect(flask.url_for('home'))
 
+
 @blueprint.route('/profile/<name:username>/logs')
 @login_required
 def logs(username):
@@ -227,38 +230,13 @@ def logs(username):
     logs.sort(key=lambda l: l['timestamp'], reverse=True)
     return flask.render_template('user/logs.html', user=user, logs=logs)
 
+
 @blueprint.route('/all')
 @admin_required
 def all():
     "Display list of all users."
     users = list(flask.g.db['users'].find())
-    return flask.render_template('user/all.html', users=users)
-
-@blueprint.route('/enable/<name:username>', methods=['POST'])
-@admin_required
-def enable(username):
-    "Enable the given user account."
-    user = get_user(username=username)
-    if user is None:
-        utils.flash_error('no such user')
-        return flask.redirect(flask.url_for('home'))
-    with UserContext(user) as ctx:
-        ctx.set_status(constants.ENABLED)
-        ctx.set_password()
-    send_password_code(user, 'enabled')
-    return flask.redirect(flask.url_for('.profile', username=username))
-
-@blueprint.route('/disable/<name:username>', methods=['POST'])
-@admin_required
-def disable(username):
-    "Disable the given user account."
-    user = get_user(username=username)
-    if user is None:
-        utils.flash_error('no such user')
-        return flask.redirect(flask.url_for('home'))
-    with UserContext(user) as ctx:
-        ctx.set_status(constants.DISABLED)
-    return flask.redirect(flask.url_for('.profile', username=username))
+    return flask.jsonify(users)
 
 
 class UserContext:
@@ -399,39 +377,12 @@ def get_current_user():
         return None
     return user
 
-def do_login(username, password):
-    """Set the session cookie if successful login.
-    Raise ValueError if some problem.
-    """
-    user = get_user(username)
-    if user is None: raise ValueError
-    if not werkzeug.security.check_password_hash(user['password'], password):
-        raise ValueError
-    if user['status'] != constants.ENABLED:
-        raise ValueError
-    flask.session['username'] = user['username']
-    flask.session.permanent = True
-
-def send_password_code(user, action):
-    "Send an email with the one-time code to the user's email address."
-    site = flask.current_app.config['SITE_NAME']
-    message = flask_mail.Message(f"{site} user account {action}",
-                                 recipients=[user['email']])
-    url = utils.url_for('.password',
-                        username=user['username'],
-                        code=user['password'][len('code:'):])
-    message.body = f"To set your password, go to {url}"
-    utils.mail.send(message)
-
-def is_empty(user):
-    "Is the given user account empty? No data associated with it."
-    # XXX Need reimplementation.
-    return True
-
 def is_admin_or_self(user):
     "Is the current user admin, or the same as the given user?"
-    if not flask.g.current_user: return False
-    if flask.g.is_admin: return True
+    if not flask.g.current_user:
+        return False
+    if flask.g.is_admin:
+        return True
     return flask.g.current_user['username'] == user['username']
 
 def is_admin_and_not_self(user):
@@ -439,3 +390,9 @@ def is_admin_and_not_self(user):
     if flask.g.is_admin:
         return flask.g.current_user['username'] != user['username']
     return False
+
+def add_dev_login():
+    @blueprint.route('/devlogin')
+    @admin_required
+    def dev_login():
+        return jsonify({'dev': True})
