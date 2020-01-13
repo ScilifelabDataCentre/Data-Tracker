@@ -86,18 +86,18 @@ const router = new VueRouter({
         },
 
         {
-          path: ':id(\\d+)',
-          redirect: ':id/about',
-        },
-        {
-          path: ':id(\\d+)/about',
+          path: ':id/about',
           component: DatasetAbout,
           props: true,
         },
         {
-          path: ':id(\\d+)/edit',
+          path: ':id/edit',
           component: DatasetEdit,
           props: true,
+        },
+        {
+          path: ':id',
+          redirect: ':id/about',
         },
       ],
     },
