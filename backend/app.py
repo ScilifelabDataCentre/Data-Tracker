@@ -5,6 +5,7 @@ import flask
 
 import config
 import datasets
+import devmode
 import projects
 import user
 import utils
@@ -12,9 +13,12 @@ import utils
 app = flask.Flask(__name__)
 config.init(app)
 
-if app.config.get('dev_mode'):
-    user.add_dev_login()
+if app.config['dev_mode']:
+    app.register_blueprint(devmode.blueprint, url_prefix='/developer')
 
+app.register_blueprint(datasets.blueprint, url_prefix='/api/dataset')
+app.register_blueprint(projects.blueprint, url_prefix='/api/project')
+#app.register_blueprint(user.blueprint, url_prefix='/api/users')
 
 @app.before_request
 def prepare():
@@ -39,8 +43,3 @@ def api_hello():
     logging.debug(f'g: {list(flask.g)}')
     logging.debug(f'session: {flask.session}')
     return flask.jsonify({'test': 'value'})
-
-
-app.register_blueprint(datasets.blueprint, url_prefix='/api/dataset')
-app.register_blueprint(projects.blueprint, url_prefix='/api/project')
-#app.register_blueprint(user.blueprint, url_prefix='/api/user')

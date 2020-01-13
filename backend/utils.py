@@ -1,23 +1,41 @@
+import logging
+import uuid
+
+from bson.binary import Binary
 import flask
 import pymongo
 
+
 def clean_mongo(response):
     """
-    Clean up a mongo response by removing e.g. ObjectId.
+    Clean up a mongo response by removing e.g. ObjectId (_id).
 
-    Changes are done in-place
+    Changes are done in-place.
 
     Args:
-        response: a response from mongodb.find() or .find_one() (dict or list)
+        response: a response from mongodb.find() or .find_one() (dict or list of dicts)
+
     """
-    if type(response) == list:
+    to_remove = ('_id',)
+    if isinstance(response, list):
         for entry in response:
-            del entry['_id']
-    if '_id' in response:
-        del response['_id']
+            for key in to_remove:
+                if key in entry:
+                    del entry[key]
+    else:
+        for key in to_remove:
+            if key in response:
+                del response[key]
+
 
 def get_dbserver():
-    "Get the connection to the MongoDB database server."
+    """
+    Get the connection to the MongoDB database server.
+
+    Returns:
+        pymongo.mongo_client.MongoClient: the client connection
+
+    """
     return pymongo.MongoClient(
         host=flask.current_app.config['mongo']['host'],
         port=flask.current_app.config['mongo']['port'],
@@ -26,5 +44,25 @@ def get_dbserver():
 
 
 def get_db(dbserver):
-    "Get the connection to the MongoDB database."
+    """
+    Get the connection to the MongoDB database.
+
+    Returns:
+        pymongo.database.Database: the database connection
+
+    """
     return dbserver[flask.current_app.config['mongo']['db']]
+
+
+def to_mongo_uuid(in_uuid: uuid.UUID):
+    """
+    Convert uuid.UUID to the Mongo representation of UUID.
+
+    Args:
+        in_uuid (uuid.UUID): the uuid to be converted
+
+    Returns:
+        bson.binary.Binary: the uuid in Mongo encoding
+
+    """
+    return Binary(uuid.UUID(in_uuid).bytes, 4)
