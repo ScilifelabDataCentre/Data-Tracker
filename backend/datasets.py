@@ -43,7 +43,7 @@ def get_random_ds(amount: int = 1):
     """
     results = list(flask.g.db['datasets'].aggregate([{'$sample': {'size': amount}}]))
     utils.clean_mongo(results)
-    return flask.jsonify({'dataset': results})
+    return flask.jsonify({'datasets': results})
 
 
 @blueprint.route('/<identifier>')
