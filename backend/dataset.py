@@ -28,8 +28,9 @@ def add_dataset():
     Add a dataset.
     """
     dataset = structure.dataset()
-    flask.g.db['datasets'].insert(dataset)
-    return flask.Response(status=200)
+    result = flask.g.db['datasets'].insert_one(dataset)
+    inserted = flask.g.db['datasets'].find_one({'_id': result.inserted_id})
+    return flask.jsonify({'uuid': inserted['uuid']})
 
 
 @blueprint.route('/random')
@@ -82,6 +83,7 @@ def delete_dataset(identifier):
         mongo_uuid = utils.to_mongo_uuid(identifier)
     except ValueError:
         return flask.Response(status=404)
-    result = flask.g.db['datasets'].delete({'uuid': mongo_uuid})
-    logging.error(result)
+    result = flask.g.db['datasets'].delete_one({'uuid': mongo_uuid})
+    if result.deleted_count == 0:
+        return flask.Response(status=404)
     return flask.Response(status=200)

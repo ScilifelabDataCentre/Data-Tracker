@@ -54,7 +54,32 @@ def get_db(dbserver):
     return dbserver[flask.current_app.config['mongo']['db']]
 
 
-def to_mongo_uuid(in_uuid: uuid.UUID):
+def to_mongo_uuid(uuid_str: str):
+    """
+    Convert str uuid to the Mongo representation of UUID.
+
+    Args:
+        uuid_str (str): the uuid to be converted
+
+    Returns:
+        bson.binary.Binary: the uuid in Mongo encoding
+
+    """
+    return uuid_convert_mongo(uuid.UUID(uuid_str))
+
+
+def new_uuid():
+    """
+    Generate a uuid for a field in a MongoDB document.
+
+    Returns:
+        bson.binary.Binary: the new uuid in binary format
+
+    """
+    return uuid_convert_mongo(uuid.uuid4())
+
+
+def uuid_convert_mongo(in_uuid: uuid.UUID):
     """
     Convert uuid.UUID to the Mongo representation of UUID.
 
@@ -66,14 +91,3 @@ def to_mongo_uuid(in_uuid: uuid.UUID):
 
     """
     return Binary(in_uuid.bytes, 4)
-
-
-def new_uuid():
-    """
-    Generate a uuid for a field in a MongoDB document.
-
-    Returns:
-        bson.binary.Binary: the new uuid in binary format
-
-    """
-    return to_mongo_uuid(uuid.uuid4())
