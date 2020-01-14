@@ -9,6 +9,7 @@ import re
 import flask
 
 import error
+import structure
 import user
 import utils
 
@@ -73,6 +74,7 @@ def logout():
     del flask.session['username']
     return flask.Response(status=200)
 
+
 @blueprint.route('/all')
 @admin_required
 def list_users():
@@ -81,20 +83,25 @@ def list_users():
 
     Admin access should be required.
     """
-    result = flask.g.db['users'].find_one({'email': username})
+    result = list(flask.g.db['users'].find())
+    return flask.jsonify({'users': result})
 
 
-# helpers
+# helper functions
 def do_login(username: str):
     """
     Set all relevant variables for a logged in user.
+
+    Users not in db will be added.
 
     Args:
         username (str): The username (email) of the user
     """
     result = flask.g.db['users'].find_one({'email': username})
     if not result:
-        flask.g.db['user'].insert({'email': username})
+        user = structure.user()
+        user['email'] = username
+        flask.g.db['user'].insert(user)
 
     flask.session['username'] = username
     flask.session.permanent = True
