@@ -34,7 +34,7 @@ const actions = {
   getProjects ({ commit }) {
     return new Promise((resolve, reject) => {
       axios
-        .get('/api/projects')
+        .get('/api/project/all')
         .then((response) => {
           commit('UPDATE_PROJECTS', response.data.projects);
           resolve(response);
