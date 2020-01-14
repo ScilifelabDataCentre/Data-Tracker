@@ -11,24 +11,24 @@ def login(username):
     return flask.Response(status=200)
 
 
-@app.route('/hello')
+@blueprint.route('/hello')
 def api_hello():
     return flask.jsonify({'test': 'success'})
 
 
-@app.route('/loginhello')
+@blueprint.route('/loginhello')
 @user.login_required
 def login_hello():
     return flask.jsonify({'test': 'success'})
 
 
-@app.route('/stewardhello')
+@blueprint.route('/stewardhello')
 @user.steward_required
 def steward_hello():
     return flask.jsonify({'test': 'success'})
 
 
-@app.route('/adminhello')
+@blueprint.route('/adminhello')
 @user.admin_required
 def admin_hello():
     return flask.jsonify({'test': 'success'})
