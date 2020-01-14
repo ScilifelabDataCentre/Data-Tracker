@@ -58,9 +58,14 @@ def get_dataset(identifier):
         flask.Request: json structure for the dataset
 
     """
-    result = flask.g.db['datasets'].find_one({'uuid': utils.to_mongo_uuid(identifier)})
+    try:
+        mongo_uuid = utils.to_mongo_uuid(identifier)
+        result = flask.g.db['datasets'].find_one({'uuid': mongo_uuid})
+    except ValueError:
+        result = None
+
     if not result:
-        flask.Response(status=404)
+        return flask.Response(status=404)
     utils.clean_mongo(result)
     return flask.jsonify({'dataset': result})
 
