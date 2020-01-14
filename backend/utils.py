@@ -1,4 +1,3 @@
-import logging
 import uuid
 
 from bson.binary import Binary
@@ -36,11 +35,10 @@ def get_dbserver():
         pymongo.mongo_client.MongoClient: the client connection
 
     """
-    return pymongo.MongoClient(
-        host=flask.current_app.config['mongo']['host'],
-        port=flask.current_app.config['mongo']['port'],
-        username=flask.current_app.config['mongo']['user'],
-        password=flask.current_app.config['mongo']['password'])
+    return pymongo.MongoClient(host=flask.current_app.config['mongo']['host'],
+                               port=flask.current_app.config['mongo']['port'],
+                               username=flask.current_app.config['mongo']['user'],
+                               password=flask.current_app.config['mongo']['password'])
 
 
 def get_db(dbserver):
@@ -66,3 +64,14 @@ def to_mongo_uuid(in_uuid: uuid.UUID):
 
     """
     return Binary(uuid.UUID(in_uuid).bytes, 4)
+
+
+def new_uuid():
+    """
+    Generate a uuid for a field in a MongoDB document.
+
+    Returns:
+        bson.binary.Binary: the new uuid in binary format
+
+    """
+    return to_mongo_uuid(uuid.uuid4())
