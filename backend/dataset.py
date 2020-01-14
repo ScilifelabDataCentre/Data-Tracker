@@ -1,13 +1,15 @@
+"""Dataset requests."""
+
 import logging
-import uuid
 
 import flask
 
+import structure
 import utils
 import user
 
 
-blueprint = flask.Blueprint('datasets', __name__)
+blueprint = flask.Blueprint('datasets', __name__)  # pylint: disable=invalid-name
 
 @blueprint.route('/all')
 def list_dataset():
@@ -20,11 +22,13 @@ def list_dataset():
 
 
 @blueprint.route('/add', methods=['POST'])
+@user.steward_required
 def add_dataset():
     """
     Add a dataset.
     """
-    flask.g.db['datasets'].insert({'uuid': utils.to_mongo_uuid(uuid.uuid4)})
+    dataset = structure.dataset()
+    flask.g.db['datasets'].insert(dataset)
     return flask.Response(status=200)
 
 
@@ -71,5 +75,13 @@ def get_dataset(identifier):
 
 
 @blueprint.route('/<identifier>/delete', methods=['PUT'])
+@user.steward_required
 def delete_dataset(identifier):
-    return flask.Response(status=500)
+    """Delete a dataset."""
+    try:
+        mongo_uuid = utils.to_mongo_uuid(identifier)
+    except ValueError:
+        return flask.Response(status=404)
+    result = flask.g.db['datasets'].delete({'uuid': mongo_uuid})
+    logging.error(result)
+    return flask.Response(status=200)

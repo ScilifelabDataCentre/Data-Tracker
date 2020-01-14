@@ -1,29 +1,29 @@
-import logging
-import os
+"""Main app for the Data Tracker."""
 
 import flask
 
 import config
-import datasets
+import dataset
 import developer
 import projects
 import user
 import utils
 
 
-app = flask.Flask(__name__)
+app = flask.Flask(__name__)  # pylint: disable=invalid-name
 config.init(app)
 
 if app.config['dev_mode']:
     app.register_blueprint(developer.blueprint, url_prefix='/api/developer')
 
-app.register_blueprint(datasets.blueprint, url_prefix='/api/dataset')
+app.register_blueprint(dataset.blueprint, url_prefix='/api/dataset')
 app.register_blueprint(projects.blueprint, url_prefix='/api/project')
 app.register_blueprint(user.blueprint, url_prefix='/api/users')
 
+
 @app.before_request
 def prepare():
-    "Open the database connection; get the current user."
+    """Open the database connection; get the current user."""
     flask.g.dbserver = utils.get_dbserver()
     flask.g.db = utils.get_db(flask.g.dbserver)
     flask.g.current_user = user.get_current_user()
@@ -32,6 +32,6 @@ def prepare():
 
 @app.after_request
 def finalize(response):
-    "Close the database connection."
+    """Close the database connection."""
     flask.g.dbserver.close()
     return response

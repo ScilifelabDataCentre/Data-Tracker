@@ -49,10 +49,10 @@ def init(app):
 
     """
     config_file = ''
-    ARG = "--config_file"
-    if ARG in sys.argv:
+    arg = "--config_file"
+    if arg in sys.argv:
         try:
-            config_file = sys.argv[sys.argv.index(ARG)+1]
+            config_file = sys.argv[sys.argv.index(arg)+1]
         except IndexError:
             logging.error("No argument for --config_file")
             sys.exit(1)

@@ -1,3 +1,5 @@
+"""General helper functions."""
+
 import uuid
 
 from bson.binary import Binary
@@ -63,7 +65,7 @@ def to_mongo_uuid(in_uuid: uuid.UUID):
         bson.binary.Binary: the uuid in Mongo encoding
 
     """
-    return Binary(uuid.UUID(in_uuid).bytes, 4)
+    return Binary(in_uuid.bytes, 4)
 
 
 def new_uuid():
