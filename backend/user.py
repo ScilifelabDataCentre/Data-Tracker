@@ -71,8 +71,9 @@ def elixir_login():
 @blueprint.route('/logout')
 def logout():
     """Log out the current user."""
-    del flask.session['username']
-    del flask.session['_csrf_token']
+    if 'username' in flask.session:
+        del flask.session['username']
+        del flask.session['_csrf_token']
     return flask.Response(status=200)
 
 
@@ -85,6 +86,7 @@ def list_users():
     Admin access should be required.
     """
     result = list(flask.g.db['users'].find())
+    utils.clean_mongo(result)
     return flask.jsonify({'users': result})
 
 
@@ -105,7 +107,7 @@ def do_login(username: str):
         flask.g.db['user'].insert(user)
 
     flask.session['username'] = username
-    flask.session['_csrf_token'] = gen_csrf_token()
+    flask.session['_csrf_token'] = utils.gen_csrf_token()
     flask.session.permanent = True
 
 

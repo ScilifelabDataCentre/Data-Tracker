@@ -18,14 +18,14 @@ if app.config['dev_mode']:
 
 app.register_blueprint(dataset.blueprint, url_prefix='/api/dataset')
 app.register_blueprint(projects.blueprint, url_prefix='/api/project')
-app.register_blueprint(user.blueprint, url_prefix='/api/users')
+app.register_blueprint(user.blueprint, url_prefix='/api/user')
 
 
 @app.before_request
 def prepare():
     """Open the database connection; get the current user."""
     if flask.request.method in ('POST', 'PUT', 'DELETE'):
-        utils.check_csrf()
+        utils.check_csrf_token()
     flask.g.dbserver = utils.get_dbserver()
     flask.g.db = utils.get_db(flask.g.dbserver)
     flask.g.current_user = user.get_current_user()

@@ -8,7 +8,7 @@ import flask
 import pymongo
 
 
-def check_csrf():
+def check_csrf_token():
     """Compare the csrf token from the request with the one in the session."""
     token = flask.request.form.get('_csrf_token')
     if not token or token != flask.session.get('_csrf_token'):
@@ -16,7 +16,7 @@ def check_csrf():
         flask.abort(flask.Response(status=400))
 
 
-def gen_csrf() -> str:
+def gen_csrf_token() -> str:
     """
     Genereate a csrf token.
 
