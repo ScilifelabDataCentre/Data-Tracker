@@ -73,7 +73,6 @@ def logout():
     """Log out the current user."""
     if 'username' in flask.session:
         del flask.session['username']
-        del flask.session['_csrf_token']
     response = flask.Response(status=200)
     response.set_cookie('_csrf_token', '', expires=0)
     return response
@@ -109,10 +108,9 @@ def do_login(username: str):
         flask.g.db['user'].insert(user)
 
     flask.session['username'] = username
-    flask.session['_csrf_token'] = utils.gen_csrf_token()
     flask.session.permanent = True
     response = flask.Response(status=200)
-    response.set_cookie('_csrf_token', flask.session['_csrf_token'], samesite='Lax')
+    response.set_cookie('_csrf_token', utils.gen_csrf_token(), samesite='Lax')
     return response
 
 

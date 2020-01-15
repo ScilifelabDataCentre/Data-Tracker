@@ -9,9 +9,9 @@ import pymongo
 
 
 def check_csrf_token():
-    """Compare the csrf token from the request with the one in the session."""
-    token = flask.request.form.get('_csrf_token')
-    if not token or token != flask.session.get('_csrf_token'):
+    """Compare the csrf token from the request (header) with the one in the cookie.session."""
+    token = flask.request.headers.get('X-CSRF-Token')
+    if not token or (token != flask.request.cookies.get('_csrf_token')):
         logging.warning('Bad csrf token received')
         flask.abort(flask.Response(status=400))
 
