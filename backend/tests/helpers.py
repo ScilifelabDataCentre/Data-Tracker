@@ -15,7 +15,7 @@ USERS = {'no-login': None,
          'admin': 'admin@example.com'}
 
 
-def request_all_permissions(url: str, method='GET', payload=None) -> list:
+def make_request_all_roles(url: str, method='GET', payload=None) -> list:
     """
     Perform a query for all roles (anonymous, User, Steward, Admin).
 
