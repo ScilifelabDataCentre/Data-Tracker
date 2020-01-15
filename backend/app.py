@@ -35,5 +35,9 @@ def prepare():
 @app.after_request
 def finalize(response):
     """Close the database connection."""
-    flask.g.dbserver.close()
+    if hasattr(flask.g, 'dbserver'):
+        flask.g.dbserver.close()
+    # add some headers for protection
+    response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+    response.headers['X-XSS-Protection'] = '1; mode=block'
     return response

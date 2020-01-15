@@ -13,7 +13,7 @@ def check_csrf():
     token = flask.request.form.get('_csrf_token')
     if not token or token != flask.session.get('_csrf_token'):
         logging.warning('Bad csrf token received')
-        flask.abort(flask.Response(400))
+        flask.abort(flask.Response(status=400))
 
 
 def gen_csrf() -> str:
