@@ -29,7 +29,7 @@ def clean_mongo(response):
                 del response[key]
 
 
-def get_dbserver():
+def get_dbserver() -> pymongo.mongo_client.MongoClient:
     """
     Get the connection to the MongoDB database server.
 
@@ -43,9 +43,12 @@ def get_dbserver():
                                password=flask.current_app.config['mongo']['password'])
 
 
-def get_db(dbserver):
+def get_db(dbserver: pymongo.mongo_client.MongoClient) -> pymongo.database.Database:
     """
     Get the connection to the MongoDB database.
+
+    Args:
+        dbserver: connection to the db
 
     Returns:
         pymongo.database.Database: the database connection
@@ -54,7 +57,7 @@ def get_db(dbserver):
     return dbserver[flask.current_app.config['mongo']['db']]
 
 
-def to_mongo_uuid(uuid_str: str):
+def to_mongo_uuid(uuid_str: str) -> bson.binary.Binary:
     """
     Convert str uuid to the Mongo representation of UUID.
 
@@ -68,7 +71,7 @@ def to_mongo_uuid(uuid_str: str):
     return uuid_convert_mongo(uuid.UUID(uuid_str))
 
 
-def new_uuid():
+def new_uuid() -> bson.binary.Binary:
     """
     Generate a uuid for a field in a MongoDB document.
 
@@ -79,7 +82,7 @@ def new_uuid():
     return uuid_convert_mongo(uuid.uuid4())
 
 
-def uuid_convert_mongo(in_uuid: uuid.UUID):
+def uuid_convert_mongo(in_uuid: uuid.UUID) -> bson.binary.Binary:
     """
     Convert uuid.UUID to the Mongo representation of UUID.
 
