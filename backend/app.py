@@ -24,6 +24,8 @@ app.register_blueprint(user.blueprint, url_prefix='/api/users')
 @app.before_request
 def prepare():
     """Open the database connection; get the current user."""
+    if flask.request.method in ('POST', 'PUT', 'DELETE'):
+        utils.check_csrf()
     flask.g.dbserver = utils.get_dbserver()
     flask.g.db = utils.get_db(flask.g.dbserver)
     flask.g.current_user = user.get_current_user()

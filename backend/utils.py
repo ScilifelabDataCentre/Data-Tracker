@@ -1,10 +1,30 @@
 """General helper functions."""
 
+import logging
 import uuid
 
 import bson
 import flask
 import pymongo
+
+
+def check_csrf():
+    """Compare the csrf token from the request with the one in the session."""
+    token = flask.request.form.get('_csrf_token')
+    if not token or token != flask.session.get('_csrf_token'):
+        logging.warning('Bad csrf token received')
+        flask.abort(flask.Response(400))
+
+
+def gen_csrf() -> str:
+    """
+    Genereate a csrf token.
+
+    Returns:
+        str: the csrf token
+
+    """
+    return uuid.uuid4().hex
 
 
 def clean_mongo(response):

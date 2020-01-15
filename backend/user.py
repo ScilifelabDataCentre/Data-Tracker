@@ -72,6 +72,7 @@ def elixir_login():
 def logout():
     """Log out the current user."""
     del flask.session['username']
+    del flask.session['_csrf_token']
     return flask.Response(status=200)
 
 
@@ -104,6 +105,7 @@ def do_login(username: str):
         flask.g.db['user'].insert(user)
 
     flask.session['username'] = username
+    flask.session['_csrf_token'] = gen_csrf_token()
     flask.session.permanent = True
 
 
