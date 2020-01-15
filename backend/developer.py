@@ -44,3 +44,9 @@ def steward_hello():
 def admin_hello():
     """Test request requiring Admin rights."""
     return flask.jsonify({'test': 'success'})
+
+
+@blueprint.route('/csrftest', methods=['POST', 'PUT', 'DELETE'])
+def csrf_test():
+    """Test csrf tokens."""
+    return flask.jsonify({'test': 'success'})
