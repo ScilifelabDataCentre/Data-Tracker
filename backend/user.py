@@ -112,7 +112,7 @@ def do_login(username: str):
     flask.session['_csrf_token'] = utils.gen_csrf_token()
     flask.session.permanent = True
     response = flask.Response(status=200)
-    response.set_cookie('_csrf_token', flask.session['_csrf_token'])
+    response.set_cookie('_csrf_token', flask.session['_csrf_token'], samesite='Lax')
     return response
 
 
