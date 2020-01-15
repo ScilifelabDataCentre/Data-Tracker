@@ -2,7 +2,7 @@
 
 import uuid
 
-from bson.binary import Binary
+import bson
 import flask
 import pymongo
 
@@ -93,4 +93,4 @@ def uuid_convert_mongo(in_uuid: uuid.UUID) -> bson.binary.Binary:
         bson.binary.Binary: the uuid in Mongo encoding
 
     """
-    return Binary(in_uuid.bytes, 4)
+    return bson.binary.Binary(in_uuid.bytes, 4)
