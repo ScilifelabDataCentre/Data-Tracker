@@ -1,5 +1,6 @@
 """Dataset requests."""
 
+import json
 import logging
 
 import flask
@@ -21,9 +22,21 @@ def list_dataset():
     return flask.jsonify({'datasets': results})
 
 
+@blueprint.route('/add', methods=['GET'])
+@user.steward_required
+def add_dataset_get():
+    """
+    Base data structure for adding a dataset.
+    """
+    dataset = structure.dataset()
+    del dataset['uuid']
+    del dataset['timestamp']
+    return flask.jsonify(dataset)
+
+
 @blueprint.route('/add', methods=['POST'])
 @user.steward_required
-def add_dataset():
+def add_dataset_post():
     """
     Add a dataset.
     """
