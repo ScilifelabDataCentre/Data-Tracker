@@ -15,8 +15,8 @@ def login(username: str):
     Args:
         username (str): the user (email) to log in as
     """
-    user.do_login(username)
-    return flask.Response(status=200)
+    response = user.do_login(username)
+    return response
 
 
 @blueprint.route('/hello')

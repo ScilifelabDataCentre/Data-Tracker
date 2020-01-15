@@ -74,7 +74,9 @@ def logout():
     if 'username' in flask.session:
         del flask.session['username']
         del flask.session['_csrf_token']
-    return flask.Response(status=200)
+    response = flask.Response(status=200)
+    response.set_cookie('_csrf_token', '', expires=0)
+    return response
 
 
 @blueprint.route('/all')
@@ -109,6 +111,9 @@ def do_login(username: str):
     flask.session['username'] = username
     flask.session['_csrf_token'] = utils.gen_csrf_token()
     flask.session.permanent = True
+    response = flask.Response(status=200)
+    response.set_cookie('_csrf_token', flask.session['_csrf_token'])
+    return response
 
 
 def get_current_user():
