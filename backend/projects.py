@@ -1,13 +1,15 @@
+"""Project requests."""
+
 import logging
-import uuid
 
 import flask
 
+import structure
 import utils
 import user
 
 
-blueprint = flask.Blueprint('projects', __name__)
+blueprint = flask.Blueprint('projects', __name__)  # pylint: disable=invalid-name
 
 @blueprint.route('/all')
 def list_project():
@@ -20,12 +22,15 @@ def list_project():
 
 
 @blueprint.route('/add', methods=['POST'])
+@user.steward_required
 def add_project():
     """
     Add a project.
     """
-    flask.g.db['projects'].insert({'uuid': utils.to_mongo_uuid(uuid.uuid4)})
-    return flask.Response(status=200)
+    project = structure.project()
+    result = flask.g.db['projects'].insert_one(project)
+    inserted = flask.g.db['projects'].find_one({'_id': result.inserted_id})
+    return flask.jsonify({'uuid': inserted['uuid']})
 
 
 @blueprint.route('/random')
@@ -58,13 +63,27 @@ def get_project(identifier):
         flask.Request: json structure for the project
 
     """
-    result = flask.g.db['projects'].find_one({'uuid': utils.to_mongo_uuid(identifier)})
+    try:
+        mongo_uuid = utils.to_mongo_uuid(identifier)
+        result = flask.g.db['projects'].find_one({'uuid': mongo_uuid})
+    except ValueError:
+        result = None
+
     if not result:
-        flask.Response(status=404)
+        return flask.Response(status=404)
     utils.clean_mongo(result)
     return flask.jsonify({'project': result})
 
 
 @blueprint.route('/<identifier>/delete', methods=['PUT'])
+@user.steward_required
 def delete_project(identifier):
-    return flask.Response(status=500)
+    """Delete a project."""
+    try:
+        mongo_uuid = utils.to_mongo_uuid(identifier)
+    except ValueError:
+        return flask.Response(status=404)
+    result = flask.g.db['projects'].delete_one({'uuid': mongo_uuid})
+    if result.deleted_count == 0:
+        return flask.Response(status=404)
+    return flask.Response(status=200)
