@@ -41,3 +41,8 @@ def finalize(response):
     response.headers['X-Frame-Options'] = 'SAMEORIGIN'
     response.headers['X-XSS-Protection'] = '1; mode=block'
     return response
+
+
+@app.errorhandler(404)
+def not_found(error):
+    return flask.Response(status=404)
