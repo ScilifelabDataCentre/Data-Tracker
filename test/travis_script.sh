@@ -4,7 +4,7 @@ DBNAME=tracker
 
 ## SETUP SETTINGS
 echo '>>> Preparing for testing: Add config.yaml'
-cp test/test_config.yaml config.yaml
+cp test/appconfig_travis.yaml config.yaml
 
 echo 'CONFIG'
 cat config.yaml
