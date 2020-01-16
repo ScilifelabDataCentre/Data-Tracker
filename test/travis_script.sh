@@ -1,26 +1,16 @@
 #!/bin/sh -ex
 
-DBNAME=portal
+DBNAME=tracker
 
 ## SETUP SETTINGS
-echo '>>> Preparing for testing: Fix settings.json file'
-cp settings_sample.json settings.json
+echo '>>> Preparing for testing: Add config.yaml'
+cp test/test_config.yaml config.yaml
 
-sed -i.tmp 's/"postgresHost" : "postgres host"/"postgresHost" : "127.0.0.1"/' settings.json
-sed -i.tmp 's/"postgresPort" : 5432/"postgresPort" : 5433/' settings.json
-sed -i.tmp "s/\"postgresName\" : \"portal\"/\"postgresName\" : \"$DBNAME\"/" settings.json
+echo 'CONFIG'
+cat config.yaml
+echo '/CONFIG'
 
-echo 'SETTINGS'
-cat settings.json
-echo '/SETTINGS'
-
-echo '>>> Test 1: Load the portal schema'
-psql -U postgres -h 127.0.0.1 -p 5433 -f sql/data_schema.sql "$DBNAME"
-psql -U postgres -h 127.0.0.1 -p 5433 -f sql/user_schema.sql "$DBNAME"
-psql -U postgres -h 127.0.0.1 -p 5433 -f test/data/test_data.sql "$DBNAME"
-
-
-echo '>>> Test 2: Check that the backend starts'
+echo '>>> Test 1: Check that the backend starts'
 
 (cd backend && ../test/01_daemon_starts.sh)
 
