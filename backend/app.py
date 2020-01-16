@@ -46,3 +46,8 @@ def finalize(response):
 @app.errorhandler(404)
 def not_found(error):
     return flask.Response(status=404)
+
+
+# to allow coverage check for testing
+if __name__ == '__main__':
+    app.run(debug=True, port=4444)

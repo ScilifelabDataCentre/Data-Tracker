@@ -10,13 +10,13 @@ echo 'CONFIG'
 cat config.yaml
 echo '/CONFIG'
 
-echo '>>> Test 1: Check that the backend starts'
+echo ">>> Test 1: Check that the backend doesn't crash immediately"
 
 (cd backend && ../test/01_daemon_starts.sh)
 
 
-echo '>>> Test 4: The backend'
-COVERAGE_FILE=.coverage_server coverage run backend/route.py --port=5000 --develop 1>http_log.txt 2>&1 &
+echo '>>> Preparing: Start the backend'
+COVERAGE_FILE=.coverage_backend coverage run backend/app.py 1>http_log.txt 2>&1 &
 BACKEND_PID=$!
 
 sleep 2 # Lets wait a little bit so the server has started
@@ -37,7 +37,7 @@ exit_handler () {
 
 trap exit_handler EXIT
 
-echo '>>> Test 4A: Pytest'
+echo '>>> Test 2: Pytest'
 # test browser
 COVERAGE_FILE=.coverage_pytest PYTHONPATH=$PYTHONPATH:backend/ py.test backend/ --cov=backend/
 RETURN_VALUE=$((RETURN_VALUE + $?))
@@ -46,13 +46,17 @@ RETURN_VALUE=$((RETURN_VALUE + $?))
 curl localhost:5000/developer/quit
 sleep 2 # Lets wait a little bit so the server has stopped
 
-echo '>>> Code evaluation'
+echo '>>> Test 3: Code evaluation'
 pylint backend
+RETURN_VALUE=$((RETURN_VALUE + $?))
+pydocstyle backend
+RETURN_VALUE=$((RETURN_VALUE + $?))
+flake8 backend
 RETURN_VALUE=$((RETURN_VALUE + $?))
 
 echo '>>> Finalising: Combine coverage'
 
-coverage combine .coverage_pytest .coverage_server
+coverage combine .coverage_pytest .coverage_backend
 
 if [ -f .coverage ]; then
     coveralls
