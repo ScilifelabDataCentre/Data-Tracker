@@ -50,4 +50,4 @@ def not_found(error):
 
 # to allow coverage check for testing
 if __name__ == '__main__':
-    app.run(debug=True, port=4444)
+    app.run(debug=True, port=5000)
