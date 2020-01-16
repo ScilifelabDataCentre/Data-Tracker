@@ -47,10 +47,8 @@ def project():
     """
     return {'contact': '',
             'description': '',
-            'dmp': '',
             'identifier': '',
             'owner': '',
-            'publications': [],
             'timestamp': datetime.datetime.now(),
             'title': '',
             'uuid': utils.new_uuid()}
