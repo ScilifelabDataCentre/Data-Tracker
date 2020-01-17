@@ -1,12 +1,9 @@
 """Dataset requests."""
 
-import json
-import logging
-
 import flask
 
 import structure
-import helpers
+import utils
 import user
 
 
@@ -18,8 +15,8 @@ def list_dataset():
     Provide a simplified list of all available datasets.
     """
     results = list(flask.g.db['datasets'].find())
-    helpers.clean_mongo(results)
-    return helpers.response_json({'datasets': results})
+    utils.clean_mongo(results)
+    return utils.response_json({'datasets': results})
 
 
 @blueprint.route('/add', methods=['GET'])
@@ -31,7 +28,7 @@ def add_dataset_get():
     dataset = structure.dataset()
     del dataset['uuid']
     del dataset['timestamp']
-    return helpers.response_json(dataset)
+    return utils.response_json(dataset)
 
 
 @blueprint.route('/add', methods=['POST'])
@@ -43,7 +40,7 @@ def add_dataset_post():
     dataset = structure.dataset()
     result = flask.g.db['datasets'].insert_one(dataset)
     inserted = flask.g.db['datasets'].find_one({'_id': result.inserted_id})
-    return helpers.response_json({'uuid': inserted['uuid']})
+    return utils.response_json({'uuid': inserted['uuid']})
 
 
 @blueprint.route('/random', methods=['GET'])
@@ -60,8 +57,8 @@ def get_random_ds(amount: int = 1):
 
     """
     results = list(flask.g.db['datasets'].aggregate([{'$sample': {'size': amount}}]))
-    helpers.clean_mongo(results)
-    return helpers.response_json({'datasets': results})
+    utils.clean_mongo(results)
+    return utils.response_json({'datasets': results})
 
 
 @blueprint.route('/<identifier>', methods=['GET'])
@@ -77,7 +74,7 @@ def get_dataset(identifier):
 
     """
     try:
-        mongo_uuid = helpers.to_mongo_uuid(identifier)
+        mongo_uuid = utils.to_mongo_uuid(identifier)
         result = flask.g.db['datasets'].find_one({'uuid': mongo_uuid})
     except ValueError:
         result = None
@@ -86,8 +83,8 @@ def get_dataset(identifier):
         return flask.Response(status=404)
     result['projects'] = [{'title': hit['title'], 'uuid': hit['uuid']}
                           for hit in flask.g.db['projects'].find({'datasets': result['uuid']})]
-    helpers.clean_mongo(result)
-    return helpers.response_json({'dataset': result})
+    utils.clean_mongo(result)
+    return utils.response_json({'dataset': result})
 
 
 @blueprint.route('/<identifier>/delete', methods=['PUT'])
@@ -95,7 +92,7 @@ def get_dataset(identifier):
 def delete_dataset(identifier):
     """Delete a dataset."""
     try:
-        mongo_uuid = helpers.to_mongo_uuid(identifier)
+        mongo_uuid = utils.to_mongo_uuid(identifier)
     except ValueError:
         return flask.Response(status=404)
     result = flask.g.db['datasets'].delete_one({'uuid': mongo_uuid})

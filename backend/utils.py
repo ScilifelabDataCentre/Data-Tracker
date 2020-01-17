@@ -7,6 +7,8 @@ import bson
 import flask
 import pymongo
 
+import error
+
 
 def check_csrf_token():
     """Compare the csrf token from the request (header) with the one in the cookie.session."""
@@ -60,7 +62,7 @@ def convert_keys_to_camel(chunk):
 
     Args:
         chunk: Object to convert
-    
+
     Returns:
         *: chunk converted to camelCase dict, otherwise chunk
 
@@ -72,10 +74,10 @@ def convert_keys_to_camel(chunk):
         return chunk
 
     new_chunk = {}
-    for k, v in chunk.items():
+    for key, value in chunk.items():
         # First character should be the same as in the original string
-        new_key = k[0] + "".join([a[0].upper() + a[1:] for a in k.split("_")])[1:]
-        new_chunk[new_key] = convert_keys_to_camel(v)
+        new_key = key[0] + "".join([a[0].upper() + a[1:] for a in key.split("_")])[1:]
+        new_chunk[new_key] = convert_keys_to_camel(value)
     return new_chunk
 
 
@@ -199,7 +201,7 @@ def response_json(json_structure: dict):
     """
     data = convert_keys_to_camel(json_structure)
     return flask.jsonify(data)
-    
+
 
 def to_mongo_uuid(uuid_str: str) -> bson.binary.Binary:
     """

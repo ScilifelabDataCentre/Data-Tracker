@@ -2,7 +2,7 @@
 
 import datetime
 
-import helpers
+import utils
 
 def user():
     """
@@ -35,7 +35,7 @@ def dataset():
             'publications': [],
             'timestamp': datetime.datetime.now(),
             'title': '',
-            'uuid': helpers.new_uuid()}
+            'uuid': utils.new_uuid()}
 
 
 def project():
@@ -52,4 +52,4 @@ def project():
             'timestamp': datetime.datetime.now(),
             'title': '',
             'datasets': [],
-            'uuid': helpers.new_uuid()}
+            'uuid': utils.new_uuid()}

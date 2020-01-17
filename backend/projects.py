@@ -1,11 +1,9 @@
 """Project requests."""
 
-import logging
-
 import flask
 
 import structure
-import helpers
+import utils
 import user
 
 
@@ -17,7 +15,7 @@ def list_project():
     Provide a simplified list of all available projects.
     """
     results = list(flask.g.db['projects'].find())
-    helpers.clean_mongo(results)
+    utils.clean_mongo(results)
     return flask.jsonify({'projects': results})
 
 
@@ -47,7 +45,7 @@ def get_random_ds(amount: int = 1):
 
     """
     results = list(flask.g.db['projects'].aggregate([{'$sample': {'size': amount}}]))
-    helpers.clean_mongo(results)
+    utils.clean_mongo(results)
     return flask.jsonify({'projects': results})
 
 
@@ -64,14 +62,14 @@ def get_project(identifier):
 
     """
     try:
-        mongo_uuid = helpers.to_mongo_uuid(identifier)
+        mongo_uuid = utils.to_mongo_uuid(identifier)
         result = flask.g.db['projects'].find_one({'uuid': mongo_uuid})
     except ValueError:
         result = None
 
     if not result:
         return flask.Response(status=404)
-    helpers.clean_mongo(result)
+    utils.clean_mongo(result)
     return flask.jsonify({'project': result})
 
 
@@ -80,7 +78,7 @@ def get_project(identifier):
 def delete_project(identifier):
     """Delete a project."""
     try:
-        mongo_uuid = helpers.to_mongo_uuid(identifier)
+        mongo_uuid = utils.to_mongo_uuid(identifier)
     except ValueError:
         return flask.Response(status=404)
     result = flask.g.db['projects'].delete_one({'uuid': mongo_uuid})

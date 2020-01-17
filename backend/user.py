@@ -1,63 +1,63 @@
 """User profile and login/logout HTMl endpoints."""
 
 import functools
-import http.client
-import json
 import logging
-import re
 
 import flask
 
-import error
 import structure
-import user
-import helpers
+import utils
 
 
-blueprint = flask.Blueprint('user', __name__)
+blueprint = flask.Blueprint('user', __name__)  # pylint: disable=invalid-name
 
+# pylint: disable=logging-too-many-args
 # Decorators
-def login_required(f):
-    """Confirm that the user is logged in."""
-    @functools.wraps(f)
+def login_required(func):
+    """
+    Confirm that the user is logged in.
+
+    Otherwise abort with status 401 Unauthorized.
+    """
+    @functools.wraps(func)
     def wrap(*args, **kwargs):
         if not flask.g.current_user:
             flask.abort(flask.Response(status=401))
-        return f(*args, **kwargs)
+        return func(*args, **kwargs)
     return wrap
 
 
-def steward_required(f):
+def steward_required(func):
     """
     Confirm that the user is logged in and has the 'admin' role.
-    
-    Otherwise return status 401 Unauthorized.
+
+    Otherwise abort with status 401 Unauthorized.
     """
-    @functools.wraps(f)
+    @functools.wraps(func)
     def wrap(*args, **kwargs):
         if flask.g.current_role not in ('Steward', 'Admin'):
             logging.info('Rejected access. User: %s Role (required): %s (Steward)',
                          flask.g.current_user,
                          flask.g.current_role)
             flask.abort(flask.Response(status=401))
-        return f(*args, **kwargs)
+        return func(*args, **kwargs)
     return wrap
 
 
-def admin_required(f):
+def admin_required(func):
     """
     Confirm that the user is logged in and has the 'admin' role.
-    
+
     Otherwise return status 401 Unauthorized.
     """
-    @functools.wraps(f)
+    @functools.wraps(func)
     def wrap(*args, **kwargs):
         if flask.g.current_role != 'Admin':
             logging.info('Rejected access. User: %s Role (required): %s (Admin)',
                          flask.g.current_user,
                          flask.g.current_role)
             flask.abort(flask.Response(status=401))
-        return f(*args, **kwargs)
+        return func(*args, **kwargs)
     return wrap
 
 
@@ -87,7 +87,7 @@ def list_users():
     Admin access should be required.
     """
     result = list(flask.g.db['users'].find())
-    helpers.clean_mongo(result)
+    utils.clean_mongo(result)
     return flask.jsonify({'users': result})
 
 
@@ -110,7 +110,7 @@ def do_login(username: str):
     flask.session['username'] = username
     flask.session.permanent = True
     response = flask.Response(status=200)
-    response.set_cookie('_csrf_token', helpers.gen_csrf_token(), samesite='Lax')
+    response.set_cookie('_csrf_token', utils.gen_csrf_token(), samesite='Lax')
     return response
 
 
