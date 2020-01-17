@@ -21,7 +21,6 @@ PYTHONPATH=backend python test/gen_test_db.py
 echo '>>> Preparing: Start the backend'
 COVERAGE_FILE=.coverage_backend coverage run backend/app.py 1>http_log.txt 2>&1 &
 BACKEND_PID=$!
-
 sleep 2 # Lets wait a little bit so the server has started
 
 exit_handler () {
@@ -45,10 +44,6 @@ echo '>>> Test 2: Pytest'
 COVERAGE_FILE=.coverage_pytest PYTHONPATH=$PYTHONPATH:backend/ py.test backend/ --cov=backend/
 RETURN_VALUE=$((RETURN_VALUE + $?))
 
-# Quit the app
-curl localhost:5000/developer/quit
-sleep 2 # Lets wait a little bit so the server has stopped
-
 echo '>>> Test 3: Code evaluation'
 pylint backend/*py
 RETURN_VALUE=$((RETURN_VALUE + $?))
@@ -57,9 +52,13 @@ RETURN_VALUE=$((RETURN_VALUE + $?))
 flake8 backend/*py
 RETURN_VALUE=$((RETURN_VALUE + $?))
 
+echo '>>> Finalising: Stop the backend'
+kill "$BACKEND_PID"
+sleep 5 # Lets wait a little bit so the server has stopped
+
 echo '>>> Finalising: Combine coverage'
 
-coverage combine .coverage_pytest .coverage_backend
+coverage combine .coverage_pytest .coverage
 
 if [ -f .coverage ]; then
     coveralls
