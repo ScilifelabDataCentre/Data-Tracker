@@ -58,7 +58,7 @@ sleep 5 # Lets wait a little bit so the server has stopped
 
 echo '>>> Finalising: Combine coverage'
 
-coverage combine .coverage_pytest .coverage
+coverage combine .coverage_pytest .coverage_backend
 
 if [ -f .coverage ]; then
     coveralls
