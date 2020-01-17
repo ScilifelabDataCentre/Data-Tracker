@@ -1,4 +1,4 @@
-"""Project requests."""
+"""Dataset requests."""
 
 import flask
 
@@ -10,30 +10,36 @@ import user
 blueprint = flask.Blueprint('projects', __name__)  # pylint: disable=invalid-name
 
 
-@blueprint.route('/all')
+@blueprint.route('/all', methods=['GET'])
 def list_project():
-    """
-    Provide a simplified list of all available projects.
-    """
+    """Provide a simplified list of all available projects."""
     results = list(flask.g.db['projects'].find())
     utils.clean_mongo(results)
-    return flask.jsonify({'projects': results})
+    return utils.response_json({'projects': results})
+
+
+@blueprint.route('/add', methods=['GET'])
+@user.steward_required
+def add_project_get():
+    """Provide a basic data structure for adding a project."""
+    project = structure.project()
+    del project['uuid']
+    del project['timestamp']
+    return utils.response_json(project)
 
 
 @blueprint.route('/add', methods=['POST'])
 @user.steward_required
-def add_project():
-    """
-    Add a project.
-    """
+def add_project_post():
+    """Add a project."""
     project = structure.project()
     result = flask.g.db['projects'].insert_one(project)
     inserted = flask.g.db['projects'].find_one({'_id': result.inserted_id})
-    return flask.jsonify({'uuid': inserted['uuid']})
+    return utils.response_json({'uuid': inserted['uuid']})
 
 
-@blueprint.route('/random')
-@blueprint.route('/random/<int:amount>')
+@blueprint.route('/random', methods=['GET'])
+@blueprint.route('/random/<int:amount>', methods=['GET'])
 def get_random_ds(amount: int = 1):
     """
     Retrieve random project(s).
@@ -47,10 +53,10 @@ def get_random_ds(amount: int = 1):
     """
     results = list(flask.g.db['projects'].aggregate([{'$sample': {'size': amount}}]))
     utils.clean_mongo(results)
-    return flask.jsonify({'projects': results})
+    return utils.response_json({'projects': results})
 
 
-@blueprint.route('/<identifier>')
+@blueprint.route('/<identifier>', methods=['GET'])
 def get_project(identifier):
     """
     Retrieve the project with uuid <identifier>.
@@ -71,7 +77,7 @@ def get_project(identifier):
     if not result:
         return flask.Response(status=404)
     utils.clean_mongo(result)
-    return flask.jsonify({'project': result})
+    return utils.response_json({'project': result})
 
 
 @blueprint.route('/<identifier>/delete', methods=['PUT'])
