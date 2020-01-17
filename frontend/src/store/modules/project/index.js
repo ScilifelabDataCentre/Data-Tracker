@@ -22,7 +22,7 @@ const actions = {
       axios
         .get('/api/project/' + id)
         .then((response) => {
-          commit('UPDATE_PROJECT', response.data);
+          commit('UPDATE_PROJECT', response.data.project);
           resolve(response);
         })
         .catch((err) => {

@@ -6,26 +6,27 @@
   <div v-else>
     <h1 class="title is-2">{{ dataset.title }}</h1>
     <div class="dataset-description field" v-html="dataset.description"></div>
-    <table class="table">
-      <tr v-if="dataset.creator"><td class="data-header">Creator</td><td>{{ dataset.creator }}</td></tr>
-      <tr v-if="dataset.doi"><td class="data-header">DOI</td><td>{{ dataset.doi }}</td></tr>
-      <tr v-if="dataset.dmp"><td class="data-header"><abbr title="Data management plan">DMP</abbr></td><td>{{ dataset.dmp }}</td></tr>
-    </table>
-    
-    <div v-if="dataset.dataUrls">
-      <h2 class="title is-5">Data locations</h2>
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Description</th><th>URL</th>
-          </tr>
-        </thead>
-        <tr v-for="location in dataset.dataUrls" :key="location.id">
-          <td>{{location.description}}</td><td>{{location.url}}</td>
+    <table class="table is-hoverable">
+      <tbody>
+        <tr v-if="dataset.creator"><td class="data-header">Creator</td><td>{{ dataset.creator }}</td></tr>
+        <tr v-if="dataset.doi"><td class="data-header">DOI</td><td>{{ dataset.doi }}</td></tr>
+        <tr v-if="dataset.dmp"><td class="data-header"><abbr title="Data management plan">DMP</abbr></td><td><a :href="dataset.dmp">{{ dataset.dmp }}</a></td></tr>
+        <tr v-if="dataset.dataUrls.length > 0">
+        <tr class="test" v-for="(location, index) in dataset.dataUrls" :key="location.id">
+          <td class="data-header"><span v-if="index === 0">Data locations</span></td>
+          <td class="test"><a :href="location.url">{{location.description}}</a></td>
         </tr>
-      </table>
-    </div>
-    <div v-if="dataset.publications">
+        <tr class="test" v-for="(publication, index) in dataset.publications" :key="publication.id">
+          <td class="data-header"><span v-if="index === 0">Publications</span></td>
+          <td class="test"><a :href="publication.url">{{publication}}</a></td>
+        </tr>
+        <tr class="test" v-for="(project, index) in dataset.projects" :key="project.id">
+          <td class="data-header"><span v-if="index === 0">Projects</span></td>
+          <td class="test"><router-link :to="'/project/' + project.uuid + '/about'">{{project.title}}</router-link></td>
+        </tr>
+      </tbody>
+    </table>    
+    <div v-if="dataset.publications.length > 0">
       <h2 class="title is-5">Publications</h2>
       <table class="table">
         <tr v-for="publication in dataset.publications" :key="publication.id">
@@ -40,12 +41,6 @@
           <td>{{tag.title}}</td>
         </tr>
       </table>
-    </div>
-    <div v-if="dataset.projects">
-      <h2 class="title is-5">Projects</h2>
-      <div class="dataset-project" v-for="project in dataset.projects" :key="project">
-	<router-link :to="'/project/' + project + '/about'">{{ project }}</router-link>
-      </div>
     </div>
   </div>
   <button class="button is-link" @click="editDataset">
@@ -94,7 +89,7 @@ export default {
     font-weight: bold;
 }
 
-.field-header {
+.field-header.td {
     font-weight: bold;
 }
 
@@ -102,6 +97,9 @@ export default {
     margin: 0.4em 0em;
 }
 
+.table td {
+    border: 0px;
+}
 .warning {
     font-weight: bold;
     text-align: center;

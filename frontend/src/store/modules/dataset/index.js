@@ -22,7 +22,7 @@ const actions = {
       axios
         .get('/api/dataset/' + id)
         .then((response) => {
-          commit('UPDATE_DATASET', response.data);
+          commit('UPDATE_DATASET', response.data.dataset);
           resolve(response);
         })
         .catch((err) => {

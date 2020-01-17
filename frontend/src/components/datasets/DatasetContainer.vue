@@ -6,7 +6,7 @@
 
 <script>
 export default {
-  name: 'ProjectContainer',
+  name: 'DatasetContainer',
   components: {
   },
   data () {
