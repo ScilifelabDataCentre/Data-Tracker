@@ -11,7 +11,7 @@ import flask
 import error
 import structure
 import user
-import utils
+import helpers
 
 
 blueprint = flask.Blueprint('user', __name__)
@@ -87,7 +87,7 @@ def list_users():
     Admin access should be required.
     """
     result = list(flask.g.db['users'].find())
-    utils.clean_mongo(result)
+    helpers.clean_mongo(result)
     return flask.jsonify({'users': result})
 
 
@@ -110,7 +110,7 @@ def do_login(username: str):
     flask.session['username'] = username
     flask.session.permanent = True
     response = flask.Response(status=200)
-    response.set_cookie('_csrf_token', utils.gen_csrf_token(), samesite='Lax')
+    response.set_cookie('_csrf_token', helpers.gen_csrf_token(), samesite='Lax')
     return response
 
 

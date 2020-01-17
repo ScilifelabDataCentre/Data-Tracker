@@ -7,7 +7,7 @@ import dataset
 import developer
 import projects
 import user
-import utils
+import helpers
 
 
 app = flask.Flask(__name__)  # pylint: disable=invalid-name
@@ -25,9 +25,9 @@ app.register_blueprint(user.blueprint, url_prefix='/api/user')
 def prepare():
     """Open the database connection; get the current user."""
     if flask.request.method in ('POST', 'PUT', 'DELETE'):
-        utils.check_csrf_token()
-    flask.g.dbserver = utils.get_dbserver()
-    flask.g.db = utils.get_db(flask.g.dbserver)
+        helpers.check_csrf_token()
+    flask.g.dbserver = helpers.get_dbserver()
+    flask.g.db = helpers.get_db(flask.g.dbserver)
     flask.g.current_user = user.get_current_user()
     flask.g.current_role = flask.g.current_user['role'] if flask.g.current_user else None
 
@@ -54,7 +54,7 @@ def add_dataset_get():
     """
     Base data structure for adding a dataset.
     """
-    return flask.jsonify({'countries': utils.country_list()})
+    return flask.jsonify({'countries': helpers.country_list()})
 
 
 # to allow coverage check for testing
