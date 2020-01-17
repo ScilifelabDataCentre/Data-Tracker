@@ -36,10 +36,7 @@ def steward_required(func):
     """
     @functools.wraps(func)
     def wrap(*args, **kwargs):
-        if flask.g.current_role not in ('Steward', 'Admin'):
-            logging.info('Rejected access. User: %s Role (required): %s (Steward)',
-                         flask.g.current_user,
-                         flask.g.current_role)
+        if not utils.check_user_permissions('Steward'):
             flask.abort(flask.Response(status=401))
         return func(*args, **kwargs)
     return wrap
@@ -53,10 +50,7 @@ def admin_required(func):
     """
     @functools.wraps(func)
     def wrap(*args, **kwargs):
-        if flask.g.current_role != 'Admin':
-            logging.info('Rejected access. User: %s Role (required): %s (Admin)',
-                         flask.g.current_user,
-                         flask.g.current_role)
+        if not utils.check_user_permissions('Admin'):
             flask.abort(flask.Response(status=401))
         return func(*args, **kwargs)
     return wrap

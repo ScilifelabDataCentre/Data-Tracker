@@ -29,6 +29,29 @@ def gen_csrf_token() -> str:
     return uuid.uuid4().hex
 
 
+def check_user_permissions(required:str):
+    """
+    Check if the current permissions fulfills the requirement.
+
+    Args:
+        required (str): the required role
+
+    Returns:
+        bool: whether the user has the required permissions or not
+
+    """
+    roles = ['User', 'Steward', 'Admin']
+    if (role := flask.g.current_role) not in roles:
+        logging.warning('Unknown user role: %s', role)
+        return False
+    if roles.index(flask.g.current_role) >= roles.index(required):
+        return True
+
+    logging.info('Rejected access. User: %s ',
+                 flask.g.current_user)
+    return False
+
+
 def clean_mongo(response):
     """
     Prepare for returning a MongoDB document by e.g. `ObjectId (_id)`.
