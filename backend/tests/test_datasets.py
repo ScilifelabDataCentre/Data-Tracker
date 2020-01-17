@@ -47,10 +47,11 @@ def test_add_get():
     Should require at least Steward.
     """
     expected_success = {'creator': '',
+                        'dataUrls': [],
                         'description': '',
                         'dmp': '',
                         'identifier': '',
-                        'publications': [ ],
+                        'publications': [],
                         'title': ''}
     
     responses = helpers.make_request_all_roles('/api/dataset/add')
