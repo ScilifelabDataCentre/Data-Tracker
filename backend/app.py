@@ -2,12 +2,12 @@
 
 import flask
 
-import config
-import dataset
-import developer
-import projects
-import user
-import helpers
+from . import config
+from . import dataset
+from . import developer
+from . import projects
+from . import user
+from . import helpers
 
 
 app = flask.Flask(__name__)  # pylint: disable=invalid-name
@@ -44,7 +44,10 @@ def finalize(response):
 
 
 @app.errorhandler(404)
-def not_found(error):
+def not_found(_):
+    """
+    Make sure a simple 404 is returned instead of an html page.
+    """
     return flask.Response(status=404)
 
 
