@@ -6,13 +6,12 @@ import utils
 
 def user():
     """
-    Base data structure for a user
+    Base data structure for a user.
 
     Returns:
         dict: the data structure for users
     """
     return {'affiliation': '',
-            'apikey': '',
             'auth_id': '',
             'country': '',
             'email': '',
@@ -23,12 +22,13 @@ def user():
 
 def dataset():
     """
-    Base data structure for a dataset
+    Base data structure for a dataset.
 
     Returns:
         dict: the data structure for datasets
     """
     return {'creator': '',
+            'data_urls': [],
             'description': '',
             'dmp': '',
             'identifier': '',
@@ -40,7 +40,7 @@ def dataset():
 
 def project():
     """
-    Base data structure for a project
+    Base data structure for a project.
 
     Returns:
         dict: the data structure for projects
@@ -51,4 +51,5 @@ def project():
             'owner': '',
             'timestamp': datetime.datetime.now(),
             'title': '',
+            'datasets': [],
             'uuid': utils.new_uuid()}
