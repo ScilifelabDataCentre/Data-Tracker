@@ -7,8 +7,6 @@ import bson
 import flask
 import pymongo
 
-import error
-
 
 def check_csrf_token():
     """Compare the csrf token from the request (header) with the one in the cookie.session."""
@@ -29,7 +27,38 @@ def gen_csrf_token() -> str:
     return uuid.uuid4().hex
 
 
-def check_user_permissions(required:str):
+def is_owner(dataset: dict = None, project: dict = None):
+    """
+    Check if the current user owns the given dataset or project.
+
+    If both a dataset and a project is provided, an exception will be raised.
+
+    Args:
+        dataset (dict): the dataset to check
+        project (dict): the project to check
+
+    Returns:
+        bool: whether the current owns the dataset/project
+
+    Raises:
+        ValueError: one of dataset or project must be set, and not both
+
+    """
+    if dataset and project:
+        raise ValueError('Only one of dataset and project should be set')
+    if dataset:
+        owners = [project['owner'] for project in dataset['projects']]
+    elif project:
+        owners = [project['owner']]
+    else:
+        raise ValueError('Either dataset or project must be set')
+
+    if flask.g.current_user in owners:
+        return True
+    return False
+
+
+def check_user_permissions(required: str):
     """
     Check if the current permissions fulfills the requirement.
 
@@ -113,13 +142,13 @@ def check_mongo_update(document: dict):
         document (dict): received input to update a document
 
     Raises:
-        error.ForbiddenUpdateInput: Forbidden fields in the input document
+        ValueError: Forbidden fields in the input document
 
     """
     forbidden = ('_id', 'timestamp', 'uuid')
     for field in forbidden:
         if field in document:
-            raise error.ForbiddenUpdateInput('Forbidden field %s in document')
+            raise ValueError('Forbidden field %s in document')
 
 
 def country_list():
