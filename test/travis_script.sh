@@ -14,6 +14,9 @@ echo ">>> Test 1: Check that the backend doesn't crash immediately"
 
 (cd backend && ../test/01_daemon_starts.sh)
 
+echo '>>> Preparing: Loading database with generated data'
+
+PYTHONPATH=backend python test/gen_test_db.py
 
 echo '>>> Preparing: Start the backend'
 COVERAGE_FILE=.coverage_backend coverage run backend/app.py 1>http_log.txt 2>&1 &
