@@ -4,6 +4,7 @@ import datetime
 
 import utils
 
+
 def user():
     """
     Base data structure for a user.

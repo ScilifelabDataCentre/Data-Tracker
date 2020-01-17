@@ -9,6 +9,7 @@ import user
 
 blueprint = flask.Blueprint('projects', __name__)  # pylint: disable=invalid-name
 
+
 @blueprint.route('/all')
 def list_project():
     """

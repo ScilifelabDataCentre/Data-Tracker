@@ -9,6 +9,7 @@ import user
 
 blueprint = flask.Blueprint('datasets', __name__)  # pylint: disable=invalid-name
 
+
 @blueprint.route('/all', methods=['GET'])
 def list_dataset():
     """

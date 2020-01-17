@@ -11,6 +11,7 @@ import utils
 
 blueprint = flask.Blueprint('user', __name__)  # pylint: disable=invalid-name
 
+
 # pylint: disable=logging-too-many-args
 # Decorators
 def login_required(func):
