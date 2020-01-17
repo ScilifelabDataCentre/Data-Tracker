@@ -48,6 +48,15 @@ def not_found(error):
     return flask.Response(status=404)
 
 
+@app.route('/api/countries', methods=['GET'])
+@user.steward_required
+def add_dataset_get():
+    """
+    Base data structure for adding a dataset.
+    """
+    return flask.jsonify({'countries': utils.country_list()})
+
+
 # to allow coverage check for testing
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
