@@ -8,6 +8,6 @@ install:
     - pip install -r test/requirements.txt
 before_script:
 - sleep 15
-- mongo tracker --eval 'db.createUser({user:"tracker",pwd:"tracker",roles:["readWrite"]});'
+- mongo admin --eval 'db.createUser({user:"tracker",pwd:"tracker",roles:["root"]});'
 script:
     - test/travis_script.sh
