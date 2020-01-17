@@ -31,10 +31,10 @@ def make_description():
 
 if __name__ == '__main__':
   conf = config.read_config()
-  dbserver = pymongo.MongoClient(host='localhost',
-                           port=conf['mongo']['port'],
-                           username=conf['mongo']['user'],
-                           password=conf['mongo']['password'])
+  dbserver = pymongo.MongoClient(host=conf['mongo']['host'],
+                                 port=conf['mongo']['port'],
+                                 username=conf['mongo']['user'],
+                                 password=conf['mongo']['password'])
   db = dbserver[conf['mongo']['db']]
 
   # datasets
