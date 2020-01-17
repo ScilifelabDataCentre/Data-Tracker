@@ -50,11 +50,11 @@ curl localhost:5000/developer/quit
 sleep 2 # Lets wait a little bit so the server has stopped
 
 echo '>>> Test 3: Code evaluation'
-pylint backend
+pylint backend/*py
 RETURN_VALUE=$((RETURN_VALUE + $?))
-pydocstyle backend
+pydocstyle backend/*py
 RETURN_VALUE=$((RETURN_VALUE + $?))
-flake8 backend
+flake8 backend/*py
 RETURN_VALUE=$((RETURN_VALUE + $?))
 
 echo '>>> Finalising: Combine coverage'
