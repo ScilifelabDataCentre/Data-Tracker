@@ -16,7 +16,7 @@ def test_list_datasets_get():
     """
     responses = helpers.make_request_all_roles('/api/dataset/all')
     assert [response[1] for response in responses] == [200, 200, 200, 200]
-    assert [len(json.loads(response[0])['datasets']) > 10 for response in responses] == [True]*4
+    assert [len(json.loads(response[0])['datasets']) == 500 for response in responses] == [True]*4
 
 
 def test_random_dataset_get():
