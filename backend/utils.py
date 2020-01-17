@@ -29,12 +29,16 @@ def gen_csrf_token() -> str:
 
 def clean_mongo(response):
     """
-    Clean up a mongo response by removing e.g. ObjectId (_id).
+    Prepare for returning a MongoDB document by e.g. `ObjectId (_id)`.
+
+    Actions:
+    * Remove `_id`
+    * convert snake_case to camelCase
 
     Changes are done in-place.
 
     Args:
-        response: a response from mongodb.find() or .find_one() (dict or list of dicts)
+        response: a response from `mongodb.find()` or `.find_one()` (dict or list of dicts)
 
     """
     to_remove = ('_id',)
@@ -47,6 +51,112 @@ def clean_mongo(response):
         for key in to_remove:
             if key in response:
                 del response[key]
+
+
+def convert_keys_to_camel(chunk):
+    """
+    Converts keys given in snake_case to camelCase, while preserving the
+    capitalization of the first letter.
+
+    Args:
+        chunk: Object to convert
+    
+    Returns:
+        *: chunk converted to camelCase dict, otherwise chunk
+
+    """
+    if isinstance(chunk, list):
+        return [convert_keys_to_camel(e) for e in chunk]
+
+    if not isinstance(chunk, dict):
+        return chunk
+
+    new_chunk = {}
+    for k, v in chunk.items():
+        # First character should be the same as in the original string
+        new_key = k[0] + "".join([a[0].upper() + a[1:] for a in k.split("_")])[1:]
+        new_chunk[new_key] = convert_keys_to_camel(v)
+    return new_chunk
+
+
+def check_mongo_update(document: dict):
+    """
+    Make sure that some fields in a document are not changed during an update.
+
+    Args:
+        document (dict): received input to update a document
+
+    Raises:
+        error.ForbiddenUpdateInput: Forbidden fields in the input document
+
+    """
+    forbidden = ('_id', 'timestamp', 'uuid')
+    for field in forbidden:
+        if field in document:
+            raise error.ForbiddenUpdateInput('Forbidden field %s in document')
+
+
+def country_list():
+    """
+    Provide a list of countries.
+
+    Returns:
+        list: A selection of countries.
+    """
+    return ["Afghanistan", "Albania", "Algeria", "American Samoa", "Andorra",
+            "Angola", "Anguilla", "Antarctica", "Antigua and Barbuda",
+            "Argentina", "Armenia", "Aruba", "Australia", "Austria",
+            "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados",
+            "Belarus", "Belgium", "Belize", "Benin", "Bermuda", "Bhutan",
+            "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil",
+            "British Indian Ocean Territory", "British Virgin Islands",
+            "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Cambodia",
+            "Cameroon", "Canada", "Cape Verde", "Cayman Islands",
+            "Central African Republic", "Chad", "Chile", "China",
+            "Christmas Island", "Cocos Islands", "Colombia", "Comoros",
+            "Cook Islands", "Costa Rica", "Croatia", "Cuba", "Curacao",
+            "Cyprus", "Czech Republic", "Democratic Republic of the Congo",
+            "Denmark", "Djibouti", "Dominica", "Dominican Republic",
+            "East Timor", "Ecuador", "Egypt", "El Salvador",
+            "Equatorial Guinea", "Eritrea", "Estonia", "Ethiopia",
+            "Falkland Islands", "Faroe Islands", "Fiji", "Finland", "France",
+            "French Polynesia", "Gabon", "Gambia", "Georgia", "Germany",
+            "Ghana", "Gibraltar", "Greece", "Greenland", "Grenada", "Guam",
+            "Guatemala", "Guernsey", "Guinea", "Guinea-Bissau", "Guyana",
+            "Haiti", "Honduras", "Hong Kong", "Hungary", "Iceland", "India",
+            "Indonesia", "Iran", "Iraq", "Ireland", "Isle of Man", "Israel",
+            "Italy", "Ivory Coast", "Jamaica", "Japan", "Jersey", "Jordan",
+            "Kazakhstan", "Kenya", "Kiribati", "Kosovo", "Kuwait",
+            "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia",
+            "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Macau",
+            "Macedonia", "Madagascar", "Malawi", "Malaysia", "Maldives",
+            "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius",
+            "Mayotte", "Mexico", "Micronesia", "Moldova", "Monaco",
+            "Mongolia", "Montenegro", "Montserrat", "Morocco", "Mozambique",
+            "Myanmar", "Namibia", "Nauru", "Nepal", "Netherlands",
+            "Netherlands Antilles", "New Caledonia", "New Zealand",
+            "Nicaragua", "Niger", "Nigeria", "Niue", "North Korea",
+            "Northern Mariana Islands", "Norway", "Oman", "Pakistan", "Palau",
+            "Palestine", "Panama", "Papua New Guinea", "Paraguay", "Peru",
+            "Philippines", "Pitcairn", "Poland", "Portugal", "Puerto Rico",
+            "Qatar", "Republic of the Congo", "Reunion", "Romania", "Russia",
+            "Rwanda", "Saint Barthelemy", "Saint Helena",
+            "Saint Kitts and Nevis", "Saint Lucia", "Saint Martin",
+            "Saint Pierre and Miquelon",
+            "Saint Vincent and the Grenadines", "Samoa", "San Marino",
+            "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia",
+            "Seychelles", "Sierra Leone", "Singapore", "Sint Maarten",
+            "Slovakia", "Slovenia", "Solomon Islands", "Somalia",
+            "South Africa", "South Korea", "South Sudan", "Spain",
+            "Sri Lanka", "Sudan", "Suriname", "Svalbard and Jan Mayen",
+            "Swaziland", "Sweden", "Switzerland", "Syria", "Taiwan",
+            "Tajikistan", "Tanzania", "Thailand", "Togo", "Tokelau", "Tonga",
+            "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan",
+            "Turks and Caicos Islands", "Tuvalu", "U.S. Virgin Islands",
+            "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom",
+            "United States", "Uruguay", "Uzbekistan", "Vanuatu", "Vatican",
+            "Venezuela", "Vietnam", "Wallis and Futuna", "Western Sahara",
+            "Yemen", "Zambia", "Zimbabwe"]
 
 
 def get_dbserver() -> pymongo.mongo_client.MongoClient:
@@ -76,6 +186,20 @@ def get_db(dbserver: pymongo.mongo_client.MongoClient) -> pymongo.database.Datab
     """
     return dbserver[flask.current_app.config['mongo']['db']]
 
+
+def response_json(json_structure: dict):
+    """
+    Convert keys to camelCase and run `flask.jsonify()`.
+
+    Args:
+        json_structure (dict): structure to prepare
+
+    Returns:
+        flask.Response: prepared response containing json structure with camelBack keys
+    """
+    data = convert_keys_to_camel(json_structure)
+    return flask.jsonify(data)
+    
 
 def to_mongo_uuid(uuid_str: str) -> bson.binary.Binary:
     """
