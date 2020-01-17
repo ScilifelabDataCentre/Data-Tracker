@@ -50,7 +50,6 @@ def not_found(_):
 
 
 @app.route('/api/countries', methods=['GET'])
-@user.steward_required
 def add_dataset_get():
     """Provide a list of countries."""
     return flask.jsonify({'countries': utils.country_list()})
