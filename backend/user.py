@@ -1,7 +1,6 @@
 """User profile and login/logout HTMl endpoints."""
 
 import functools
-import logging
 
 import flask
 
@@ -12,7 +11,6 @@ import utils
 blueprint = flask.Blueprint('user', __name__)  # pylint: disable=invalid-name
 
 
-# pylint: disable=logging-too-many-args
 # Decorators
 def login_required(func):
     """
@@ -30,7 +28,7 @@ def login_required(func):
 
 def steward_required(func):
     """
-    Confirm that the user is logged in and has the 'admin' role.
+    Confirm that the user is logged in and has the 'Steward' role.
 
     Otherwise abort with status 401 Unauthorized.
     """
@@ -42,9 +40,24 @@ def steward_required(func):
     return wrap
 
 
+def steward_or_owner_required(func, dec_dataset=None, dec_project=None):
+    """
+    Confirm that the user is logged in and has the 'Steward' role.
+
+    Otherwise abort with status 401 Unauthorized.
+    """
+    @functools.wraps(func)
+    def wrap(*args, **kwargs):
+        if (not utils.check_user_permissions('Steward') and
+            not utils.is_owner(dec_dataset, dec_project)):
+            flask.abort(flask.Response(status=401))
+        return func(*args, **kwargs)
+    return wrap
+
+
 def admin_required(func):
     """
-    Confirm that the user is logged in and has the 'admin' role.
+    Confirm that the user is logged in and has the 'Admin' role.
 
     Otherwise return status 401 Unauthorized.
     """
