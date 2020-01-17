@@ -11,7 +11,7 @@ import pymongo
 
 import config
 import structure
-import helpers
+import utils
 
 
 def make_description():
@@ -58,7 +58,7 @@ if __name__ == '__main__':
           {'name' : 'Admin Test', 'role' : 'Admin', 'email' : 'admin@example.com',
            'country' : 'Sweden', 'affiliation' : 'Test university', 'auth_id' : 'hash1@elixir' }]
   db['users'].insert_many(base)
-  countries = helpers.country_list()
+  countries = utils.country_list()
   for i in range(1,98):
     user = structure.user()
     changes = {'affiliation': 'University ' + random.choice(string.ascii_uppercase),
