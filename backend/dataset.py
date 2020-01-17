@@ -12,14 +12,14 @@ import user
 
 blueprint = flask.Blueprint('datasets', __name__)  # pylint: disable=invalid-name
 
-@blueprint.route('/all')
+@blueprint.route('/all', methods=['GET'])
 def list_dataset():
     """
     Provide a simplified list of all available datasets.
     """
     results = list(flask.g.db['datasets'].find())
     utils.clean_mongo(results)
-    return flask.jsonify({'datasets': results})
+    return utils.response_json({'datasets': results})
 
 
 @blueprint.route('/add', methods=['GET'])
@@ -31,7 +31,7 @@ def add_dataset_get():
     dataset = structure.dataset()
     del dataset['uuid']
     del dataset['timestamp']
-    return flask.jsonify(dataset)
+    return utils.response_json(dataset)
 
 
 @blueprint.route('/add', methods=['POST'])
@@ -43,11 +43,11 @@ def add_dataset_post():
     dataset = structure.dataset()
     result = flask.g.db['datasets'].insert_one(dataset)
     inserted = flask.g.db['datasets'].find_one({'_id': result.inserted_id})
-    return flask.jsonify({'uuid': inserted['uuid']})
+    return utils.response_json({'uuid': inserted['uuid']})
 
 
-@blueprint.route('/random')
-@blueprint.route('/random/<int:amount>')
+@blueprint.route('/random', methods=['GET'])
+@blueprint.route('/random/<int:amount>', methods=['GET'])
 def get_random_ds(amount: int = 1):
     """
     Retrieve random dataset(s).
@@ -61,10 +61,10 @@ def get_random_ds(amount: int = 1):
     """
     results = list(flask.g.db['datasets'].aggregate([{'$sample': {'size': amount}}]))
     utils.clean_mongo(results)
-    return flask.jsonify({'datasets': results})
+    return utils.response_json({'datasets': results})
 
 
-@blueprint.route('/<identifier>')
+@blueprint.route('/<identifier>', methods=['GET'])
 def get_dataset(identifier):
     """
     Retrieve the dataset with uuid <identifier>.
@@ -84,8 +84,10 @@ def get_dataset(identifier):
 
     if not result:
         return flask.Response(status=404)
+    result['projects'] = [{'title': hit['title'], 'uuid': hit['uuid']}
+                          for hit in flask.g.db['projects'].find({'datasets': result['uuid']})]
     utils.clean_mongo(result)
-    return flask.jsonify({'dataset': result})
+    return utils.response_json({'dataset': result})
 
 
 @blueprint.route('/<identifier>/delete', methods=['PUT'])
