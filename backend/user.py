@@ -65,7 +65,7 @@ def admin_required(func):
 # requests
 @blueprint.route('/login')
 def elixir_login():
-    """Perform a Elixir AAI login"""
+    """Perform a Elixir AAI login."""
     return flask.Response(status=500)
 
 

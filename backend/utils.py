@@ -57,8 +57,9 @@ def clean_mongo(response):
 
 def convert_keys_to_camel(chunk):
     """
-    Converts keys given in snake_case to camelCase, while preserving the
-    capitalization of the first letter.
+    Convert keys given in snake_case to camelCase.
+
+    The capitalization of the first letter is preserved.
 
     Args:
         chunk: Object to convert

@@ -45,18 +45,14 @@ def finalize(response):
 
 @app.errorhandler(404)
 def not_found(_):
-    """
-    Make sure a simple 404 is returned instead of an html page.
-    """
+    """Make sure a simple 404 is returned instead of an html page."""
     return flask.Response(status=404)
 
 
 @app.route('/api/countries', methods=['GET'])
 @user.steward_required
 def add_dataset_get():
-    """
-    Base data structure for adding a dataset.
-    """
+    """Provide a list of countries."""
     return flask.jsonify({'countries': utils.country_list()})
 
 

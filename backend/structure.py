@@ -7,7 +7,7 @@ import utils
 
 def user():
     """
-    Base data structure for a user.
+    Provide a basic data structure for a user.
 
     Returns:
         dict: the data structure for users
@@ -23,7 +23,7 @@ def user():
 
 def dataset():
     """
-    Base data structure for a dataset.
+    Provide a basic data structure for a dataset.
 
     Returns:
         dict: the data structure for datasets
@@ -41,7 +41,7 @@ def dataset():
 
 def project():
     """
-    Base data structure for a project.
+    Provide a basic data structure for a project.
 
     Returns:
         dict: the data structure for projects

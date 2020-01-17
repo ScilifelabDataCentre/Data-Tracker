@@ -12,9 +12,7 @@ blueprint = flask.Blueprint('datasets', __name__)  # pylint: disable=invalid-nam
 
 @blueprint.route('/all', methods=['GET'])
 def list_dataset():
-    """
-    Provide a simplified list of all available datasets.
-    """
+    """Provide a simplified list of all available datasets."""
     results = list(flask.g.db['datasets'].find())
     utils.clean_mongo(results)
     return utils.response_json({'datasets': results})
@@ -23,9 +21,7 @@ def list_dataset():
 @blueprint.route('/add', methods=['GET'])
 @user.steward_required
 def add_dataset_get():
-    """
-    Base data structure for adding a dataset.
-    """
+    """Provide a basic data structure for adding a dataset."""
     dataset = structure.dataset()
     del dataset['uuid']
     del dataset['timestamp']
@@ -35,9 +31,7 @@ def add_dataset_get():
 @blueprint.route('/add', methods=['POST'])
 @user.steward_required
 def add_dataset_post():
-    """
-    Add a dataset.
-    """
+    """Add a dataset."""
     dataset = structure.dataset()
     result = flask.g.db['datasets'].insert_one(dataset)
     inserted = flask.g.db['datasets'].find_one({'_id': result.inserted_id})
