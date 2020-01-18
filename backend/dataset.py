@@ -22,10 +22,9 @@ def query_dataset(identifier: str):
     try:
         mongo_uuid = utils.to_mongo_uuid(identifier)
         result = flask.g.db['datasets'].find_one({'uuid': mongo_uuid})
-        result['projects'] = [{'title': hit['title'], 'uuid': hit['uuid']}
-                              for hit in flask.g.db['projects'].find({'datasets': result['uuid']})]
+        result['projects'] = list(flask.g.db['projects'].find({'datasets': result['uuid']},
+                                                              {'title': 1, 'uuid': 1, '_id': 0}))
         utils.clean_mongo(result)
-        utils.clean_mongo(result['projects'])
     except ValueError:
         result = None
     return result
@@ -72,7 +71,8 @@ def get_random_ds(amount: int = 1):
         flask.Response: json structure for the dataset(s)
 
     """
-    results = list(flask.g.db['datasets'].aggregate([{'$sample': {'size': amount}}]))
+    results = list(flask.g.db['datasets'].aggregate([{'$sample': {'size': amount}},
+    {'$project': {'_id': 0, 'uuid': 1}}]))
     for i, result in enumerate(results):
         results[i] = query_dataset(result['uuid'].hex)
     return utils.response_json({'datasets': results})
