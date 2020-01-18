@@ -48,8 +48,8 @@ def steward_or_owner_required(func, dec_dataset=None, dec_project=None):
     """
     @functools.wraps(func)
     def wrap(*args, **kwargs):
-        if (not utils.check_user_permissions('Steward') and
-            not utils.is_owner(dec_dataset, dec_project)):
+        if not utils.check_user_permissions('Steward')\
+        and not utils.is_owner(dec_dataset, dec_project):
             flask.abort(flask.Response(status=401))
         return func(*args, **kwargs)
     return wrap
