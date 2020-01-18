@@ -49,7 +49,7 @@ pylint backend/*py
 RETURN_VALUE=$((RETURN_VALUE + $?))
 pydocstyle backend/*py
 RETURN_VALUE=$((RETURN_VALUE + $?))
-flake8 backend/*py
+#flake8 backend/*py
 RETURN_VALUE=$((RETURN_VALUE + $?))
 
 echo '>>> Finalising: Stop the backend'
