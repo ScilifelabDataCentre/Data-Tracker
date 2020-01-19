@@ -52,6 +52,14 @@ def csrf_test():
     return flask.jsonify({'test': 'success'})
 
 
+@blueprint.route('/test_datasets')
+def get_added_ds():
+    """Get datasets added during testing."""
+    added = list(flask.g.db['datasets'].find({'dmp': 'http://test'},
+                                             {'uuid': 1, '_id': 0}))
+    return flask.jsonify({'datasets': added})
+
+
 @blueprint.route('/quit')
 def stop_server():
     """Shutdown the flask server."""
