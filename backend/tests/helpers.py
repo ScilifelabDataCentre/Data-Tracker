@@ -103,7 +103,7 @@ def make_request(session, url: str, data: dict = None, method='GET', ret_json:bo
     elif response.text:
         data = response.text
     else:
-        data = ''
+        data = None
     return (data, response.status_code)
 
 
