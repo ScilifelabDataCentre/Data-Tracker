@@ -50,3 +50,9 @@ def admin_hello():
 def csrf_test():
     """Test csrf tokens."""
     return flask.jsonify({'test': 'success'})
+
+
+@blueprint.route('/quit')
+def stop_server():
+    flask.request.environ.get('werkzeug.server.shutdown')()
+    return flask.Response(status=200)
