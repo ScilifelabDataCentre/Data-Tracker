@@ -13,7 +13,7 @@ import utils
 app = flask.Flask(__name__)  # pylint: disable=invalid-name
 config.init(app)
 
-if app.config['dev_mode']:
+if app.config['dev_mode']['api']:
     app.register_blueprint(developer.blueprint, url_prefix='/api/developer')
 
 app.register_blueprint(dataset.blueprint, url_prefix='/api/dataset')
@@ -57,4 +57,4 @@ def add_dataset_get():
 
 # to allow coverage check for testing
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(port=5000)
