@@ -54,5 +54,6 @@ def csrf_test():
 
 @blueprint.route('/quit')
 def stop_server():
+    """Shutdown the flask server."""
     flask.request.environ.get('werkzeug.server.shutdown')()
     return flask.Response(status=200)
