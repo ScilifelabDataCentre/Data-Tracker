@@ -1,5 +1,6 @@
 """General helper functions."""
 
+import datetime
 import logging
 import uuid
 
@@ -55,29 +56,6 @@ def is_owner(dataset: dict = None, project: dict = None):
 
     if flask.g.current_user in owners:
         return True
-    return False
-
-
-def check_user_permissions(required: str):
-    """
-    Check if the current permissions fulfills the requirement.
-
-    Args:
-        required (str): the required role
-
-    Returns:
-        bool: whether the user has the required permissions or not
-
-    """
-    roles = ['User', 'Steward', 'Admin']
-    if (role := flask.g.current_role) not in roles:
-        logging.warning('Unknown user role: %s', role)
-        return False
-    if roles.index(flask.g.current_role) >= roles.index(required):
-        return True
-
-    logging.info('Rejected access. User: %s ',
-                 flask.g.current_user)
     return False
 
 
@@ -293,3 +271,13 @@ def uuid_convert_mongo(in_uuid: uuid.UUID) -> bson.binary.Binary:
 
     """
     return bson.binary.Binary(in_uuid.bytes, 4)
+
+
+def make_timestamp():
+    """
+    Generate a timestamp of the current time.
+
+    returns:
+        datetime.datetime: the current time
+    """
+    return datetime.datetime.now()

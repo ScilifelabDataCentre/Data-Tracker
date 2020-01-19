@@ -34,7 +34,7 @@ def steward_required(func):
     """
     @functools.wraps(func)
     def wrap(*args, **kwargs):
-        if not utils.check_user_permissions('Steward'):
+        if not check_user_permissions('Steward'):
             flask.abort(flask.Response(status=401))
         return func(*args, **kwargs)
     return wrap
@@ -48,7 +48,7 @@ def steward_or_owner_required(func, dec_dataset=None, dec_project=None):
     """
     @functools.wraps(func)
     def wrap(*args, **kwargs):
-        if not utils.check_user_permissions('Steward')\
+        if not check_user_permissions('Steward')\
         and not utils.is_owner(dec_dataset, dec_project):
             flask.abort(flask.Response(status=401))
         return func(*args, **kwargs)
@@ -63,10 +63,34 @@ def admin_required(func):
     """
     @functools.wraps(func)
     def wrap(*args, **kwargs):
-        if not utils.check_user_permissions('Admin'):
+        if not check_user_permissions('Admin'):
             flask.abort(flask.Response(status=401))
         return func(*args, **kwargs)
     return wrap
+
+
+def check_user_permissions(required: str):
+    """
+    Check if the current permissions fulfills the requirement.
+
+    Args:
+        required (str): the required role
+
+    Returns:
+        bool: whether the user has the required permissions or not
+
+    """
+    roles = ['User', 'Steward', 'Admin']
+    if (role := flask.g.current_role) not in roles:
+        logging.warning('Unknown user role: %s', role)
+        return False
+    if roles.index(flask.g.current_role) >= roles.index(required):
+        return True
+
+    logging.info('Rejected access. User: %s ',
+                 flask.g.current_user)
+    return False
+
 
 
 # requests
@@ -97,6 +121,15 @@ def list_users():
     result = list(flask.g.db['users'].find())
     utils.clean_mongo(result)
     return flask.jsonify({'users': result})
+
+
+# requests
+@blueprint.route('/me')
+def get_current_user_info():
+    """
+    List basic information about the current user.
+    """
+    return flask.Response(status=500)
 
 
 # helper functions
