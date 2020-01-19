@@ -53,8 +53,9 @@ RETURN_VALUE=$((RETURN_VALUE + $?))
 RETURN_VALUE=$((RETURN_VALUE + $?))
 
 echo '>>> Finalising: Stop the backend'
-kill "$BACKEND_PID"
-sleep 10 # Lets wait a little bit so the server has stopped
+
+curl http://127.0.0.1:5000/api/developer/quit
+sleep 5 # Lets wait a little bit so the server has stopped
 
 echo '>>> Finalising: Combine coverage'
 
