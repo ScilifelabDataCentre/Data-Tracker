@@ -1,4 +1,7 @@
 """Dataset requests."""
+import json
+import logging
+
 import flask
 
 import structure
@@ -30,6 +33,36 @@ def query_dataset(identifier: str):
     return result
 
 
+def validate_dataset_input(indata):
+    """
+    Validate the dataset input.
+
+    It may only contain valid fields that may be changed by the role of the current user.
+
+    Args:
+        indata: the dataset input
+
+    Returns:
+        bool: whether the dataset input is accepted
+
+    """
+    # check that fields should exist and are not forbidden
+    reference = set(structure.dataset().keys())
+    forbidden = {'uuid', 'timestamp', 'identifier'}
+    inkeys = set(indata.keys())
+    if not inkeys.issubset(reference) or forbidden&inkeys:
+        logging.debug('Bad input: %s', inkeys)
+        return False
+
+    # check restricted (admin/steward) fields
+    restricted_steward = {'creator'}
+    if not user.check_user_permissions('Steward') and restricted_steward&inkeys:
+        logging.debug('Restricted input: %s', inkeys)
+        return False
+
+    return True
+
+
 @blueprint.route('/all', methods=['GET'])
 def list_dataset():
     """Provide a simplified list of all available datasets."""
@@ -44,6 +77,7 @@ def add_dataset_get():
     """Provide a basic data structure for adding a dataset."""
     dataset = structure.dataset()
     del dataset['uuid']
+    del dataset['identifier']
     del dataset['timestamp']
     return utils.response_json(dataset)
 
@@ -53,6 +87,11 @@ def add_dataset_get():
 def add_dataset_post():
     """Add a dataset."""
     dataset = structure.dataset()
+    indata = json.loads(flask.request.data)
+    if indata:
+        if not validate_dataset_input(indata):
+            flask.abort(flask.Response(status=400))
+        dataset.update(indata)
     result = flask.g.db['datasets'].insert_one(dataset)
     inserted = flask.g.db['datasets'].find_one({'_id': result.inserted_id})
     return utils.response_json({'uuid': inserted['uuid']})
@@ -72,7 +111,7 @@ def get_random_ds(amount: int = 1):
 
     """
     results = list(flask.g.db['datasets'].aggregate([{'$sample': {'size': amount}},
-    {'$project': {'_id': 0, 'uuid': 1}}]))
+                                                     {'$project': {'_id': 0, 'uuid': 1}}]))
     for i, result in enumerate(results):
         results[i] = query_dataset(result['uuid'].hex)
     return utils.response_json({'datasets': results})
@@ -134,4 +173,5 @@ def update_dataset(identifier):
         utils.check_mongo_update(data)
     except ValueError:
         flask.abort(flask.Response(status=400))
-    #    flask.g.db.datasets.update()
+    data['timestamp'] = utils.make_timestamp()
+    flask.g.db.datasets.update()
