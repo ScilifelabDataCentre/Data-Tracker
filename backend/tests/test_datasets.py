@@ -147,4 +147,38 @@ def test_delete():
 
     Should require at least Steward.
     """
-    
+    session = requests.Session()
+    response = helpers.make_request(session, '/api/developer/test_datasets')
+    uuids = [ds['uuid'] for ds in response[0]['datasets']]
+
+    i_user = 0
+    i_uuid = 0
+    users = tuple(helpers.USERS.values())
+    while i_uuid < len(uuids):
+        helpers.as_user(session, users[i_user])
+
+        response = helpers.make_request(session,
+                                        f'/api/dataset/{uuids[i_uuid]}',
+                                        method='DELETE')
+        if i_user >= 2:
+            assert response == (None, 200)
+            i_uuid += 1
+        elif i_user == 0:
+            assert response == (None, 400)
+        else:
+            assert response == (None, 401)
+
+        if i_uuid >= len(uuids):
+            break
+
+        response = helpers.make_request(session,
+                                        f'/api/dataset/{uuids[i_uuid]}/delete',
+                                        method='POST')
+        if i_user >= 2:
+            assert response == (None, 200)
+            i_uuid += 1
+        elif i_user == 0:
+            assert response == (None, 400)
+        else:
+            assert response == (None, 401)
+        i_user = (i_user+1) % 4
