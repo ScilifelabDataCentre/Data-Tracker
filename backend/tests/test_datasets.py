@@ -74,7 +74,6 @@ def test_add_get():
                         'dataUrls': [],
                         'description': '',
                         'dmp': '',
-                        'identifier': '',
                         'publications': [],
                         'title': ''}
     
@@ -91,12 +90,48 @@ def test_add_post_permissions():
     """
     Add a default dataset using .post(dataset/add).
 
+    Simple data content, using {identifer: test} to tell that it was added during testing.
+
     Should require at least Steward.
     """
-    responses = helpers.make_request_all_roles('/api/dataset/add', method='POST', payload={'identifier': 'test'})
+    session = requests.Session()
+    responses = helpers.make_request_all_roles('/api/dataset/add',
+                                               method='POST',
+                                               payload={'dmp': 'http://test'})
     assert [response[1] for response in responses] == [400, 401, 200, 200]
-    assert [list(json.loads(response[0]).keys())[0] if response[0] else None
-            for response in responses] == [None,
-                                           None,
-                                           'uuid',
-                                           'uuid']
+    for response in responses:
+        if response[1] == 200:
+            data = json.loads(response[0])
+            assert 'uuid' in data
+            req = helpers.make_request(session, f'/api/dataset/{data["uuid"]}')
+            assert req[0]['dataset']['dmp'] == 'http://test'
+        else:
+            assert response[0] is None
+
+
+def test_add_post_all_fields():
+    """
+    Add a default dataset using .post(dataset/add).
+
+    Should require at least Steward.
+    """
+    indata = {'creator': 'Test facility',
+              'data_urls': [{'description': 'Test description', 'url': 'http://test_url'}],
+              'description': 'Test description',
+              'dmp': 'http://test',
+              'publications': ['Title. Journal: year'],
+              'title': 'Test title'}
+
+    session = requests.Session()
+    responses = helpers.make_request_all_roles('/api/dataset/add',
+                                               method='POST',
+                                               payload=indata)
+    assert [response[1] for response in responses] == [400, 401, 200, 200]
+    for response in responses:
+        if response[1] == 200:
+            data = json.loads(response[0])
+            assert 'uuid' in data
+            req = helpers.make_request(session, f'/api/dataset/{data["uuid"]}')
+            assert req[0]['dataset']['dmp'] == 'http://test'
+        else:
+            assert response[0] is None
