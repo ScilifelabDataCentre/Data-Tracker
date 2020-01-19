@@ -129,6 +129,10 @@ def list_users():
 def get_current_user_info():
     """
     List basic information about the current user.
+
+    Returns:
+        flask.Response: json structure for the user
+
     """
     return flask.Response(status=500)
 
