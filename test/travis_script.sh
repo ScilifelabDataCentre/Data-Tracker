@@ -54,7 +54,7 @@ RETURN_VALUE=$((RETURN_VALUE + $?))
 
 echo '>>> Finalising: Stop the backend'
 kill "$BACKEND_PID"
-sleep 5 # Lets wait a little bit so the server has stopped
+sleep 10 # Lets wait a little bit so the server has stopped
 
 echo '>>> Finalising: Combine coverage'
 
