@@ -1,6 +1,7 @@
 """User profile and login/logout HTMl endpoints."""
 
 import functools
+import logging
 
 import flask
 
@@ -87,8 +88,8 @@ def check_user_permissions(required: str):
     if roles.index(flask.g.current_role) >= roles.index(required):
         return True
 
-    logging.info('Rejected access. User: %s ',
-                 flask.g.current_user)
+    logging.warning('Rejected access. User: %s ',
+                    flask.g.current_user)
     return False
 
 
