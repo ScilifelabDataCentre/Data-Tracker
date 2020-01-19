@@ -9,4 +9,4 @@ flask:
   port: 5000
   secret: "secret"
 
-dev_mode: true
+dev_mode: false
