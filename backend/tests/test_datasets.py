@@ -132,6 +132,19 @@ def test_add_post_all_fields():
             data = json.loads(response[0])
             assert 'uuid' in data
             req = helpers.make_request(session, f'/api/dataset/{data["uuid"]}')
-            assert req[0]['dataset']['dmp'] == 'http://test'
+            for key in indata:
+                if key != 'data_urls':
+                    assert req[0]['dataset'][key] == indata[key]
+                else:
+                    assert req[0]['dataset']['dataUrls'] == indata[key]
         else:
             assert response[0] is None
+
+
+def test_delete():
+    """
+    Delete all datasets that were created by the add tests, one at a time.
+
+    Should require at least Steward.
+    """
+    
