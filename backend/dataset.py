@@ -135,7 +135,8 @@ def get_dataset(identifier):
     return utils.response_json({'dataset': result})
 
 
-@blueprint.route('/<identifier>/delete', methods=['PUT'])
+@blueprint.route('/<identifier>/delete', methods=['POST'])
+@blueprint.route('/<identifier>', methods=['DELETE'])
 @user.steward_required
 def delete_dataset(identifier):
     """Delete a dataset."""
