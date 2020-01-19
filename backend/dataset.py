@@ -163,7 +163,7 @@ def update_dataset(identifier):
         flask.Response: success: 200, failure: 400
 
     """
-    if not utils.check_user_permissions('Steward'):
+    if not user.check_user_permissions('Steward'):
         current = flask.g.g.db['datasets'].find_one({'uuid': identifier})
         if not utils.is_owner(dataset=current):
             flask.abort(flask.Response(status=403))
