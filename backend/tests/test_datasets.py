@@ -141,6 +141,35 @@ def test_add_post_all_fields():
             assert response[0] is None
 
 
+def test_add_post_bad_fields():
+    """Attempt to add datasets with e.g. forbidden fields."""
+    session = requests.Session()
+    helpers.as_user(session, helpers.USERS['steward'])
+    indata = {'dmp': 'http://test',
+              'uuid': 'asd'}
+    response = helpers.make_request(session,
+                                    '/api/dataset/add',
+                                    method='POST',
+                                    data=indata)
+    assert response == (None, 400)
+
+    indata = {'dmp': 'http://test',
+              'timestamp': 'asd'}
+    response = helpers.make_request(session,
+                                    '/api/dataset/add',
+                                    method='POST',
+                                    data=indata)
+    assert response == (None, 400)
+
+    indata = {'dmp': 'http://test',
+              'identifier': 'asd'}
+    response = helpers.make_request(session,
+                                    '/api/dataset/add',
+                                    method='POST',
+                                    data=indata)
+    assert response == (None, 400)
+
+
 def test_delete():
     """
     Delete all datasets that were created by the add tests, one at a time.
