@@ -1,6 +1,8 @@
 import json
 import os
+import random
 import requests
+import string
 
 import pytest
 
@@ -149,3 +151,20 @@ def project_for_tests():
     make_request(session,
                  '/api/dataset/delete',
                  payload)
+
+
+def random_string(min_length: int = 1, max_length: int = 150):
+    """
+    Generate a random string.
+
+    Args:
+        min_length(int): minimum length of the generated string
+        max_length(int): maximum length of the generated string
+
+    Returns:
+        str: a string of random characters
+
+    """
+    char_source = string.ascii_letters + string.digits + '-'
+    length = random.randint(min_length, max_length)
+    return ''.join(random.choice(char_source) for _ in range(length))
