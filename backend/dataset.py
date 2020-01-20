@@ -1,6 +1,7 @@
 """Dataset requests."""
 import json
 import logging
+import uuid
 
 import flask
 
@@ -10,6 +11,7 @@ import user
 
 
 blueprint = flask.Blueprint('datasets', __name__)  # pylint: disable=invalid-name
+
 
 def query_dataset(identifier: str):
     """
@@ -50,6 +52,7 @@ def validate_dataset_input(indata):
     """
     # check that fields should exist and are not forbidden
     reference = set(structure.dataset().keys())
+    reference.add('projects')
     forbidden = {'uuid', 'timestamp', 'identifier'}
     inkeys = set(indata.keys())
     if not inkeys.issubset(reference) or forbidden&inkeys:
@@ -57,12 +60,42 @@ def validate_dataset_input(indata):
         return False
 
     # check restricted (admin/steward) fields
-    restricted_steward = {'creator'}
+    restricted_steward = {'creator', 'projects'}
     if not user.check_user_permissions('Steward') and restricted_steward&inkeys:
         logging.debug('Restricted input: %s', inkeys)
         return False
 
     return True
+
+
+def update_projects(dataset_uuid: uuid.UUID, in_projects: list):
+    """
+    Update the dataset list in the projects the dataset is connected to.
+
+    Remove the dataset from projects in old_projects that are not in new_projects,
+    and add the dataset to the new projects.
+
+    Args:
+        dataset_uuid (uuid.UUID): the uuid of the dataset
+        new_projects (list): the project uuids (str) the dataset should now be related to
+
+    Raises:
+        ValueError: a project uuid did not match any project in the db
+
+    """
+    old_projects = {item['uuid']
+                    for item in
+                    flask.g.db['projects'].find({'datasets': dataset_uuid},
+                                                {'uuid': 1, '_id': 0})}
+    new_projects = {uuid.UUID(proj) for proj in in_projects}
+    to_remove = old_projects-new_projects
+    to_add = new_projects-old_projects
+    for proj in to_remove:
+        flask.g.db['projects'].update({'uuid': proj},
+                                      {'$pull': {'datasets': dataset_uuid}})
+    for proj in to_add:
+        flask.g.db['projects'].update({'uuid': proj},
+                                      {'$push': {'datasets': dataset_uuid}})
 
 
 @blueprint.route('/all', methods=['GET'])
