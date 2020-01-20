@@ -1,7 +1,5 @@
 #!/bin/sh -ex
 
-DBNAME=tracker
-
 ## SETUP SETTINGS
 echo '>>> Preparing for testing: Add config.yaml'
 cp test/appconfig_travis.yaml config.yaml
