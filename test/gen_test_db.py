@@ -29,16 +29,8 @@ def make_description():
   return desc
 
 
-if __name__ == '__main__':
-  conf = config.read_config()
-  dbserver = pymongo.MongoClient(host=conf['mongo']['host'],
-                                 port=conf['mongo']['port'],
-                                 username=conf['mongo']['user'],
-                                 password=conf['mongo']['password'])
-  db = dbserver[conf['mongo']['db']]
-
-  # datasets
-  for i in range(1, 501):
+def gen_datasets(db, nr_datasets: int = 500):
+  for i in range(1, nr_datasets+1):
     dataset = structure.dataset()
     changes = {'title': f'Dataset {i} Title',
                'description': make_description(),
@@ -50,7 +42,8 @@ if __name__ == '__main__':
     dataset.update(changes)
     db['datasets'].insert_one(dataset)
 
-  # users
+
+def gen_users(db, nr_users: int = 100):
   base = [{'name' : 'User Test', 'role' : 'User', 'email' : 'user@example.com',
            'country' : 'Sweden', 'affiliation' : 'Test university', 'auth_id' : 'hash3@elixir' },
           {'name' : 'Steward Test', 'role' : 'Steward', 'email' : 'steward@example.com',
@@ -59,7 +52,7 @@ if __name__ == '__main__':
            'country' : 'Sweden', 'affiliation' : 'Test university', 'auth_id' : 'hash1@elixir' }]
   db['users'].insert_many(base)
   countries = utils.country_list()
-  for i in range(1,98):
+  for i in range(1, nr_users+1-3):
     user = structure.user()
     changes = {'affiliation': 'University ' + random.choice(string.ascii_uppercase),
                'name': f'First Last {i}',
@@ -69,16 +62,29 @@ if __name__ == '__main__':
     user.update(changes)
     db['users'].insert_one(user)
 
-  # projects
+
+def gen_projects(db, nr_projects: int = 500):
   datasets = tuple(db['datasets'].find())
   users = tuple(db['users'].find())
-  for i in range(1, 501):
+  for i in range(1, nr_projects+1):
     project = structure.project()
     changes = {'title': f'Project {i} Title',
                'description': make_description(),
                'owner': random.choice(users)['email'],
                'contact': f'email{i}@entity{i}',
-               'datasets': [random.choice(datasets)['uuid'] for _ in range(random.randint(0, 5))]}
+               'datasets': [utils.uuid_convert_mongo(random.choice(datasets)['uuid'])
+                            for _ in range(random.randint(0, 5))]}
     project.update(changes)
     db['projects'].insert_one(project)
 
+
+if __name__ == '__main__':
+  conf = config.read_config()
+  dbserver = pymongo.MongoClient(host=conf['mongo']['host'],
+                                 port=conf['mongo']['port'],
+                                 username=conf['mongo']['user'],
+                                 password=conf['mongo']['password'])
+  db = dbserver[conf['mongo']['db']]
+  gen_datasets(db)
+  gen_users(db)
+  gen_projects(db)
