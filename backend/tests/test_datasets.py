@@ -1,6 +1,7 @@
 """Tests for dataset requests."""
 
 import json
+import uuid
 import requests
 
 import helpers
@@ -60,8 +61,25 @@ def test_get_dataset_get():
     session = requests.Session()
     for _ in range(10):
         orig = helpers.make_request(session, '/api/dataset/random')[0]['datasets'][0]
-        requested = helpers.make_request(session, f'/api/dataset/{orig["uuid"]}')[0]['dataset']
+        response = helpers.make_request(session, f'/api/dataset/{orig["uuid"]}')
+        assert response[1] == 200
+        requested = response[0]['dataset']
         assert orig == requested
+
+
+def test_get_dataset_get_bad():
+    """
+    Request datasets using bad identifiers.
+
+    All are expected to return 404.
+    """
+    session = requests.Session()
+    for _ in range(10):
+        response = helpers.make_request(session, f'/api/dataset/{uuid.uuid4().hex}')
+        assert response == (None, 404)
+    for _ in range(10):
+        response = helpers.make_request(session, f'/api/dataset/{helpers.random_string()}')
+        assert response == (None, 404)
 
 
 def test_add_get():

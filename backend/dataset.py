@@ -25,11 +25,13 @@ def query_dataset(identifier: str):
     try:
         mongo_uuid = utils.to_mongo_uuid(identifier)
         result = flask.g.db['datasets'].find_one({'uuid': mongo_uuid})
+        if not result:
+            return None
         result['projects'] = list(flask.g.db['projects'].find({'datasets': result['uuid']},
                                                               {'title': 1, 'uuid': 1, '_id': 0}))
         utils.clean_mongo(result)
     except ValueError:
-        result = None
+        return None
     return result
 
 
