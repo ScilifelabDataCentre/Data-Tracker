@@ -28,15 +28,15 @@ def gen_csrf_token() -> str:
     return uuid.uuid4().hex
 
 
-def is_owner(dataset: dict = None, project: dict = None):
+def is_owner(dataset: str = None, project: str = None):
     """
     Check if the current user owns the given dataset or project.
 
     If both a dataset and a project is provided, an exception will be raised.
 
     Args:
-        dataset (dict): the dataset to check
-        project (dict): the project to check
+        dataset (str): the dataset to check
+        project (str: the project to check
 
     Returns:
         bool: whether the current owns the dataset/project
@@ -48,8 +48,14 @@ def is_owner(dataset: dict = None, project: dict = None):
     if dataset and project:
         raise ValueError('Only one of dataset and project should be set')
     if dataset:
-        owners = [project['owner'] for project in dataset['projects']]
+        ds_data = get_dataset(dataset)
+        if not ds_data:
+            flask.abort(status=404)
+        owners = [project['owner'] for project in ds_data['projects']]
     elif project:
+        proj_data = get_project(project)
+        if not proj_data:
+            flask.abort(status=404)
         owners = [project['owner']]
     else:
         raise ValueError('Either dataset or project must be set')
@@ -190,6 +196,52 @@ def country_list():
             "United States", "Uruguay", "Uzbekistan", "Vanuatu", "Vatican",
             "Venezuela", "Vietnam", "Wallis and Futuna", "Western Sahara",
             "Yemen", "Zambia", "Zimbabwe"]
+
+
+def get_dataset(identifier: str):
+    """
+    Query for a dataset from the database.
+
+    Args:
+        identifier (str): the uuid of the dataset
+
+    Returns:
+        dict: the dataset
+
+    """
+    try:
+        mongo_uuid = to_mongo_uuid(identifier)
+        result = flask.g.db['datasets'].find_one({'uuid': mongo_uuid})
+        if not result:
+            return None
+        result['projects'] = list(flask.g.db['projects'].find({'datasets': result['uuid']},
+                                                              {'title': 1, 'uuid': 1, '_id': 0}))
+        clean_mongo(result)
+    except ValueError:
+        return None
+    return result
+
+
+def get_project(identifier: str):
+    """
+    Query for a project from the database.
+
+    Args:
+        identifier (str): the uuid of the project
+
+    Returns:
+        dict: the project
+
+    """
+    try:
+        mongo_uuid = utils.to_mongo_uuid(identifier)
+        result = flask.g.db['projects'].find_one({'uuid': mongo_uuid})
+        if not result:
+            return None
+        utils.clean_mongo(result)
+    except ValueError:
+        return None
+    return result
 
 
 def get_dbserver() -> pymongo.mongo_client.MongoClient:
