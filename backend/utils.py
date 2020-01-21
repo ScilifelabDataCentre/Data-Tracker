@@ -234,11 +234,11 @@ def get_project(identifier: str):
 
     """
     try:
-        mongo_uuid = utils.to_mongo_uuid(identifier)
+        mongo_uuid = to_mongo_uuid(identifier)
         result = flask.g.db['projects'].find_one({'uuid': mongo_uuid})
         if not result:
             return None
-        utils.clean_mongo(result)
+        clean_mongo(result)
     except ValueError:
         return None
     return result

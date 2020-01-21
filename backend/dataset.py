@@ -114,7 +114,7 @@ def add_dataset_post():
     if 'projects' in dataset:
         update_projects(identifier, dataset['projects'])
         del dataset['projects']
-    
+
     result = flask.g.db['datasets'].insert_one(dataset)
     entry = flask.g.db['datasets'].find_one({'_id': result.inserted_id},
                                             {'uuid': 1, '_id': 0})
@@ -194,5 +194,10 @@ def update_dataset(identifier):
         utils.check_mongo_update(data)
     except ValueError:
         flask.abort(flask.Response(status=400))
+    if 'projects' in data:
+        if not user.check_user_permissions('Steward'):
+            flask.abort(flask.Response(status=401))
+        update_projects(identifier, data['projects'])
+        del data['projects']
     data['timestamp'] = utils.make_timestamp()
-    flask.g.db.datasets.update()
+    flask.g.db.datasets.update({'uuid': identifier}, data)
