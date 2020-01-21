@@ -41,7 +41,7 @@ def steward_required(func):
     return wrap
 
 
-def steward_or_owner_required(func, dec_dataset=None, dec_project=None):
+def steward_or_dsowner_required(func):
     """
     Confirm that the user is logged in and has the 'Steward' role.
 
@@ -50,7 +50,7 @@ def steward_or_owner_required(func, dec_dataset=None, dec_project=None):
     @functools.wraps(func)
     def wrap(*args, **kwargs):
         if not check_user_permissions('Steward')\
-        and not utils.is_owner(dec_dataset, dec_project):
+           and not utils.is_owner(dataset=kwargs['identifier']):
             flask.abort(flask.Response(status=401))
         return func(*args, **kwargs)
     return wrap
