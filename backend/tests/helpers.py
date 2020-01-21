@@ -47,14 +47,13 @@ def dataset_for_tests():
     # prepare
     session = requests.Session()
     as_user(session, 5)
-    payload = {'dataset': {'title': 'A Unique Title',
-                           'description': 'Description',
-                           'doi': 'DOI',
-                           'creator': 'Creator',
-                           'dmp': 'Data Management Plan',
-                           'publications': [{'identifier': 'Publication'}],
-                           'dataUrls': [{'url': 'Data Access URL', 'description': 'Description'}],
-                           'projects': [2]}}
+    payload = {'title': 'A Unique Title',
+               'description': 'Description',
+               'doi': 'DOI',
+               'creator': 'Creator',
+               'dmp': 'Data Management Plan',
+               'publications': [{'identifier': 'Publication'}],
+               'dataUrls': [{'url': 'Data Access URL', 'description': 'Description'}]}
 
     data, status_code = make_request(session,
                                   '/api/dataset/add',

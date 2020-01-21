@@ -8,7 +8,7 @@ import helpers
 
 # pylint: disable=redefined-outer-name
 
-def test_list_datasets_get():
+def test_list_datasets():
     """
     Request a list of all datasets.
 
@@ -20,7 +20,7 @@ def test_list_datasets_get():
         assert len(json.loads(response[0])['datasets']) == 500
 
 
-def test_random_dataset_get():
+def test_random_dataset():
     """Request a random dataset."""
     responses = helpers.make_request_all_roles('/api/dataset/random')
     assert [response[1] for response in responses] == [200, 200, 200, 200]
@@ -28,7 +28,7 @@ def test_random_dataset_get():
         assert len(json.loads(response[0])['datasets']) == 1
 
 
-def test_random_datasets_get():
+def test_random_datasets():
     """Request random datasets."""
     session = requests.Session()
     helpers.as_user(session, helpers.USERS['user'])
@@ -77,6 +77,7 @@ def test_get_dataset_get_bad():
     for _ in range(10):
         response = helpers.make_request(session, f'/api/dataset/{uuid.uuid4().hex}')
         assert response == (None, 404)
+
     for _ in range(10):
         response = helpers.make_request(session, f'/api/dataset/{helpers.random_string()}')
         assert response == (None, 404)
@@ -92,6 +93,7 @@ def test_add_get():
                         'dataUrls': [],
                         'description': '',
                         'dmp': '',
+                        'projects': [],
                         'publications': [],
                         'title': ''}
     
@@ -158,6 +160,34 @@ def test_add_post_all_fields():
         else:
             assert response[0] is None
 
+
+def test_add_post_projects():
+    """Add a new dataset with connected projects."""
+    indata = {'creator': 'Test facility',
+              'data_urls': [{'description': 'Test description', 'url': 'http://test_url'}],
+              'description': 'Test description',
+              'dmp': 'http://test',
+              'publications': ['Title. Journal: year'],
+              'title': 'Test title'}
+
+    session = requests.Session()
+    helpers.as_user(session, helpers.USERS['steward'])
+    indata['projects'] = [ds['uuid']
+                          for ds in helpers.make_request(session,
+                                                         '/api/project/random/5')[0]['projects']]
+    ins_request = helpers.make_request(session,
+                                       '/api/dataset/add',
+                                       data=indata, method='POST')
+    assert ins_request[1] == 200
+    print(indata['projects'])
+    print(ins_request)
+    for proj_uuid in indata['projects']:
+        find_request = helpers.make_request(session,
+                                            f'/api/project/{proj_uuid}')
+        print(find_request)
+        assert ins_request[0]['uuid'] in find_request[0]['project']['datasets']
+
+    
 
 def test_add_post_bad_fields():
     """Attempt to add datasets with e.g. forbidden fields."""
@@ -229,3 +259,50 @@ def test_delete():
         else:
             assert response == (None, 401)
         i_user = (i_user+1) % 4
+
+
+def test_delete_bad():
+    """
+    Delete all datasets that were created by the add tests, one at a time.
+
+    Should require at least Steward.
+    """
+    session = requests.Session()
+    response = helpers.make_request(session, '/api/developer/test_datasets')
+    uuids = [ds['uuid'] for ds in response[0]['datasets']]
+
+    i_user = 0
+    i_uuid = 0
+    users = tuple(helpers.USERS.values())
+    while i_uuid < len(uuids):
+        helpers.as_user(session, users[i_user])
+
+        response = helpers.make_request(session,
+                                        f'/api/dataset/{uuids[i_uuid]}',
+                                        method='DELETE')
+        if i_user >= 2:
+            assert response == (None, 200)
+            i_uuid += 1
+        elif i_user == 0:
+            assert response == (None, 400)
+        else:
+            assert response == (None, 401)
+
+        if i_uuid >= len(uuids):
+            break
+
+        response = helpers.make_request(session,
+                                        f'/api/dataset/{uuids[i_uuid]}/delete',
+                                        method='POST')
+        if i_user >= 2:
+            assert response == (None, 200)
+            i_uuid += 1
+        elif i_user == 0:
+            assert response == (None, 400)
+        else:
+            assert response == (None, 401)
+        i_user = (i_user+1) % 4
+
+
+def test_update_permissions():
+    pass
