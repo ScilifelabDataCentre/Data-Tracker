@@ -70,10 +70,8 @@ def update_projects(dataset_uuid: uuid.UUID, in_projects: list):
         flask.g.db['projects'].update({'uuid': utils.uuid_convert_mongo(proj)},
                                       {'$pull': {'datasets': dataset_uuid}})
     for proj in to_add:
-        logging.error(f'Adding projects; ds:{dataset_uuid}, proj: {proj}')
         response = flask.g.db['projects'].update({'uuid': utils.uuid_convert_mongo(proj)},
                                                  {'$push': {'datasets': dataset_uuid}})
-        logging.error(f'Adding projects, resp: {response}')
 
 
 @blueprint.route('/all', methods=['GET'])
