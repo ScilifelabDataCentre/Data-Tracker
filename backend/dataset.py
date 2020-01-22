@@ -67,11 +67,16 @@ def update_projects(dataset_uuid: uuid.UUID, in_projects: list):
     to_remove = old_projects-new_projects
     to_add = new_projects-old_projects
     for proj in to_remove:
-        flask.g.db['projects'].update({'uuid': utils.uuid_convert_mongo(proj)},
-                                      {'$pull': {'datasets': dataset_uuid}})
+        response = flask.g.db['projects'].update({'uuid': utils.uuid_convert_mongo(proj)},
+                                                 {'$pull': {'datasets': dataset_uuid}})
+        if not response['nModified']:
+            flask.abort(flask.Response(status=500))
     for proj in to_add:
         response = flask.g.db['projects'].update({'uuid': utils.uuid_convert_mongo(proj)},
                                                  {'$push': {'datasets': dataset_uuid}})
+        if not response['nModified']:
+            flask.abort(flask.Response(status=500))
+
 
 
 @blueprint.route('/all', methods=['GET'])
