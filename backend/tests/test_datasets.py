@@ -358,4 +358,37 @@ def test_delete_bad():
 
 
 def test_update_permissions():
+    """
+    Test the permissions for the request.
+
+    Should require at least Steward or being the owner of the dataset.
+    """
+
+    pass
+
+
+def test_update():
+    """
+    Update multiple random datasets. Then return to old. Confirm that they look the same.
+
+    Should require at least Steward.
+    """
+    pass
+
+
+def test_update_owner():
+    """
+    Add, update, and delete some datasets.
+
+    The current user is the owner.
+    """    
+    pass
+
+
+def test_update_bad():
+    """
+    Confirm that bad requests will be rejected.
+
+    Should require at least Steward.
+    """
     pass
