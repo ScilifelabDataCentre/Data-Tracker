@@ -78,11 +78,14 @@ def test_get_dataset_projects_field():
     """
     session = requests.Session()
     for _ in range(10):
-        orig = helpers.make_request(session, '/api/project/random')[0]['projects'][0]
-        ds_uuid = orig['datasets'][0]
+        datasets = []
+        while not datasets:
+            orig = helpers.make_request(session, '/api/project/random')[0]['projects'][0]
+            datasets = orig['datasets']
+        ds_uuid = datasets[0]
         response = helpers.make_request(session, f'/api/dataset/{ds_uuid}')
         assert response[1] == 200
-        assert orig['uuid'] in response[0]['dataset']['projects']
+        assert orig['uuid'] in [proj['uuid'] for proj in response[0]['dataset']['projects']]
 
 
 def test_get_dataset_bad():

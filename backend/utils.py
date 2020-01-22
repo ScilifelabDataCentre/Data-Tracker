@@ -28,43 +28,6 @@ def gen_csrf_token() -> str:
     return uuid.uuid4().hex
 
 
-def is_owner(dataset: str = None, project: str = None):
-    """
-    Check if the current user owns the given dataset or project.
-
-    If both a dataset and a project is provided, an exception will be raised.
-
-    Args:
-        dataset (str): the dataset to check
-        project (str: the project to check
-
-    Returns:
-        bool: whether the current owns the dataset/project
-
-    Raises:
-        ValueError: one of dataset or project must be set, and not both
-
-    """
-    if dataset and project:
-        raise ValueError('Only one of dataset and project should be set')
-    if dataset:
-        ds_data = get_dataset(dataset)
-        if not ds_data:
-            flask.abort(status=404)
-        owners = [project['owner'] for project in ds_data['projects']]
-    elif project:
-        proj_data = get_project(project)
-        if not proj_data:
-            flask.abort(status=404)
-        owners = [project['owner']]
-    else:
-        raise ValueError('Either dataset or project must be set')
-
-    if flask.g.current_user in owners:
-        return True
-    return False
-
-
 def clean_mongo(response):
     """
     Prepare for returning a MongoDB document by e.g. `ObjectId (_id)`.
@@ -214,8 +177,9 @@ def get_dataset(identifier: str):
         result = flask.g.db['datasets'].find_one({'uuid': mongo_uuid})
         if not result:
             return None
-        result['projects'] = list(flask.g.db['projects'].find({'datasets': result['uuid']},
-                                                              {'title': 1, 'uuid': 1, '_id': 0}))
+        result['projects'] = list(flask.g.db['projects']
+                                  .find({'datasets': uuid_convert_mongo(result['uuid'])},
+                                        {'title': 1, 'uuid': 1, '_id': 0}))
         clean_mongo(result)
     except ValueError:
         return None
@@ -270,6 +234,43 @@ def get_db(dbserver: pymongo.mongo_client.MongoClient) -> pymongo.database.Datab
 
     """
     return dbserver[flask.current_app.config['mongo']['db']]
+
+
+def is_owner(dataset: str = None, project: str = None):
+    """
+    Check if the current user owns the given dataset or project.
+
+    If both a dataset and a project is provided, an exception will be raised.
+
+    Args:
+        dataset (str): the dataset to check
+        project (str: the project to check
+
+    Returns:
+        bool: whether the current owns the dataset/project
+
+    Raises:
+        ValueError: one of dataset or project must be set, and not both
+
+    """
+    if dataset and project:
+        raise ValueError('Only one of dataset and project should be set')
+    if dataset:
+        ds_data = get_dataset(dataset)
+        if not ds_data:
+            flask.abort(status=404)
+        owners = [project['owner'] for project in ds_data['projects']]
+    elif project:
+        proj_data = get_project(project)
+        if not proj_data:
+            flask.abort(status=404)
+        owners = [project['owner']]
+    else:
+        raise ValueError('Either dataset or project must be set')
+
+    if flask.g.current_user in owners:
+        return True
+    return False
 
 
 def response_json(json_structure: dict):
