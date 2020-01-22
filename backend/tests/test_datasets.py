@@ -207,7 +207,6 @@ def test_add_projects():
                                             f'/api/project/{proj_uuid}')
         print(find_request)
         assert ins_request[0]['uuid'] in find_request[0]['project']['datasets']
-
     
 
 def test_add_bad_fields():
@@ -280,6 +279,39 @@ def test_delete():
         else:
             assert response == (None, 401)
         i_user = (i_user+1) % 4
+
+
+def test_delete_ref_in_projects():
+    """
+    Ensure that the references to the datasets are destroyed in the projects
+
+    Should require at least Steward.
+    """
+    indata = {'creator': 'Test facility',
+              'data_urls': [{'description': 'Test description', 'url': 'http://test_url'}],
+              'description': 'Test description',
+              'dmp': 'http://test',
+              'publications': ['Title. Journal: year'],
+              'title': 'Test title'}
+
+    session = requests.Session()
+    helpers.as_user(session, helpers.USERS['steward'])
+    indata['projects'] = [ds['uuid']
+                          for ds in helpers.make_request(session,
+                                                         '/api/project/random/5')[0]['projects']]
+    ins_request = helpers.make_request(session,
+                                       '/api/dataset/add',
+                                       data=indata, method='POST')
+
+    ds_uuid = ins_request[0]['uuid']
+    response = helpers.make_request(session,
+                                    f'/api/dataset/{ds_uuid}',
+                                    method='DELETE')
+    assert response == (None, 200)
+    for proj in indata['projects']:
+        response = helpers.make_request(session,
+                                        f'/api/project/{proj}')
+        assert ds_uuid not in response[0]['project']['datasets']
 
 
 def test_delete_bad():

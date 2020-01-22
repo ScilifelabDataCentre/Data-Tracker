@@ -44,7 +44,7 @@ def validate_dataset_input(indata):
     return True
 
 
-def update_projects(dataset_uuid: uuid.UUID, in_projects: list):
+def update_projects(dataset_uuid: str, in_projects: list):
     """
     Update the dataset list in the projects the dataset is connected to.
 
@@ -52,31 +52,35 @@ def update_projects(dataset_uuid: uuid.UUID, in_projects: list):
     and add the dataset to the new projects.
 
     Args:
-        dataset_uuid (uuid.UUID): the uuid of the dataset
+        dataset_uuid (str): the uuid of the dataset
         new_projects (list): the project uuids (str) the dataset should now be related to
 
     Raises:
         ValueError: a project uuid did not match any project in the db
 
     """
+    ds_uuid = utils.to_mongo_uuid(dataset_uuid)
     old_projects = {item['uuid']
                     for item in
-                    flask.g.db['projects'].find({'datasets': dataset_uuid},
+                    flask.g.db['projects'].find({'datasets': ds_uuid},
                                                 {'uuid': 1, '_id': 0})}
     new_projects = {uuid.UUID(proj) for proj in in_projects}
     to_remove = old_projects-new_projects
     to_add = new_projects-old_projects
     for proj in to_remove:
-        response = flask.g.db['projects'].update({'uuid': utils.uuid_convert_mongo(proj)},
-                                                 {'$pull': {'datasets': dataset_uuid}})
+        response = (flask.g.db['projects']
+                    .update({'uuid': utils.uuid_convert_mongo(proj)},
+                            {'$pull': {'datasets': ds_uuid}}))
         if not response['nModified']:
-            flask.abort(flask.Response(status=500))
+            logging.error('Dataset %s not listed in project %s',
+                          dataset_uuid, proj)
     for proj in to_add:
-        response = flask.g.db['projects'].update({'uuid': utils.uuid_convert_mongo(proj)},
-                                                 {'$push': {'datasets': dataset_uuid}})
+        response = (flask.g.db['projects']
+                    .update({'uuid': utils.uuid_convert_mongo(proj)},
+                            {'$push': {'datasets': ds_uuid}}))
         if not response['nModified']:
-            flask.abort(flask.Response(status=500))
-
+            logging.error('Dataset %s not listed in project %s',
+                          dataset_uuid, proj)
 
 
 @blueprint.route('/all', methods=['GET'])
@@ -162,7 +166,7 @@ def get_dataset(identifier):
     return utils.response_json({'dataset': result})
 
 
-@blueprint.route('/<identifier>/delete', methods=['POST'])
+@blueprint.route('/<identifier>/delete', methods=['POST'])  # post to make sure csrf is used
 @blueprint.route('/<identifier>', methods=['DELETE'])
 @user.steward_required
 def delete_dataset(identifier):
@@ -171,6 +175,13 @@ def delete_dataset(identifier):
         mongo_uuid = utils.to_mongo_uuid(identifier)
     except ValueError:
         return flask.Response(status=404)
+    logging.error(list(flask.g.db['projects'].find({'datasets': mongo_uuid})))
+
+    response = (flask.g.db['projects'].update_many({'datasets': mongo_uuid},
+                                                   {'$pull': {'datasets': mongo_uuid}}))
+    logging.error(response.matched_count)
+    logging.error(response.modified_count)
+
     result = flask.g.db['datasets'].delete_one({'uuid': mongo_uuid})
     if result.deleted_count == 0:
         return flask.Response(status=404)
