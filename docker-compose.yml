@@ -7,7 +7,7 @@ services:
     volumes:
       - ./mongo-data:/data/db
     ports:
-      - 27017:27017
+      - 127.0.0.1:27017:27017
   backend:
     build:
       context: ./
@@ -34,7 +34,7 @@ services:
       context: ./
       dockerfile: Dockerfile-proxy
     ports:
-      - 5000:80
+      - 127.0.0.1:5000:80
     depends_on:
       - backend
       - frontend
