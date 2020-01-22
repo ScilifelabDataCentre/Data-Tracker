@@ -52,7 +52,7 @@ def test_get_dataset_get_permissions():
         assert response[1] == 200
 
 
-def test_get_dataset_get():
+def test_get_dataset():
     """
     Request multiple datasets by uuid, one at a time.
 
@@ -67,7 +67,25 @@ def test_get_dataset_get():
         assert orig == requested
 
 
-def test_get_dataset_get_bad():
+def test_get_dataset_projects_field():
+    """
+    Request multiple datasets by uuid, one at a time.
+    
+    Make sure that the projects field contains the correct projects.
+
+    Choose random projects, look up the datasets that should contain the project uuids.
+    Projects are choosen randomly using /api/project/random.
+    """
+    session = requests.Session()
+    for _ in range(10):
+        orig = helpers.make_request(session, '/api/project/random')[0]['projects'][0]
+        ds_uuid = orig['datasets'][0]
+        response = helpers.make_request(session, f'/api/dataset/{ds_uuid}')
+        assert response[1] == 200
+        assert orig['uuid'] in response[0]['dataset']['projects']
+
+
+def test_get_dataset_bad():
     """
     Request datasets using bad identifiers.
 
@@ -106,7 +124,7 @@ def test_add_get():
                                            expected_success]
 
 
-def test_add_post_permissions():
+def test_add_permissions():
     """
     Add a default dataset using .post(dataset/add).
 
@@ -129,7 +147,7 @@ def test_add_post_permissions():
             assert response[0] is None
 
 
-def test_add_post_all_fields():
+def test_add_all_fields():
     """
     Add a default dataset using .post(dataset/add).
 
@@ -161,7 +179,7 @@ def test_add_post_all_fields():
             assert response[0] is None
 
 
-def test_add_post_projects():
+def test_add_projects():
     """Add a new dataset with connected projects."""
     indata = {'creator': 'Test facility',
               'data_urls': [{'description': 'Test description', 'url': 'http://test_url'}],
@@ -189,7 +207,7 @@ def test_add_post_projects():
 
     
 
-def test_add_post_bad_fields():
+def test_add_bad_fields():
     """Attempt to add datasets with e.g. forbidden fields."""
     session = requests.Session()
     helpers.as_user(session, helpers.USERS['steward'])
