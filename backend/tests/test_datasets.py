@@ -4,8 +4,7 @@ import json
 import uuid
 import requests
 
-import helpers
-
+from helpers import make_request, as_user, make_request_all_roles, dataset_for_tests, USERS, random_string
 # pylint: disable=redefined-outer-name
 
 def test_list_datasets():
@@ -14,7 +13,7 @@ def test_list_datasets():
 
     Should also test e.g. pagination once implemented.
     """
-    responses = helpers.make_request_all_roles('/api/dataset/all')
+    responses = make_request_all_roles('/api/dataset/all')
     assert [response[1] for response in responses] == [200, 200, 200, 200]
     for response in responses:
         assert len(json.loads(response[0])['datasets']) == 500
@@ -22,7 +21,7 @@ def test_list_datasets():
 
 def test_random_dataset():
     """Request a random dataset."""
-    responses = helpers.make_request_all_roles('/api/dataset/random')
+    responses = make_request_all_roles('/api/dataset/random')
     assert [response[1] for response in responses] == [200, 200, 200, 200]
     for response in responses:
         assert len(json.loads(response[0])['datasets']) == 1
@@ -31,13 +30,13 @@ def test_random_dataset():
 def test_random_datasets():
     """Request random datasets."""
     session = requests.Session()
-    helpers.as_user(session, helpers.USERS['user'])
+    as_user(session, USERS['user'])
     for i in (1, 5, 0):
-        response = helpers.make_request(session, f'/api/dataset/random/{i}')
+        response = make_request(session, f'/api/dataset/random/{i}')
         assert response[1] == 200
         assert len(response[0]['datasets']) == i
 
-    response = helpers.make_request(session, '/api/dataset/random/-1')
+    response = make_request(session, '/api/dataset/random/-1')
     assert response[1] == 404
     assert not response[0]
 
@@ -45,8 +44,8 @@ def test_random_datasets():
 def test_get_dataset_get_permissions():
     """Test permissions for requesting a dataset."""
     session = requests.Session()
-    orig = helpers.make_request(session, '/api/dataset/random')[0]['datasets'][0]
-    responses = helpers.make_request_all_roles(f'/api/dataset/{orig["uuid"]}')
+    orig = make_request(session, '/api/dataset/random')[0]['datasets'][0]
+    responses = make_request_all_roles(f'/api/dataset/{orig["uuid"]}')
     for response in responses:
         assert json.loads(response[0])['dataset'] == orig
         assert response[1] == 200
@@ -60,8 +59,8 @@ def test_get_dataset():
     """
     session = requests.Session()
     for _ in range(10):
-        orig = helpers.make_request(session, '/api/dataset/random')[0]['datasets'][0]
-        response = helpers.make_request(session, f'/api/dataset/{orig["uuid"]}')
+        orig = make_request(session, '/api/dataset/random')[0]['datasets'][0]
+        response = make_request(session, f'/api/dataset/{orig["uuid"]}')
         assert response[1] == 200
         requested = response[0]['dataset']
         assert orig == requested
@@ -80,10 +79,10 @@ def test_get_dataset_projects_field():
     for _ in range(10):
         datasets = []
         while not datasets:
-            orig = helpers.make_request(session, '/api/project/random')[0]['projects'][0]
+            orig = make_request(session, '/api/project/random')[0]['projects'][0]
             datasets = orig['datasets']
         ds_uuid = datasets[0]
-        response = helpers.make_request(session, f'/api/dataset/{ds_uuid}')
+        response = make_request(session, f'/api/dataset/{ds_uuid}')
         assert response[1] == 200
         assert orig['uuid'] in [proj['uuid'] for proj in response[0]['dataset']['projects']]
 
@@ -96,11 +95,11 @@ def test_get_dataset_bad():
     """
     session = requests.Session()
     for _ in range(10):
-        response = helpers.make_request(session, f'/api/dataset/{uuid.uuid4().hex}')
+        response = make_request(session, f'/api/dataset/{uuid.uuid4().hex}')
         assert response == (None, 404)
 
     for _ in range(10):
-        response = helpers.make_request(session, f'/api/dataset/{helpers.random_string()}')
+        response = make_request(session, f'/api/dataset/{random_string()}')
         assert response == (None, 404)
 
 
@@ -118,7 +117,7 @@ def test_add_get():
                         'publications': [],
                         'title': ''}
     
-    responses = helpers.make_request_all_roles('/api/dataset/add')
+    responses = make_request_all_roles('/api/dataset/add')
     assert [response[1] for response in responses] == [401, 401, 200, 200]
     assert [json.loads(response[0]) if response[0] else None
             for response in responses] == [None,
@@ -136,15 +135,15 @@ def test_add_permissions():
     Should require at least Steward.
     """
     session = requests.Session()
-    responses = helpers.make_request_all_roles('/api/dataset/add',
+    responses = make_request_all_roles('/api/dataset/add',
                                                method='POST',
-                                               payload={'dmp': 'http://test'})
+                                               data={'dmp': 'http://test'})
     assert [response[1] for response in responses] == [400, 401, 200, 200]
     for response in responses:
         if response[1] == 200:
             data = json.loads(response[0])
             assert 'uuid' in data
-            req = helpers.make_request(session, f'/api/dataset/{data["uuid"]}')
+            req = make_request(session, f'/api/dataset/{data["uuid"]}')
             assert req[0]['dataset']['dmp'] == 'http://test'
         else:
             assert response[0] is None
@@ -164,15 +163,15 @@ def test_add_all_fields():
               'title': 'Test title'}
 
     session = requests.Session()
-    responses = helpers.make_request_all_roles('/api/dataset/add',
+    responses = make_request_all_roles('/api/dataset/add',
                                                method='POST',
-                                               payload=indata)
+                                               data=indata)
     assert [response[1] for response in responses] == [400, 401, 200, 200]
     for response in responses:
         if response[1] == 200:
             data = json.loads(response[0])
             assert 'uuid' in data
-            req = helpers.make_request(session, f'/api/dataset/{data["uuid"]}')
+            req = make_request(session, f'/api/dataset/{data["uuid"]}')
             for key in indata:
                 if key != 'data_urls':
                     assert req[0]['dataset'][key] == indata[key]
@@ -192,18 +191,18 @@ def test_add_projects():
               'title': 'Test title'}
 
     session = requests.Session()
-    helpers.as_user(session, helpers.USERS['steward'])
+    as_user(session, USERS['steward'])
     indata['projects'] = [ds['uuid']
-                          for ds in helpers.make_request(session,
+                          for ds in make_request(session,
                                                          '/api/project/random/5')[0]['projects']]
-    ins_request = helpers.make_request(session,
+    ins_request = make_request(session,
                                        '/api/dataset/add',
                                        data=indata, method='POST')
     assert ins_request[1] == 200
     print(indata['projects'])
     print(ins_request)
     for proj_uuid in indata['projects']:
-        find_request = helpers.make_request(session,
+        find_request = make_request(session,
                                             f'/api/project/{proj_uuid}')
         print(find_request)
         assert ins_request[0]['uuid'] in find_request[0]['project']['datasets']
@@ -212,10 +211,10 @@ def test_add_projects():
 def test_add_bad_fields():
     """Attempt to add datasets with e.g. forbidden fields."""
     session = requests.Session()
-    helpers.as_user(session, helpers.USERS['steward'])
+    as_user(session, USERS['steward'])
     indata = {'dmp': 'http://test',
               'uuid': 'asd'}
-    response = helpers.make_request(session,
+    response = make_request(session,
                                     '/api/dataset/add',
                                     method='POST',
                                     data=indata)
@@ -223,7 +222,7 @@ def test_add_bad_fields():
 
     indata = {'dmp': 'http://test',
               'timestamp': 'asd'}
-    response = helpers.make_request(session,
+    response = make_request(session,
                                     '/api/dataset/add',
                                     method='POST',
                                     data=indata)
@@ -231,7 +230,7 @@ def test_add_bad_fields():
 
     indata = {'dmp': 'http://test',
               'identifier': 'asd'}
-    response = helpers.make_request(session,
+    response = make_request(session,
                                     '/api/dataset/add',
                                     method='POST',
                                     data=indata)
@@ -245,16 +244,16 @@ def test_delete():
     Should require at least Steward.
     """
     session = requests.Session()
-    response = helpers.make_request(session, '/api/developer/test_datasets')
+    response = make_request(session, '/api/developer/test_datasets')
     uuids = [ds['uuid'] for ds in response[0]['datasets']]
 
     i_user = 0
     i_uuid = 0
-    users = tuple(helpers.USERS.values())
+    users = tuple(USERS.values())
     while i_uuid < len(uuids):
-        helpers.as_user(session, users[i_user])
+        as_user(session, users[i_user])
 
-        response = helpers.make_request(session,
+        response = make_request(session,
                                         f'/api/dataset/{uuids[i_uuid]}',
                                         method='DELETE')
         if i_user >= 2:
@@ -268,7 +267,7 @@ def test_delete():
         if i_uuid >= len(uuids):
             break
 
-        response = helpers.make_request(session,
+        response = make_request(session,
                                         f'/api/dataset/{uuids[i_uuid]}/delete',
                                         method='POST')
         if i_user >= 2:
@@ -295,21 +294,21 @@ def test_delete_ref_in_projects():
               'title': 'Test title'}
 
     session = requests.Session()
-    helpers.as_user(session, helpers.USERS['steward'])
+    as_user(session, USERS['steward'])
     indata['projects'] = [ds['uuid']
-                          for ds in helpers.make_request(session,
+                          for ds in make_request(session,
                                                          '/api/project/random/5')[0]['projects']]
-    ins_request = helpers.make_request(session,
+    ins_request = make_request(session,
                                        '/api/dataset/add',
                                        data=indata, method='POST')
 
     ds_uuid = ins_request[0]['uuid']
-    response = helpers.make_request(session,
+    response = make_request(session,
                                     f'/api/dataset/{ds_uuid}',
                                     method='DELETE')
     assert response == (None, 200)
     for proj in indata['projects']:
-        response = helpers.make_request(session,
+        response = make_request(session,
                                         f'/api/project/{proj}')
         assert ds_uuid not in response[0]['project']['datasets']
 
@@ -321,16 +320,16 @@ def test_delete_bad():
     Should require at least Steward.
     """
     session = requests.Session()
-    response = helpers.make_request(session, '/api/developer/test_datasets')
+    response = make_request(session, '/api/developer/test_datasets')
     uuids = [ds['uuid'] for ds in response[0]['datasets']]
 
     i_user = 0
     i_uuid = 0
-    users = tuple(helpers.USERS.values())
+    users = tuple(USERS.values())
     while i_uuid < len(uuids):
-        helpers.as_user(session, users[i_user])
+        as_user(session, users[i_user])
 
-        response = helpers.make_request(session,
+        response = make_request(session,
                                         f'/api/dataset/{uuids[i_uuid]}',
                                         method='DELETE')
         if i_user >= 2:
@@ -344,7 +343,7 @@ def test_delete_bad():
         if i_uuid >= len(uuids):
             break
 
-        response = helpers.make_request(session,
+        response = make_request(session,
                                         f'/api/dataset/{uuids[i_uuid]}/delete',
                                         method='POST')
         if i_user >= 2:
@@ -357,23 +356,60 @@ def test_delete_bad():
         i_user = (i_user+1) % 4
 
 
-def test_update_permissions():
+def test_update_permissions(dataset_for_tests):
     """
     Test the permissions for the request.
 
     Should require at least Steward or being the owner of the dataset.
     """
+    ds_uuid = dataset_for_tests
+    indata = {'title': 'Updated title'}
+    responses = make_request_all_roles(f'/api/dataset/{ds_uuid}', method='PUT', data=indata)
+    assert [response[1] for response in responses] == [400, 401, 200, 200]
+    assert [response[0] for response in responses] == [None]*4
 
-    pass
+    session = requests.Session()
+    project = {'datasets': []}
+    print(project)
+    print(project.keys())
+    while not project['datasets']:
+        proj_response = make_request(session, f'/api/project/random')
+        assert proj_response[1] == 200
+        project = proj_response[0]['projects'][0]
+        print(project)
+    owner = project['owner']
+    uuid = project['datasets'][0]
+    as_user(session, owner)
+    ds_response = make_request(session, f'/api/dataset/{uuid}',
+                               method='PUT', data=indata)
+    assert ds_response == (None, 200)
 
 
-def test_update():
+def test_update_empty(dataset_for_tests):
+    """
+    Confirm response 400 to an empty update request
+
+    Should require at least Steward or being the owner of the dataset.
+    """
+    ds_uuid = dataset_for_tests
+    responses = make_request_all_roles(f'/api/dataset/{ds_uuid}', method='PUT')
+    assert [response[1] for response in responses] == [400, 401, 400, 400]
+    assert [response[0] for response in responses] == [None]*4
+
+
+def test_update(dataset_for_tests):
     """
     Update multiple random datasets. Then return to old. Confirm that they look the same.
 
     Should require at least Steward.
     """
-    pass
+    ds_uuid = dataset_for_tests
+    indata = {'title': 'Updated title'}
+    session = requests.Session()
+    responses = make_request_all_roles(f'/api/dataset/{ds_uuid}', method='PUT', data=indata)
+    assert [response[1] for response in responses] == [400, 401, 200, 200]
+    assert [response[0] for response in responses] == [None]*4
+    # need check that values matches the expected
 
 
 def test_update_owner():
@@ -391,4 +427,11 @@ def test_update_bad():
 
     Should require at least Steward.
     """
-    pass
+    for _ in range(5):
+        ds_uuid = random_string()
+        indata = {'title': 'Updated title'}
+        session = requests.Session()
+        responses = make_request_all_roles(f'/api/dataset/{ds_uuid}', method='PUT', data=indata)
+        assert [response[1] for response in responses] == [400, 401, 404, 404]
+        assert [response[0] for response in responses] == [None]*4
+

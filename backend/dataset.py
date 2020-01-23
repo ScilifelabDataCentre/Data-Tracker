@@ -175,12 +175,9 @@ def delete_dataset(identifier):
         mongo_uuid = utils.to_mongo_uuid(identifier)
     except ValueError:
         return flask.Response(status=404)
-    logging.error(list(flask.g.db['projects'].find({'datasets': mongo_uuid})))
 
-    response = (flask.g.db['projects'].update_many({'datasets': mongo_uuid},
-                                                   {'$pull': {'datasets': mongo_uuid}}))
-    logging.error(response.matched_count)
-    logging.error(response.modified_count)
+    (flask.g.db['projects'].update_many({'datasets': mongo_uuid},
+                                        {'$pull': {'datasets': mongo_uuid}}))
 
     result = flask.g.db['datasets'].delete_one({'uuid': mongo_uuid})
     if result.deleted_count == 0:
@@ -205,13 +202,24 @@ def update_dataset(identifier):
     """
     data = json.loads(flask.request.data)
     try:
+        ds_uuid = utils.to_mongo_uuid(identifier)
+    except ValueError:
+        flask.abort(flask.Response(status=404))
+    try:
         utils.check_mongo_update(data)
     except ValueError:
         flask.abort(flask.Response(status=400))
+    projects = None
     if 'projects' in data:
-        if not user.check_user_permissions('Steward'):
-            flask.abort(flask.Response(status=401))
-        update_projects(identifier, data['projects'])
+        projects = data['projects']
         del data['projects']
+
     data['timestamp'] = utils.make_timestamp()
-    flask.g.db.datasets.update({'uuid': identifier}, data)
+    response = flask.g.db.datasets.update_one({'uuid': ds_uuid}, {'$set': data})
+    if response.matched_count == 0:
+        flask.abort(flask.Response(status=404))
+
+    if projects:
+        update_projects(identifier, projects)
+
+    return flask.Response(status=200)
