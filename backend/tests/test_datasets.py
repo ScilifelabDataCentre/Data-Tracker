@@ -315,45 +315,23 @@ def test_delete_ref_in_projects():
 
 def test_delete_bad():
     """
-    Delete all datasets that were created by the add tests, one at a time.
+    Bad deletion requests.
 
     Should require at least Steward.
     """
     session = requests.Session()
-    response = make_request(session, '/api/developer/test_datasets')
-    uuids = [ds['uuid'] for ds in response[0]['datasets']]
-
-    i_user = 0
-    i_uuid = 0
-    users = tuple(USERS.values())
-    while i_uuid < len(uuids):
-        as_user(session, users[i_user])
-
+    as_user(session, USERS['steward'])
+    for _ in range(3):
+        ds_uuid = random_string()
         response = make_request(session,
-                                        f'/api/dataset/{uuids[i_uuid]}',
-                                        method='DELETE')
-        if i_user >= 2:
-            assert response == (None, 200)
-            i_uuid += 1
-        elif i_user == 0:
-            assert response == (None, 400)
-        else:
-            assert response == (None, 401)
-
-        if i_uuid >= len(uuids):
-            break
-
+                                f'/api/dataset/{ds_uuid}',
+                                method='DELETE')
+        assert response == (None, 404)
+        ds_uuid = uuid.uuid4().hex
         response = make_request(session,
-                                        f'/api/dataset/{uuids[i_uuid]}/delete',
-                                        method='POST')
-        if i_user >= 2:
-            assert response == (None, 200)
-            i_uuid += 1
-        elif i_user == 0:
-            assert response == (None, 400)
-        else:
-            assert response == (None, 401)
-        i_user = (i_user+1) % 4
+                                f'/api/dataset/{ds_uuid}',
+                                method='DELETE')
+        assert response == (None, 404)
 
 
 def test_update_permissions(dataset_for_tests):
