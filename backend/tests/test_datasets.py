@@ -427,7 +427,7 @@ def test_update_bad():
 
     Should require at least Steward.
     """
-    for _ in range(5):
+    for _ in range(3):
         ds_uuid = random_string()
         indata = {'title': 'Updated title'}
         session = requests.Session()
@@ -435,3 +435,7 @@ def test_update_bad():
         assert [response[1] for response in responses] == [400, 401, 404, 404]
         assert [response[0] for response in responses] == [None]*4
 
+        ds_uuid = uuid.uuid4().hex
+        responses = make_request_all_roles(f'/api/dataset/{ds_uuid}', method='PUT', data=indata)
+        assert [response[1] for response in responses] == [400, 401, 404, 404]
+        assert [response[0] for response in responses] == [None]*4
