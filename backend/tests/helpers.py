@@ -45,30 +45,28 @@ def as_user(session: requests.Session, username: str, set_csrf: bool = True) -> 
 @pytest.fixture
 def dataset_for_tests():
     # prepare
+    indata = {'creator': 'Test facility',
+              'data_urls': [{'description': 'Test description', 'url': 'http://test_url'}],
+              'description': 'Test description',
+              'dmp': 'http://test',
+              'publications': ['Title. Journal: year'],
+              'title': 'Test title'}
     session = requests.Session()
-    as_user(session, 5)
-    payload = {'title': 'A Unique Title',
-               'description': 'Description',
-               'doi': 'DOI',
-               'creator': 'Creator',
-               'dmp': 'Data Management Plan',
-               'publications': [{'identifier': 'Publication'}],
-               'dataUrls': [{'url': 'Data Access URL', 'description': 'Description'}]}
+    as_user(session, USERS['steward'])
 
     data, status_code = make_request(session,
-                                  '/api/dataset/add',
-                                  payload)
+                                     '/api/dataset/add',
+                                     data=indata,
+                                     method='POST')
     assert status_code == 200
-    ds_id = data['id']
+    uuid = data['uuid']
 
-    yield ds_id
+    yield uuid
 
     # cleanup
-    payload = {'id': ds_id}
-    print(payload)
     _, status_code = make_request(session,
-                                  '/api/dataset/delete',
-                                  payload)
+                                  f'/api/dataset/{uuid}',
+                                  method='DELETE')
 
 
 def make_request(session, url: str, data: dict = None, method='GET', ret_json:bool = True) -> dict:
@@ -108,7 +106,7 @@ def make_request(session, url: str, data: dict = None, method='GET', ret_json:bo
     return (data, response.status_code)
 
 
-def make_request_all_roles(url: str, method: str = 'GET', payload=None, set_csrf: bool = True) -> list:
+def make_request_all_roles(url: str, method: str = 'GET', data=None, set_csrf: bool = True) -> list:
     """
     Perform a query for all roles (anonymous, User, Steward, Admin).
 
@@ -123,7 +121,7 @@ def make_request_all_roles(url: str, method: str = 'GET', payload=None, set_csrf
     session = requests.Session()
     for user in USERS:
         as_user(session, USERS[user], set_csrf=set_csrf)
-        responses.append(make_request(session, url, payload, method, ret_json=False))
+        responses.append(make_request(session, url, data, method, ret_json=False))
     return responses
 
 
