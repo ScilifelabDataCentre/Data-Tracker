@@ -89,9 +89,11 @@ def check_mongo_update(document: dict):
         document (dict): received input to update a document
 
     Raises:
-        ValueError: Forbidden fields in the input document
+        ValueError: Forbidden fields in the input document or empty document
 
     """
+    if not document:
+        raise ValueError('Forbidden field %s in document')
     forbidden = ('_id', 'timestamp', 'uuid')
     for field in forbidden:
         if field in document:
@@ -256,10 +258,13 @@ def is_owner(dataset: str = None, project: str = None):
     if dataset and project:
         raise ValueError('Only one of dataset and project should be set')
     if dataset:
-        ds_data = get_dataset(dataset)
-        if not ds_data:
-            flask.abort(status=404)
-        owners = [project['owner'] for project in ds_data['projects']]
+        try:
+            mongo_uuid = to_mongo_uuid(dataset)
+        except ValueError:
+            flask.abort(flask.Response(status=401))
+        projects = list(flask.g.db['projects'].find({'datasets': mongo_uuid},
+                                                    {'owner': 1, 'datasets': 1, '_id': 0}))
+        owners = [project['owner'] for project in projects]
     elif project:
         proj_data = get_project(project)
         if not proj_data:
@@ -268,7 +273,7 @@ def is_owner(dataset: str = None, project: str = None):
     else:
         raise ValueError('Either dataset or project must be set')
 
-    if flask.g.current_user in owners:
+    if flask.g.current_user['email'] in owners:
         return True
     return False
 
