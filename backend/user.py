@@ -93,7 +93,6 @@ def check_user_permissions(required: str):
     return False
 
 
-
 # requests
 @blueprint.route('/login')
 def elixir_login():
@@ -134,7 +133,11 @@ def get_current_user_info():
         flask.Response: json structure for the user
 
     """
-    return flask.Response(status=500)
+    data = flask.g.current_user
+    if data:
+        utils.clean_mongo(data)
+        del data['auth_id']
+    return flask.jsonify({'user': data})
 
 
 # helper functions
