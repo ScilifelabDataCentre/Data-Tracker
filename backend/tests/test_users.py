@@ -43,7 +43,11 @@ def test_list_info():
     assert [response[1] for response in responses] == [200]*4
     for i, response in enumerate(responses):
         data = json.loads(response[0])
+        assert len(data['user']) == 5
         if i == 0:
-            assert data == {'user': None}
+            for field in data['user']:
+                assert not data['user'][field]
         else:
-            assert len(data['user']) == 5
+            for field in data['user']:
+                assert data['user'][field]
+

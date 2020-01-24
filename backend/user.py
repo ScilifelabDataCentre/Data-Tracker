@@ -134,10 +134,16 @@ def get_current_user_info():
 
     """
     data = flask.g.current_user
+    outstructure = {'affiliation': '',
+                    'country': '',
+                    'email': '',
+                    'name': '',
+                    'role': ''}
     if data:
-        utils.clean_mongo(data)
-        del data['auth_id']
-    return flask.jsonify({'user': data})
+        for field in outstructure:
+            if field in data:
+                outstructure[field] = data[field]
+    return flask.jsonify({'user': outstructure})
 
 
 # helper functions
