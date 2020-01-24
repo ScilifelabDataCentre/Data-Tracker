@@ -160,7 +160,7 @@ def do_login(username: str):
     if not result:
         user = structure.user()
         user['email'] = username
-        flask.g.db['user'].insert(user)
+        response = flask.g.db['users'].insert_one(user)
 
     flask.session['username'] = username
     flask.session.permanent = True
