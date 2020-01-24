@@ -17,7 +17,7 @@ if app.config['dev_mode']['api']:
     app.register_blueprint(developer.blueprint, url_prefix='/api/developer')
 
 app.register_blueprint(dataset.blueprint, url_prefix='/api/dataset')
-app.register_blueprint(projects.blueprint, url_prefix='/api/project')
+app.register_blueprint(project.blueprint, url_prefix='/api/project')
 app.register_blueprint(user.blueprint, url_prefix='/api/user')
 
 
