@@ -9,7 +9,8 @@ import user from './modules/user';
 Vue.use(Vuex);
 
 const state = {
-  notification: {},
+  notification: {'message': '',
+                 'type': 'normal'},
 }
 
 const mutations = {
