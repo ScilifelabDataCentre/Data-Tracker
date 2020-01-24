@@ -9,7 +9,7 @@
   <router-link to="/project" class="navbar-item">Projects</router-link>
   <router-link to="/dataset" class="navbar-item">Datasets</router-link>
   <router-link to="/about" class="navbar-item">About us</router-link>
-  <div v-if="user.permission === 'Admin'" class="navbar-item has-dropdown is-hoverable">
+  <div v-if="user.role === 'Admin'" class="navbar-item has-dropdown is-hoverable">
     <a class="navbar-link">Admin</a>
     <div class="navbar-dropdown">
       <router-link to="/admin/users" class="navbar-item">User management</router-link>
@@ -17,11 +17,11 @@
     </div>
   </div>
   <div class="navbar-end">
-    <div v-if="user.user" class="navbar-item has-dropdown is-hoverable">
-      <a class="navbar-link">{{ user.user }}</a>
+    <div v-if="user.name" class="navbar-item has-dropdown is-hoverable">
+      <a class="navbar-link">{{ user.name }}</a>
       <div class="navbar-dropdown">
-        <router-link v-if="user.user" to="/user" class="navbar-item">Info</router-link>
-        <a v-if="user.user" href="/logout" class="navbar-item">Logout</a>
+        <router-link to="/user" class="navbar-item">Info</router-link>
+        <a href="/api/user/logout" class="navbar-item">Logout</a>
       </div>
     </div>
     <a v-else href="/elixir/login" class="navbar-item">Log in</a>
