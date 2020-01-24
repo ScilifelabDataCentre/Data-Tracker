@@ -8,7 +8,28 @@ import user from './modules/user';
 
 Vue.use(Vuex);
 
+const state = {
+  notification: {},
+}
+
+const mutations = {
+  UPDATE_NOTIFICATION (state, payload) {
+    state.notification = payload;
+  },
+}
+
+const actions = {
+}
+
+const getters = {
+  notification: state => state.notification,
+}
+
 export default new Vuex.Store({
+  state,
+  mutations,
+  actions,
+  getters,
   modules: {
     admin,
     dataset,
