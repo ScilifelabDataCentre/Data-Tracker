@@ -25,23 +25,8 @@
           <td class="test"><router-link :to="'/project/' + project.uuid + '/about'">{{project.title}}</router-link></td>
         </tr>
       </tbody>
-    </table>    
-    <div v-if="dataset.publications.length > 0">
-      <h2 class="title is-5">Publications</h2>
-      <table class="table">
-        <tr v-for="publication in dataset.publications" :key="publication.id">
-          <td>{{publication.identifier}}</td>
-        </tr>
-      </table>
-    </div>
-    <div v-if="dataset.tags">
-      <h2 class="title is-5">Tags</h2>
-      <table class="table">
-        <tr v-for="tag in dataset.tags" :key="tag.id">
-          <td>{{tag.title}}</td>
-        </tr>
-      </table>
-    </div>
+    </table>
+    <span class="timestamp">Last update: {{ dataset.timestamp }}</span>
   </div>
   <button class="button is-link" @click="editDataset">
     Edit
@@ -104,5 +89,9 @@ export default {
     font-weight: bold;
     text-align: center;
     font-size: large;
+}
+.timestamp {
+    font-style: italic;
+    font-size: 1em;
 }
 </style>
