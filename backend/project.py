@@ -1,4 +1,5 @@
 """Dataset requests."""
+import logging
 
 import flask
 
@@ -100,7 +101,6 @@ def add_project_get():
     del project['uuid']
     del project['identifier']
     del project['timestamp']
-    logging.error(project)
     return utils.response_json(project)
 
 

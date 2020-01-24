@@ -103,3 +103,24 @@ def test_get_project_bad():
     for _ in range(5):
         response = make_request(session, f'/api/project/{random_string()}')
         assert response == (None, 404)
+
+
+def test_add_get():
+    """
+    Request data structure for .get(project/add).
+
+    Should require at least Steward.
+    """
+    expected_success = {'contact': '',
+                        'description': '',
+                        'owner': '',
+                        'title': '',
+                        'datasets': []}
+
+    responses = make_request_all_roles('/api/project/add')
+    assert [response[1] for response in responses] == [401, 401, 200, 200]
+    assert [json.loads(response[0]) if response[0] else None
+            for response in responses] == [None,
+                                           None,
+                                           expected_success,
+                                           expected_success]
