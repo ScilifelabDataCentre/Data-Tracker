@@ -339,3 +339,14 @@ def make_timestamp():
         datetime.datetime: the current time
     """
     return datetime.datetime.now()
+
+
+def make_log(data: dict, datatype: str, action: str):
+    """
+    Log a change in the system.
+    """
+    return flask.g.db['logs'].insert_one({'data': data,
+                                          'datatype': datatype,
+                                          'action': action,
+                                          'timestamp': make_timestamp(),
+                                          'user': flask.g.current_user['email']})
