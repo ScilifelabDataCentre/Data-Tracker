@@ -344,6 +344,11 @@ def make_timestamp():
 def make_log(data: dict, datatype: str, action: str):
     """
     Log a change in the system.
+
+    Args:
+        data (dict): the indata
+        datatype (str): the collection
+        action (str): type of action (insert, update etc)
     """
     return flask.g.db['logs'].insert_one({'data': data,
                                           'datatype': datatype,
