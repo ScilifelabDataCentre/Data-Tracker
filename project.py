@@ -40,7 +40,7 @@ def add_project_post():
 
 @blueprint.route('/random', methods=['GET'])
 @blueprint.route('/random/<int:amount>', methods=['GET'])
-def get_random_ds(amount: int = 1):
+def get_random(amount: int = 1):
     """
     Retrieve random project(s).
 
@@ -78,17 +78,3 @@ def get_project(identifier):
         return flask.Response(status=404)
     utils.clean_mongo(result)
     return utils.response_json({'project': result})
-
-
-@blueprint.route('/<identifier>/delete', methods=['PUT'])
-@user.steward_required
-def delete_project(identifier):
-    """Delete a project."""
-    try:
-        mongo_uuid = utils.to_mongo_uuid(identifier)
-    except ValueError:
-        return flask.Response(status=404)
-    result = flask.g.db['projects'].delete_one({'uuid': mongo_uuid})
-    if result.deleted_count == 0:
-        return flask.Response(status=404)
-    return flask.Response(status=200)

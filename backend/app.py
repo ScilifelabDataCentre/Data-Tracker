@@ -5,7 +5,7 @@ import flask
 import config
 import dataset
 import developer
-import projects
+import project
 import user
 import utils
 
