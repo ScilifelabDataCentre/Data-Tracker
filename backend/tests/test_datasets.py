@@ -19,6 +19,29 @@ def test_list_datasets():
         assert len(json.loads(response[0])['datasets']) == 500
 
 
+def test_user_datasets():
+    """
+    Retrieve a list of datasets belonging to current user.
+
+    Confirm that they actually belong to the user.
+    """
+    # wait for queries to be ready
+    return
+    session = requests.Session()
+    for _ in range(3):
+        response = make_request(session, '/api/project/random')
+        expected_datasets = response[0]['projects'][0]['datasets']
+        as_user(session, response[0]['projects'][0]['owner'])
+        responses = make_request_all_roles('/api/dataset/user')
+        assert [response[1] for response in responses] == [401, 200, 200, 200]
+        for response in responses:
+            if response[1] == 401:
+                assert not response[0]
+            print(response[0])
+            datasets = [doc['uuid'] for doc in json.loads(response[0])['datasets']]
+            assert datasets == expected_datasets
+
+
 def test_random_dataset():
     """Request a random dataset."""
     responses = make_request_all_roles('/api/dataset/random')

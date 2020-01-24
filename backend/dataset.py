@@ -86,11 +86,26 @@ def update_projects(dataset_uuid: str, in_projects: list):
 
 
 @blueprint.route('/all', methods=['GET'])
-def list_dataset():
+def list_datasets():
     """Provide a simplified list of all available datasets."""
-    results = list(flask.g.db['datasets'].find())
+    results = list(flask.g.db['datasets'].find(projection={'title': 1, '_id': 0,
+                                                           'description': 1, 'uuid': 1}))
     utils.clean_mongo(results)
     return utils.response_json({'datasets': results})
+
+
+@blueprint.route('/user', methods=['GET'])
+@user.login_required
+def list_user_data():
+    """List all datasets belonging to current user."""
+    user_projects = tuple(flask.g.db['projects'].find({'owner': flask.session['username']},
+                                                      {'datasets': 1, '_id': 0}))
+    uuids = tuple(utils.uuid_convert_mongo(ds)
+                  for entry in user_projects for ds in entry['datasets'])
+    user_datasets = list(flask.g.db['datasets'].find({'uuid': {'$in': uuids}},
+                                                     {'uuid': 1, 'title': 1, '_id': 0}))
+    logging.error(user_datasets)
+    return utils.response_json({'datasets': user_datasets})
 
 
 @blueprint.route('/add', methods=['GET'])
