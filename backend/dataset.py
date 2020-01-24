@@ -26,10 +26,12 @@ def validate_dataset_input(indata):
         bool: whether the dataset input is accepted
 
     """
+    if not utils.check_mongo_update(indata):
+        return False
     # check that fields should exist and are not forbidden
     reference = set(structure.dataset().keys())
     reference.add('projects')
-    forbidden = {'uuid', 'timestamp', 'identifier'}
+    forbidden = {'identifier'}
     inkeys = set(indata.keys())
     if not inkeys.issubset(reference) or forbidden&inkeys:
         logging.debug('Bad input: %s', inkeys)
@@ -200,22 +202,20 @@ def update_dataset(identifier):
         flask.Response: success: 200, failure: 400
 
     """
-    data = json.loads(flask.request.data)
+    indata = json.loads(flask.request.data)
     try:
         ds_uuid = utils.to_mongo_uuid(identifier)
     except ValueError:
         flask.abort(flask.Response(status=404))
-    try:
-        utils.check_mongo_update(data)
-    except ValueError:
+    if not validate_dataset_input(indata):
         flask.abort(flask.Response(status=400))
     projects = None
-    if 'projects' in data:
-        projects = data['projects']
-        del data['projects']
+    if 'projects' in indata:
+        projects = indata['projects']
+        del indata['projects']
 
-    data['timestamp'] = utils.make_timestamp()
-    response = flask.g.db.datasets.update_one({'uuid': ds_uuid}, {'$set': data})
+    indata['timestamp'] = utils.make_timestamp()
+    response = flask.g.db['datasets'].update_one({'uuid': ds_uuid}, {'$set': indata})
     if response.matched_count == 0:
         flask.abort(flask.Response(status=404))
 

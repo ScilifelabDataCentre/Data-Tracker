@@ -85,19 +85,19 @@ def check_mongo_update(document: dict):
     """
     Make sure that some fields in a document are not changed during an update.
 
+    Also make sure indata is not empty.
+
     Args:
         document (dict): received input to update a document
 
-    Raises:
-        ValueError: Forbidden fields in the input document or empty document
-
     """
     if not document:
-        raise ValueError('Forbidden field %s in document')
+        return False
     forbidden = ('_id', 'timestamp', 'uuid')
     for field in forbidden:
         if field in document:
-            raise ValueError('Forbidden field %s in document')
+            return False
+    return True
 
 
 def country_list():
