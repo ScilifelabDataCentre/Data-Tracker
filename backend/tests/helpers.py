@@ -1,3 +1,4 @@
+import datetime
 import json
 import os
 import random
@@ -72,7 +73,6 @@ def dataset_for_tests():
 def make_request(session, url: str, data: dict = None, method='GET', ret_json:bool = True) -> dict:
     """
     Helper method for using get/post to a url.
-
     Args:
         session (requests.Session()): The session to use
         url: str: The url to get without {BASE_URL} prefix (but with leading /)
@@ -165,3 +165,14 @@ def random_string(min_length: int = 1, max_length: int = 150):
     char_source = string.ascii_letters + string.digits + '-'
     length = random.randint(min_length, max_length)
     return ''.join(random.choice(char_source) for _ in range(length))
+
+
+def parse_time(datetime_str: str):
+    """
+    Parse the timestamp from a query.
+
+    Args:
+        datetime_str (str): timestamp string (Wed, 22 Jan 2020 21:07:35 GMT)
+    """
+    str_format = '%a, %d %b %Y %H:%M:%S %Z'
+    return datetime.datetime.strptime(datetime_str, str_format)

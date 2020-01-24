@@ -1,10 +1,10 @@
 """Tests for dataset requests."""
-
 import json
+import time
 import uuid
 import requests
 
-from helpers import make_request, as_user, make_request_all_roles, dataset_for_tests, USERS, random_string
+from helpers import make_request, as_user, make_request_all_roles, dataset_for_tests, USERS, random_string, parse_time
 # pylint: disable=redefined-outer-name
 
 def test_list_datasets():
@@ -377,25 +377,53 @@ def test_update_empty(dataset_for_tests):
 
 def test_update(dataset_for_tests):
     """
-    Update multiple random datasets. Then return to old. Confirm that they look the same.
+    Update a dataset multiple times. Confirm that the update is done correctly.
 
     Should require at least Steward.
     """
-    ds_uuid = dataset_for_tests
-    indata = {'title': 'Updated title'}
+    indata = {'creator': 'Test2 facility',
+              'data_urls': [{'description': 'Test2 description', 'url': 'http://test2_url'}],
+              'description': 'Test2 description',
+              'dmp': 'http://test',
+              'publications': ['Title. Journal: year'],
+              'title': 'Test2 title'}
+
     session = requests.Session()
+    as_user(session, USERS['steward'])
+
+    ds_uuid = dataset_for_tests
     responses = make_request_all_roles(f'/api/dataset/{ds_uuid}', method='PUT', data=indata)
     assert [response[1] for response in responses] == [400, 401, 200, 200]
     assert [response[0] for response in responses] == [None]*4
-    # need check that values matches the expected
+    data = make_request(session, f'/api/dataset/{ds_uuid}')[0]['dataset']
+    for field in indata:
+        if field == 'data_urls':
+            assert data['dataUrls'] == indata['data_urls']
+        else:
+            assert data[field] == indata[field]
+
+    new_title = random_string()
+    time.sleep(1)  # make sure that timestamp will differ
+    responses = make_request(session, f'/api/dataset/{ds_uuid}',
+                             method='PUT', data={'title': new_title})
+    new_data = make_request(session, f'/api/dataset/{ds_uuid}')[0]['dataset']
+    for field in new_data:
+        if field == 'title':
+            assert new_data[field] == new_title
+        elif field == 'timestamp':
+            new_time = parse_time(new_data[field])
+            old_time = parse_time(data[field])
+            assert (new_time-old_time).total_seconds() > 0
+        else:
+            assert new_data[field] == data[field]
 
 
-def test_update_owner():
+def test_update_as_owner():
     """
     Add, update, and delete some datasets.
 
     The current user is the owner.
-    """    
+    """
     pass
 
 
@@ -408,7 +436,6 @@ def test_update_bad():
     for _ in range(3):
         ds_uuid = random_string()
         indata = {'title': 'Updated title'}
-        session = requests.Session()
         responses = make_request_all_roles(f'/api/dataset/{ds_uuid}', method='PUT', data=indata)
         assert [response[1] for response in responses] == [400, 401, 404, 404]
         assert [response[0] for response in responses] == [None]*4
@@ -417,3 +444,6 @@ def test_update_bad():
         responses = make_request_all_roles(f'/api/dataset/{ds_uuid}', method='PUT', data=indata)
         assert [response[1] for response in responses] == [400, 401, 404, 404]
         assert [response[0] for response in responses] == [None]*4
+
+    session = requests.Session()
+    as_user(session, USERS['steward'])
