@@ -1,7 +1,7 @@
 <template>
 <div class="dataset-browser">
   <h3 class="subtitle is-3">Datasets</h3>
-  <button class="button is-link" v-if="user.permission === 'Steward' || user.permission === 'Admin'" @click="addDataset">
+  <button class="button is-link" v-if="user.role === 'Steward' || user.role === 'Admin'" @click="addDataset">
     Add
   </button>
   <dataset-entry v-for="dataset in datasets" :key="dataset.id" :dataset="dataset">

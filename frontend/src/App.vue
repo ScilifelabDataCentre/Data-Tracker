@@ -3,7 +3,7 @@
   <nav-bar></nav-bar>
 
   <transition name="notification-fade">
-    <div v-if="notification" :class="{notification: true, 'is-info': !error, 'is-danger': error}">
+    <div v-if="notification.message" :class="{notification: true, 'is-info': type === 'normal', 'is-danger': notification.type === 'warning'}">
       {{ notification }}
     </div>
   </transition>
@@ -25,7 +25,7 @@ export default {
     'nav-bar': NavigationBar
   },
   computed: {
-    ...mapGetters(['datasets', 'user']),
+    ...mapGetters(['notification']),
   },
   data() {
     return {
