@@ -4,14 +4,14 @@
   <button class="button is-link" v-if="user.role === 'Steward' || user.role === 'Admin'" @click="addDataset">
     Add
   </button>
-  <dataset-entry v-for="dataset in datasets" :key="dataset.id" :dataset="dataset">
-  </dataset-entry>
+  <browser-entry v-for="dataset in datasets" :key="dataset.id" :entry="dataset" entry_type="dataset">
+  </browser-entry>
 </div>
 </template>
 
 <script>
 import {mapGetters} from 'vuex';
-import DatasetEntry from './DatasetEntry.vue';
+import BrowserEntry from '../BrowserEntry.vue';
 
 export default {
   name: 'DatasetBrowser',
@@ -23,7 +23,7 @@ export default {
     ...mapGetters(['datasets', 'user']),
   },
   components: {
-    'dataset-entry': DatasetEntry
+    'browser-entry': BrowserEntry
   },
   created () {
     this.$store.dispatch('getDatasets');
