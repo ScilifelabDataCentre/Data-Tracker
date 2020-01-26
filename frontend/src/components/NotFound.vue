@@ -1,6 +1,6 @@
 <template>
 <div class="not-found">
-  404: Page not found.
+  The requested page was not found in the system.
 </div>
 </template>
 
