@@ -37,6 +37,10 @@ const router = new VueRouter({
       component: AboutPage,
     },
     {
+      path: '/search',
+      component: AboutPage,
+    },
+    {
       path: '/project',
       component: ProjectContainer,
       children: [
@@ -65,6 +69,9 @@ const router = new VueRouter({
           path: ':id/edit',
           component: ProjectEdit,
           props: true,
+          meta: {
+            loginRequired: true,
+          },
         },
       ],
     },
@@ -94,6 +101,9 @@ const router = new VueRouter({
           path: ':id/edit',
           component: DatasetEdit,
           props: true,
+          meta: {
+            loginRequired: true,
+          },
         },
         {
           path: ':id',
@@ -101,6 +111,7 @@ const router = new VueRouter({
         },
       ],
     },
+
     {
       path: '/user',
       component: UserContainer,
@@ -116,16 +127,23 @@ const router = new VueRouter({
         {
           path: 'edit',
           component: UserAbout,
+          meta: {
+            loginRequired: true,
+          },
         },
       ],
     },
+
     {
-      path: '/admin',
+      path: '/manage',
       component: AdminUserBrowser,
+      meta: {
+        loginRequired: true,
+      },
       children: [
         {
           path: '',
-          redirect: 'stats',
+          redirect: 'summary',
         },
         {
           path: 'stats',
@@ -142,6 +160,10 @@ const router = new VueRouter({
         {
           path: 'users',
           component: AdminUserBrowser,
+          meta: {
+            adminRequired: true,
+          },
+
         }
       ],
     },
@@ -150,6 +172,17 @@ const router = new VueRouter({
       component: NotFound
     },
   ]
+});
+
+router.beforeEach((to, from, next) => {
+  if(to.matched.some(record => record.meta.loginRequired)) {
+    from;
+    // if from and not logged in return to from, show notification
+    if(to.matched.some(record => record.meta.adminRequired)) {
+      from;
+    }
+  }
+  next({ to })
 });
 
 export default router;
