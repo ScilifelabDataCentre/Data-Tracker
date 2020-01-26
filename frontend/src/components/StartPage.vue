@@ -8,21 +8,20 @@
       <h4 class="title is-4">
         Random Project
       </h4>
-      <proj_entry :project="random_proj.projects[0]"></proj_entry>
+      <browser-entry v-if="random_proj" :entry="random_proj.projects[0]" entry_type="project"></browser-entry>
     </div>
     <div class = "column" v-if="random_ds">
       <h4 class="title is-4">
         Random Dataset
       </h4>
-      <ds_entry :dataset="random_ds.datasets[0]"></ds_entry>
+      <browser-entry v-if="random_ds" :entry="random_ds.datasets[0]" entry_type="dataset"></browser-entry>
     </div>
   </div>
 </div>
 </template>
 
 <script>
-import DatasetEntry from './datasets/DatasetEntry.vue';
-import ProjectEntry from './projects/ProjectEntry.vue';
+import BrowserEntry from './BrowserEntry.vue';
 import axios from 'axios';
 
 export default {
@@ -36,8 +35,7 @@ export default {
   },
 
   components: {
-    'ds_entry': DatasetEntry,
-    'proj_entry': ProjectEntry,
+    'browser-entry': BrowserEntry,
   },
 
   mounted () {
