@@ -6,9 +6,10 @@
     </div>
   </div>
   <router-link to="/" class="navbar-item"><img id="home-icon" :src="require('../assets/open-iconic/svg/home.svg')" alt="home"></router-link>
+  <router-link to="/search" class="navbar-item">Search</router-link>
   <router-link to="/project" class="navbar-item">Projects</router-link>
   <router-link to="/dataset" class="navbar-item">Datasets</router-link>
-  <router-link to="/about" class="navbar-item">About us</router-link>
+  <router-link to="/about" class="navbar-item">About</router-link>
   <div v-if="user.role === 'Admin'" class="navbar-item has-dropdown is-hoverable">
     <a class="navbar-link">Admin</a>
     <div class="navbar-dropdown">
