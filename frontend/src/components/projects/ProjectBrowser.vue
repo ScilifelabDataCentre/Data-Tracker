@@ -1,7 +1,9 @@
 <template>
 <div class="project-browser">
   <h3 class="subtitle is-3">Projects</h3>
-  <router-link v-if="user.permission === 'Steward' || user.permission === 'Admin'" to="add" class="add-entry">Add</router-link>
+  <router-link v-if="user.role === 'Steward' || user.role === 'Admin'" to="/project/add">
+    <img class="icon-add" :src="require('../../assets/open-iconic/svg/plus.svg')" alt="Add" />
+  </router-link>
   <browser-entry v-for="project in projects" :key="project.id" :entry="project" entry_type="project">
   </browser-entry>
 </div>
@@ -30,5 +32,8 @@ export default {
 </script>
 
 <style scoped>
-
+.icon-add {
+  width: 1.2em;
+  height: 1.2em;
+}
 </style>
