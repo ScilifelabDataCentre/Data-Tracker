@@ -3,8 +3,6 @@ import VueRouter from 'vue-router';
 
 import AboutPage from '../components/AboutPage.vue'
 
-import AdminUserBrowser from '../components/admin/AdminUserBrowser.vue'
-
 import NotFound from '../components/NotFound.vue'
 
 import StartPage from '../components/StartPage.vue'
@@ -21,6 +19,16 @@ const ProjectAbout = () => import(/* webpackChunkName: "project" */ '../componen
 const ProjectBrowser = () => import(/* webpackChunkName: "project" */ '../components/projects/ProjectBrowser.vue')
 const ProjectContainer = () => import(/* webpackChunkName: "project" */ '../components/projects/ProjectContainer.vue')
 const ProjectEdit = () => import(/* webpackChunkName: "project" */ '../components/projects/ProjectEdit.vue')
+
+const AdminContainer = () => import(/* webpackChunkName: "admin" */ '../components/admin/AdminContainer.vue')
+const DoiManager = () => import(/* webpackChunkName: "admin" */ '../components/admin/DoiManager.vue')
+const Stats = () => import(/* webpackChunkName: "admin" */ '../components/admin/Stats.vue')
+const UserManager = () => import(/* webpackChunkName: "admin" */ '../components/admin/UserManager.vue')
+
+const OrderAbout = () => import(/* webpackChunkName: "order" */ '../components/orders/OrderAbout.vue')
+const OrderBrowser = () => import(/* webpackChunkName: "order" */ '../components/orders/OrderBrowser.vue')
+const OrderContainer = () => import(/* webpackChunkName: "order" */ '../components/orders/OrderContainer.vue')
+const OrderEdit = () => import(/* webpackChunkName: "order" */ '../components/orders/OrderEdit.vue')
 
 Vue.use(VueRouter);
 
@@ -40,6 +48,7 @@ const router = new VueRouter({
       path: '/search',
       component: AboutPage,
     },
+
     {
       path: '/project',
       component: ProjectContainer,
@@ -75,6 +84,7 @@ const router = new VueRouter({
         },
       ],
     },
+
     {
       path: '/dataset',
       component: DatasetContainer,
@@ -91,7 +101,6 @@ const router = new VueRouter({
           path: 'add',
           component: DatasetEdit,
         },
-
         {
           path: ':id/about',
           component: DatasetAbout,
@@ -113,8 +122,44 @@ const router = new VueRouter({
     },
 
     {
+      path: '/order',
+      component: OrderContainer,
+      meta: {
+        loginRequired: true,
+        stewardRequired: true,
+      },
+      children: [
+        {
+          path: '',
+          redirect: 'browser',
+        },
+        {
+          path: 'browser',
+          component: OrderBrowser
+        },
+        {
+          path: ':id/about',
+          component: OrderAbout,
+          props: true,
+        },
+        {
+          path: ':id/edit',
+          component: OrderEdit,
+          props: true,
+        },
+        {
+          path: ':id',
+          redirect: ':id/about',
+        },
+      ],
+    },
+    
+    {
       path: '/user',
       component: UserContainer,
+      meta: {
+        loginRequired: true,
+      },
       children: [   
         {
           path: '',
@@ -135,35 +180,26 @@ const router = new VueRouter({
     },
 
     {
-      path: '/manage',
-      component: AdminUserBrowser,
+      path: '/admin',
+      component: AdminContainer,
       meta: {
         loginRequired: true,
       },
       children: [
         {
-          path: '',
-          redirect: 'summary',
-        },
-        {
           path: 'stats',
-          component: AdminUserBrowser,
+          component: Stats,
         },
         {
-          path: 'projects',
-          component: AdminUserBrowser,
-        },
-        {
-          path: 'datasets',
-          component: AdminUserBrowser,
+          path: 'dois',
+          component: DoiManager,
         },
         {
           path: 'users',
-          component: AdminUserBrowser,
+          component: UserManager,
           meta: {
             adminRequired: true,
           },
-
         }
       ],
     },
