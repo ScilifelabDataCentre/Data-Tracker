@@ -14,7 +14,7 @@ const actions = {
   getUsers ({ commit }) {
     return new Promise((resolve, reject) => {
       axios
-        .get('/api/users')
+        .get('/api/user/all')
         .then((response) => {
           commit('UPDATE_USERS', response.data.users);
           resolve(response);
