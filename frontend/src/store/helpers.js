@@ -1,5 +1,5 @@
 export function getXsrf() {
-  let name = "_xsrf=";
+  let name = "_csrf_token=";
   let decodedCookie = decodeURIComponent(document.cookie);
   let ca = decodedCookie.split(';');
   for(let i = 0; i <ca.length; i++) {
