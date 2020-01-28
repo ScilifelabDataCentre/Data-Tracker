@@ -39,7 +39,7 @@ def as_user(session: requests.Session, username: str, set_csrf: bool = True) -> 
         assert code == 200
         session.get(f'{BASE_URL}/api/developer/hello')  # reset cookies
     if set_csrf:
-        session.headers['X-CSRF-Token'] = session.cookies.get('_csrf_token')
+        session.headers['X-CSRFToken'] = session.cookies.get('_csrf_token')
     return code
 
 
