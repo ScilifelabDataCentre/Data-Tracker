@@ -102,12 +102,12 @@ const router = new VueRouter({
           component: DatasetEdit,
         },
         {
-          path: ':id/about',
+          path: ':uuid/about',
           component: DatasetAbout,
           props: true,
         },
         {
-          path: ':id/edit',
+          path: ':uuid/edit',
           component: DatasetEdit,
           props: true,
           meta: {
@@ -115,8 +115,8 @@ const router = new VueRouter({
           },
         },
         {
-          path: ':id',
-          redirect: ':id/about',
+          path: ':uuid',
+          redirect: ':uuid/about',
         },
       ],
     },

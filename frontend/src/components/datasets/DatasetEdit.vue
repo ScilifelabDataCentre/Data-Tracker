@@ -1,15 +1,15 @@
 <template>
 <div class="dataset-edit">
   <form @submit="submitDatasetForm">
-    <div class="field" v-if="newDataset.id !== -1">
-      <label for="dataset-id" class="label">Dataset ID</label>
+    <div class="field" v-if="newDataset.uuid !== ''">
+      <label for="dataset-id" class="label">Dataset UUID</label>
       <div class="control">
         <input id="dataset-id"
                class="input"
                name="DATASET_ID"
                type="text"
-               placeholder="id"
-               v-model="newDataset.id"
+               placeholder="uuid"
+               v-model="newDataset.uuid"
                disabled="true"/>
       </div>
     </div>
@@ -42,15 +42,6 @@
              type="text"
              placeholder="Dataset creator" />
     </div>
-    <div class="field">
-      <label class="label" for="dataset-projects">Project IDs</label>
-      <input id="dataset-projects"
-             class="input"
-             v-model="newDataset.projects"
-             name="DATASET_PROJECTS"
-             type="text"
-             placeholder="Project IDs" />
-    </div>
     <div class="field is-grouped">
       <div class="control">
         <button class="button is-link">Submit</button>
@@ -59,7 +50,7 @@
         <button class="button is-light" @click="cancelChanges">Cancel</button>
       </div>
       <div class="control">
-        <button class="button is-danger" v-if="newDataset.id != -1 && (user.permission === 'Steward' || user.permission === 'Admin')" @click="deleteDataset">Delete</button>
+        <button class="button is-danger" v-if="dataset.uuid && (user.role === 'Steward' || user.role === 'Admin')" @click="deleteDataset">Delete</button>
       </div>
     </div>
   </form>
@@ -71,7 +62,7 @@ import {mapGetters} from 'vuex';
 
 export default {
   name: 'DatasetEdit',
-  props: ['id'],
+  props: ['uuid'],
   components: {
   },
   computed: {
@@ -80,17 +71,15 @@ export default {
   data () {
     return {
       newDataset: {
-        id: -1,
+        uuid: '',
         title: '',
         description: '',
-        contact: '',
-        projects: [],
       },
       value: null,
     }
   },
   created () {
-    this.$store.dispatch('getDataset', this.id)
+    this.$store.dispatch('getDataset', this.uuid)
       .then(() => {
         this.newDataset = this.dataset;
         this.newDataset.projects = this.newDataset.projects.join(' ')
@@ -99,7 +88,7 @@ export default {
   methods: {
     cancelChanges(event) {
       event.preventDefault();
-      if (this.newDataset.id === -1) {
+      if (this.newDataset.id === '') {
         this.$router.push("/dataset/browser");
       }
       else {
@@ -115,18 +104,17 @@ export default {
     },
     submitDatasetForm(event) {
       event.preventDefault();
-      this.newDataset.projects = this.newDataset.projects.split(' ');
       this.$store.dispatch('saveDataset', this.newDataset)
         .then((response) => {
           // add performed
-          let id = -1;
+          let uuid = '';
           if (response.data) {
-            id = response.data.id;
+            uuid = response.data.uuid;
           }
           else {
-            id = this.newDataset.id
+            uuid = this.newDataset.uuid
           }
-          this.$router.push("/dataset/" + id + "/about");
+          this.$router.push("/dataset/" + uuid + "/about");
         });
     },
   },

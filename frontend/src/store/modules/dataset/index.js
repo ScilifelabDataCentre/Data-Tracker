@@ -66,19 +66,23 @@ const actions = {
 
   saveDataset (context, payload) {
     return new Promise((resolve, reject) => {
-      const newDataset = {'dataset': payload};
+      const newDataset = payload;
       let url = '';
-      if (newDataset.dataset.id === -1) {
+      if (newDataset.uuid === '') {
         url = '/api/dataset/add';
       }
       else {
-        url = '/api/dataset/' + newDataset.dataset.id + '/update';
+        url = '/api/dataset/' + newDataset.uuid + '/edit';
       }
+      delete newDataset.uuid;
+      delete newDataset.timestamp;
+      delete newDataset.identifier;
+      delete newDataset.dataUrls;
       axios
         .post(url,
               newDataset,
               {
-                headers: {'X-Xsrftoken': getXsrf()},
+                headers: {'X-CSRFToken': getXsrf()},
               })
         .then((response) => {
           resolve(response);
