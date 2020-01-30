@@ -39,7 +39,7 @@ import {mapGetters} from 'vuex';
 
 export default {
   name: 'DatasetAbout',
-  props: ['id'],
+  props: ['uuid'],
   components: {
   },
   computed: {
@@ -50,7 +50,7 @@ export default {
     }
   },
   created () {
-    this.$store.dispatch('getDataset', this.id);
+    this.$store.dispatch('getDataset', this.uuid);
   },
   methods: {
     editDataset(event) {
