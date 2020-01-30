@@ -105,7 +105,7 @@ def logout():
     """Log out the current user."""
     if 'username' in flask.session:
         del flask.session['username']
-    response = flask.Response(status=200)
+    response = flask.redirect("/", code=302)
     response.set_cookie('_csrf_token', '', expires=0)
     return response
 
