@@ -1,11 +1,13 @@
+"""Helper functions for tests, including requests to e.g. change current user."""
+
 import datetime
 import json
 import os
 import random
-import requests
 import string
 
 import pytest
+import requests
 
 
 CURR_DIR = os.path.realpath(__file__)
@@ -45,6 +47,12 @@ def as_user(session: requests.Session, username: str, set_csrf: bool = True) -> 
 
 @pytest.fixture
 def dataset_for_tests():
+    """
+    Add a new dataset that can be modified in tests, followed by automatic removal.
+
+    Yields the uuid of the added dataset.
+    """
+
     # prepare
     indata = {'creator': 'Test facility',
               'data_urls': [{'description': 'Test description', 'url': 'http://test_url'}],
@@ -70,7 +78,7 @@ def dataset_for_tests():
                                   method='DELETE')
 
 
-def make_request(session, url: str, data: dict = None, method='GET', ret_json:bool = True) -> dict:
+def make_request(session, url: str, data: dict = None, method='GET', ret_json: bool = True) -> dict:
     """
     Helper method for using get/post to a url.
     Args:
@@ -127,6 +135,11 @@ def make_request_all_roles(url: str, method: str = 'GET', data=None, set_csrf: b
 
 @pytest.fixture
 def project_for_tests():
+    """
+    Add a new project that can be modified in tests and then removed.
+
+    Yields the uuid of the added project.
+    """
     # prepare
     session = requests.Session()
     as_user(session, 5)
@@ -135,8 +148,8 @@ def project_for_tests():
                            'creator': 'Creator'}}
 
     data, status_code = make_request(session,
-                                  '/api/project/add',
-                                  payload)
+                                     '/api/project/add',
+                                     payload)
     assert status_code == 200
 
     proj_id = data['id']

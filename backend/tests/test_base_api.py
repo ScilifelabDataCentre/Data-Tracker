@@ -1,8 +1,6 @@
 """Tests for dataset requests."""
 
 import json
-import uuid
-import requests
 
 import helpers
 

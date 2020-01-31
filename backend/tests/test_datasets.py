@@ -4,8 +4,11 @@ import time
 import uuid
 import requests
 
-from helpers import make_request, as_user, make_request_all_roles, dataset_for_tests, USERS, random_string, parse_time
-# pylint: disable=redefined-outer-name
+# avoid pylint errors because of fixtures
+# pylint: disable = redefined-outer-name, unused-import
+
+from helpers import make_request, as_user, make_request_all_roles,\
+    dataset_for_tests, USERS, random_string, parse_time
 
 def test_list_datasets():
     """
@@ -26,7 +29,6 @@ def test_user_datasets():
     Confirm that they actually belong to the user.
     """
     # wait for queries to be ready
-    return
     session = requests.Session()
     for _ in range(3):
         response = make_request(session, '/api/project/random')
@@ -92,7 +94,7 @@ def test_get_dataset():
 def test_get_dataset_projects_field():
     """
     Request multiple datasets by uuid, one at a time.
-    
+
     Make sure that the projects field contains the correct projects.
 
     Choose random projects, look up the datasets that should contain the project uuids.
@@ -139,7 +141,7 @@ def test_add_get():
                         'projects': [],
                         'publications': [],
                         'title': ''}
-    
+
     responses = make_request_all_roles('/api/dataset/add')
     assert [response[1] for response in responses] == [401, 401, 200, 200]
     assert [json.loads(response[0]) if response[0] else None
@@ -159,8 +161,8 @@ def test_add_permissions():
     """
     session = requests.Session()
     responses = make_request_all_roles('/api/dataset/add',
-                                               method='POST',
-                                               data={'dmp': 'http://test'})
+                                       method='POST',
+                                       data={'dmp': 'http://test'})
     assert [response[1] for response in responses] == [400, 401, 200, 200]
     for response in responses:
         if response[1] == 200:
@@ -187,8 +189,8 @@ def test_add_all_fields():
 
     session = requests.Session()
     responses = make_request_all_roles('/api/dataset/add',
-                                               method='POST',
-                                               data=indata)
+                                       method='POST',
+                                       data=indata)
     assert [response[1] for response in responses] == [400, 401, 200, 200]
     for response in responses:
         if response[1] == 200:
@@ -217,19 +219,19 @@ def test_add_projects():
     as_user(session, USERS['steward'])
     indata['projects'] = [ds['uuid']
                           for ds in make_request(session,
-                                                         '/api/project/random/5')[0]['projects']]
+                                                 '/api/project/random/5')[0]['projects']]
     ins_request = make_request(session,
-                                       '/api/dataset/add',
-                                       data=indata, method='POST')
+                               '/api/dataset/add',
+                               data=indata, method='POST')
     assert ins_request[1] == 200
     print(indata['projects'])
     print(ins_request)
     for proj_uuid in indata['projects']:
         find_request = make_request(session,
-                                            f'/api/project/{proj_uuid}')
+                                    f'/api/project/{proj_uuid}')
         print(find_request)
         assert ins_request[0]['uuid'] in find_request[0]['project']['datasets']
-    
+
 
 def test_add_bad_fields():
     """Attempt to add datasets with e.g. forbidden fields."""
@@ -238,25 +240,25 @@ def test_add_bad_fields():
     indata = {'dmp': 'http://test',
               'uuid': 'asd'}
     response = make_request(session,
-                                    '/api/dataset/add',
-                                    method='POST',
-                                    data=indata)
+                            '/api/dataset/add',
+                            method='POST',
+                            data=indata)
     assert response == (None, 400)
 
     indata = {'dmp': 'http://test',
               'timestamp': 'asd'}
     response = make_request(session,
-                                    '/api/dataset/add',
-                                    method='POST',
-                                    data=indata)
+                            '/api/dataset/add',
+                            method='POST',
+                            data=indata)
     assert response == (None, 400)
 
     indata = {'dmp': 'http://test',
               'identifier': 'asd'}
     response = make_request(session,
-                                    '/api/dataset/add',
-                                    method='POST',
-                                    data=indata)
+                            '/api/dataset/add',
+                            method='POST',
+                            data=indata)
     assert response == (None, 400)
 
 
@@ -277,8 +279,8 @@ def test_delete():
         as_user(session, users[i_user])
 
         response = make_request(session,
-                                        f'/api/dataset/{uuids[i_uuid]}',
-                                        method='DELETE')
+                                f'/api/dataset/{uuids[i_uuid]}',
+                                method='DELETE')
         if i_user >= 2:
             assert response == (None, 200)
             i_uuid += 1
@@ -291,8 +293,8 @@ def test_delete():
             break
 
         response = make_request(session,
-                                        f'/api/dataset/{uuids[i_uuid]}/delete',
-                                        method='POST')
+                                f'/api/dataset/{uuids[i_uuid]}/delete',
+                                method='POST')
         if i_user >= 2:
             assert response == (None, 200)
             i_uuid += 1
@@ -320,19 +322,19 @@ def test_delete_ref_in_projects():
     as_user(session, USERS['steward'])
     indata['projects'] = [ds['uuid']
                           for ds in make_request(session,
-                                                         '/api/project/random/5')[0]['projects']]
+                                                 '/api/project/random/5')[0]['projects']]
     ins_request = make_request(session,
-                                       '/api/dataset/add',
-                                       data=indata, method='POST')
+                               '/api/dataset/add',
+                               data=indata, method='POST')
 
     ds_uuid = ins_request[0]['uuid']
     response = make_request(session,
-                                    f'/api/dataset/{ds_uuid}',
-                                    method='DELETE')
+                            f'/api/dataset/{ds_uuid}',
+                            method='DELETE')
     assert response == (None, 200)
     for proj in indata['projects']:
         response = make_request(session,
-                                        f'/api/project/{proj}')
+                                f'/api/project/{proj}')
         assert ds_uuid not in response[0]['project']['datasets']
 
 
@@ -426,7 +428,7 @@ def test_update(dataset_for_tests):
     new_title = random_string()
     time.sleep(1)  # make sure that timestamp will differ
     response = make_request(session, f'/api/dataset/{ds_uuid}',
-                             method='PUT', data={'title': new_title})
+                            method='PUT', data={'title': new_title})
     assert response == (None, 200)
     new_data = make_request(session, f'/api/dataset/{ds_uuid}')[0]['dataset']
     for field in new_data:
@@ -444,7 +446,7 @@ def test_update_projects(dataset_for_tests):
     """Confirm that the project associations are updated correcly."""
     session = requests.Session()
     as_user(session, USERS['steward'])
-    
+
     ds_uuid = dataset_for_tests
 
     proj_uuid = make_request(session, f'/api/project/random')[0]['projects'][0]['uuid']
@@ -454,7 +456,7 @@ def test_update_projects(dataset_for_tests):
     assert response == (None, 200)
     data = make_request(session, f'/api/dataset/{ds_uuid}')[0]['dataset']
     assert proj_uuid in [project['uuid'] for project in data['projects']]
-    
+
     proj_uuid2 = make_request(session, f'/api/project/random')[0]['projects'][0]['uuid']
     indata = {'projects': [proj_uuid2]}
     response = make_request(session, f'/api/dataset/{ds_uuid}', method='PUT', data=indata)
@@ -468,7 +470,7 @@ def test_update_as_owner(dataset_for_tests):
     """Update some datasets as the owner."""
     session = requests.Session()
     as_user(session, USERS['steward'])
-    
+
     ds_uuid = dataset_for_tests
 
     project = make_request(session, f'/api/project/random')[0]['projects'][0]
@@ -498,7 +500,7 @@ def test_update_as_owner(dataset_for_tests):
     data = make_request(session, f'/api/dataset/{ds_uuid}')[0]['dataset']
     assert proj_uuid not in data['projects'][0]
 
-    
+
 def test_update_bad(dataset_for_tests):
     """
     Confirm that bad requests will be rejected.

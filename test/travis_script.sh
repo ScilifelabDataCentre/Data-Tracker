@@ -40,15 +40,12 @@ trap exit_handler EXIT
 echo '>>> Test 2: Pytest'
 # test browser
 COVERAGE_FILE=.coverage_pytest PYTHONPATH=$PYTHONPATH:backend/ py.test backend/ --cov=backend/
-RETURN_VALUE=$((RETURN_VALUE + $?))
 
 echo '>>> Test 3: Code evaluation'
 pylint backend/*py
-RETURN_VALUE=$((RETURN_VALUE + $?))
+pylint backend/tests/*py
 pydocstyle backend/*py
-RETURN_VALUE=$((RETURN_VALUE + $?))
 #flake8 backend/*py
-RETURN_VALUE=$((RETURN_VALUE + $?))
 
 echo '>>> Finalising: Stop the backend'
 
@@ -63,5 +60,3 @@ if [ -f .coverage ]; then
     coveralls
     coverage report
 fi
-
-exit "$RETURN_VALUE"

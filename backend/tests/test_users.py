@@ -1,7 +1,5 @@
 """Tests for dataset requests."""
 import json
-import time
-import uuid
 import requests
 
 from helpers import make_request, as_user, make_request_all_roles, USERS
@@ -30,7 +28,7 @@ def test_list_users():
     assert [response[1] for response in responses] == [401, 401, 401, 200]
     for response in responses:
         if response[1] == 401:
-            assert response[0] == None
+            assert response[0] is None
         else:
             data = json.loads(response[0])
             assert len(data['users']) == 100
@@ -51,4 +49,3 @@ def test_list_info():
         else:
             for field in data['user']:
                 assert data['user'][field]
-

@@ -1,10 +1,10 @@
 """Tests for project requests."""
 import json
-import time
 import uuid
 import requests
 
-from helpers import make_request, as_user, make_request_all_roles, project_for_tests, USERS, random_string, parse_time
+from helpers import make_request, as_user, make_request_all_roles,\
+    USERS, random_string
 # pylint: disable=redefined-outer-name
 
 def test_list_projects():
@@ -17,29 +17,6 @@ def test_list_projects():
     assert [response[1] for response in responses] == [200, 200, 200, 200]
     for response in responses:
         assert len(json.loads(response[0])['projects']) == 500
-
-
-def test_user_projects():
-    """
-    Retrieve a list of projects belonging to current user.
-
-    Confirm that they actually belong to the user.
-    """
-    # wait for queries to be ready
-    return
-    session = requests.Session()
-    for _ in range(3):
-        response = make_request(session, '/api/project/random')
-        expected_projects = response[0]['projects'][0]['projects']
-        as_user(session, response[0]['projects'][0]['owner'])
-        responses = make_request_all_roles('/api/project/user')
-        assert [response[1] for response in responses] == [401, 200, 200, 200]
-        for response in responses:
-            if response[1] == 401:
-                assert not response[0]
-            print(response[0])
-            projects = [doc['uuid'] for doc in json.loads(response[0])['projects']]
-            assert projects == expected_projects
 
 
 def test_random_project():

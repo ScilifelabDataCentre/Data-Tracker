@@ -1,7 +1,6 @@
 """Tests for permission levels."""
 
 import json
-import requests
 
 import helpers
 
@@ -72,4 +71,3 @@ def test_csrf():
                                                {'test': 'success'},
                                                {'test': 'success'},
                                                {'test': 'success'}]
-
