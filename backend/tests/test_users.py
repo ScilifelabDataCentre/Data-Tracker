@@ -15,7 +15,6 @@ def test_logout():
     assert response == ({'test': 'success'}, 200)
     response = make_request(session, '/api/user/logout', ret_json=False)
     assert response[1] == 200
-    assert len(response[0]) == 1028  # length of default /-page "no javascript"
 
     response = make_request(session, '/api/developer/loginhello', ret_json=False)
     assert response == (None, 401)
