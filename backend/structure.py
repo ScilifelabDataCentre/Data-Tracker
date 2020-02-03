@@ -10,7 +10,8 @@ def user():
     Returns:
         dict: the data structure for users
     """
-    return {'affiliation': '',
+    return {'_id': utils.new_uuid(),
+            'affiliation': '',
             'auth_id': '',
             'country': '',
             'email': '',
@@ -25,11 +26,11 @@ def dataset():
     Returns:
         dict: the data structure for datasets
     """
-    return {'data_urls': [],
+    return {'_id': utils.new_uuid(),
+            'data_urls': [],
             'description': '',
             'identifier': '',
-            'title': '',
-            '_id': utils.new_uuid()}
+            'title': ''}
 
 
 def order():
@@ -39,11 +40,12 @@ def order():
     Returns:
         dict: the data structure for orders
     """
-    return {'creator': '',
+    return {'_id': utils.new_uuid(),
+            'creator': '',
             'receiver': '',
             'description': '',
             'title': '',
-            '_id': utils.new_uuid()}
+            'datasets': []}
 
 
 def order_validator(order: dict):
@@ -78,12 +80,12 @@ def project():
     Returns:
         dict: the data structure for projects
     """
-    return {'dmp': '',
-            'contact': '',
+    return {'_id': utils.new_uuid(),
+            'dmp': '',
+            'contact': ''
+            'datasets': [],
             'description': '',
             'identifier': '',
             'owner': '',
             'publications': [],
-            'title': '',
-            'datasets': [],
-            '_id': utils.new_uuid()}
+            'title': ''}
