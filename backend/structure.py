@@ -81,10 +81,10 @@ def project():
         dict: the data structure for projects
     """
     return {'_id': utils.new_uuid(),
-            'dmp': '',
-            'contact': ''
+            'contact': '',
             'datasets': [],
             'description': '',
+            'dmp': '',
             'identifiers': [],
             'owner': '',
             'publications': [],
