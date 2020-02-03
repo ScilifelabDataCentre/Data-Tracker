@@ -281,6 +281,22 @@ def country_list():
             "Yemen", "Zambia", "Zimbabwe"]
 
 
+REGEX = {'email': re.compile('.*@.*\..*')}
+
+
+def is_email(indata: str):
+    """
+    Check whether a string seems to be an email address or not.
+
+    Args:
+        indata (str): data to check
+
+    Returns:
+        bool: is the indata an email address or not
+
+    """
+    return bool(REGEX['email'].search(indata))
+
 
 def is_owner(dataset: str = None, project: str = None):
     """
