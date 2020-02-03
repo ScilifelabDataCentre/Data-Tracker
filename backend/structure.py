@@ -29,7 +29,7 @@ def dataset():
     return {'_id': utils.new_uuid(),
             'data_urls': [],
             'description': '',
-            'identifier': '',
+            'identifiers': [],
             'title': ''}
 
 
@@ -85,7 +85,7 @@ def project():
             'contact': ''
             'datasets': [],
             'description': '',
-            'identifier': '',
+            'identifiers': [],
             'owner': '',
             'publications': [],
             'title': ''}
