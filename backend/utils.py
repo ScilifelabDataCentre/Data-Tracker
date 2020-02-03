@@ -62,7 +62,7 @@ def get_dataset(identifier: str):
 
     """
     try:
-        mongo_uuid = to_mongo_uuid(identifier)
+        mongo_uuid = str_to_mongo_uuid(identifier)
         result = flask.g.db['datasets'].find_one({'uuid': mongo_uuid})
         if not result:
             return None
@@ -86,7 +86,7 @@ def get_project(identifier: str):
 
     """
     try:
-        mongo_uuid = to_mongo_uuid(identifier)
+        mongo_uuid = str_to_mongo_uuid(identifier)
         result = flask.g.db['projects'].find_one({'uuid': mongo_uuid})
         if not result:
             return None
@@ -255,7 +255,7 @@ def country_list():
             "Yemen", "Zambia", "Zimbabwe"]
 
 
-REGEX = {'email': re.compile('.*@.*\..*')}
+REGEX = {'email': re.compile(r'.*@.*\..*')}
 
 
 def is_email(indata: str):
@@ -293,7 +293,7 @@ def is_owner(dataset: str = None, project: str = None):
         raise ValueError('Only one of dataset and project should be set')
     if dataset:
         try:
-            mongo_uuid = to_mongo_uuid(dataset)
+            mongo_uuid = str_to_mongo_uuid(dataset)
         except ValueError:
             flask.abort(flask.Response(status=401))
         projects = list(flask.g.db['projects'].find({'datasets': mongo_uuid},
