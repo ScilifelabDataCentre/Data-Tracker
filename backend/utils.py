@@ -2,6 +2,7 @@
 
 import datetime
 import logging
+import re
 import uuid
 
 import bson
@@ -9,6 +10,7 @@ import flask
 import pymongo
 
 
+# csrf
 def check_csrf_token():
     """Compare the csrf token from the request (header) with the one in the cookie.session."""
     token = flask.request.headers.get('X-CSRFToken')
@@ -26,6 +28,26 @@ def gen_csrf_token() -> str:
 
     """
     return uuid.uuid4().hex
+
+
+# db input/output
+def check_mongo_update(document: dict):
+    """
+    Make sure that some fields in a document are not changed during an update.
+
+    Also make sure indata is not empty.
+
+    Args:
+        document (dict): received input to update a document
+
+    """
+    if not document:
+        return False
+    forbidden = ('_id', 'timestamp', 'uuid')
+    for field in forbidden:
+        if field in document:
+            return False
+    return True
 
 
 def clean_mongo(response):
@@ -52,115 +74,6 @@ def clean_mongo(response):
         for key in to_remove:
             if key in response:
                 del response[key]
-
-
-def convert_keys_to_camel(chunk):
-    """
-    Convert keys given in snake_case to camelCase.
-
-    The capitalization of the first letter is preserved.
-
-    Args:
-        chunk: Object to convert
-
-    Returns:
-        *: chunk converted to camelCase dict, otherwise chunk
-
-    """
-    if isinstance(chunk, list):
-        return [convert_keys_to_camel(e) for e in chunk]
-
-    if not isinstance(chunk, dict):
-        return chunk
-
-    new_chunk = {}
-    for key, value in chunk.items():
-        # First character should be the same as in the original string
-        new_key = key[0] + "".join([a[0].upper() + a[1:] for a in key.split("_")])[1:]
-        new_chunk[new_key] = convert_keys_to_camel(value)
-    return new_chunk
-
-
-def check_mongo_update(document: dict):
-    """
-    Make sure that some fields in a document are not changed during an update.
-
-    Also make sure indata is not empty.
-
-    Args:
-        document (dict): received input to update a document
-
-    """
-    if not document:
-        return False
-    forbidden = ('_id', 'timestamp', 'uuid')
-    for field in forbidden:
-        if field in document:
-            return False
-    return True
-
-
-def country_list():
-    """
-    Provide a list of countries.
-
-    Returns:
-        list: A selection of countries.
-    """
-    return ["Afghanistan", "Albania", "Algeria", "American Samoa", "Andorra",
-            "Angola", "Anguilla", "Antarctica", "Antigua and Barbuda",
-            "Argentina", "Armenia", "Aruba", "Australia", "Austria",
-            "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados",
-            "Belarus", "Belgium", "Belize", "Benin", "Bermuda", "Bhutan",
-            "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil",
-            "British Indian Ocean Territory", "British Virgin Islands",
-            "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Cambodia",
-            "Cameroon", "Canada", "Cape Verde", "Cayman Islands",
-            "Central African Republic", "Chad", "Chile", "China",
-            "Christmas Island", "Cocos Islands", "Colombia", "Comoros",
-            "Cook Islands", "Costa Rica", "Croatia", "Cuba", "Curacao",
-            "Cyprus", "Czech Republic", "Democratic Republic of the Congo",
-            "Denmark", "Djibouti", "Dominica", "Dominican Republic",
-            "East Timor", "Ecuador", "Egypt", "El Salvador",
-            "Equatorial Guinea", "Eritrea", "Estonia", "Ethiopia",
-            "Falkland Islands", "Faroe Islands", "Fiji", "Finland", "France",
-            "French Polynesia", "Gabon", "Gambia", "Georgia", "Germany",
-            "Ghana", "Gibraltar", "Greece", "Greenland", "Grenada", "Guam",
-            "Guatemala", "Guernsey", "Guinea", "Guinea-Bissau", "Guyana",
-            "Haiti", "Honduras", "Hong Kong", "Hungary", "Iceland", "India",
-            "Indonesia", "Iran", "Iraq", "Ireland", "Isle of Man", "Israel",
-            "Italy", "Ivory Coast", "Jamaica", "Japan", "Jersey", "Jordan",
-            "Kazakhstan", "Kenya", "Kiribati", "Kosovo", "Kuwait",
-            "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia",
-            "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Macau",
-            "Macedonia", "Madagascar", "Malawi", "Malaysia", "Maldives",
-            "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius",
-            "Mayotte", "Mexico", "Micronesia", "Moldova", "Monaco",
-            "Mongolia", "Montenegro", "Montserrat", "Morocco", "Mozambique",
-            "Myanmar", "Namibia", "Nauru", "Nepal", "Netherlands",
-            "Netherlands Antilles", "New Caledonia", "New Zealand",
-            "Nicaragua", "Niger", "Nigeria", "Niue", "North Korea",
-            "Northern Mariana Islands", "Norway", "Oman", "Pakistan", "Palau",
-            "Palestine", "Panama", "Papua New Guinea", "Paraguay", "Peru",
-            "Philippines", "Pitcairn", "Poland", "Portugal", "Puerto Rico",
-            "Qatar", "Republic of the Congo", "Reunion", "Romania", "Russia",
-            "Rwanda", "Saint Barthelemy", "Saint Helena",
-            "Saint Kitts and Nevis", "Saint Lucia", "Saint Martin",
-            "Saint Pierre and Miquelon",
-            "Saint Vincent and the Grenadines", "Samoa", "San Marino",
-            "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia",
-            "Seychelles", "Sierra Leone", "Singapore", "Sint Maarten",
-            "Slovakia", "Slovenia", "Solomon Islands", "Somalia",
-            "South Africa", "South Korea", "South Sudan", "Spain",
-            "Sri Lanka", "Sudan", "Suriname", "Svalbard and Jan Mayen",
-            "Swaziland", "Sweden", "Switzerland", "Syria", "Taiwan",
-            "Tajikistan", "Tanzania", "Thailand", "Togo", "Tokelau", "Tonga",
-            "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan",
-            "Turks and Caicos Islands", "Tuvalu", "U.S. Virgin Islands",
-            "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom",
-            "United States", "Uruguay", "Uzbekistan", "Vanuatu", "Vatican",
-            "Venezuela", "Vietnam", "Wallis and Futuna", "Western Sahara",
-            "Yemen", "Zambia", "Zimbabwe"]
 
 
 def get_dataset(identifier: str):
@@ -238,6 +151,137 @@ def get_db(dbserver: pymongo.mongo_client.MongoClient) -> pymongo.database.Datab
     return dbserver[flask.current_app.config['mongo']['db']]
 
 
+def new_uuid() -> bson.binary.Binary:
+    """
+    Generate a uuid for a field in a MongoDB document.
+
+    Returns:
+        bson.binary.Binary: the new uuid in binary format
+
+    """
+    return uuid_convert_mongo(uuid.uuid4())
+
+
+def to_mongo_uuid(uuid_str: str) -> bson.binary.Binary:
+    """
+    Convert str uuid to the Mongo representation of UUID.
+
+    Args:
+        uuid_str (str): the uuid to be converted
+
+    Returns:
+        bson.binary.Binary: the uuid in Mongo encoding
+
+    """
+    return uuid_convert_mongo(uuid.UUID(uuid_str))
+
+
+def uuid_convert_mongo(in_uuid: uuid.UUID) -> bson.binary.Binary:
+    """
+    Convert uuid.UUID to the Mongo representation of UUID.
+
+    Args:
+        in_uuid (uuid.UUID): the uuid to be converted
+
+    Returns:
+        bson.binary.Binary: the uuid in Mongo encoding
+
+    """
+    return bson.binary.Binary(in_uuid.bytes, 4)
+
+
+# misc
+def convert_keys_to_camel(chunk):
+    """
+    Convert keys given in snake_case to camelCase.
+
+    The capitalization of the first letter is preserved.
+
+    Args:
+        chunk: Object to convert
+
+    Returns:
+        *: chunk converted to camelCase dict, otherwise chunk
+
+    """
+    if isinstance(chunk, list):
+        return [convert_keys_to_camel(e) for e in chunk]
+
+    if not isinstance(chunk, dict):
+        return chunk
+
+    new_chunk = {}
+    for key, value in chunk.items():
+        # First character should be the same as in the original string
+        new_key = key[0] + "".join([a[0].upper() + a[1:] for a in key.split("_")])[1:]
+        new_chunk[new_key] = convert_keys_to_camel(value)
+    return new_chunk
+
+
+def country_list():
+    """
+    Provide a list of countries.
+
+    Returns:
+        list: A selection of countries.
+    """
+    return ["Afghanistan", "Albania", "Algeria", "American Samoa", "Andorra",
+            "Angola", "Anguilla", "Antarctica", "Antigua and Barbuda",
+            "Argentina", "Armenia", "Aruba", "Australia", "Austria",
+            "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados",
+            "Belarus", "Belgium", "Belize", "Benin", "Bermuda", "Bhutan",
+            "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil",
+            "British Indian Ocean Territory", "British Virgin Islands",
+            "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Cambodia",
+            "Cameroon", "Canada", "Cape Verde", "Cayman Islands",
+            "Central African Republic", "Chad", "Chile", "China",
+            "Christmas Island", "Cocos Islands", "Colombia", "Comoros",
+            "Cook Islands", "Costa Rica", "Croatia", "Cuba", "Curacao",
+            "Cyprus", "Czech Republic", "Democratic Republic of the Congo",
+            "Denmark", "Djibouti", "Dominica", "Dominican Republic",
+            "East Timor", "Ecuador", "Egypt", "El Salvador",
+            "Equatorial Guinea", "Eritrea", "Estonia", "Ethiopia",
+            "Falkland Islands", "Faroe Islands", "Fiji", "Finland", "France",
+            "French Polynesia", "Gabon", "Gambia", "Georgia", "Germany",
+            "Ghana", "Gibraltar", "Greece", "Greenland", "Grenada", "Guam",
+            "Guatemala", "Guernsey", "Guinea", "Guinea-Bissau", "Guyana",
+            "Haiti", "Honduras", "Hong Kong", "Hungary", "Iceland", "India",
+            "Indonesia", "Iran", "Iraq", "Ireland", "Isle of Man", "Israel",
+            "Italy", "Ivory Coast", "Jamaica", "Japan", "Jersey", "Jordan",
+            "Kazakhstan", "Kenya", "Kiribati", "Kosovo", "Kuwait",
+            "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia",
+            "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Macau",
+            "Macedonia", "Madagascar", "Malawi", "Malaysia", "Maldives",
+            "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius",
+            "Mayotte", "Mexico", "Micronesia", "Moldova", "Monaco",
+            "Mongolia", "Montenegro", "Montserrat", "Morocco", "Mozambique",
+            "Myanmar", "Namibia", "Nauru", "Nepal", "Netherlands",
+            "Netherlands Antilles", "New Caledonia", "New Zealand",
+            "Nicaragua", "Niger", "Nigeria", "Niue", "North Korea",
+            "Northern Mariana Islands", "Norway", "Oman", "Pakistan", "Palau",
+            "Palestine", "Panama", "Papua New Guinea", "Paraguay", "Peru",
+            "Philippines", "Pitcairn", "Poland", "Portugal", "Puerto Rico",
+            "Qatar", "Republic of the Congo", "Reunion", "Romania", "Russia",
+            "Rwanda", "Saint Barthelemy", "Saint Helena",
+            "Saint Kitts and Nevis", "Saint Lucia", "Saint Martin",
+            "Saint Pierre and Miquelon",
+            "Saint Vincent and the Grenadines", "Samoa", "San Marino",
+            "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia",
+            "Seychelles", "Sierra Leone", "Singapore", "Sint Maarten",
+            "Slovakia", "Slovenia", "Solomon Islands", "Somalia",
+            "South Africa", "South Korea", "South Sudan", "Spain",
+            "Sri Lanka", "Sudan", "Suriname", "Svalbard and Jan Mayen",
+            "Swaziland", "Sweden", "Switzerland", "Syria", "Taiwan",
+            "Tajikistan", "Tanzania", "Thailand", "Togo", "Tokelau", "Tonga",
+            "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan",
+            "Turks and Caicos Islands", "Tuvalu", "U.S. Virgin Islands",
+            "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom",
+            "United States", "Uruguay", "Uzbekistan", "Vanuatu", "Vatican",
+            "Venezuela", "Vietnam", "Wallis and Futuna", "Western Sahara",
+            "Yemen", "Zambia", "Zimbabwe"]
+
+
+
 def is_owner(dataset: str = None, project: str = None):
     """
     Check if the current user owns the given dataset or project.
@@ -290,45 +334,6 @@ def response_json(json_structure: dict):
     """
     data = convert_keys_to_camel(json_structure)
     return flask.jsonify(data)
-
-
-def to_mongo_uuid(uuid_str: str) -> bson.binary.Binary:
-    """
-    Convert str uuid to the Mongo representation of UUID.
-
-    Args:
-        uuid_str (str): the uuid to be converted
-
-    Returns:
-        bson.binary.Binary: the uuid in Mongo encoding
-
-    """
-    return uuid_convert_mongo(uuid.UUID(uuid_str))
-
-
-def new_uuid() -> bson.binary.Binary:
-    """
-    Generate a uuid for a field in a MongoDB document.
-
-    Returns:
-        bson.binary.Binary: the new uuid in binary format
-
-    """
-    return uuid_convert_mongo(uuid.uuid4())
-
-
-def uuid_convert_mongo(in_uuid: uuid.UUID) -> bson.binary.Binary:
-    """
-    Convert uuid.UUID to the Mongo representation of UUID.
-
-    Args:
-        in_uuid (uuid.UUID): the uuid to be converted
-
-    Returns:
-        bson.binary.Binary: the uuid in Mongo encoding
-
-    """
-    return bson.binary.Binary(in_uuid.bytes, 4)
 
 
 def make_timestamp():
