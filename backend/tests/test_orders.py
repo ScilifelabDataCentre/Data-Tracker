@@ -8,7 +8,7 @@ import requests
 # pylint: disable = redefined-outer-name, unused-import
 
 from helpers import make_request, as_user, make_request_all_roles,\
-    order_for_tests, USERS, random_string, parse_time
+    USERS, random_string, parse_time
 
 
 def test_user_orders():
