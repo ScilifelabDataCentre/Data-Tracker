@@ -159,7 +159,7 @@ def new_uuid() -> bson.binary.Binary:
         bson.binary.Binary: the new uuid in binary format
 
     """
-    return uuid_convert_mongo(uuid.uuid4())
+    return uuid_to_mongo_uuid(uuid.uuid4())
 
 
 def str_to_mongo_uuid(uuid_str: str) -> bson.binary.Binary:
