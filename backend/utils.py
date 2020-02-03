@@ -93,7 +93,7 @@ def get_dataset(identifier: str):
         if not result:
             return None
         result['projects'] = list(flask.g.db['projects']
-                                  .find({'datasets': uuid_convert_mongo(result['uuid'])},
+                                  .find({'datasets': uuid_to_mongo_uuid(result['uuid'])},
                                         {'title': 1, 'uuid': 1, '_id': 0}))
         clean_mongo(result)
     except ValueError:
@@ -162,7 +162,7 @@ def new_uuid() -> bson.binary.Binary:
     return uuid_convert_mongo(uuid.uuid4())
 
 
-def to_mongo_uuid(uuid_str: str) -> bson.binary.Binary:
+def str_to_mongo_uuid(uuid_str: str) -> bson.binary.Binary:
     """
     Convert str uuid to the Mongo representation of UUID.
 
@@ -173,10 +173,10 @@ def to_mongo_uuid(uuid_str: str) -> bson.binary.Binary:
         bson.binary.Binary: the uuid in Mongo encoding
 
     """
-    return uuid_convert_mongo(uuid.UUID(uuid_str))
+    return uuid_to_mongo_uuid(uuid.UUID(uuid_str))
 
 
-def uuid_convert_mongo(in_uuid: uuid.UUID) -> bson.binary.Binary:
+def uuid_to_mongo_uuid(in_uuid: uuid.UUID) -> bson.binary.Binary:
     """
     Convert uuid.UUID to the Mongo representation of UUID.
 

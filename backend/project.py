@@ -83,7 +83,7 @@ def get_project(identifier):
 
     """
     try:
-        mongo_uuid = utils.to_mongo_uuid(identifier)
+        mongo_uuid = utils.str_to_mongo_uuid(identifier)
         result = flask.g.db['projects'].find_one({'uuid': mongo_uuid})
     except ValueError:
         result = None
@@ -122,7 +122,7 @@ def add_project_post():
                   f'{identifier[12:16]}-{identifier[16:20]}-{identifier[20:]}')
     if 'datasets' in project:
         try:
-            project['datasets'] = [utils.to_mongo_uuid(ds) for ds in project['datasets']]
+            project['datasets'] = [utils.str_to_mongo_uuid(ds) for ds in project['datasets']]
         except ValueError:
             flask.abort(flask.Response(status=400))
 
