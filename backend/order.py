@@ -13,16 +13,7 @@ import user
 blueprint = flask.Blueprint('orders', __name__)  # pylint: disable=invalid-name
 
 
-@blueprint.route('/user', methods=['GET'])
-@user.login_required
-def list_orders_self():
-    """List all orders belonging to current user."""
-    user_orders = tuple(flask.g.db['orders'].find({'$or': [{'receiver': flask.session['username']},
-                                                           {'creator': flask.session['username']}]}))
-
-    return utils.response_json({'orders': user_orders})
-
-
+@blueprint.route('/user', defaults={'username': None}, methods=['GET'])
 @blueprint.route('/user/<username>', methods=['GET'])
 @user.steward_required
 def list_orders_user(username: str):
@@ -33,10 +24,12 @@ def list_orders_user(username: str):
         username (str): username to find orders for
 
     """
-    user_orders = tuple(flask.g.db['orders'].find({'$or': [{'receiver': username},
-                                                           {'creator': username}]}))
+    if not username:
+        username = flask.session['username']
+    orders = tuple(flask.g.db['orders'].find({'$or': [{'receiver': username},
+                                                      {'creator': username}]}))
 
-    return utils.response_json({'orders': user_orders})
+    return utils.response_json({'orders': orders})
 
 
 @blueprint.route('/add', methods=['GET'])
