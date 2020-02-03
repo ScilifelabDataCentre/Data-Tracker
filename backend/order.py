@@ -1,11 +1,8 @@
 """Order requests."""
-import json
 import logging
-import uuid
 
 import flask
 
-import structure
 import utils
 import user
 
@@ -30,43 +27,6 @@ def list_orders_user(username: str):
                                                       {'creator': username}]}))
 
     return utils.response_json({'orders': orders})
-
-
-@blueprint.route('/add', methods=['GET'])
-@user.steward_required
-def add_order_get():
-    """Provide a basic data structure for adding a order."""
-    order = structure.order()
-    del order['uuid']
-    del order['identifier']
-    del order['timestamp']
-    order['projects'] = []
-    return utils.response_json(order)
-
-
-@blueprint.route('/add', methods=['POST'])
-@user.steward_required
-def add_order_post():
-    """Add a order."""
-    order = structure.order()
-
-    indata = json.loads(flask.request.data)
-    if indata:
-        if not validate_order_input(indata):
-            flask.abort(flask.Response(status=400))
-        order.update(indata)
-
-    identifier = order['uuid'].hex()
-    identifier = (f'{identifier[:8]}-{identifier[8:12]}-' +
-                  f'{identifier[12:16]}-{identifier[16:20]}-{identifier[20:]}')
-    if 'projects' in order:
-        update_projects(identifier, order['projects'])
-        del order['projects']
-
-    result = flask.g.db['orders'].insert_one(order)
-    entry = flask.g.db['orders'].find_one({'_id': result.inserted_id},
-                                            {'uuid': 1, '_id': 0})
-    return utils.response_json(entry)
 
 
 @blueprint.route('/<identifier>', methods=['GET'])
