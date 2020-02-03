@@ -43,7 +43,7 @@ def check_mongo_update(document: dict):
     """
     if not document:
         return False
-    forbidden = ('_id', 'timestamp', 'uuid')
+    forbidden = ('_id')
     for field in forbidden:
         if field in document:
             return False
