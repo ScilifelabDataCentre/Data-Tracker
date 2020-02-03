@@ -10,6 +10,9 @@ import requests
 from helpers import make_request, as_user, make_request_all_roles,\
     dataset_for_tests, USERS, random_string, parse_time
 
+TEST_DS_LABEL = {'description': 'Test dataset'}
+
+
 def test_list_datasets():
     """
     Request a list of all datasets.
@@ -159,14 +162,14 @@ def test_add_permissions():
     session = requests.Session()
     responses = make_request_all_roles('/api/dataset/add',
                                        method='POST',
-                                       data={'dmp': 'http://test'})
+                                       data=TEST_DS_LABEL)
     assert [response[1] for response in responses] == [400, 401, 200, 200]
     for response in responses:
         if response[1] == 200:
             data = json.loads(response[0])
             assert '_id' in data
-            req = make_request(session, f'/api/dataset/{data["uuid"]}')
-            assert req[0]['dataset']['dmp'] == 'http://test'
+            req = make_request(session, f'/api/dataset/{data["_id"]}')
+            assert req[0]['dataset']['description'] == TEST_DS_LABEL['description']
         else:
             assert response[0] is None
 
@@ -180,7 +183,6 @@ def test_add_all_fields():
     indata = {'creator': 'Test facility',
               'data_urls': [{'description': 'Test description', 'url': 'http://test_url'}],
               'description': 'Test description',
-              'dmp': 'http://test',
               'publications': ['Title. Journal: year'],
               'title': 'Test title'}
 

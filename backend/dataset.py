@@ -132,7 +132,7 @@ def add_dataset_post():
             flask.abort(flask.Response(status=400))
         dataset.update(indata)
 
-    identifier = dataset['uuid'].hex()
+    identifier = dataset['_id'].hex()
     identifier = (f'{identifier[:8]}-{identifier[8:12]}-' +
                   f'{identifier[12:16]}-{identifier[16:20]}-{identifier[20:]}')
     if 'projects' in dataset:
