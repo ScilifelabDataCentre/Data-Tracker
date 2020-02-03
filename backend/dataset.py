@@ -90,7 +90,6 @@ def list_datasets():
     """Provide a simplified list of all available datasets."""
     results = list(flask.g.db['datasets'].find(projection={'title': 1, '_id': 0,
                                                            'description': 1, 'uuid': 1}))
-    utils.clean_mongo(results)
     return utils.response_json({'datasets': results})
 
 

@@ -119,7 +119,6 @@ def list_users():
     Admin access should be required.
     """
     result = list(flask.g.db['users'].find())
-    utils.clean_mongo(result)
     return flask.jsonify({'users': result})
 
 

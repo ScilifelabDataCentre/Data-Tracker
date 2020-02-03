@@ -48,7 +48,6 @@ def validate_project_input(indata):
 def list_project():
     """Provide a simplified list of all available projects."""
     results = list(flask.g.db['projects'].find())
-    utils.clean_mongo(results)
     return utils.response_json({'projects': results})
 
 
@@ -66,7 +65,6 @@ def get_random(amount: int = 1):
 
     """
     results = list(flask.g.db['projects'].aggregate([{'$sample': {'size': amount}}]))
-    utils.clean_mongo(results)
     return utils.response_json({'projects': results})
 
 
@@ -90,7 +88,6 @@ def get_project(identifier):
 
     if not result:
         return flask.Response(status=404)
-    utils.clean_mongo(result)
     return utils.response_json({'project': result})
 
 

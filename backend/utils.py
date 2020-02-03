@@ -50,32 +50,6 @@ def check_mongo_update(document: dict):
     return True
 
 
-def clean_mongo(response):
-    """
-    Prepare for returning a MongoDB document by e.g. `ObjectId (_id)`.
-
-    Actions:
-    * Remove `_id`
-    * convert snake_case to camelCase
-
-    Changes are done in-place.
-
-    Args:
-        response: a response from `mongodb.find()` or `.find_one()` (dict or list of dicts)
-
-    """
-    to_remove = ('_id',)
-    if isinstance(response, list):
-        for entry in response:
-            for key in to_remove:
-                if key in entry:
-                    del entry[key]
-    else:
-        for key in to_remove:
-            if key in response:
-                del response[key]
-
-
 def get_dataset(identifier: str):
     """
     Query for a dataset from the database.
@@ -95,7 +69,6 @@ def get_dataset(identifier: str):
         result['projects'] = list(flask.g.db['projects']
                                   .find({'datasets': uuid_to_mongo_uuid(result['uuid'])},
                                         {'title': 1, 'uuid': 1, '_id': 0}))
-        clean_mongo(result)
     except ValueError:
         return None
     return result
@@ -117,7 +90,6 @@ def get_project(identifier: str):
         result = flask.g.db['projects'].find_one({'uuid': mongo_uuid})
         if not result:
             return None
-        clean_mongo(result)
     except ValueError:
         return None
     return result
@@ -212,6 +184,8 @@ def convert_keys_to_camel(chunk):
 
     new_chunk = {}
     for key, value in chunk.items():
+        if key == '_id':
+            continue
         # First character should be the same as in the original string
         new_key = key[0] + "".join([a[0].upper() + a[1:] for a in key.split("_")])[1:]
         new_chunk[new_key] = convert_keys_to_camel(value)
