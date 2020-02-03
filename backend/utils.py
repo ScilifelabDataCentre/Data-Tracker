@@ -63,12 +63,12 @@ def get_dataset(identifier: str):
     """
     try:
         mongo_uuid = str_to_mongo_uuid(identifier)
-        result = flask.g.db['datasets'].find_one({'uuid': mongo_uuid})
+        result = flask.g.db['datasets'].find_one({'_id': mongo_uuid})
         if not result:
             return None
         result['projects'] = list(flask.g.db['projects']
-                                  .find({'datasets': uuid_to_mongo_uuid(result['uuid'])},
-                                        {'title': 1, 'uuid': 1, '_id': 0}))
+                                  .find({'datasets': uuid_to_mongo_uuid(result['_id'])},
+                                        {'title': 1, '_id': 1}))
     except ValueError:
         return None
     return result
@@ -87,7 +87,7 @@ def get_project(identifier: str):
     """
     try:
         mongo_uuid = str_to_mongo_uuid(identifier)
-        result = flask.g.db['projects'].find_one({'uuid': mongo_uuid})
+        result = flask.g.db['projects'].find_one({'_id': mongo_uuid})
         if not result:
             return None
     except ValueError:
@@ -185,6 +185,7 @@ def convert_keys_to_camel(chunk):
     new_chunk = {}
     for key, value in chunk.items():
         if key == '_id':
+            new_chunk[key] = value
             continue
         # First character should be the same as in the original string
         new_key = key[0] + "".join([a[0].upper() + a[1:] for a in key.split("_")])[1:]
