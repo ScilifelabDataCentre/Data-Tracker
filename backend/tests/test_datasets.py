@@ -44,6 +44,7 @@ def test_user_datasets():
                 assert not response[0]
             print(response[0])
             datasets = [doc['_id'] for doc in json.loads(response[0])['datasets']]
+            response = make_request(session, '/api/project/random')
             assert datasets == expected_datasets
 
 
@@ -137,7 +138,7 @@ def test_add_get():
 
     Should require at least Steward.
     """
-    expected_success = {'dataUrls': [],
+    expected_success = {'links': [],
                         'description': '',
                         'projects': [],
                         'title': ''}
@@ -180,11 +181,9 @@ def test_add_all_fields():
 
     Should require at least Steward.
     """
-    indata = {'creator': 'Test facility',
-              'data_urls': [{'description': 'Test description', 'url': 'http://test_url'}],
-              'description': 'Test description',
-              'publications': ['Title. Journal: year'],
+    indata = {'links': [{'description': 'Test description', 'url': 'http://test_url'}],
               'title': 'Test title'}
+    indata.update(TEST_DS_LABEL)
 
     session = requests.Session()
     responses = make_request_all_roles('/api/dataset/add',
@@ -195,24 +194,21 @@ def test_add_all_fields():
         if response[1] == 200:
             data = json.loads(response[0])
             assert '_id' in data
-            req = make_request(session, f'/api/dataset/{data["uuid"]}')
+            req = make_request(session, f'/api/dataset/{data["_id"]}')
             for key in indata:
-                if key != 'data_urls':
+                if key != 'links':
                     assert req[0]['dataset'][key] == indata[key]
                 else:
-                    assert req[0]['dataset']['dataUrls'] == indata[key]
+                    assert req[0]['dataset']['links'] == indata[key]
         else:
             assert response[0] is None
 
 
 def test_add_projects():
     """Add a new dataset with connected projects."""
-    indata = {'creator': 'Test facility',
-              'data_urls': [{'description': 'Test description', 'url': 'http://test_url'}],
-              'description': 'Test description',
-              'dmp': 'http://test',
-              'publications': ['Title. Journal: year'],
+    indata = {'links': [{'description': 'Test description', 'url': 'http://test_url'}],
               'title': 'Test title'}
+    indata.update(TEST_DS_LABEL)
 
     session = requests.Session()
     as_user(session, USERS['steward'])
@@ -236,24 +232,24 @@ def test_add_bad_fields():
     """Attempt to add datasets with e.g. forbidden fields."""
     session = requests.Session()
     as_user(session, USERS['steward'])
-    indata = {'dmp': 'http://test',
-              '_id': 'asd'}
+    indata = {'_id': 'asd'}
+    indata.update(TEST_DS_LABEL)
     response = make_request(session,
                             '/api/dataset/add',
                             method='POST',
                             data=indata)
     assert response == (None, 400)
 
-    indata = {'dmp': 'http://test',
-              'timestamp': 'asd'}
+    indata = {'timestamp': 'asd'}
+    indata.update(TEST_DS_LABEL)
     response = make_request(session,
                             '/api/dataset/add',
                             method='POST',
                             data=indata)
     assert response == (None, 400)
 
-    indata = {'dmp': 'http://test',
-              'identifier': 'asd'}
+    indata = {'identifiers': ['asd']}
+    indata.update(TEST_DS_LABEL)
     response = make_request(session,
                             '/api/dataset/add',
                             method='POST',
@@ -310,11 +306,8 @@ def test_delete_ref_in_projects():
 
     Should require at least Steward.
     """
-    indata = {'creator': 'Test facility',
-              'data_urls': [{'description': 'Test description', 'url': 'http://test_url'}],
+    indata = {'links': [{'description': 'Test description', 'url': 'http://test_url'}],
               'description': 'Test description',
-              'dmp': 'http://test',
-              'publications': ['Title. Journal: year'],
               'title': 'Test title'}
 
     session = requests.Session()
@@ -404,7 +397,7 @@ def test_update(dataset_for_tests):
     Should require at least Steward.
     """
     indata = {'creator': 'Test2 facility',
-              'data_urls': [{'description': 'Test2 description', 'url': 'http://test2_url'}],
+              'links': [{'description': 'Test2 description', 'url': 'http://test2_url'}],
               'description': 'Test2 description',
               'dmp': 'http://test',
               'publications': ['Title. Journal: year'],
@@ -419,8 +412,8 @@ def test_update(dataset_for_tests):
     assert [response[0] for response in responses] == [None]*4
     data = make_request(session, f'/api/dataset/{ds_uuid}')[0]['dataset']
     for field in indata:
-        if field == 'data_urls':
-            assert data['dataUrls'] == indata['data_urls']
+        if field == 'links':
+            assert data['links'] == indata['links']
         else:
             assert data[field] == indata[field]
 

@@ -82,7 +82,7 @@ def get_project(identifier):
     """
     try:
         mongo_uuid = utils.str_to_mongo_uuid(identifier)
-        result = flask.g.db['projects'].find_one({'uuid': mongo_uuid})
+        result = flask.g.db['projects'].find_one({'_id': mongo_uuid})
     except ValueError:
         result = None
 
@@ -96,9 +96,8 @@ def get_project(identifier):
 def add_project_get():
     """Provide a basic data structure for adding a project."""
     project = structure.project()
-    del project['uuid']
-    del project['identifier']
-    del project['timestamp']
+    del project['_id']
+    del project['identifiers']
     return utils.response_json(project)
 
 
@@ -114,7 +113,7 @@ def add_project_post():
             flask.abort(flask.Response(status=400))
         project.update(indata)
 
-    identifier = project['uuid'].hex()
+    identifier = project['_id'].hex()
     identifier = (f'{identifier[:8]}-{identifier[8:12]}-' +
                   f'{identifier[12:16]}-{identifier[16:20]}-{identifier[20:]}')
     if 'datasets' in project:
@@ -125,5 +124,5 @@ def add_project_post():
 
     result = flask.g.db['projects'].insert_one(project)
     entry = flask.g.db['projects'].find_one({'_id': result.inserted_id},
-                                            {'uuid': 1, '_id': 0})
+                                            {'_id': 1})
     return utils.response_json(entry)

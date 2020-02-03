@@ -27,7 +27,7 @@ def dataset():
         dict: the data structure for datasets
     """
     return {'_id': utils.new_uuid(),
-            'data_urls': [],
+            'links': [],
             'description': '',
             'identifiers': [],
             'title': ''}

@@ -196,7 +196,7 @@ def delete_dataset(identifier):
     (flask.g.db['projects'].update_many({'datasets': mongo_uuid},
                                         {'$pull': {'datasets': mongo_uuid}}))
 
-    result = flask.g.db['datasets'].delete_one({'uuid': mongo_uuid})
+    result = flask.g.db['datasets'].delete_one({'_id': mongo_uuid})
     if result.deleted_count == 0:
         return flask.Response(status=404)
     return flask.Response(status=200)

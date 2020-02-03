@@ -55,8 +55,8 @@ def csrf_test():
 @blueprint.route('/test_datasets')
 def get_added_ds():
     """Get datasets added during testing."""
-    added = list(flask.g.db['datasets'].find({'dmp': 'http://test'},
-                                             {'uuid': 1, '_id': 0}))
+    added = list(flask.g.db['datasets'].find({'description': 'Test dataset'},
+                                             {'_id': 1}))
     return flask.jsonify({'datasets': added})
 
 
