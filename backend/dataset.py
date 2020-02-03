@@ -62,23 +62,23 @@ def update_projects(dataset_uuid: str, in_projects: list):
 
     """
     ds_uuid = utils.str_to_mongo_uuid(dataset_uuid)
-    old_projects = {item['uuid']
+    old_projects = {item['_id']
                     for item in
                     flask.g.db['projects'].find({'datasets': ds_uuid},
-                                                {'uuid': 1, '_id': 0})}
+                                                {'_id': 1})}
     new_projects = {uuid.UUID(proj) for proj in in_projects}
     to_remove = old_projects-new_projects
     to_add = new_projects-old_projects
     for proj in to_remove:
         response = (flask.g.db['projects']
-                    .update({'uuid': utils.uuid_to_mongo_uuid(proj)},
+                    .update({'_id': utils.uuid_to_mongo_uuid(proj)},
                             {'$pull': {'datasets': ds_uuid}}))
         if not response['nModified']:
             logging.error('Dataset %s not listed in project %s',
                           dataset_uuid, proj)
     for proj in to_add:
         response = (flask.g.db['projects']
-                    .update({'uuid': utils.uuid_to_mongo_uuid(proj)},
+                    .update({'_id': utils.uuid_to_mongo_uuid(proj)},
                             {'$push': {'datasets': ds_uuid}}))
         if not response['nModified']:
             logging.error('Dataset %s not listed in project %s',
@@ -88,8 +88,9 @@ def update_projects(dataset_uuid: str, in_projects: list):
 @blueprint.route('/all', methods=['GET'])
 def list_datasets():
     """Provide a simplified list of all available datasets."""
-    results = list(flask.g.db['datasets'].find(projection={'title': 1, '_id': 0,
-                                                           'description': 1, 'uuid': 1}))
+    results = list(flask.g.db['datasets'].find(projection={'title': 1,
+                                                           'description': 1,
+                                                           '_id': 1}))
     return utils.response_json({'datasets': results})
 
 
@@ -98,11 +99,11 @@ def list_datasets():
 def list_user_data():
     """List all datasets belonging to current user."""
     user_projects = tuple(flask.g.db['projects'].find({'owner': flask.session['username']},
-                                                      {'datasets': 1, '_id': 0}))
+                                                      {'datasets': 1}))
     uuids = tuple(utils.uuid_to_mongo_uuid(ds)
                   for entry in user_projects for ds in entry['datasets'])
     user_datasets = list(flask.g.db['datasets'].find({'uuid': {'$in': uuids}},
-                                                     {'uuid': 1, 'title': 1, '_id': 0}))
+                                                     {'title': 1}))
     logging.error(user_datasets)
     return utils.response_json({'datasets': user_datasets})
 
@@ -112,9 +113,9 @@ def list_user_data():
 def add_dataset_get():
     """Provide a basic data structure for adding a dataset."""
     dataset = structure.dataset()
-    del dataset['uuid']
-    del dataset['identifier']
-    del dataset['timestamp']
+    logging.error(dataset)
+    del dataset['_id']
+    del dataset['identifiers']
     dataset['projects'] = []
     return utils.response_json(dataset)
 
@@ -140,7 +141,7 @@ def add_dataset_post():
 
     result = flask.g.db['datasets'].insert_one(dataset)
     entry = flask.g.db['datasets'].find_one({'_id': result.inserted_id},
-                                            {'uuid': 1, '_id': 0})
+                                            {'_id': 1})
     return utils.response_json(entry)
 
 
@@ -158,9 +159,9 @@ def get_random_ds(amount: int = 1):
 
     """
     results = list(flask.g.db['datasets'].aggregate([{'$sample': {'size': amount}},
-                                                     {'$project': {'_id': 0, 'uuid': 1}}]))
+                                                     {'$project': {'_id': 1}}]))
     for i, result in enumerate(results):
-        results[i] = utils.get_dataset(result['uuid'].hex)
+        results[i] = utils.get_dataset(result['_id'].hex)
     return utils.response_json({'datasets': results})
 
 
