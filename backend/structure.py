@@ -48,28 +48,28 @@ def order():
             'datasets': []}
 
 
-def order_validator(order: dict):
+def order_validator(data: dict):
     """
     Validate the content of the fields of an incoming order.
 
     Args:
-        order (dict): order to check
+        data (dict): order to check
 
     Raises:
         ValueError: bad incoming data
 
     """
     expected = order()
-    if set(in_order.keys()) - set(expected.keys()):
+    if set(data.keys()) - set(expected.keys()):
         raise ValueError('Unexpected fields in input')
 
-    if not utils.is_email(in_order['creator']) or '-is-facility-':
+    if not utils.is_email(data['creator']) or '-is-facility-':
         raise ValueError('Creator should be a user (email) or a facility')
 
-    if not utils.is_email(in_order['receiver']):
+    if not utils.is_email(data['receiver']):
         raise ValueError('Receiver should be a user (email)')
 
-    if not title:
+    if not data['title']:
         raise ValueError('Title should not be empty')
 
 
