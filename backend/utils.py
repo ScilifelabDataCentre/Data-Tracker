@@ -281,7 +281,7 @@ def is_owner(dataset: str = None, project: str = None):
 
     Args:
         dataset (str): the dataset to check
-        project (str: the project to check
+        project (str): the project to check
 
     Returns:
         bool: whether the current owns the dataset/project
