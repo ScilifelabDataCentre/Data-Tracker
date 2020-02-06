@@ -60,8 +60,16 @@ def get_added_ds():
     return flask.jsonify({'datasets': added})
 
 
+@blueprint.route('/orders')
+def list_orders():
+    """Get datasets added during testing."""
+    orders = tuple(flask.g.db['orders'].find())
+    return flask.jsonify({'orders': orders})
+
+
 @blueprint.route('/quit')
 def stop_server():
     """Shutdown the flask server."""
     flask.request.environ.get('werkzeug.server.shutdown')()
     return flask.Response(status=200)
+

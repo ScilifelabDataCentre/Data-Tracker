@@ -41,8 +41,12 @@ def get_order(identifier):
         flask.Response: json structure for the order
 
     """
-    result = flask.g.db['orders'].find_one({'_id': utils.str_to_mongo_uuid(identifier)})
+    try:
+        muuid = utils.str_to_mongo_uuid(identifier)
+    except ValueError:
+        return flask.abort(status=404)
+    result = flask.g.db['orders'].find_one({'_id': muuid})
     logging.error(result)
     if not result:
-        return flask.Response(status=404)
+        return flask.abort(status=404)
     return utils.response_json({'order': result})
