@@ -52,7 +52,7 @@ def gen_datasets(db, nr_datasets: int = 500):
 def gen_facilities(db, nr_facilities: int = 30):
     countries = utils.country_list()
     uuids = []
-    for i in range(1, nr_facilities+1-3):
+    for i in range(1, nr_facilities+1):
         user = structure.user()
         changes = {'affiliation': 'University ' + random.choice(string.ascii_uppercase),
                    'name': f'Facility {i}',
@@ -102,12 +102,16 @@ def gen_projects(db, nr_projects: int = 500):
 
 def gen_users(db, nr_users: int = 100):
     uuids = []
-    base = [{'name' : 'User Test', 'role' : 'User', 'email' : 'user@example.com',
-             'country' : 'Sweden', 'affiliation' : 'Test university', 'auth_id' : 'hash3@elixir'},
-            {'name' : 'Steward Test', 'role' : 'Steward', 'email' : 'steward@example.com',
-             'country' : 'Sweden', 'affiliation' : 'Test university', 'auth_id' : 'hash2@elixir'},
-            {'name' : 'Admin Test', 'role' : 'Admin', 'email' : 'admin@example.com',
-             'country' : 'Sweden', 'affiliation' : 'Test university', 'auth_id' : 'hash1@elixir'}]
+    role_users = [{'name' : 'User Test', 'role' : 'User', 'email' : 'user@example.com',
+                   'country' : 'Sweden', 'affiliation' : 'Test university', 'auth_id' : 'hash3@roles'},
+                  {'name' : 'Steward Test', 'role' : 'Steward', 'email' : 'steward@example.com',
+                   'country' : 'Sweden', 'affiliation' : 'Test university', 'auth_id' : 'hash2@roles'},
+                  {'name' : 'Admin Test', 'role' : 'Admin', 'email' : 'admin@example.com',
+                   'country' : 'Sweden', 'affiliation' : 'Test university', 'auth_id' : 'hash1@roles'}]
+
+    base = [structure.user() for _ in range(3)]
+    for i, entry in enumerate(base):
+        entry.update(role_users[i])
     db['users'].insert_many(base)
     countries = utils.country_list()
     for i in range(1, nr_users+1-3):
