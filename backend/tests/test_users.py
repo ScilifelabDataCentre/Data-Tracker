@@ -31,7 +31,7 @@ def test_list_users():
             assert response[0] is None
         else:
             data = json.loads(response[0])
-            assert len(data['users']) == 100
+            assert len(data['users']) == 130
 
 
 def test_list_info():
