@@ -1,7 +1,6 @@
 """Tests for order requests."""
 import json
 import random
-import time
 import uuid
 
 import requests
