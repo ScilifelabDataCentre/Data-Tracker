@@ -12,7 +12,6 @@ def test_logout():
     response = make_request(session, '/api/developer/loginhello')
     assert response == ({'test': 'success'}, 200)
     response = make_request(session, '/api/user/logout', ret_json=False)
-    assert response[1] == 200
 
     response = make_request(session, '/api/developer/loginhello', ret_json=False)
     assert response == (None, 401)
