@@ -2,8 +2,8 @@
 <div class="user-browser">
   <div>
 
-    Requested DOIs
-    <table class="table is-hoverable is-striped">
+    <h2 id="doi-request-title" class="title is-2">Requested DOIs</h2>
+    <table class="table is-hoverable is-striped" aria-describedby="doi-request-title">
       <thead>
         <tr>
           <th scope="col">Data type</th>
@@ -19,8 +19,8 @@
     </table>
 
     
-    DOIs
-    <table class="table is-hoverable is-striped">
+    <h2 id="doi-title" class="title is-2">DOIs</h2>
+    <table class="table is-hoverable is-striped" aria-describedby="doi-request-title">
       <thead>
         <tr>
           <th scope="col">DOI</th>
