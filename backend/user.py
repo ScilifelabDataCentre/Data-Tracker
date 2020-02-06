@@ -118,8 +118,8 @@ def list_users():
 
     Admin access should be required.
     """
-    result = list(flask.g.db['users'].find())
-    return flask.jsonify({'users': result})
+    result = tuple(flask.g.db['users'].find())
+    return utils.response_json({'users': result})
 
 
 # requests
