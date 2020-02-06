@@ -37,7 +37,7 @@ def gen_datasets(db, nr_datasets: int = 500):
         dataset = structure.dataset()
         changes = {'title': f'Dataset {i} Title',
                    'description': make_description(),
-                   'data_urls': [{'description': f'Download location {j}',
+                   'links': [{'description': f'Download location {j}',
                                   'url': (f'https://data_source{i}/' +
                                           f'{random.choice(string.ascii_uppercase)}')}
                                  for j in range(1, random.randint(0, 6))]}
@@ -124,7 +124,7 @@ def gen_users(db, nr_users: int = 100):
 
 if __name__ == '__main__':
     CONF = config.read_config()
-    DBSERVER = pymongo.MongoClient(host='localhost',
+    DBSERVER = pymongo.MongoClient(host=CONF['mongo']['host'],
                                    port=CONF['mongo']['port'],
                                    username=CONF['mongo']['user'],
                                    password=CONF['mongo']['password'])
