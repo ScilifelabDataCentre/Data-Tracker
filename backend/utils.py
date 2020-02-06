@@ -2,6 +2,7 @@
 
 import datetime
 import logging
+import re
 import uuid
 
 import bson
@@ -9,6 +10,7 @@ import flask
 import pymongo
 
 
+# csrf
 def check_csrf_token():
     """Compare the csrf token from the request (header) with the one in the cookie.session."""
     token = flask.request.headers.get('X-CSRFToken')
@@ -28,32 +30,139 @@ def gen_csrf_token() -> str:
     return uuid.uuid4().hex
 
 
-def clean_mongo(response):
+# db input/output
+def check_mongo_update(document: dict):
     """
-    Prepare for returning a MongoDB document by e.g. `ObjectId (_id)`.
+    Make sure that some fields in a document are not changed during an update.
 
-    Actions:
-    * Remove `_id`
-    * convert snake_case to camelCase
-
-    Changes are done in-place.
+    Also make sure indata is not empty.
 
     Args:
-        response: a response from `mongodb.find()` or `.find_one()` (dict or list of dicts)
+        document (dict): received input to update a document
 
     """
-    to_remove = ('_id',)
-    if isinstance(response, list):
-        for entry in response:
-            for key in to_remove:
-                if key in entry:
-                    del entry[key]
-    else:
-        for key in to_remove:
-            if key in response:
-                del response[key]
+    if not document:
+        return False
+    forbidden = ('_id')
+    for field in forbidden:
+        if field in document:
+            return False
+    return True
 
 
+def get_dataset(identifier: str):
+    """
+    Query for a dataset from the database.
+
+    Args:
+        identifier (str): the uuid of the dataset
+
+    Returns:
+        dict: the dataset
+
+    """
+    try:
+        mongo_uuid = str_to_mongo_uuid(identifier)
+        result = flask.g.db['datasets'].find_one({'_id': mongo_uuid})
+        if not result:
+            return None
+        result['projects'] = list(flask.g.db['projects']
+                                  .find({'datasets': uuid_to_mongo_uuid(result['_id'])},
+                                        {'title': 1, '_id': 1}))
+    except ValueError:
+        return None
+    return result
+
+
+def get_project(identifier: str):
+    """
+    Query for a project from the database.
+
+    Args:
+        identifier (str): the uuid of the project
+
+    Returns:
+        dict: the project
+
+    """
+    try:
+        mongo_uuid = str_to_mongo_uuid(identifier)
+        result = flask.g.db['projects'].find_one({'_id': mongo_uuid})
+        if not result:
+            return None
+    except ValueError:
+        return None
+    return result
+
+
+def get_dbserver() -> pymongo.mongo_client.MongoClient:
+    """
+    Get the connection to the MongoDB database server.
+
+    Returns:
+        pymongo.mongo_client.MongoClient: the client connection
+
+    """
+    return pymongo.MongoClient(host=flask.current_app.config['mongo']['host'],
+                               port=flask.current_app.config['mongo']['port'],
+                               username=flask.current_app.config['mongo']['user'],
+                               password=flask.current_app.config['mongo']['password'])
+
+
+def get_db(dbserver: pymongo.mongo_client.MongoClient) -> pymongo.database.Database:
+    """
+    Get the connection to the MongoDB database.
+
+    Args:
+        dbserver: connection to the db
+
+    Returns:
+        pymongo.database.Database: the database connection
+
+    """
+    return dbserver[flask.current_app.config['mongo']['db']]
+
+
+def new_uuid() -> bson.binary.Binary:
+    """
+    Generate a uuid for a field in a MongoDB document.
+
+    Returns:
+        bson.binary.Binary: the new uuid in binary format
+
+    """
+    return uuid_to_mongo_uuid(uuid.uuid4())
+
+
+def str_to_mongo_uuid(uuid_str: str) -> bson.binary.Binary:
+    """
+    Convert str uuid to the Mongo representation of UUID.
+
+    Args:
+        uuid_str (str): the uuid to be converted
+
+    Returns:
+        bson.binary.Binary: the uuid in Mongo encoding
+
+    """
+    return uuid_to_mongo_uuid(uuid.UUID(uuid_str))
+
+
+def uuid_to_mongo_uuid(in_uuid: uuid.UUID) -> bson.binary.Binary:
+    """
+    Convert uuid.UUID to the Mongo representation of UUID.
+
+    Args:
+        in_uuid (uuid.UUID): the uuid to be converted
+
+    Returns:
+        bson.binary.Binary: the uuid in Mongo encoding
+
+    """
+    return bson.binary.Binary(in_uuid.bytes, 4)
+
+
+# misc
 def convert_keys_to_camel(chunk):
     """
     Convert keys given in snake_case to camelCase.
@@ -75,29 +184,13 @@ def convert_keys_to_camel(chunk):
 
     new_chunk = {}
     for key, value in chunk.items():
+        if key == '_id':
+            new_chunk[key] = value
+            continue
         # First character should be the same as in the original string
         new_key = key[0] + "".join([a[0].upper() + a[1:] for a in key.split("_")])[1:]
         new_chunk[new_key] = convert_keys_to_camel(value)
     return new_chunk
-
-
-def check_mongo_update(document: dict):
-    """
-    Make sure that some fields in a document are not changed during an update.
-
-    Also make sure indata is not empty.
-
-    Args:
-        document (dict): received input to update a document
-
-    """
-    if not document:
-        return False
-    forbidden = ('_id', 'timestamp', 'uuid')
-    for field in forbidden:
-        if field in document:
-            return False
-    return True
 
 
 def country_list():
@@ -163,79 +256,21 @@ def country_list():
             "Yemen", "Zambia", "Zimbabwe"]
 
 
-def get_dataset(identifier: str):
+REGEX = {'email': re.compile(r'.*@.*\..*')}
+
+
+def is_email(indata: str):
     """
-    Query for a dataset from the database.
+    Check whether a string seems to be an email address or not.
 
     Args:
-        identifier (str): the uuid of the dataset
+        indata (str): data to check
 
     Returns:
-        dict: the dataset
+        bool: is the indata an email address or not
 
     """
-    try:
-        mongo_uuid = to_mongo_uuid(identifier)
-        result = flask.g.db['datasets'].find_one({'uuid': mongo_uuid})
-        if not result:
-            return None
-        result['projects'] = list(flask.g.db['projects']
-                                  .find({'datasets': uuid_convert_mongo(result['uuid'])},
-                                        {'title': 1, 'uuid': 1, '_id': 0}))
-        clean_mongo(result)
-    except ValueError:
-        return None
-    return result
-
-
-def get_project(identifier: str):
-    """
-    Query for a project from the database.
-
-    Args:
-        identifier (str): the uuid of the project
-
-    Returns:
-        dict: the project
-
-    """
-    try:
-        mongo_uuid = to_mongo_uuid(identifier)
-        result = flask.g.db['projects'].find_one({'uuid': mongo_uuid})
-        if not result:
-            return None
-        clean_mongo(result)
-    except ValueError:
-        return None
-    return result
-
-
-def get_dbserver() -> pymongo.mongo_client.MongoClient:
-    """
-    Get the connection to the MongoDB database server.
-
-    Returns:
-        pymongo.mongo_client.MongoClient: the client connection
-
-    """
-    return pymongo.MongoClient(host=flask.current_app.config['mongo']['host'],
-                               port=flask.current_app.config['mongo']['port'],
-                               username=flask.current_app.config['mongo']['user'],
-                               password=flask.current_app.config['mongo']['password'])
-
-
-def get_db(dbserver: pymongo.mongo_client.MongoClient) -> pymongo.database.Database:
-    """
-    Get the connection to the MongoDB database.
-
-    Args:
-        dbserver: connection to the db
-
-    Returns:
-        pymongo.database.Database: the database connection
-
-    """
-    return dbserver[flask.current_app.config['mongo']['db']]
+    return bool(REGEX['email'].search(indata))
 
 
 def is_owner(dataset: str = None, project: str = None):
@@ -246,7 +281,7 @@ def is_owner(dataset: str = None, project: str = None):
 
     Args:
         dataset (str): the dataset to check
-        project (str: the project to check
+        project (str): the project to check
 
     Returns:
         bool: whether the current owns the dataset/project
@@ -259,7 +294,7 @@ def is_owner(dataset: str = None, project: str = None):
         raise ValueError('Only one of dataset and project should be set')
     if dataset:
         try:
-            mongo_uuid = to_mongo_uuid(dataset)
+            mongo_uuid = str_to_mongo_uuid(dataset)
         except ValueError:
             flask.abort(flask.Response(status=401))
         projects = list(flask.g.db['projects'].find({'datasets': mongo_uuid},
@@ -290,45 +325,6 @@ def response_json(json_structure: dict):
     """
     data = convert_keys_to_camel(json_structure)
     return flask.jsonify(data)
-
-
-def to_mongo_uuid(uuid_str: str) -> bson.binary.Binary:
-    """
-    Convert str uuid to the Mongo representation of UUID.
-
-    Args:
-        uuid_str (str): the uuid to be converted
-
-    Returns:
-        bson.binary.Binary: the uuid in Mongo encoding
-
-    """
-    return uuid_convert_mongo(uuid.UUID(uuid_str))
-
-
-def new_uuid() -> bson.binary.Binary:
-    """
-    Generate a uuid for a field in a MongoDB document.
-
-    Returns:
-        bson.binary.Binary: the new uuid in binary format
-
-    """
-    return uuid_convert_mongo(uuid.uuid4())
-
-
-def uuid_convert_mongo(in_uuid: uuid.UUID) -> bson.binary.Binary:
-    """
-    Convert uuid.UUID to the Mongo representation of UUID.
-
-    Args:
-        in_uuid (uuid.UUID): the uuid to be converted
-
-    Returns:
-        bson.binary.Binary: the uuid in Mongo encoding
-
-    """
-    return bson.binary.Binary(in_uuid.bytes, 4)
 
 
 def make_timestamp():

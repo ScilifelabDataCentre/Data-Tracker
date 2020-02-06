@@ -48,7 +48,6 @@ def validate_project_input(indata):
 def list_project():
     """Provide a simplified list of all available projects."""
     results = list(flask.g.db['projects'].find())
-    utils.clean_mongo(results)
     return utils.response_json({'projects': results})
 
 
@@ -66,7 +65,6 @@ def get_random(amount: int = 1):
 
     """
     results = list(flask.g.db['projects'].aggregate([{'$sample': {'size': amount}}]))
-    utils.clean_mongo(results)
     return utils.response_json({'projects': results})
 
 
@@ -83,14 +81,13 @@ def get_project(identifier):
 
     """
     try:
-        mongo_uuid = utils.to_mongo_uuid(identifier)
-        result = flask.g.db['projects'].find_one({'uuid': mongo_uuid})
+        mongo_uuid = utils.str_to_mongo_uuid(identifier)
+        result = flask.g.db['projects'].find_one({'_id': mongo_uuid})
     except ValueError:
         result = None
 
     if not result:
         return flask.Response(status=404)
-    utils.clean_mongo(result)
     return utils.response_json({'project': result})
 
 
@@ -99,9 +96,8 @@ def get_project(identifier):
 def add_project_get():
     """Provide a basic data structure for adding a project."""
     project = structure.project()
-    del project['uuid']
-    del project['identifier']
-    del project['timestamp']
+    del project['_id']
+    del project['identifiers']
     return utils.response_json(project)
 
 
@@ -117,16 +113,16 @@ def add_project_post():
             flask.abort(flask.Response(status=400))
         project.update(indata)
 
-    identifier = project['uuid'].hex()
+    identifier = project['_id'].hex()
     identifier = (f'{identifier[:8]}-{identifier[8:12]}-' +
                   f'{identifier[12:16]}-{identifier[16:20]}-{identifier[20:]}')
     if 'datasets' in project:
         try:
-            project['datasets'] = [utils.to_mongo_uuid(ds) for ds in project['datasets']]
+            project['datasets'] = [utils.str_to_mongo_uuid(ds) for ds in project['datasets']]
         except ValueError:
             flask.abort(flask.Response(status=400))
 
     result = flask.g.db['projects'].insert_one(project)
     entry = flask.g.db['projects'].find_one({'_id': result.inserted_id},
-                                            {'uuid': 1, '_id': 0})
+                                            {'_id': 1})
     return utils.response_json(entry)

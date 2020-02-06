@@ -1,7 +1,5 @@
 """Required fields for the different data types."""
 
-import datetime
-
 import utils
 
 
@@ -12,13 +10,13 @@ def user():
     Returns:
         dict: the data structure for users
     """
-    return {'affiliation': '',
+    return {'_id': utils.new_uuid(),
+            'affiliation': '',
             'auth_id': '',
             'country': '',
             'email': '',
             'name': '',
-            'role': 'User',
-            'timestamp': datetime.datetime.now()}
+            'role': 'User'}
 
 
 def dataset():
@@ -28,15 +26,51 @@ def dataset():
     Returns:
         dict: the data structure for datasets
     """
-    return {'creator': '',
-            'data_urls': [],
+    return {'_id': utils.new_uuid(),
+            'links': [],
             'description': '',
-            'dmp': '',
-            'identifier': '',
-            'publications': [],
-            'timestamp': datetime.datetime.now(),
+            'identifiers': [],
+            'title': ''}
+
+
+def order():
+    """
+    Provide a basic data structure for an order.
+
+    Returns:
+        dict: the data structure for orders
+    """
+    return {'_id': utils.new_uuid(),
+            'creator': '',
+            'receiver': '',
+            'description': '',
             'title': '',
-            'uuid': utils.new_uuid()}
+            'datasets': []}
+
+
+def order_validator(data: dict):
+    """
+    Validate the content of the fields of an incoming order.
+
+    Args:
+        data (dict): order to check
+
+    Raises:
+        ValueError: bad incoming data
+
+    """
+    expected = order()
+    if set(data.keys()) - set(expected.keys()):
+        raise ValueError('Unexpected fields in input')
+
+    if not utils.is_email(data['creator']) or '-is-facility-':
+        raise ValueError('Creator should be a user (email) or a facility')
+
+    if not utils.is_email(data['receiver']):
+        raise ValueError('Receiver should be a user (email)')
+
+    if not data['title']:
+        raise ValueError('Title should not be empty')
 
 
 def project():
@@ -46,11 +80,12 @@ def project():
     Returns:
         dict: the data structure for projects
     """
-    return {'contact': '',
-            'description': '',
-            'identifier': '',
-            'owner': '',
-            'timestamp': datetime.datetime.now(),
-            'title': '',
+    return {'_id': utils.new_uuid(),
+            'contact': '',
             'datasets': [],
-            'uuid': utils.new_uuid()}
+            'description': '',
+            'dmp': '',
+            'identifiers': [],
+            'owner': '',
+            'publications': [],
+            'title': ''}

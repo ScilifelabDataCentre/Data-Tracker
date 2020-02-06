@@ -7,7 +7,7 @@
     <table class="table is-hoverable is-striped" v-if="users.length > 0">
       <thead>
 	<tr>
-          <th v-for="header in Object.keys(users[0])" :key="header">
+          <th scope="col" v-for="header in Object.keys(users[0])" :key="header">
             {{ header }}
           </th>
 	</tr>

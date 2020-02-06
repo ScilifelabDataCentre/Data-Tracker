@@ -6,8 +6,8 @@
     <table class="table is-hoverable is-striped">
       <thead>
         <tr>
-          <th>Data type</th>
-          <th>Internal ID</th>
+          <th scope="col">Data type</th>
+          <th scope="col">Internal ID</th>
         </tr>
       </thead>
       <tbody>
@@ -23,9 +23,9 @@
     <table class="table is-hoverable is-striped">
       <thead>
         <tr>
-          <th>DOI</th>
-          <th>Data type</th>
-          <th>Internal ID</th>
+          <th scope="col">DOI</th>
+          <th scope="col">Data type</th>
+          <th scope="col">Internal ID</th>
         </tr>
       </thead>
       <tbody>

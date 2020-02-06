@@ -12,7 +12,6 @@ def test_logout():
     response = make_request(session, '/api/developer/loginhello')
     assert response == ({'test': 'success'}, 200)
     response = make_request(session, '/api/user/logout', ret_json=False)
-    assert response[1] == 200
 
     response = make_request(session, '/api/developer/loginhello', ret_json=False)
     assert response == (None, 401)
@@ -31,7 +30,7 @@ def test_list_users():
             assert response[0] is None
         else:
             data = json.loads(response[0])
-            assert len(data['users']) == 100
+            assert len(data['users']) == 130
 
 
 def test_list_info():

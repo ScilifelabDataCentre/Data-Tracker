@@ -38,7 +38,6 @@ def as_user(session: requests.Session, username: str, set_csrf: bool = True) -> 
         assert code == 200
     else:
         code = session.get(f'{BASE_URL}/api/user/logout').status_code
-        assert code == 200
         session.get(f'{BASE_URL}/api/developer/hello')  # reset cookies
     if set_csrf:
         session.headers['X-CSRFToken'] = session.cookies.get('_csrf_token')
@@ -54,11 +53,8 @@ def dataset_for_tests():
     """
 
     # prepare
-    indata = {'creator': 'Test facility',
-              'data_urls': [{'description': 'Test description', 'url': 'http://test_url'}],
+    indata = {'links': [{'description': 'Test description', 'url': 'http://test_url'}],
               'description': 'Test description',
-              'dmp': 'http://test',
-              'publications': ['Title. Journal: year'],
               'title': 'Test title'}
     session = requests.Session()
     as_user(session, USERS['steward'])
@@ -68,7 +64,7 @@ def dataset_for_tests():
                                      data=indata,
                                      method='POST')
     assert status_code == 200
-    uuid = data['uuid']
+    uuid = data['_id']
 
     yield uuid
 
@@ -152,14 +148,13 @@ def project_for_tests():
                                      payload)
     assert status_code == 200
 
-    proj_id = data['id']
-    print(proj_id)
+    proj_id = data['_id']
     yield proj_id
 
     # cleanup
-    payload = {'id': proj_id}
+    payload = {'_id': proj_id}
     make_request(session,
-                 '/api/dataset/delete',
+                 '/api/project/delete',
                  payload)
 
 

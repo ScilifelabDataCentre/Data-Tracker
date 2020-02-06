@@ -31,7 +31,7 @@ def validate_dataset_input(indata):
     # check that fields should exist and are not forbidden
     reference = set(structure.dataset().keys())
     reference.add('projects')
-    forbidden = {'identifier'}
+    forbidden = {'_id', 'identifiers'}
     inkeys = set(indata.keys())
     if not inkeys.issubset(reference) or forbidden&inkeys:
         logging.debug('Bad input: %s', inkeys)
@@ -61,24 +61,24 @@ def update_projects(dataset_uuid: str, in_projects: list):
         ValueError: a project uuid did not match any project in the db
 
     """
-    ds_uuid = utils.to_mongo_uuid(dataset_uuid)
-    old_projects = {item['uuid']
+    ds_uuid = utils.str_to_mongo_uuid(dataset_uuid)
+    old_projects = {item['_id']
                     for item in
                     flask.g.db['projects'].find({'datasets': ds_uuid},
-                                                {'uuid': 1, '_id': 0})}
+                                                {'_id': 1})}
     new_projects = {uuid.UUID(proj) for proj in in_projects}
     to_remove = old_projects-new_projects
     to_add = new_projects-old_projects
     for proj in to_remove:
         response = (flask.g.db['projects']
-                    .update({'uuid': utils.uuid_convert_mongo(proj)},
+                    .update({'_id': utils.uuid_to_mongo_uuid(proj)},
                             {'$pull': {'datasets': ds_uuid}}))
         if not response['nModified']:
             logging.error('Dataset %s not listed in project %s',
                           dataset_uuid, proj)
     for proj in to_add:
         response = (flask.g.db['projects']
-                    .update({'uuid': utils.uuid_convert_mongo(proj)},
+                    .update({'_id': utils.uuid_to_mongo_uuid(proj)},
                             {'$push': {'datasets': ds_uuid}}))
         if not response['nModified']:
             logging.error('Dataset %s not listed in project %s',
@@ -88,9 +88,9 @@ def update_projects(dataset_uuid: str, in_projects: list):
 @blueprint.route('/all', methods=['GET'])
 def list_datasets():
     """Provide a simplified list of all available datasets."""
-    results = list(flask.g.db['datasets'].find(projection={'title': 1, '_id': 0,
-                                                           'description': 1, 'uuid': 1}))
-    utils.clean_mongo(results)
+    results = list(flask.g.db['datasets'].find(projection={'title': 1,
+                                                           'description': 1,
+                                                           '_id': 1}))
     return utils.response_json({'datasets': results})
 
 
@@ -98,12 +98,14 @@ def list_datasets():
 @user.login_required
 def list_user_data():
     """List all datasets belonging to current user."""
-    user_projects = tuple(flask.g.db['projects'].find({'owner': flask.session['username']},
-                                                      {'datasets': 1, '_id': 0}))
-    uuids = tuple(utils.uuid_convert_mongo(ds)
+    user_projects = tuple(flask.g.db['orders']
+                          .find({'$or': [{'receiver': flask.session['username']},
+                                         {'creator': flask.session['username']}]},
+                                {'datasets': 1}))
+    uuids = tuple(utils.uuid_to_mongo_uuid(ds)
                   for entry in user_projects for ds in entry['datasets'])
     user_datasets = list(flask.g.db['datasets'].find({'uuid': {'$in': uuids}},
-                                                     {'uuid': 1, 'title': 1, '_id': 0}))
+                                                     {'title': 1}))
     logging.error(user_datasets)
     return utils.response_json({'datasets': user_datasets})
 
@@ -113,9 +115,9 @@ def list_user_data():
 def add_dataset_get():
     """Provide a basic data structure for adding a dataset."""
     dataset = structure.dataset()
-    del dataset['uuid']
-    del dataset['identifier']
-    del dataset['timestamp']
+    logging.error(dataset)
+    del dataset['_id']
+    del dataset['identifiers']
     dataset['projects'] = []
     return utils.response_json(dataset)
 
@@ -132,7 +134,7 @@ def add_dataset_post():
             flask.abort(flask.Response(status=400))
         dataset.update(indata)
 
-    identifier = dataset['uuid'].hex()
+    identifier = dataset['_id'].hex()
     identifier = (f'{identifier[:8]}-{identifier[8:12]}-' +
                   f'{identifier[12:16]}-{identifier[16:20]}-{identifier[20:]}')
     if 'projects' in dataset:
@@ -141,7 +143,7 @@ def add_dataset_post():
 
     result = flask.g.db['datasets'].insert_one(dataset)
     entry = flask.g.db['datasets'].find_one({'_id': result.inserted_id},
-                                            {'uuid': 1, '_id': 0})
+                                            {'_id': 1})
     return utils.response_json(entry)
 
 
@@ -159,9 +161,9 @@ def get_random_ds(amount: int = 1):
 
     """
     results = list(flask.g.db['datasets'].aggregate([{'$sample': {'size': amount}},
-                                                     {'$project': {'_id': 0, 'uuid': 1}}]))
+                                                     {'$project': {'_id': 1}}]))
     for i, result in enumerate(results):
-        results[i] = utils.get_dataset(result['uuid'].hex)
+        results[i] = utils.get_dataset(result['_id'].hex)
     return utils.response_json({'datasets': results})
 
 
@@ -189,21 +191,20 @@ def get_dataset(identifier):
 def delete_dataset(identifier):
     """Delete a dataset."""
     try:
-        mongo_uuid = utils.to_mongo_uuid(identifier)
+        mongo_uuid = utils.str_to_mongo_uuid(identifier)
     except ValueError:
         return flask.Response(status=404)
 
     (flask.g.db['projects'].update_many({'datasets': mongo_uuid},
                                         {'$pull': {'datasets': mongo_uuid}}))
 
-    result = flask.g.db['datasets'].delete_one({'uuid': mongo_uuid})
+    result = flask.g.db['datasets'].delete_one({'_id': mongo_uuid})
     if result.deleted_count == 0:
         return flask.Response(status=404)
     return flask.Response(status=200)
 
 
 @blueprint.route('/<identifier>', methods=['PUT'])
-@blueprint.route('/<identifier>/edit', methods=['POST'])
 @user.steward_or_dsowner_required
 # require Steward or owning dataset
 def update_dataset(identifier):
@@ -219,7 +220,7 @@ def update_dataset(identifier):
     """
     indata = json.loads(flask.request.data)
     try:
-        ds_uuid = utils.to_mongo_uuid(identifier)
+        ds_uuid = utils.str_to_mongo_uuid(identifier)
     except ValueError:
         flask.abort(flask.Response(status=404))
     if not validate_dataset_input(indata):
@@ -230,7 +231,7 @@ def update_dataset(identifier):
         del indata['projects']
 
     indata['timestamp'] = utils.make_timestamp()
-    response = flask.g.db['datasets'].update_one({'uuid': ds_uuid}, {'$set': indata})
+    response = flask.g.db['datasets'].update_one({'_id': ds_uuid}, {'$set': indata})
     if response.matched_count == 0:
         flask.abort(flask.Response(status=404))
 
