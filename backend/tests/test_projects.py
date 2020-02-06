@@ -45,7 +45,7 @@ def test_get_project_permissions():
     """Test permissions for requesting a project."""
     session = requests.Session()
     orig = make_request(session, '/api/project/random')[0]['projects'][0]
-    responses = make_request_all_roles(f'/api/project/{orig["uuid"]}')
+    responses = make_request_all_roles(f'/api/project/{orig["_id"]}')
     for response in responses:
         assert json.loads(response[0])['project'] == orig
         assert response[1] == 200
@@ -60,7 +60,7 @@ def test_get_project():
     session = requests.Session()
     for _ in range(10):
         orig = make_request(session, '/api/project/random')[0]['projects'][0]
-        response = make_request(session, f'/api/project/{orig["uuid"]}')
+        response = make_request(session, f'/api/project/{orig["_id"]}')
         assert response[1] == 200
         requested = response[0]['project']
         assert orig == requested
@@ -89,10 +89,12 @@ def test_add_get():
     Should require at least Steward.
     """
     expected_success = {'contact': '',
+                        'datasets': [],
                         'description': '',
+                        'dmp': '',
                         'owner': '',
-                        'title': '',
-                        'datasets': []}
+                        'publications': [],
+                        'title': ''}
 
     responses = make_request_all_roles('/api/project/add')
     assert [response[1] for response in responses] == [401, 401, 200, 200]
