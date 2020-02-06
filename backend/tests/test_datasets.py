@@ -25,29 +25,6 @@ def test_list_datasets():
         assert len(json.loads(response[0])['datasets']) == 500
 
 
-def test_user_datasets():
-    """
-    Retrieve a list of datasets belonging to current user.
-
-    Confirm that they actually belong to the user.
-    """
-    # wait for queries to be ready
-    session = requests.Session()
-    for _ in range(3):
-        response = make_request(session, '/api/project/random')
-        expected_datasets = response[0]['projects'][0]['datasets']
-        as_user(session, response[0]['projects'][0]['owner'])
-        responses = make_request_all_roles('/api/dataset/user')
-        assert [response[1] for response in responses] == [401, 200, 200, 200]
-        for response in responses:
-            if response[1] == 401:
-                assert not response[0]
-            print(response[0])
-            datasets = [doc['_id'] for doc in json.loads(response[0])['datasets']]
-            response = make_request(session, '/api/project/random')
-            assert datasets == expected_datasets
-
-
 def test_random_dataset():
     """Request a random dataset."""
     responses = make_request_all_roles('/api/dataset/random')
@@ -219,12 +196,9 @@ def test_add_projects():
                                '/api/dataset/add',
                                data=indata, method='POST')
     assert ins_request[1] == 200
-    print(indata['projects'])
-    print(ins_request)
     for proj_uuid in indata['projects']:
         find_request = make_request(session,
                                     f'/api/project/{proj_uuid}')
-        print(find_request)
         assert ins_request[0]['_id'] in find_request[0]['project']['datasets']
 
 
@@ -307,8 +281,8 @@ def test_delete_ref_in_projects():
     Should require at least Steward.
     """
     indata = {'links': [{'description': 'Test description', 'url': 'http://test_url'}],
-              'description': 'Test description',
               'title': 'Test title'}
+    indata.update(TEST_DS_LABEL)
 
     session = requests.Session()
     as_user(session, USERS['steward'])
@@ -369,7 +343,6 @@ def test_update_permissions(dataset_for_tests):
         proj_response = make_request(session, f'/api/project/random')
         assert proj_response[1] == 200
         project = proj_response[0]['projects'][0]
-        print(project)
     owner = project['owner']
     uuid = project['datasets'][0]
     as_user(session, owner)
@@ -396,11 +369,8 @@ def test_update(dataset_for_tests):
 
     Should require at least Steward.
     """
-    indata = {'creator': 'Test2 facility',
-              'links': [{'description': 'Test2 description', 'url': 'http://test2_url'}],
+    indata = {'links': [{'description': 'Test2 description', 'url': 'http://test2_url'}],
               'description': 'Test2 description',
-              'dmp': 'http://test',
-              'publications': ['Title. Journal: year'],
               'title': 'Test2 title'}
 
     session = requests.Session()
@@ -412,10 +382,7 @@ def test_update(dataset_for_tests):
     assert [response[0] for response in responses] == [None]*4
     data = make_request(session, f'/api/dataset/{ds_uuid}')[0]['dataset']
     for field in indata:
-        if field == 'links':
-            assert data['links'] == indata['links']
-        else:
-            assert data[field] == indata[field]
+        assert data[field] == indata[field]
 
     new_title = random_string()
     time.sleep(1)  # make sure that timestamp will differ
@@ -483,14 +450,7 @@ def test_update_as_owner(dataset_for_tests):
     response = make_request(session, f'/api/dataset/{ds_uuid}', method='PUT', data=indata)
     assert response == (None, 400)
     data = make_request(session, f'/api/dataset/{ds_uuid}')[0]['dataset']
-    assert data['creator'] != 'should not update'
-
-    proj_uuid = make_request(session, f'/api/project/random')[0]['projects'][0]['_id']
-    indata = {'projects': [proj_uuid]}
-    response = make_request(session, f'/api/dataset/{ds_uuid}', method='PUT', data=indata)
-    assert response == (None, 400)
-    data = make_request(session, f'/api/dataset/{ds_uuid}')[0]['dataset']
-    assert proj_uuid not in data['projects'][0]
+    assert 'creator' not in data
 
 
 def test_update_bad(dataset_for_tests):
@@ -516,7 +476,6 @@ def test_update_bad(dataset_for_tests):
     as_user(session, USERS['steward'])
     indata = {'_id': 'Updated title'}
     response = make_request(session, f'/api/dataset/{ds_uuid}')
-    print(response)
 
     response = make_request(session, f'/api/dataset/{ds_uuid}',
                             method='PUT', data=indata)

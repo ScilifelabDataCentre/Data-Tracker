@@ -31,7 +31,7 @@ def validate_dataset_input(indata):
     # check that fields should exist and are not forbidden
     reference = set(structure.dataset().keys())
     reference.add('projects')
-    forbidden = {'identifier'}
+    forbidden = {'_id', 'identifiers'}
     inkeys = set(indata.keys())
     if not inkeys.issubset(reference) or forbidden&inkeys:
         logging.debug('Bad input: %s', inkeys)
@@ -98,8 +98,9 @@ def list_datasets():
 @user.login_required
 def list_user_data():
     """List all datasets belonging to current user."""
-    user_projects = tuple(flask.g.db['projects'].find({'owner': flask.session['username']},
-                                                      {'datasets': 1}))
+    user_projects = tuple(flask.g.db['orders'].find({'$or': [{'receiver': flask.session['username']},
+                                                             {'creator': flask.session['username']}]},
+                                                     {'datasets': 1}))
     uuids = tuple(utils.uuid_to_mongo_uuid(ds)
                   for entry in user_projects for ds in entry['datasets'])
     user_datasets = list(flask.g.db['datasets'].find({'uuid': {'$in': uuids}},
@@ -203,7 +204,6 @@ def delete_dataset(identifier):
 
 
 @blueprint.route('/<identifier>', methods=['PUT'])
-@blueprint.route('/<identifier>/edit', methods=['POST'])
 @user.steward_or_dsowner_required
 # require Steward or owning dataset
 def update_dataset(identifier):
@@ -230,7 +230,7 @@ def update_dataset(identifier):
         del indata['projects']
 
     indata['timestamp'] = utils.make_timestamp()
-    response = flask.g.db['datasets'].update_one({'uuid': ds_uuid}, {'$set': indata})
+    response = flask.g.db['datasets'].update_one({'_id': ds_uuid}, {'$set': indata})
     if response.matched_count == 0:
         flask.abort(flask.Response(status=404))
 
