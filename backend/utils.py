@@ -1,5 +1,6 @@
 """General helper functions."""
 
+from collections import abc
 import datetime
 import logging
 import re
@@ -176,10 +177,10 @@ def convert_keys_to_camel(chunk):
         *: chunk converted to camelCase dict, otherwise chunk
 
     """
-    if isinstance(chunk, list):
+    if isinstance(chunk, abc.Sequence) and not isinstance(chunk, str):
         return [convert_keys_to_camel(e) for e in chunk]
 
-    if not isinstance(chunk, dict):
+    if not isinstance(chunk, abc.Mapping):
         return chunk
 
     new_chunk = {}
