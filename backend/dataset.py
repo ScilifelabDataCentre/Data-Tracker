@@ -198,12 +198,22 @@ def delete_dataset(identifier):
     result = flask.g.db['datasets'].delete_one({'_id': mongo_uuid})
     if result.deleted_count == 0:
         return flask.Response(status=404)
-    (flask.g.db['projects'].update_many({'datasets': mongo_uuid},
-                                        {'$pull': {'datasets': mongo_uuid}}))
-    (flask.g.db['orders'].update_many({'datasets': mongo_uuid},
-                                      {'$pull': {'datasets': mongo_uuid}}))
-
     utils.make_log('dataset', 'delete')
+
+    for entry in flask.g.db['orders'].find({'datasets': mongo_uuid}):
+        logging.error(f'flaff: {entry}')
+        flask.g.db['orders'].update_one({'_id': utils.uuid_to_mongo_uuid(entry['_id'])},
+                                        {'$pull': {'datasets': mongo_uuid}})
+        new_data = flask.g.db['orders'].find_one({'_id': utils.uuid_to_mongo_uuid(entry['_id'])})
+        new_data['_id'] = utils.uuid_to_mongo_uuid(new_data['_id'])
+        utils.make_log('order', 'edit', new_data)
+
+    for entry in flask.g.db['projects'].find({'datasets': mongo_uuid}):
+        flask.g.db['projects'].update_one({'_id': utils.uuid_to_mongo_uuid(entry['_id'])},
+                                          {'$pull': {'datasets': mongo_uuid}})
+        new_data = flask.g.db['projects'].find_one({'_id': utils.uuid_to_mongo_uuid(entry['_id'])})
+        new_data['_id'] = utils.uuid_to_mongo_uuid(new_data['_id'])
+        utils.make_log('project', 'edit', new_data)
 
     return flask.Response(status=200)
 
