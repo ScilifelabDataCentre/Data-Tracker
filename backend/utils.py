@@ -338,20 +338,21 @@ def make_timestamp():
     return datetime.datetime.now()
 
 
-def make_log(entry_id: bson.binary.Binary, data_type: str, action: str,
-             new_data: dict = None, transaction=None):
+def make_log(data_type: str, action: str, data: dict = None):
     """
     Log a change in the system.
 
+    Saves a complete copy of the new object.
+
     It is assumed that all values are curated,
-    e.g. that new_data only contains permitted fields.
+    e.g. that data only contains permitted fields.
 
     ``
     {
         'action': ('add', 'edit', 'delete'),
         'data_type': type of data, e.g. 'order',
         'entry': the entry id (_id),
-        'old_fields': {modified fields with the old data},
+        'fields': {modified fields with the old data},
         'timestamp': the current time,
         'user': the id of the current user
     }
@@ -359,35 +360,12 @@ def make_log(entry_id: bson.binary.Binary, data_type: str, action: str,
 
     Args:
         action (str): type of action (insert, update etc)
-        entry_id (bson.binary.Binary): the entry id (_id)
         data_type (str): the collection name
-        new_data (dict): the new data for the entry
-
-    Returns:
-        bool: whether errors occured while preparing the log
+        data (dict): the new data for the entry
 
     """
-    if (action not in ('add', 'delete', 'edit') or not entry or not data_type):
-        return False
-    if action == 'add':
-        log_data = {}
-    else:
-        old_data = flask.g.db[data_type].find_one({'_id': entry_id})
-        if action == 'edit':
-            if not new_data:
-                return False
-            log_data = {}
-            for field in new_data.keys():
-                if old_data[field] != new_data[field]:
-                    log_data[field] = old_data[field]
-
-        else:
-            log_data = old_data
-
     flask.g.db['logs'].insert_one({'action': action,
                                    'data_type': data_type,
-                                   'entry': entry_id,
-                                   'old_fields': log_data,
+                                   'data': data,
                                    'timestamp': make_timestamp(),
-                                   'user': flask.g.current_user['_id']})
-    return True
+                                   'user': uuid_to_mongo_uuid(flask.g.current_user['_id'])})
