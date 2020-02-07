@@ -195,12 +195,16 @@ def delete_dataset(identifier):
     except ValueError:
         return flask.Response(status=404)
 
-    (flask.g.db['projects'].update_many({'datasets': mongo_uuid},
-                                        {'$pull': {'datasets': mongo_uuid}}))
-
     result = flask.g.db['datasets'].delete_one({'_id': mongo_uuid})
     if result.deleted_count == 0:
         return flask.Response(status=404)
+    (flask.g.db['projects'].update_many({'datasets': mongo_uuid},
+                                        {'$pull': {'datasets': mongo_uuid}}))
+    (flask.g.db['orders'].update_many({'datasets': mongo_uuid},
+                                      {'$pull': {'datasets': mongo_uuid}}))
+
+    utils.make_log('dataset', 'delete')
+
     return flask.Response(status=200)
 
 
