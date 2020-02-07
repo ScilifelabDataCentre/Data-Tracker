@@ -15,6 +15,7 @@ import structure
 import utils
 
 
+# helper functions
 def make_description():
     """
     Make a random description based on lorem ipsum.
@@ -30,6 +31,7 @@ def make_description():
     return desc
 
 
+# generator functions
 def gen_datasets(db, nr_datasets: int = 500):
     uuids = []
     orders = [utils.uuid_to_mongo_uuid(entry['_id']) for entry in db['orders'].find()]
