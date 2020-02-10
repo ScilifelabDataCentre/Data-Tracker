@@ -20,6 +20,13 @@ const mutations = {
 }
 
 const actions = {
+  updateNotification({ commit }, notification) {
+    return new Promise((resolve) => {
+      commit('UPDATE_NOTIFICATION', {'message': notification[0],
+                                     'type': notification[1]});
+      resolve();
+    });
+  },
 }
 
 const getters = {

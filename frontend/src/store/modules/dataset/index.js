@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import {getXsrf} from '../../helpers.js';
+import {getCsrfHeader} from '../../helpers.js';
 
 const state = {
   dataset: {},
@@ -17,7 +17,7 @@ const mutations = {
 }
 
 const actions = {
-  getDataset ({ commit }, id) {
+  getDataset ({ commit, dispatch }, id) {
     return new Promise((resolve, reject) => {
       axios
         .get('/api/dataset/' + id)
@@ -26,6 +26,7 @@ const actions = {
           resolve(response);
         })
         .catch((err) => {
+          dispatch('updateNotification', ['Unable to retrieve dataset', 'warning'])
           reject(err);
         });
     });
@@ -48,13 +49,11 @@ const actions = {
   deleteDataset (context, dataset_id) {
     return new Promise((resolve, reject) => {
       axios
-        .post('/api/dataset/delete',
-              {
-                'id': dataset_id,
-              },
-              {
-                headers: {'X-Xsrftoken': getXsrf()},
-              })
+        .delete('/api/dataset/' + dataset_id,
+                {},
+                {
+                  headers: getCsrfHeader(),
+                })
         .then((response) => {
           resolve(response);
         })
@@ -82,7 +81,7 @@ const actions = {
         .post(url,
               newDataset,
               {
-                headers: {'X-CSRFToken': getXsrf()},
+                headers: getCsrfHeader(),
               })
         .then((response) => {
           resolve(response);
