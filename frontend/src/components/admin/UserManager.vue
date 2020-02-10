@@ -4,7 +4,8 @@
     You do not have the permissions to view this page.
   </div>
   <div v-else>
-    <table class="table is-hoverable is-striped" v-if="users.length > 0">
+    <h1 id="user-table-header" class="title is-1">List of users</h1>
+    <table class="table is-hoverable is-striped" v-if="users.length > 0" aria-describedby="user-table-header">
       <thead>
 	<tr>
           <th scope="col" v-for="header in Object.keys(users[0])" :key="header">

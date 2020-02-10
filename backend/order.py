@@ -1,6 +1,4 @@
 """Order requests."""
-import logging
-
 import flask
 
 import utils
@@ -42,11 +40,10 @@ def get_order(identifier):
 
     """
     try:
-        muuid = utils.str_to_mongo_uuid(identifier)
+        muuid = utils.str_to_uuid(identifier)
     except ValueError:
         return flask.abort(status=404)
     result = flask.g.db['orders'].find_one({'_id': muuid})
-    logging.error(result)
     if not result:
         return flask.abort(status=404)
     return utils.response_json({'order': result})

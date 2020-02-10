@@ -2,11 +2,11 @@
 """
 Generate a test dataset.
 """
-
 import random
 import string
 import uuid
 
+import bson
 import lorem
 import pymongo
 
@@ -15,6 +15,7 @@ import structure
 import utils
 
 
+# helper functions
 def make_description():
     """
     Make a random description based on lorem ipsum.
@@ -30,9 +31,10 @@ def make_description():
     return desc
 
 
+# generator functions
 def gen_datasets(db, nr_datasets: int = 500):
     uuids = []
-    orders = [utils.uuid_to_mongo_uuid(entry['_id']) for entry in db['orders'].find()]
+    orders = [entry['_id'] for entry in db['orders'].find()]
     for i in range(1, nr_datasets+1):
         dataset = structure.dataset()
         changes = {'title': f'Dataset {i} Title',
@@ -90,7 +92,7 @@ def gen_projects(db, nr_projects: int = 500):
                    'description': make_description(),
                    'owner': random.choice(users)['email'],
                    'contact': f'email{i}@entity{i}',
-                   'datasets': [utils.uuid_to_mongo_uuid(random.choice(datasets)['_id'])
+                   'datasets': [random.choice(datasets)['_id']
                                 for _ in range(random.randint(0, 5))],
                    'dmp': f'http://dmp-url{i}',
                    'publications': [f'Title {i}. Journal: 200{j}'
@@ -128,11 +130,13 @@ def gen_users(db, nr_users: int = 100):
 
 if __name__ == '__main__':
     CONF = config.read_config()
-    DBSERVER = pymongo.MongoClient(host=CONF['mongo']['host'],
+    DBSERVER = pymongo.MongoClient(host='localhost',
                                    port=CONF['mongo']['port'],
                                    username=CONF['mongo']['user'],
                                    password=CONF['mongo']['password'])
-    DB = DBSERVER[CONF['mongo']['db']]
+    codec_options = bson.codec_options.CodecOptions(uuid_representation=bson.binary.STANDARD)
+    DB = DBSERVER.get_database(CONF['mongo']['db'],
+                               codec_options=(codec_options))
     gen_facilities(DB)
     gen_users(DB)
     gen_orders(DB)

@@ -1,6 +1,6 @@
 # Data Tracker
 [![Travis Status][travis-badge]][travis-link]
-[![Coverage Status][coveralls-badge]][coveralls-link]
+[![Coverage Status][codecov-badge]][codecov-link]
 
 A system for tracking datasets.
 
@@ -19,5 +19,6 @@ PYTHON_PATH=backend python3 test/gen_test_db.py
 
 [travis-badge]: https://travis-ci.org/ScilifelabDataCentre/SciLifeLab-Data-Tracker.svg?branch=develop
 [travis-link]: https://travis-ci.org/ScilifelabDataCentre/SciLifeLab-Data-Tracker
-[coveralls-badge]: https://coveralls.io/repos/github/ScilifelabDataCentre/SciLifeLab-Data-Tracker/badge.svg?branch=develop
-[coveralls-link]: https://coveralls.io/github/ScilifelabDataCentre/SciLifeLab-Data-Tracker?branch=develop
+
+[codecov-badge]: https://codecov.io/gh/ScilifelabDataCentre/SciLifeLab-Data-Tracker/branch/develop/graph/badge.svg
+[codecov-link]: https://codecov.io/gh/ScilifelabDataCentre/SciLifeLab-Data-Tracker
