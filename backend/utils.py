@@ -63,12 +63,12 @@ def get_dataset(identifier: str):
 
     """
     try:
-        mongo_uuid = str_to_mongo_uuid(identifier)
+        mongo_uuid = str_to_uuid(identifier)
         result = flask.g.db['datasets'].find_one({'_id': mongo_uuid})
         if not result:
             return None
         result['projects'] = list(flask.g.db['projects']
-                                  .find({'datasets': uuid_to_mongo_uuid(result['_id'])},
+                                  .find({'datasets': result['_id']},
                                         {'title': 1, '_id': 1}))
     except ValueError:
         return None
@@ -87,7 +87,7 @@ def get_project(identifier: str):
 
     """
     try:
-        mongo_uuid = str_to_mongo_uuid(identifier)
+        mongo_uuid = str_to_uuid(identifier)
         result = flask.g.db['projects'].find_one({'_id': mongo_uuid})
         if not result:
             return None
@@ -126,43 +126,29 @@ def get_db(dbserver: pymongo.mongo_client.MongoClient) -> pymongo.database.Datab
                                  codec_options=(codec_options))
 
 
-def new_uuid() -> bson.binary.Binary:
+def new_uuid() -> uuid.UUID:
     """
     Generate a uuid for a field in a MongoDB document.
 
     Returns:
-        bson.binary.Binary: the new uuid in binary format
+        uuid.UUID: the new uuid in binary format
 
     """
-    return uuid_to_mongo_uuid(uuid.uuid4())
+    return uuid.uuid4()
 
 
-def str_to_mongo_uuid(uuid_str: str) -> bson.binary.Binary:
+def str_to_uuid(uuid_str: str) -> uuid.UUID:
     """
-    Convert str uuid to the Mongo representation of UUID.
+    Convert str uuid to uuid.UUID.
 
     Args:
         uuid_str (str): the uuid to be converted
 
     Returns:
-        bson.binary.Binary: the uuid in Mongo encoding
+        uuid.UUID: the uuid
 
     """
-    return uuid_to_mongo_uuid(uuid.UUID(uuid_str))
-
-
-def uuid_to_mongo_uuid(in_uuid: uuid.UUID) -> bson.binary.Binary:
-    """
-    Convert uuid.UUID to the Mongo representation of UUID.
-
-    Args:
-        in_uuid (uuid.UUID): the uuid to be converted
-
-    Returns:
-        bson.binary.Binary: the uuid in Mongo encoding
-
-    """
-    return bson.binary.Binary(in_uuid.bytes, 4)
+    return uuid.UUID(uuid_str)
 
 
 # misc
@@ -297,10 +283,10 @@ def is_owner(dataset: str = None, project: str = None):
         raise ValueError('Only one of dataset and project should be set')
     if dataset:
         try:
-            mongo_uuid = str_to_mongo_uuid(dataset)
+            muuid = str_to_uuid(dataset)
         except ValueError:
             flask.abort(flask.Response(status=401))
-        projects = list(flask.g.db['projects'].find({'datasets': mongo_uuid},
+        projects = list(flask.g.db['projects'].find({'datasets': muuid},
                                                     {'owner': 1, 'datasets': 1, '_id': 0}))
         owners = [project['owner'] for project in projects]
     elif project:
@@ -370,4 +356,4 @@ def make_log(data_type: str, action: str, data: dict = None):
                                    'data_type': data_type,
                                    'data': data,
                                    'timestamp': make_timestamp(),
-                                   'user': uuid_to_mongo_uuid(flask.g.current_user['_id'])})
+                                   'user': flask.g.current_user['_id']})

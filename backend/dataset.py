@@ -61,7 +61,7 @@ def update_projects(dataset_uuid: str, in_projects: list):
         ValueError: a project uuid did not match any project in the db
 
     """
-    ds_uuid = utils.str_to_mongo_uuid(dataset_uuid)
+    ds_uuid = utils.str_to_uuid(dataset_uuid)
     old_projects = {item['_id']
                     for item in
                     flask.g.db['projects'].find({'datasets': ds_uuid},
@@ -71,14 +71,14 @@ def update_projects(dataset_uuid: str, in_projects: list):
     to_add = new_projects-old_projects
     for proj in to_remove:
         response = (flask.g.db['projects']
-                    .update({'_id': utils.uuid_to_mongo_uuid(proj)},
+                    .update({'_id': proj},
                             {'$pull': {'datasets': ds_uuid}}))
         if not response['nModified']:
             logging.error('Dataset %s not listed in project %s',
                           dataset_uuid, proj)
     for proj in to_add:
         response = (flask.g.db['projects']
-                    .update({'_id': utils.uuid_to_mongo_uuid(proj)},
+                    .update({'_id': proj},
                             {'$push': {'datasets': ds_uuid}}))
         if not response['nModified']:
             logging.error('Dataset %s not listed in project %s',
@@ -102,11 +102,9 @@ def list_user_data():
                           .find({'$or': [{'receiver': flask.session['username']},
                                          {'creator': flask.session['username']}]},
                                 {'datasets': 1}))
-    uuids = tuple(utils.uuid_to_mongo_uuid(ds)
-                  for entry in user_projects for ds in entry['datasets'])
+    uuids = tuple(ds for entry in user_projects for ds in entry['datasets'])
     user_datasets = list(flask.g.db['datasets'].find({'uuid': {'$in': uuids}},
                                                      {'title': 1}))
-    logging.error(user_datasets)
     return utils.response_json({'datasets': user_datasets})
 
 
@@ -134,9 +132,7 @@ def add_dataset_post():
             flask.abort(flask.Response(status=400))
         dataset.update(indata)
 
-    identifier = dataset['_id'].hex()
-    identifier = (f'{identifier[:8]}-{identifier[8:12]}-' +
-                  f'{identifier[12:16]}-{identifier[16:20]}-{identifier[20:]}')
+    identifier = dataset['_id'].hex
     if 'projects' in dataset:
         update_projects(identifier, dataset['projects'])
         del dataset['projects']
@@ -191,28 +187,25 @@ def get_dataset(identifier):
 def delete_dataset(identifier):
     """Delete a dataset."""
     try:
-        mongo_uuid = utils.str_to_mongo_uuid(identifier)
+        muuid = utils.str_to_uuid(identifier)
     except ValueError:
         return flask.Response(status=404)
 
-    result = flask.g.db['datasets'].delete_one({'_id': mongo_uuid})
+    result = flask.g.db['datasets'].delete_one({'_id': muuid})
     if result.deleted_count == 0:
         return flask.Response(status=404)
     utils.make_log('dataset', 'delete')
 
-    for entry in flask.g.db['orders'].find({'datasets': mongo_uuid}):
-        logging.error(f'flaff: {entry}')
-        flask.g.db['orders'].update_one({'_id': utils.uuid_to_mongo_uuid(entry['_id'])},
-                                        {'$pull': {'datasets': mongo_uuid}})
-        new_data = flask.g.db['orders'].find_one({'_id': utils.uuid_to_mongo_uuid(entry['_id'])})
-        new_data['_id'] = utils.uuid_to_mongo_uuid(new_data['_id'])
+    for entry in flask.g.db['orders'].find({'datasets': muuid}):
+        flask.g.db['orders'].update_one({'_id': entry['_id']},
+                                        {'$pull': {'datasets': muuid}})
+        new_data = flask.g.db['orders'].find_one({'_id': entry['_id']})
         utils.make_log('order', 'edit', new_data)
 
-    for entry in flask.g.db['projects'].find({'datasets': mongo_uuid}):
-        flask.g.db['projects'].update_one({'_id': utils.uuid_to_mongo_uuid(entry['_id'])},
-                                          {'$pull': {'datasets': mongo_uuid}})
-        new_data = flask.g.db['projects'].find_one({'_id': utils.uuid_to_mongo_uuid(entry['_id'])})
-        new_data['_id'] = utils.uuid_to_mongo_uuid(new_data['_id'])
+    for entry in flask.g.db['projects'].find({'datasets': muuid}):
+        flask.g.db['projects'].update_one({'_id': entry['_id']},
+                                          {'$pull': {'datasets': muuid}})
+        new_data = flask.g.db['projects'].find_one({'_id': entry['_id']})
         utils.make_log('project', 'edit', new_data)
 
     return flask.Response(status=200)
@@ -234,7 +227,7 @@ def update_dataset(identifier):
     """
     indata = json.loads(flask.request.data)
     try:
-        ds_uuid = utils.str_to_mongo_uuid(identifier)
+        ds_uuid = utils.str_to_uuid(identifier)
     except ValueError:
         flask.abort(flask.Response(status=404))
     if not validate_dataset_input(indata):

@@ -40,7 +40,7 @@ def get_order(identifier):
 
     """
     try:
-        muuid = utils.str_to_mongo_uuid(identifier)
+        muuid = utils.str_to_uuid(identifier)
     except ValueError:
         return flask.abort(status=404)
     result = flask.g.db['orders'].find_one({'_id': muuid})
