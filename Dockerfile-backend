@@ -5,10 +5,8 @@ COPY config.yaml.sample /config.yaml
 RUN sed -i 's/mongo_host:.*/mongo_host: "db"/' /config.yaml
 WORKDIR /code/backend
 
-ENV FLASK_APP app
-ENV FLASK_ENV development
 ENV PYTHONPATH /code/backend
 
 RUN pip3 install -r requirements.txt
 
-CMD ["flask", "run", "--host", "0.0.0.0"]
+CMD ["python3", "app.py", "--config_file", "/config.yaml"]
