@@ -244,10 +244,10 @@ def update_dataset(identifier):
         projects = indata['projects']
         del indata['projects']
 
-    response = flask.g.db['datasets'].update_one({'_id': ds_uuid}, {'$set': indata})
-    if response.matched_count == 0:
-        flask.abort(flask.Response(status=404))
-
+    if indata:
+        response = flask.g.db['datasets'].update_one({'_id': ds_uuid}, {'$set': indata})
+        if response.matched_count == 0:
+            flask.abort(flask.Response(status=404))
     if projects:
         update_projects(identifier, projects)
 
