@@ -4,7 +4,7 @@
 
   <transition name="notification-fade">
     <div v-if="notification.message" :class="{notification: true, 'is-info': type === 'normal', 'is-danger': notification.type === 'warning'}">
-      {{ notification }}
+      {{ notification.message }}
     </div>
   </transition>
 
