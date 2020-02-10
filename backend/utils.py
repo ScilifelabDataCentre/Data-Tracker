@@ -121,7 +121,9 @@ def get_db(dbserver: pymongo.mongo_client.MongoClient) -> pymongo.database.Datab
         pymongo.database.Database: the database connection
 
     """
-    return dbserver[flask.current_app.config['mongo']['db']]
+    codec_options = bson.codec_options.CodecOptions(uuid_representation=bson.binary.STANDARD)
+    return dbserver.get_database(flask.current_app.config['mongo']['db'],
+                                 codec_options=(codec_options))
 
 
 def new_uuid() -> bson.binary.Binary:
