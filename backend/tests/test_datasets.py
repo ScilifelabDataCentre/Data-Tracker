@@ -1,6 +1,5 @@
 """Tests for dataset requests."""
 import json
-import time
 import uuid
 import requests
 
