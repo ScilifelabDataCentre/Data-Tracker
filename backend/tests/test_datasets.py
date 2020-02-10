@@ -385,7 +385,6 @@ def test_update(dataset_for_tests):
         assert data[field] == indata[field]
 
     new_title = random_string()
-    time.sleep(1)  # make sure that timestamp will differ
     response = make_request(session, f'/api/dataset/{ds_uuid}',
                             method='PUT', data={'title': new_title})
     assert response == (None, 200)
@@ -393,10 +392,6 @@ def test_update(dataset_for_tests):
     for field in new_data:
         if field == 'title':
             assert new_data[field] == new_title
-        elif field == 'timestamp':
-            new_time = parse_time(new_data[field])
-            old_time = parse_time(data[field])
-            assert (new_time-old_time).total_seconds() > 0
         else:
             assert new_data[field] == data[field]
 
