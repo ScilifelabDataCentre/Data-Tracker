@@ -368,9 +368,10 @@ def test_update(dataset_for_tests):
 
     Should require at least Steward.
     """
-    indata = {'links': [{'description': 'Test2 description', 'url': 'http://test2_url'}],
-              'description': 'Test2 description',
+    indata = {'links': [{'description': 'Test description', 'url': 'http://test2_url'}],
+              'description': 'Test description',
               'title': 'Test2 title'}
+    indata.update(TEST_DS_LABEL)
 
     session = requests.Session()
     as_user(session, USERS['steward'])
