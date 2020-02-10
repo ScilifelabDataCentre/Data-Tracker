@@ -1,7 +1,7 @@
 <template>
-<div class="browser-entry box">
-  <div class="entry-title"><router-link :to="'/' + entry_type + '/' + entry.uuid"> {{ entry.title }}</router-link></div>
-  <div v-html="entry.description"></div>
+<div class="browser-entry message">
+  <div class="message-header"><router-link :to="'/' + entry_type + '/' + entry._id"> {{ entry.title }}</router-link></div>
+  <div v-html="entry.description" class="message-body"></div>
   <div class="fade-helper"></div>
 </div>
 </template>
@@ -15,7 +15,7 @@ export default {
 
 <style scoped>
 .browser-entry {
-  height: 120px;
+  height: 9em;
   position: relative;
   overflow: hidden;
 }
@@ -27,9 +27,5 @@ export default {
   margin: 0;
   padding: 1.5em 0;
   background-image: linear-gradient(to bottom, transparent, white);
-}
-
-.dataset-title {
-    font-weight: bold;
 }
 </style>
