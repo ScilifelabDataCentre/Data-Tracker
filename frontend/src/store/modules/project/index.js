@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import {getXsrf} from '../../helpers.js';
+import {getCsrfHeader} from '../../helpers.js';
 
 const state = {
   project: {},
@@ -53,7 +53,7 @@ const actions = {
                 'id': project_id,
               },
               {
-                headers: {'X-Xsrftoken': getXsrf()},
+                headers: getCsrfHeader(),
               })
         .then((response) => {
           resolve(response);
@@ -77,7 +77,7 @@ const actions = {
         .post(url,
               newProject,
               {
-                headers: {'X-Xsrftoken': getXsrf()},
+                  headers: getCsrfHeader(),
               })
         .then((response) => {
           resolve(response);

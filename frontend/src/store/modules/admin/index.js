@@ -2,6 +2,7 @@ import axios from 'axios';
 
 const state = {
   users: [],
+  
 }
 
 const mutations = {
@@ -34,7 +35,7 @@ const adminModule = {
   state,
   mutations,
   actions,
-  getters
+  getters,
 }
 
 export default adminModule
