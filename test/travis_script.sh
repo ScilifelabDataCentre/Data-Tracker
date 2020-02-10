@@ -57,7 +57,6 @@ echo '>>> Finalising: Combine coverage'
 coverage combine .coverage_pytest .coverage_backend
 
 if [ -f .coverage ]; then
-    coveralls
     codecov
     coverage report
 fi
