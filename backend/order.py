@@ -1,6 +1,4 @@
 """Order requests."""
-import logging
-
 import flask
 
 import utils
