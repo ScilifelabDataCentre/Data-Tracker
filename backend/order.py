@@ -46,7 +46,6 @@ def get_order(identifier):
     except ValueError:
         return flask.abort(status=404)
     result = flask.g.db['orders'].find_one({'_id': muuid})
-    logging.error(result)
     if not result:
         return flask.abort(status=404)
     return utils.response_json({'order': result})
