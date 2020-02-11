@@ -1,5 +1,5 @@
-user module
-===========
+user.py
+=======
 
 .. automodule:: user
    :members:

@@ -1,5 +1,5 @@
-utils module
-============
+utils.py
+========
 
 .. automodule:: utils
    :members:

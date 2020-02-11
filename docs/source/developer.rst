@@ -1,5 +1,5 @@
-developer module
-================
+developer.py
+============
 
 .. automodule:: developer
    :members:

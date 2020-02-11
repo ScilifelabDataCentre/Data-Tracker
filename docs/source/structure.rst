@@ -1,5 +1,5 @@
-structure module
-================
+structure.py
+============
 
 .. automodule:: structure
    :members:

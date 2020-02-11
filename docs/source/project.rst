@@ -1,5 +1,5 @@
-project module
-==============
+project.py
+==========
 
 .. automodule:: project
    :members:

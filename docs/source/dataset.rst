@@ -1,5 +1,5 @@
-dataset module
-==============
+dataset.py
+==========
 
 .. automodule:: dataset
    :members:

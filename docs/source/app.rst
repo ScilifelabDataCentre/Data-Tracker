@@ -1,5 +1,5 @@
-app module
-==========
+app.py
+======
 
 .. automodule:: app
    :members:

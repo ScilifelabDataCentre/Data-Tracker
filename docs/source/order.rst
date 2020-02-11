@@ -1,5 +1,5 @@
-order module
-============
+order.py
+========
 
 .. automodule:: order
    :members:
