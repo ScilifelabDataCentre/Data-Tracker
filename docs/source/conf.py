@@ -52,6 +52,11 @@ exclude_patterns = []
 html_theme = 'alabaster'
 
 html_theme_options = {
+    'github_banner': True,
+    'github_button': False,
+    'github_count': False,
+    'github_repo': 'SciLifeLab-Data-Tracker',
+    'github_user': 'ScilifelabDataCentre',
     'sidebar_width': '240px',
     'page_width': '1000px'
 }
