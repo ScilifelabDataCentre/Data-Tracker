@@ -52,13 +52,20 @@ exclude_patterns = []
 html_theme = 'alabaster'
 
 html_theme_options = {
+    'badge_branch': 'develop',
+    'codecov_button': True,
     'github_banner': True,
     'github_button': False,
     'github_count': False,
     'github_repo': 'SciLifeLab-Data-Tracker',
     'github_user': 'ScilifelabDataCentre',
+    'link': '#045C64',
+    'link_hover': '#A7C947',
+    'logo': 'data-centre-logo.png',
+    'logo_name': True,
+    'page_width': '1000px',
     'sidebar_width': '240px',
-    'page_width': '1000px'
+    'travis_button': True
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
