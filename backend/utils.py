@@ -335,17 +335,6 @@ def make_log(data_type: str, action: str, data: dict = None):
     It is assumed that all values are curated,
     e.g. that data only contains permitted fields.
 
-    ``
-    {
-        'action': ('add', 'edit', 'delete'),
-        'data_type': type of data, e.g. 'order',
-        'entry': the entry id (_id),
-        'fields': {modified fields with the old data},
-        'timestamp': the current time,
-        'user': the id of the current user
-    }
-    ``
-
     Args:
         action (str): type of action (insert, update etc)
         data_type (str): the collection name
