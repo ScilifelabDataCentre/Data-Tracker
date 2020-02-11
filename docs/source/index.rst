@@ -9,7 +9,8 @@ SciLifeLab Data Tracker
 .. toctree::
    :maxdepth: 2
 
-   develop_env.md
+   data_structure
+   develop_env
    modules
 
 
