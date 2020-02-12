@@ -49,24 +49,19 @@ exclude_patterns = []
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'alabaster'
+html_theme = 'sphinx_rtd_theme'
 
 html_logo = '_static/data-centre-logo.png'
 
+html_context = {
+    "display_github": True, # Integrate GitHub
+    "github_user": "ScilifelabDataCentre", # Username
+    "github_repo": "SciLifeLab-Data-Tracker", # Repo name
+    "github_version": "develop", # Version
+    "conf_py_path": "/docs/source/", # Path in the checkout to the docs root
+}
+
 html_theme_options = {
-    'badge_branch': 'develop',
-    'codecov_button': True,
-    'github_banner': True,
-    'github_button': False,
-    'github_count': False,
-    'github_repo': 'SciLifeLab-Data-Tracker',
-    'github_user': 'ScilifelabDataCentre',
-    'link': '#045C64',
-    'link_hover': '#A7C947',
-    'logo_name': True,
-    'page_width': '1000px',
-    'sidebar_width': '220px',
-    'travis_button': True
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
