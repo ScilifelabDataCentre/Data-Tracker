@@ -17,7 +17,7 @@ The Data Tracker is based on a few main components:
 
 
 ## Order
-* Added automatically when e.g. order in order portal changes to {\tt accepted}
+* Added automatically when e.g. order in order portal changes to `accepted`
   - Import data from order portal
 * Can have any number of associated datasets
 
