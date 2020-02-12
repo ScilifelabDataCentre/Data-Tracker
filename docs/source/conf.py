@@ -51,6 +51,8 @@ exclude_patterns = []
 #
 html_theme = 'alabaster'
 
+html_logo = '_static/data-centre-logo.png'
+
 html_theme_options = {
     'badge_branch': 'develop',
     'codecov_button': True,
@@ -61,10 +63,9 @@ html_theme_options = {
     'github_user': 'ScilifelabDataCentre',
     'link': '#045C64',
     'link_hover': '#A7C947',
-    'logo': 'data-centre-logo.png',
     'logo_name': True,
     'page_width': '1000px',
-    'sidebar_width': '240px',
+    'sidebar_width': '220px',
     'travis_button': True
 }
 
