@@ -1,0 +1,541 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>utils &mdash; Data Tracker  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Data Tracker
+          
+
+          
+            
+            <img src="../_static/data-centre-logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../data_structure.html">Data Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../develop_env.html">System for development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">Code reference</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Data Tracker</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Module code</a> &raquo;</li>
+        
+      <li>utils</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for utils</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;General helper functions.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">abc</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">uuid</span>
+
+<span class="kn">import</span> <span class="nn">bson</span>
+<span class="kn">import</span> <span class="nn">flask</span>
+<span class="kn">import</span> <span class="nn">pymongo</span>
+
+
+<span class="c1"># csrf</span>
+<div class="viewcode-block" id="check_csrf_token"><a class="viewcode-back" href="../utils.html#utils.check_csrf_token">[docs]</a><span class="k">def</span> <span class="nf">check_csrf_token</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Compare the csrf token from the request (header) with the one in the cookie.session.&quot;&quot;&quot;</span>
+    <span class="n">token</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;X-CSRFToken&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">token</span> <span class="ow">or</span> <span class="p">(</span><span class="n">token</span> <span class="o">!=</span> <span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">cookies</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;_csrf_token&#39;</span><span class="p">)):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Bad csrf token received&#39;</span><span class="p">)</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="gen_csrf_token"><a class="viewcode-back" href="../utils.html#utils.gen_csrf_token">[docs]</a><span class="k">def</span> <span class="nf">gen_csrf_token</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Genereate a csrf token.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: the csrf token</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span><span class="o">.</span><span class="n">hex</span></div>
+
+
+<span class="c1"># db input/output</span>
+<div class="viewcode-block" id="check_mongo_update"><a class="viewcode-back" href="../utils.html#utils.check_mongo_update">[docs]</a><span class="k">def</span> <span class="nf">check_mongo_update</span><span class="p">(</span><span class="n">document</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Make sure that some fields in a document are not changed during an update.</span>
+
+<span class="sd">    Also make sure indata is not empty.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        document (dict): received input to update a document</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">document</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="n">forbidden</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;_id&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">forbidden</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">document</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="get_dataset"><a class="viewcode-back" href="../utils.html#utils.get_dataset">[docs]</a><span class="k">def</span> <span class="nf">get_dataset</span><span class="p">(</span><span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Query for a dataset from the database.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        identifier (str): the uuid of the dataset</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: the dataset</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">mongo_uuid</span> <span class="o">=</span> <span class="n">str_to_uuid</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;datasets&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">mongo_uuid</span><span class="p">})</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;projects&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;projects&#39;</span><span class="p">]</span>
+                                  <span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s1">&#39;datasets&#39;</span><span class="p">:</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]},</span>
+                                        <span class="p">{</span><span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}))</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="get_project"><a class="viewcode-back" href="../utils.html#utils.get_project">[docs]</a><span class="k">def</span> <span class="nf">get_project</span><span class="p">(</span><span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Query for a project from the database.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        identifier (str): the uuid of the project</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: the project</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">mongo_uuid</span> <span class="o">=</span> <span class="n">str_to_uuid</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;projects&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">mongo_uuid</span><span class="p">})</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="get_dbserver"><a class="viewcode-back" href="../utils.html#utils.get_dbserver">[docs]</a><span class="k">def</span> <span class="nf">get_dbserver</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">mongo_client</span><span class="o">.</span><span class="n">MongoClient</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the connection to the MongoDB database server.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        pymongo.mongo_client.MongoClient: the client connection</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">MongoClient</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;mongo&#39;</span><span class="p">][</span><span class="s1">&#39;host&#39;</span><span class="p">],</span>
+                               <span class="n">port</span><span class="o">=</span><span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;mongo&#39;</span><span class="p">][</span><span class="s1">&#39;port&#39;</span><span class="p">],</span>
+                               <span class="n">username</span><span class="o">=</span><span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;mongo&#39;</span><span class="p">][</span><span class="s1">&#39;user&#39;</span><span class="p">],</span>
+                               <span class="n">password</span><span class="o">=</span><span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;mongo&#39;</span><span class="p">][</span><span class="s1">&#39;password&#39;</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="get_db"><a class="viewcode-back" href="../utils.html#utils.get_db">[docs]</a><span class="k">def</span> <span class="nf">get_db</span><span class="p">(</span><span class="n">dbserver</span><span class="p">:</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">mongo_client</span><span class="o">.</span><span class="n">MongoClient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">database</span><span class="o">.</span><span class="n">Database</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the connection to the MongoDB database.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        dbserver: connection to the db</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        pymongo.database.Database: the database connection</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">codec_options</span> <span class="o">=</span> <span class="n">bson</span><span class="o">.</span><span class="n">codec_options</span><span class="o">.</span><span class="n">CodecOptions</span><span class="p">(</span><span class="n">uuid_representation</span><span class="o">=</span><span class="n">bson</span><span class="o">.</span><span class="n">binary</span><span class="o">.</span><span class="n">STANDARD</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dbserver</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;mongo&#39;</span><span class="p">][</span><span class="s1">&#39;db&#39;</span><span class="p">],</span>
+                                 <span class="n">codec_options</span><span class="o">=</span><span class="p">(</span><span class="n">codec_options</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="new_uuid"><a class="viewcode-back" href="../utils.html#utils.new_uuid">[docs]</a><span class="k">def</span> <span class="nf">new_uuid</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate a uuid for a field in a MongoDB document.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        uuid.UUID: the new uuid in binary format</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="str_to_uuid"><a class="viewcode-back" href="../utils.html#utils.str_to_uuid">[docs]</a><span class="k">def</span> <span class="nf">str_to_uuid</span><span class="p">(</span><span class="n">uuid_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert str uuid to uuid.UUID.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        uuid_str (str): the uuid to be converted</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        uuid.UUID: the uuid</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">(</span><span class="n">uuid_str</span><span class="p">)</span></div>
+
+
+<span class="c1"># misc</span>
+<div class="viewcode-block" id="convert_keys_to_camel"><a class="viewcode-back" href="../utils.html#utils.convert_keys_to_camel">[docs]</a><span class="k">def</span> <span class="nf">convert_keys_to_camel</span><span class="p">(</span><span class="n">chunk</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert keys given in snake_case to camelCase.</span>
+
+<span class="sd">    The capitalization of the first letter is preserved.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        chunk: Object to convert</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        *: chunk converted to camelCase dict, otherwise chunk</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">chunk</span><span class="p">,</span> <span class="n">abc</span><span class="o">.</span><span class="n">Sequence</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">chunk</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">convert_keys_to_camel</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">chunk</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">chunk</span><span class="p">,</span> <span class="n">abc</span><span class="o">.</span><span class="n">Mapping</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">chunk</span>
+
+    <span class="n">new_chunk</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">chunk</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;_id&#39;</span><span class="p">:</span>
+            <span class="n">new_chunk</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="k">continue</span>
+        <span class="c1"># First character should be the same as in the original string</span>
+        <span class="n">new_key</span> <span class="o">=</span> <span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">+</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)])[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">new_chunk</span><span class="p">[</span><span class="n">new_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">convert_keys_to_camel</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">new_chunk</span></div>
+
+
+<div class="viewcode-block" id="country_list"><a class="viewcode-back" href="../utils.html#utils.country_list">[docs]</a><span class="k">def</span> <span class="nf">country_list</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Provide a list of countries.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list: A selection of countries.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;Afghanistan&quot;</span><span class="p">,</span> <span class="s2">&quot;Albania&quot;</span><span class="p">,</span> <span class="s2">&quot;Algeria&quot;</span><span class="p">,</span> <span class="s2">&quot;American Samoa&quot;</span><span class="p">,</span> <span class="s2">&quot;Andorra&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Angola&quot;</span><span class="p">,</span> <span class="s2">&quot;Anguilla&quot;</span><span class="p">,</span> <span class="s2">&quot;Antarctica&quot;</span><span class="p">,</span> <span class="s2">&quot;Antigua and Barbuda&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Argentina&quot;</span><span class="p">,</span> <span class="s2">&quot;Armenia&quot;</span><span class="p">,</span> <span class="s2">&quot;Aruba&quot;</span><span class="p">,</span> <span class="s2">&quot;Australia&quot;</span><span class="p">,</span> <span class="s2">&quot;Austria&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Azerbaijan&quot;</span><span class="p">,</span> <span class="s2">&quot;Bahamas&quot;</span><span class="p">,</span> <span class="s2">&quot;Bahrain&quot;</span><span class="p">,</span> <span class="s2">&quot;Bangladesh&quot;</span><span class="p">,</span> <span class="s2">&quot;Barbados&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Belarus&quot;</span><span class="p">,</span> <span class="s2">&quot;Belgium&quot;</span><span class="p">,</span> <span class="s2">&quot;Belize&quot;</span><span class="p">,</span> <span class="s2">&quot;Benin&quot;</span><span class="p">,</span> <span class="s2">&quot;Bermuda&quot;</span><span class="p">,</span> <span class="s2">&quot;Bhutan&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Bolivia&quot;</span><span class="p">,</span> <span class="s2">&quot;Bosnia and Herzegovina&quot;</span><span class="p">,</span> <span class="s2">&quot;Botswana&quot;</span><span class="p">,</span> <span class="s2">&quot;Brazil&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;British Indian Ocean Territory&quot;</span><span class="p">,</span> <span class="s2">&quot;British Virgin Islands&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Brunei&quot;</span><span class="p">,</span> <span class="s2">&quot;Bulgaria&quot;</span><span class="p">,</span> <span class="s2">&quot;Burkina Faso&quot;</span><span class="p">,</span> <span class="s2">&quot;Burundi&quot;</span><span class="p">,</span> <span class="s2">&quot;Cambodia&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Cameroon&quot;</span><span class="p">,</span> <span class="s2">&quot;Canada&quot;</span><span class="p">,</span> <span class="s2">&quot;Cape Verde&quot;</span><span class="p">,</span> <span class="s2">&quot;Cayman Islands&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Central African Republic&quot;</span><span class="p">,</span> <span class="s2">&quot;Chad&quot;</span><span class="p">,</span> <span class="s2">&quot;Chile&quot;</span><span class="p">,</span> <span class="s2">&quot;China&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Christmas Island&quot;</span><span class="p">,</span> <span class="s2">&quot;Cocos Islands&quot;</span><span class="p">,</span> <span class="s2">&quot;Colombia&quot;</span><span class="p">,</span> <span class="s2">&quot;Comoros&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Cook Islands&quot;</span><span class="p">,</span> <span class="s2">&quot;Costa Rica&quot;</span><span class="p">,</span> <span class="s2">&quot;Croatia&quot;</span><span class="p">,</span> <span class="s2">&quot;Cuba&quot;</span><span class="p">,</span> <span class="s2">&quot;Curacao&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Cyprus&quot;</span><span class="p">,</span> <span class="s2">&quot;Czech Republic&quot;</span><span class="p">,</span> <span class="s2">&quot;Democratic Republic of the Congo&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Denmark&quot;</span><span class="p">,</span> <span class="s2">&quot;Djibouti&quot;</span><span class="p">,</span> <span class="s2">&quot;Dominica&quot;</span><span class="p">,</span> <span class="s2">&quot;Dominican Republic&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;East Timor&quot;</span><span class="p">,</span> <span class="s2">&quot;Ecuador&quot;</span><span class="p">,</span> <span class="s2">&quot;Egypt&quot;</span><span class="p">,</span> <span class="s2">&quot;El Salvador&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Equatorial Guinea&quot;</span><span class="p">,</span> <span class="s2">&quot;Eritrea&quot;</span><span class="p">,</span> <span class="s2">&quot;Estonia&quot;</span><span class="p">,</span> <span class="s2">&quot;Ethiopia&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Falkland Islands&quot;</span><span class="p">,</span> <span class="s2">&quot;Faroe Islands&quot;</span><span class="p">,</span> <span class="s2">&quot;Fiji&quot;</span><span class="p">,</span> <span class="s2">&quot;Finland&quot;</span><span class="p">,</span> <span class="s2">&quot;France&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;French Polynesia&quot;</span><span class="p">,</span> <span class="s2">&quot;Gabon&quot;</span><span class="p">,</span> <span class="s2">&quot;Gambia&quot;</span><span class="p">,</span> <span class="s2">&quot;Georgia&quot;</span><span class="p">,</span> <span class="s2">&quot;Germany&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Ghana&quot;</span><span class="p">,</span> <span class="s2">&quot;Gibraltar&quot;</span><span class="p">,</span> <span class="s2">&quot;Greece&quot;</span><span class="p">,</span> <span class="s2">&quot;Greenland&quot;</span><span class="p">,</span> <span class="s2">&quot;Grenada&quot;</span><span class="p">,</span> <span class="s2">&quot;Guam&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Guatemala&quot;</span><span class="p">,</span> <span class="s2">&quot;Guernsey&quot;</span><span class="p">,</span> <span class="s2">&quot;Guinea&quot;</span><span class="p">,</span> <span class="s2">&quot;Guinea-Bissau&quot;</span><span class="p">,</span> <span class="s2">&quot;Guyana&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Haiti&quot;</span><span class="p">,</span> <span class="s2">&quot;Honduras&quot;</span><span class="p">,</span> <span class="s2">&quot;Hong Kong&quot;</span><span class="p">,</span> <span class="s2">&quot;Hungary&quot;</span><span class="p">,</span> <span class="s2">&quot;Iceland&quot;</span><span class="p">,</span> <span class="s2">&quot;India&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Indonesia&quot;</span><span class="p">,</span> <span class="s2">&quot;Iran&quot;</span><span class="p">,</span> <span class="s2">&quot;Iraq&quot;</span><span class="p">,</span> <span class="s2">&quot;Ireland&quot;</span><span class="p">,</span> <span class="s2">&quot;Isle of Man&quot;</span><span class="p">,</span> <span class="s2">&quot;Israel&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Italy&quot;</span><span class="p">,</span> <span class="s2">&quot;Ivory Coast&quot;</span><span class="p">,</span> <span class="s2">&quot;Jamaica&quot;</span><span class="p">,</span> <span class="s2">&quot;Japan&quot;</span><span class="p">,</span> <span class="s2">&quot;Jersey&quot;</span><span class="p">,</span> <span class="s2">&quot;Jordan&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Kazakhstan&quot;</span><span class="p">,</span> <span class="s2">&quot;Kenya&quot;</span><span class="p">,</span> <span class="s2">&quot;Kiribati&quot;</span><span class="p">,</span> <span class="s2">&quot;Kosovo&quot;</span><span class="p">,</span> <span class="s2">&quot;Kuwait&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Kyrgyzstan&quot;</span><span class="p">,</span> <span class="s2">&quot;Laos&quot;</span><span class="p">,</span> <span class="s2">&quot;Latvia&quot;</span><span class="p">,</span> <span class="s2">&quot;Lebanon&quot;</span><span class="p">,</span> <span class="s2">&quot;Lesotho&quot;</span><span class="p">,</span> <span class="s2">&quot;Liberia&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Libya&quot;</span><span class="p">,</span> <span class="s2">&quot;Liechtenstein&quot;</span><span class="p">,</span> <span class="s2">&quot;Lithuania&quot;</span><span class="p">,</span> <span class="s2">&quot;Luxembourg&quot;</span><span class="p">,</span> <span class="s2">&quot;Macau&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Macedonia&quot;</span><span class="p">,</span> <span class="s2">&quot;Madagascar&quot;</span><span class="p">,</span> <span class="s2">&quot;Malawi&quot;</span><span class="p">,</span> <span class="s2">&quot;Malaysia&quot;</span><span class="p">,</span> <span class="s2">&quot;Maldives&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Mali&quot;</span><span class="p">,</span> <span class="s2">&quot;Malta&quot;</span><span class="p">,</span> <span class="s2">&quot;Marshall Islands&quot;</span><span class="p">,</span> <span class="s2">&quot;Mauritania&quot;</span><span class="p">,</span> <span class="s2">&quot;Mauritius&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Mayotte&quot;</span><span class="p">,</span> <span class="s2">&quot;Mexico&quot;</span><span class="p">,</span> <span class="s2">&quot;Micronesia&quot;</span><span class="p">,</span> <span class="s2">&quot;Moldova&quot;</span><span class="p">,</span> <span class="s2">&quot;Monaco&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Mongolia&quot;</span><span class="p">,</span> <span class="s2">&quot;Montenegro&quot;</span><span class="p">,</span> <span class="s2">&quot;Montserrat&quot;</span><span class="p">,</span> <span class="s2">&quot;Morocco&quot;</span><span class="p">,</span> <span class="s2">&quot;Mozambique&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Myanmar&quot;</span><span class="p">,</span> <span class="s2">&quot;Namibia&quot;</span><span class="p">,</span> <span class="s2">&quot;Nauru&quot;</span><span class="p">,</span> <span class="s2">&quot;Nepal&quot;</span><span class="p">,</span> <span class="s2">&quot;Netherlands&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Netherlands Antilles&quot;</span><span class="p">,</span> <span class="s2">&quot;New Caledonia&quot;</span><span class="p">,</span> <span class="s2">&quot;New Zealand&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Nicaragua&quot;</span><span class="p">,</span> <span class="s2">&quot;Niger&quot;</span><span class="p">,</span> <span class="s2">&quot;Nigeria&quot;</span><span class="p">,</span> <span class="s2">&quot;Niue&quot;</span><span class="p">,</span> <span class="s2">&quot;North Korea&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Northern Mariana Islands&quot;</span><span class="p">,</span> <span class="s2">&quot;Norway&quot;</span><span class="p">,</span> <span class="s2">&quot;Oman&quot;</span><span class="p">,</span> <span class="s2">&quot;Pakistan&quot;</span><span class="p">,</span> <span class="s2">&quot;Palau&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Palestine&quot;</span><span class="p">,</span> <span class="s2">&quot;Panama&quot;</span><span class="p">,</span> <span class="s2">&quot;Papua New Guinea&quot;</span><span class="p">,</span> <span class="s2">&quot;Paraguay&quot;</span><span class="p">,</span> <span class="s2">&quot;Peru&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Philippines&quot;</span><span class="p">,</span> <span class="s2">&quot;Pitcairn&quot;</span><span class="p">,</span> <span class="s2">&quot;Poland&quot;</span><span class="p">,</span> <span class="s2">&quot;Portugal&quot;</span><span class="p">,</span> <span class="s2">&quot;Puerto Rico&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Qatar&quot;</span><span class="p">,</span> <span class="s2">&quot;Republic of the Congo&quot;</span><span class="p">,</span> <span class="s2">&quot;Reunion&quot;</span><span class="p">,</span> <span class="s2">&quot;Romania&quot;</span><span class="p">,</span> <span class="s2">&quot;Russia&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Rwanda&quot;</span><span class="p">,</span> <span class="s2">&quot;Saint Barthelemy&quot;</span><span class="p">,</span> <span class="s2">&quot;Saint Helena&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Saint Kitts and Nevis&quot;</span><span class="p">,</span> <span class="s2">&quot;Saint Lucia&quot;</span><span class="p">,</span> <span class="s2">&quot;Saint Martin&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Saint Pierre and Miquelon&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Saint Vincent and the Grenadines&quot;</span><span class="p">,</span> <span class="s2">&quot;Samoa&quot;</span><span class="p">,</span> <span class="s2">&quot;San Marino&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Sao Tome and Principe&quot;</span><span class="p">,</span> <span class="s2">&quot;Saudi Arabia&quot;</span><span class="p">,</span> <span class="s2">&quot;Senegal&quot;</span><span class="p">,</span> <span class="s2">&quot;Serbia&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Seychelles&quot;</span><span class="p">,</span> <span class="s2">&quot;Sierra Leone&quot;</span><span class="p">,</span> <span class="s2">&quot;Singapore&quot;</span><span class="p">,</span> <span class="s2">&quot;Sint Maarten&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Slovakia&quot;</span><span class="p">,</span> <span class="s2">&quot;Slovenia&quot;</span><span class="p">,</span> <span class="s2">&quot;Solomon Islands&quot;</span><span class="p">,</span> <span class="s2">&quot;Somalia&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;South Africa&quot;</span><span class="p">,</span> <span class="s2">&quot;South Korea&quot;</span><span class="p">,</span> <span class="s2">&quot;South Sudan&quot;</span><span class="p">,</span> <span class="s2">&quot;Spain&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Sri Lanka&quot;</span><span class="p">,</span> <span class="s2">&quot;Sudan&quot;</span><span class="p">,</span> <span class="s2">&quot;Suriname&quot;</span><span class="p">,</span> <span class="s2">&quot;Svalbard and Jan Mayen&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Swaziland&quot;</span><span class="p">,</span> <span class="s2">&quot;Sweden&quot;</span><span class="p">,</span> <span class="s2">&quot;Switzerland&quot;</span><span class="p">,</span> <span class="s2">&quot;Syria&quot;</span><span class="p">,</span> <span class="s2">&quot;Taiwan&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Tajikistan&quot;</span><span class="p">,</span> <span class="s2">&quot;Tanzania&quot;</span><span class="p">,</span> <span class="s2">&quot;Thailand&quot;</span><span class="p">,</span> <span class="s2">&quot;Togo&quot;</span><span class="p">,</span> <span class="s2">&quot;Tokelau&quot;</span><span class="p">,</span> <span class="s2">&quot;Tonga&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Trinidad and Tobago&quot;</span><span class="p">,</span> <span class="s2">&quot;Tunisia&quot;</span><span class="p">,</span> <span class="s2">&quot;Turkey&quot;</span><span class="p">,</span> <span class="s2">&quot;Turkmenistan&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Turks and Caicos Islands&quot;</span><span class="p">,</span> <span class="s2">&quot;Tuvalu&quot;</span><span class="p">,</span> <span class="s2">&quot;U.S. Virgin Islands&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Uganda&quot;</span><span class="p">,</span> <span class="s2">&quot;Ukraine&quot;</span><span class="p">,</span> <span class="s2">&quot;United Arab Emirates&quot;</span><span class="p">,</span> <span class="s2">&quot;United Kingdom&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;United States&quot;</span><span class="p">,</span> <span class="s2">&quot;Uruguay&quot;</span><span class="p">,</span> <span class="s2">&quot;Uzbekistan&quot;</span><span class="p">,</span> <span class="s2">&quot;Vanuatu&quot;</span><span class="p">,</span> <span class="s2">&quot;Vatican&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Venezuela&quot;</span><span class="p">,</span> <span class="s2">&quot;Vietnam&quot;</span><span class="p">,</span> <span class="s2">&quot;Wallis and Futuna&quot;</span><span class="p">,</span> <span class="s2">&quot;Western Sahara&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Yemen&quot;</span><span class="p">,</span> <span class="s2">&quot;Zambia&quot;</span><span class="p">,</span> <span class="s2">&quot;Zimbabwe&quot;</span><span class="p">]</span></div>
+
+
+<span class="n">REGEX</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;.*@.*\..*&#39;</span><span class="p">)}</span>
+
+
+<div class="viewcode-block" id="is_email"><a class="viewcode-back" href="../utils.html#utils.is_email">[docs]</a><span class="k">def</span> <span class="nf">is_email</span><span class="p">(</span><span class="n">indata</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check whether a string seems to be an email address or not.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        indata (str): data to check</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: is the indata an email address or not</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">REGEX</span><span class="p">[</span><span class="s1">&#39;email&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">indata</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="is_owner"><a class="viewcode-back" href="../utils.html#utils.is_owner">[docs]</a><span class="k">def</span> <span class="nf">is_owner</span><span class="p">(</span><span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">project</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check if the current user owns the given dataset or project.</span>
+
+<span class="sd">    If both a dataset and a project is provided, an exception will be raised.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        dataset (str): the dataset to check</span>
+<span class="sd">        project (str): the project to check</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: whether the current owns the dataset/project</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: one of dataset or project must be set, and not both</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">dataset</span> <span class="ow">and</span> <span class="n">project</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Only one of dataset and project should be set&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dataset</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">muuid</span> <span class="o">=</span> <span class="n">str_to_uuid</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">401</span><span class="p">))</span>
+        <span class="n">projects</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;projects&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s1">&#39;datasets&#39;</span><span class="p">:</span> <span class="n">muuid</span><span class="p">},</span>
+                                                    <span class="p">{</span><span class="s1">&#39;owner&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;datasets&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}))</span>
+        <span class="n">owners</span> <span class="o">=</span> <span class="p">[</span><span class="n">project</span><span class="p">[</span><span class="s1">&#39;owner&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">project</span> <span class="ow">in</span> <span class="n">projects</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">project</span><span class="p">:</span>
+        <span class="n">proj_data</span> <span class="o">=</span> <span class="n">get_project</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">proj_data</span><span class="p">:</span>
+            <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">404</span><span class="p">)</span>
+        <span class="n">owners</span> <span class="o">=</span> <span class="p">[</span><span class="n">project</span><span class="p">[</span><span class="s1">&#39;owner&#39;</span><span class="p">]]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Either dataset or project must be set&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span><span class="p">[</span><span class="s1">&#39;email&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">owners</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="response_json"><a class="viewcode-back" href="../utils.html#utils.response_json">[docs]</a><span class="k">def</span> <span class="nf">response_json</span><span class="p">(</span><span class="n">json_structure</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert keys to camelCase and run `flask.jsonify()`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        json_structure (dict): structure to prepare</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        flask.Response: prepared response containing json structure with camelBack keys</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">convert_keys_to_camel</span><span class="p">(</span><span class="n">json_structure</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="make_timestamp"><a class="viewcode-back" href="../utils.html#utils.make_timestamp">[docs]</a><span class="k">def</span> <span class="nf">make_timestamp</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate a timestamp of the current time.</span>
+
+<span class="sd">    returns:</span>
+<span class="sd">        datetime.datetime: the current time</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="make_log"><a class="viewcode-back" href="../utils.html#utils.make_log">[docs]</a><span class="k">def</span> <span class="nf">make_log</span><span class="p">(</span><span class="n">data_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Log a change in the system.</span>
+
+<span class="sd">    Saves a complete copy of the new object.</span>
+
+<span class="sd">    It is assumed that all values are curated,</span>
+<span class="sd">    e.g. that data only contains permitted fields.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        action (str): type of action (insert, update etc)</span>
+<span class="sd">        data_type (str): the collection name</span>
+<span class="sd">        data (dict): the new data for the entry</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;logs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">insert_one</span><span class="p">({</span><span class="s1">&#39;action&#39;</span><span class="p">:</span> <span class="n">action</span><span class="p">,</span>
+                                   <span class="s1">&#39;data_type&#39;</span><span class="p">:</span> <span class="n">data_type</span><span class="p">,</span>
+                                   <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="n">data</span><span class="p">,</span>
+                                   <span class="s1">&#39;timestamp&#39;</span><span class="p">:</span> <span class="n">make_timestamp</span><span class="p">(),</span>
+                                   <span class="s1">&#39;user&#39;</span><span class="p">:</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]})</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019-2020, SciLifeLab Data Centre
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

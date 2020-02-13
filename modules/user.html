@@ -1,0 +1,395 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>user &mdash; Data Tracker  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Data Tracker
+          
+
+          
+            
+            <img src="../_static/data-centre-logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../data_structure.html">Data Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../develop_env.html">System for development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">Code reference</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Data Tracker</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Module code</a> &raquo;</li>
+        
+      <li>user</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for user</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;User profile and login/logout HTMl endpoints.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">functools</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">flask</span>
+
+<span class="kn">import</span> <span class="nn">structure</span>
+<span class="kn">import</span> <span class="nn">utils</span>
+
+
+<span class="n">blueprint</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">Blueprint</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">)</span>  <span class="c1"># pylint: disable=invalid-name</span>
+
+
+<span class="c1"># Decorators</span>
+<div class="viewcode-block" id="login_required"><a class="viewcode-back" href="../user.html#user.login_required">[docs]</a><span class="k">def</span> <span class="nf">login_required</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Confirm that the user is logged in.</span>
+
+<span class="sd">    Otherwise abort with status 401 Unauthorized.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">wrap</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span><span class="p">:</span>
+            <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">401</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">wrap</span></div>
+
+
+<div class="viewcode-block" id="steward_required"><a class="viewcode-back" href="../user.html#user.steward_required">[docs]</a><span class="k">def</span> <span class="nf">steward_required</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Confirm that the user is logged in and has the &#39;Steward&#39; role.</span>
+
+<span class="sd">    Otherwise abort with status 401 Unauthorized.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">wrap</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">check_user_permissions</span><span class="p">(</span><span class="s1">&#39;Steward&#39;</span><span class="p">):</span>
+            <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">401</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">wrap</span></div>
+
+
+<div class="viewcode-block" id="steward_or_dsowner_required"><a class="viewcode-back" href="../user.html#user.steward_or_dsowner_required">[docs]</a><span class="k">def</span> <span class="nf">steward_or_dsowner_required</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Confirm that the user is logged in and has the &#39;Steward&#39; role.</span>
+
+<span class="sd">    Otherwise abort with status 401 Unauthorized.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">wrap</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">check_user_permissions</span><span class="p">(</span><span class="s1">&#39;Steward&#39;</span><span class="p">)</span>\
+           <span class="ow">and</span> <span class="ow">not</span> <span class="n">utils</span><span class="o">.</span><span class="n">is_owner</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;identifier&#39;</span><span class="p">]):</span>
+            <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">401</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">wrap</span></div>
+
+
+<div class="viewcode-block" id="admin_required"><a class="viewcode-back" href="../user.html#user.admin_required">[docs]</a><span class="k">def</span> <span class="nf">admin_required</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Confirm that the user is logged in and has the &#39;Admin&#39; role.</span>
+
+<span class="sd">    Otherwise return status 401 Unauthorized.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">wrap</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">check_user_permissions</span><span class="p">(</span><span class="s1">&#39;Admin&#39;</span><span class="p">):</span>
+            <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">401</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">wrap</span></div>
+
+
+<div class="viewcode-block" id="check_user_permissions"><a class="viewcode-back" href="../user.html#user.check_user_permissions">[docs]</a><span class="k">def</span> <span class="nf">check_user_permissions</span><span class="p">(</span><span class="n">required</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check if the current permissions fulfills the requirement.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        required (str): the required role</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: whether the user has the required permissions or not</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">roles</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;User&#39;</span><span class="p">,</span> <span class="s1">&#39;Steward&#39;</span><span class="p">,</span> <span class="s1">&#39;Admin&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">role</span> <span class="p">:</span><span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_role</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">roles</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Unknown user role: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">role</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">roles</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_role</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">roles</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">required</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Rejected access. User: </span><span class="si">%s</span><span class="s1"> &#39;</span><span class="p">,</span>
+                    <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<span class="c1"># requests</span>
+<div class="viewcode-block" id="elixir_login"><a class="viewcode-back" href="../user.html#user.elixir_login">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/login&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">elixir_login</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Perform a Elixir AAI login.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="logout"><a class="viewcode-back" href="../user.html#user.logout">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/logout&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">logout</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Log out the current user.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s1">&#39;username&#39;</span> <span class="ow">in</span> <span class="n">flask</span><span class="o">.</span><span class="n">session</span><span class="p">:</span>
+        <span class="k">del</span> <span class="n">flask</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">]</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="mi">302</span><span class="p">)</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">set_cookie</span><span class="p">(</span><span class="s1">&#39;_csrf_token&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">expires</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">response</span></div>
+
+
+<div class="viewcode-block" id="list_users"><a class="viewcode-back" href="../user.html#user.list_users">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/all&#39;</span><span class="p">)</span>
+<span class="nd">@admin_required</span>
+<span class="k">def</span> <span class="nf">list_users</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    List all users.</span>
+
+<span class="sd">    Admin access should be required.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;users&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">response_json</span><span class="p">({</span><span class="s1">&#39;users&#39;</span><span class="p">:</span> <span class="n">result</span><span class="p">})</span></div>
+
+
+<span class="c1"># requests</span>
+<div class="viewcode-block" id="get_current_user_info"><a class="viewcode-back" href="../user.html#user.get_current_user_info">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/me&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">get_current_user_info</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    List basic information about the current user.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        flask.Response: json structure for the user</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span>
+    <span class="n">outstructure</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;affiliation&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;country&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;role&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">}</span>
+    <span class="k">if</span> <span class="n">data</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">outstructure</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                <span class="n">outstructure</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">field</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">({</span><span class="s1">&#39;user&#39;</span><span class="p">:</span> <span class="n">outstructure</span><span class="p">})</span></div>
+
+
+<span class="c1"># helper functions</span>
+<div class="viewcode-block" id="do_login"><a class="viewcode-back" href="../user.html#user.do_login">[docs]</a><span class="k">def</span> <span class="nf">do_login</span><span class="p">(</span><span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Set all relevant variables for a logged in user.</span>
+
+<span class="sd">    Users not in db will be added.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        username (str): The username (email) of the user</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;users&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">username</span><span class="p">})</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="p">:</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="n">structure</span><span class="o">.</span><span class="n">user</span><span class="p">()</span>
+        <span class="n">user</span><span class="p">[</span><span class="s1">&#39;email&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">username</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;users&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+
+    <span class="n">flask</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">username</span>
+    <span class="n">flask</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">permanent</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">set_cookie</span><span class="p">(</span><span class="s1">&#39;_csrf_token&#39;</span><span class="p">,</span> <span class="n">utils</span><span class="o">.</span><span class="n">gen_csrf_token</span><span class="p">(),</span> <span class="n">samesite</span><span class="o">=</span><span class="s1">&#39;Lax&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">response</span></div>
+
+
+<div class="viewcode-block" id="get_current_user"><a class="viewcode-back" href="../user.html#user.get_current_user">[docs]</a><span class="k">def</span> <span class="nf">get_current_user</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the current user.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: the current user</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">get_user</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">flask</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;username&#39;</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="get_user"><a class="viewcode-back" href="../user.html#user.get_user">[docs]</a><span class="k">def</span> <span class="nf">get_user</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">apikey</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get data about the user.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        username (str): The username (email) of the user</span>
+<span class="sd">        apikey (str): The api key of the user</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: The current user</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">usercoll</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;users&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">username</span><span class="p">:</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="n">usercoll</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">username</span><span class="p">})</span>
+        <span class="k">if</span> <span class="n">user</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">user</span>
+    <span class="k">if</span> <span class="n">apikey</span><span class="p">:</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="n">usercoll</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;apikey&#39;</span><span class="p">:</span> <span class="n">apikey</span><span class="p">})</span>
+        <span class="k">if</span> <span class="n">user</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">user</span>
+    <span class="k">return</span> <span class="kc">None</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019-2020, SciLifeLab Data Centre
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
