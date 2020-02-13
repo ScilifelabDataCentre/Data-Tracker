@@ -203,6 +203,8 @@ The Data Tracker is based on a few main components:
   - File hashes
 * If accepted, the data will be copied to `doi`
 * Each DOI document is a complete copy of the entire data structure that was accepted for the DOI
+* A DOI will not be updated or deleted.
+* A DOI request may be updated (by reviewer) but not deleted.
 
 
 ### Fields (request)
