@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>app.py &mdash; Data Tracker  documentation</title>
+  <title>Development &mdash; Data Tracker  documentation</title>
   
 
   
@@ -35,8 +35,8 @@
   <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="config.py" href="config.html" />
-    <link rel="prev" title="Code reference" href="modules.html" /> 
+    <link rel="next" title="System for development" href="development.quick_environment.html" />
+    <link rel="prev" title="Permissions" href="permissions.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -87,20 +87,9 @@
 <li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_structure.html">Data Structure</a></li>
 <li class="toctree-l1"><a class="reference internal" href="permissions.html">Permissions</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="development.html">Development</a><ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Development</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="development.quick_environment.html">System for development</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="modules.html">Code reference</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">app.py</a></li>
-<li class="toctree-l3"><a class="reference internal" href="config.html">config.py</a></li>
-<li class="toctree-l3"><a class="reference internal" href="dataset.html">dataset.py</a></li>
-<li class="toctree-l3"><a class="reference internal" href="developer.html">developer.py</a></li>
-<li class="toctree-l3"><a class="reference internal" href="order.html">order.py</a></li>
-<li class="toctree-l3"><a class="reference internal" href="project.html">project.py</a></li>
-<li class="toctree-l3"><a class="reference internal" href="structure.html">structure.py</a></li>
-<li class="toctree-l3"><a class="reference internal" href="user.html">user.py</a></li>
-<li class="toctree-l3"><a class="reference internal" href="utils.html">utils.py</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="modules.html">Code reference</a></li>
 </ul>
 </li>
 </ul>
@@ -148,18 +137,14 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-          <li><a href="development.html">Development</a> &raquo;</li>
-        
-          <li><a href="modules.html">Code reference</a> &raquo;</li>
-        
-      <li>app.py</li>
+      <li>Development</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
             
-              <a href="https://github.com/ScilifelabDataCentre/SciLifeLab-Data-Tracker/blob/develop/docs/source/app.rst" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/ScilifelabDataCentre/SciLifeLab-Data-Tracker/blob/develop/docs/source/development.rst" class="fa fa-github"> Edit on GitHub</a>
             
           
         
@@ -173,33 +158,25 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-app">
-<span id="app-py"></span><h1>app.py<a class="headerlink" href="#module-app" title="Permalink to this headline">¶</a></h1>
-<p>Main app for the Data Tracker.</p>
-<dl class="function">
-<dt id="app.add_dataset_get">
-<code class="sig-prename descclassname">app.</code><code class="sig-name descname">add_dataset_get</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#add_dataset_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.add_dataset_get" title="Permalink to this definition">¶</a></dt>
-<dd><p>Provide a list of countries.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="app.finalize">
-<code class="sig-prename descclassname">app.</code><code class="sig-name descname">finalize</code><span class="sig-paren">(</span><em class="sig-param">response</em><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#finalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.finalize" title="Permalink to this definition">¶</a></dt>
-<dd><p>Close the database connection.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="app.not_found">
-<code class="sig-prename descclassname">app.</code><code class="sig-name descname">not_found</code><span class="sig-paren">(</span><em class="sig-param">_</em><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#not_found"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.not_found" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make sure a simple 404 is returned instead of an html page.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="app.prepare">
-<code class="sig-prename descclassname">app.</code><code class="sig-name descname">prepare</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#prepare"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.prepare" title="Permalink to this definition">¶</a></dt>
-<dd><p>Open the database connection; get the current user.</p>
-</dd></dl>
-
+  <div class="section" id="development">
+<h1>Development<a class="headerlink" href="#development" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="development.quick_environment.html">System for development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Code reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="app.html">app.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="config.html">config.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dataset.html">dataset.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="developer.html">developer.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="order.html">order.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project.html">project.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structure.html">structure.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user.html">user.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">utils.py</a></li>
+</ul>
+</li>
+</ul>
+</div>
 </div>
 
 
@@ -210,10 +187,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="config.html" class="btn btn-neutral float-right" title="config.py" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="development.quick_environment.html" class="btn btn-neutral float-right" title="System for development" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="modules.html" class="btn btn-neutral float-left" title="Code reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="permissions.html" class="btn btn-neutral float-left" title="Permissions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

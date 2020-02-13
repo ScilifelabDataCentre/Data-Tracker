@@ -83,19 +83,23 @@
             
             
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="data_structure.html">Data Structure</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="develop_env.html">System for development</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Code reference</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="app.html">app.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="config.html">config.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dataset.html">dataset.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="developer.html">developer.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="order.html">order.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="project.html">project.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structure.html">structure.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user.html">user.py</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">utils.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_structure.html">Data Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="permissions.html">Permissions</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="development.html">Development</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="development.quick_environment.html">System for development</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="modules.html">Code reference</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="app.html">app.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="config.html">config.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dataset.html">dataset.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="developer.html">developer.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="order.html">order.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="project.html">project.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="structure.html">structure.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user.html">user.py</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">utils.py</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -142,6 +146,8 @@
   <ul class="wy-breadcrumbs">
     
       <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="development.html">Development</a> &raquo;</li>
         
           <li><a href="modules.html">Code reference</a> &raquo;</li>
         
@@ -347,8 +353,11 @@
 <code class="sig-prename descclassname">utils.</code><code class="sig-name descname">make_log</code><span class="sig-paren">(</span><em class="sig-param">data_type: str</em>, <em class="sig-param">action: str</em>, <em class="sig-param">data: dict = None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#make_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.make_log" title="Permalink to this definition">¶</a></dt>
 <dd><p>Log a change in the system.</p>
 <p>Saves a complete copy of the new object.</p>
-<p>It is assumed that all values are curated,
-e.g. that data only contains permitted fields.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It is assumed that all values are exactly like in the db,
+e.g. <code class="docutils literal notranslate"><span class="pre">data</span></code> should only contain permitted fields.</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
