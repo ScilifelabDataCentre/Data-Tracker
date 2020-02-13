@@ -4,10 +4,11 @@ Data Tracker
 .. toctree::
    :maxdepth: 2
 
-   data_structure
+
    api
-   develop_env
-   modules
+   data_structure
+   permissions
+   development
 
 
 Indices and tables

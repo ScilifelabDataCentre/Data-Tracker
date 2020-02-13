@@ -82,10 +82,10 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../data_structure.html">Data Structure</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api.html">API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../develop_env.html">System for development</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../modules.html">Code reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_structure.html">Data Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../permissions.html">Permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">Development</a></li>
 </ul>
 
             
@@ -483,8 +483,9 @@
 
 <span class="sd">    Saves a complete copy of the new object.</span>
 
-<span class="sd">    It is assumed that all values are curated,</span>
-<span class="sd">    e.g. that data only contains permitted fields.</span>
+<span class="sd">    Note:</span>
+<span class="sd">        It is assumed that all values are exactly like in the db,</span>
+<span class="sd">        e.g. ``data`` should only contain permitted fields.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        action (str): type of action (insert, update etc)</span>

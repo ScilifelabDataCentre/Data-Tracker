@@ -84,19 +84,23 @@
             
             
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="data_structure.html">Data Structure</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="develop_env.html">System for development</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Code reference</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="app.html">app.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="config.html">config.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dataset.html">dataset.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="developer.html">developer.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="order.html">order.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="project.html">project.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structure.html">structure.py</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">user.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="utils.html">utils.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_structure.html">Data Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="permissions.html">Permissions</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="development.html">Development</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="development.quick_environment.html">System for development</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="modules.html">Code reference</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="app.html">app.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="config.html">config.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dataset.html">dataset.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="developer.html">developer.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="order.html">order.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="project.html">project.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="structure.html">structure.py</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">user.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.html">utils.py</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -144,6 +148,8 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
+          <li><a href="development.html">Development</a> &raquo;</li>
+        
           <li><a href="modules.html">Code reference</a> &raquo;</li>
         
       <li>user.py</li>
@@ -169,7 +175,15 @@
             
   <div class="section" id="module-user">
 <span id="user-py"></span><h1>user.py<a class="headerlink" href="#module-user" title="Permalink to this headline">¶</a></h1>
-<p>User profile and login/logout HTMl endpoints.</p>
+<p>User profile, permissions, and login/logout functions and endpoints.</p>
+<dl class="simple">
+<dt>Decorators</dt><dd><p>Decorators used to e.g. assert that a user is logged in.</p>
+</dd>
+<dt>Helper functions</dt><dd><p>Functions to help with user-related tasks, e.g. setting all variables at login.</p>
+</dd>
+<dt>Requests</dt><dd><p>User-related API endpoints, including login/logout and user manament.</p>
+</dd>
+</dl>
 <dl class="function">
 <dt id="user.admin_required">
 <code class="sig-prename descclassname">user.</code><code class="sig-name descname">admin_required</code><span class="sig-paren">(</span><em class="sig-param">func</em><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#admin_required"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#user.admin_required" title="Permalink to this definition">¶</a></dt>
@@ -183,7 +197,7 @@
 <dd><p>Check if the current permissions fulfills the requirement.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>required</strong> (<em>str</em>) – the required role</p>
+<dd class="field-odd"><p><strong>required</strong> (<em>str</em>) – the required permission</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>whether the user has the required permissions or not</p>
@@ -278,6 +292,27 @@
 <dt id="user.logout">
 <code class="sig-prename descclassname">user.</code><code class="sig-name descname">logout</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#logout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#user.logout" title="Permalink to this definition">¶</a></dt>
 <dd><p>Log out the current user.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="user.permissions_required">
+<code class="sig-prename descclassname">user.</code><code class="sig-name descname">permissions_required</code><span class="sig-paren">(</span><em class="sig-param">func</em><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#permissions_required"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#user.permissions_required" title="Permalink to this definition">¶</a></dt>
+<dd><p>Confirm that the current user has the correct permissions.</p>
+<p>Will look in <code class="docutils literal notranslate"><span class="pre">kwarg</span></code> for the parameter <code class="docutils literal notranslate"><span class="pre">perm_required</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>perm_required</strong> (<em>Sequence</em>) – The required permission terms.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The wrapped function.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Callable</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>werkzeug.exceptions.Unauthorized</strong> – User does not have the required permission.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">

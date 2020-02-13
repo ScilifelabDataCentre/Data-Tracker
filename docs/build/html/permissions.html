@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Code reference &mdash; Data Tracker  documentation</title>
+  <title>Permissions &mdash; Data Tracker  documentation</title>
   
 
   
@@ -35,8 +35,8 @@
   <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="app.py" href="app.html" />
-    <link rel="prev" title="System for development" href="development.quick_environment.html" /> 
+    <link rel="next" title="Development" href="development.html" />
+    <link rel="prev" title="Data Structure" href="data_structure.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -86,23 +86,11 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_structure.html">Data Structure</a></li>
-<li class="toctree-l1"><a class="reference internal" href="permissions.html">Permissions</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="development.html">Development</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="development.quick_environment.html">System for development</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Code reference</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="app.html">app.py</a></li>
-<li class="toctree-l3"><a class="reference internal" href="config.html">config.py</a></li>
-<li class="toctree-l3"><a class="reference internal" href="dataset.html">dataset.py</a></li>
-<li class="toctree-l3"><a class="reference internal" href="developer.html">developer.py</a></li>
-<li class="toctree-l3"><a class="reference internal" href="order.html">order.py</a></li>
-<li class="toctree-l3"><a class="reference internal" href="project.html">project.py</a></li>
-<li class="toctree-l3"><a class="reference internal" href="structure.html">structure.py</a></li>
-<li class="toctree-l3"><a class="reference internal" href="user.html">user.py</a></li>
-<li class="toctree-l3"><a class="reference internal" href="utils.html">utils.py</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Permissions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#current-units">Current units</a></li>
 </ul>
 </li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
 </ul>
 
             
@@ -148,16 +136,14 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-          <li><a href="development.html">Development</a> &raquo;</li>
-        
-      <li>Code reference</li>
+      <li>Permissions</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
             
-              <a href="https://github.com/ScilifelabDataCentre/SciLifeLab-Data-Tracker/blob/develop/docs/source/modules.rst" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/ScilifelabDataCentre/SciLifeLab-Data-Tracker/blob/develop/docs/source/permissions.rst" class="fa fa-github"> Edit on GitHub</a>
             
           
         
@@ -171,20 +157,25 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="code-reference">
-<h1>Code reference<a class="headerlink" href="#code-reference" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="app.html">app.py</a></li>
-<li class="toctree-l1"><a class="reference internal" href="config.html">config.py</a></li>
-<li class="toctree-l1"><a class="reference internal" href="dataset.html">dataset.py</a></li>
-<li class="toctree-l1"><a class="reference internal" href="developer.html">developer.py</a></li>
-<li class="toctree-l1"><a class="reference internal" href="order.html">order.py</a></li>
-<li class="toctree-l1"><a class="reference internal" href="project.html">project.py</a></li>
-<li class="toctree-l1"><a class="reference internal" href="structure.html">structure.py</a></li>
-<li class="toctree-l1"><a class="reference internal" href="user.html">user.py</a></li>
-<li class="toctree-l1"><a class="reference internal" href="utils.html">utils.py</a></li>
-</ul>
+  <div class="section" id="permissions">
+<h1>Permissions<a class="headerlink" href="#permissions" title="Permalink to this headline">¶</a></h1>
+<p>Permissions are managed by roles. A user may have multiple roles.</p>
+<div class="section" id="current-units">
+<h2>Current units<a class="headerlink" href="#current-units" title="Permalink to this headline">¶</a></h2>
+<dl class="simple">
+<dt>LOGGED_IN</dt><dd><p>Task require a logged in user (e.g. show user info)</p>
+</dd>
+<dt>ORDERS_SELF</dt><dd><p>CRUD permissions for owned orders and datasets for the orders.</p>
+</dd>
+<dt>DATA_MANAGEMENT</dt><dd><p>May modify any order, dataset, or project.</p>
+</dd>
+<dt>OWNERS_READ</dt><dd><p>May access all entity owner information.</p>
+</dd>
+<dt>USER_MANAGEMENT</dt><dd><p>May modify any user.</p>
+</dd>
+<dt>DOI_REVIEWER</dt><dd><p>May evaluate and accept DOI requests.</p>
+</dd>
+</dl>
 </div>
 </div>
 
@@ -196,10 +187,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="app.html" class="btn btn-neutral float-right" title="app.py" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="development.html" class="btn btn-neutral float-right" title="Development" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="development.quick_environment.html" class="btn btn-neutral float-left" title="System for development" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="data_structure.html" class="btn btn-neutral float-left" title="Data Structure" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
