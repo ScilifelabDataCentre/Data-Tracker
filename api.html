@@ -90,6 +90,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#dataset">Dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#project">Project</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#user">User</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#doi">DOI</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="develop_env.html">System for development</a></li>
@@ -193,6 +194,12 @@
 <dd><p><strong>GET</strong> Get a list of orders created or received by current user or <code class="docutils literal notranslate"><span class="pre">username</span></code> (if provided as parameter).</p>
 </dd></dl>
 
+<dl class="function">
+<dt>
+<code class="sig-name descname">/order/&lt;identifier&gt;/log</code></dt>
+<dd><p><strong>GET</strong> Get a list of changes done to the order with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
+</dd></dl>
+
 </div>
 <div class="section" id="dataset">
 <h2>Dataset<a class="headerlink" href="#dataset" title="Permalink to this headline">¶</a></h2>
@@ -214,6 +221,12 @@
 <dt>
 <code class="sig-name descname">/dataset/user</code></dt>
 <dd><p><strong>GET</strong> Get a list of datasets created or received by current user or <code class="docutils literal notranslate"><span class="pre">username</span></code> (if provided as parameter).</p>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-name descname">/dataset/&lt;identifier&gt;/log</code></dt>
+<dd><p><strong>GET</strong> Get a list of changes done to the dataset with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
 </dd></dl>
 
 </div>
@@ -239,49 +252,122 @@
 <dd><p><strong>GET</strong> Get a list of projects created or received by current user or <code class="docutils literal notranslate"><span class="pre">username</span></code> (if provided as parameter).</p>
 </dd></dl>
 
+<dl class="function">
+<dt>
+<code class="sig-name descname">/order/&lt;identifier&gt;/log</code></dt>
+<dd><p><strong>GET</strong> Get a list of changes done to the project with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
+</dd></dl>
+
 </div>
 <div class="section" id="user">
 <h2>User<a class="headerlink" href="#user" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt>
 <code class="sig-name descname">/user/me</code></dt>
-<dd><p><strong>GET</strong> Get information about the current user</p>
+<dd><p><strong>GET</strong> Get information about the current user.</p>
+<p><strong>PUT</strong> Update information about the current user.</p>
 </dd></dl>
 
 <dl class="function">
 <dt>
-<code class="sig-name descname">/user/edit</code></dt>
-<dd><p><strong>GET</strong> Update information of current user</p>
+<code class="sig-name descname">/user/me/log</code></dt>
+<dd><p><strong>GET</strong> Get a list of changes done to the current user.</p>
 </dd></dl>
 
 <dl class="function">
 <dt>
-<code class="sig-name descname">/user/edit/&lt;uuid&gt;</code></dt>
-<dd><p><strong>GET</strong> Update information of user with uuid <code class="docutils literal notranslate"><span class="pre">uuid</span></code></p>
+<code class="sig-name descname">/user/me/actionLog</code></dt>
+<dd><p><strong>GET</strong> Get a list of changes done by the current user.</p>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-name descname">/user/&lt;uuid&gt;</code></dt>
+<dd><p><strong>GET</strong> Get information about user with <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p>
+<p><strong>PUT</strong> Update information about user with <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-name descname">/user/&lt;uuid&gt;/log</code></dt>
+<dd><p><strong>GET</strong> Get a list of changes done to the user with <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-name descname">/user/&lt;uuid&gt;/actionLog</code></dt>
+<dd><p><strong>GET</strong> Get a list of changes done by the user with <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p>
 </dd></dl>
 
 <dl class="function">
 <dt>
 <code class="sig-name descname">/user/logout</code></dt>
-<dd><p><strong>GET</strong> Log out current user</p>
+<dd><p><strong>GET</strong> Log out current user.</p>
 </dd></dl>
 
 <dl class="function">
 <dt>
 <code class="sig-name descname">/user/login</code></dt>
-<dd><p><strong>GET</strong> Log in user via elixir</p>
+<dd><p><strong>GET</strong> Log in via elixir.</p>
 </dd></dl>
 
 <dl class="function">
 <dt>
 <code class="sig-name descname">/user/all</code></dt>
-<dd><p><strong>GET</strong> Get a list of all users</p>
+<dd><p><strong>GET</strong> Get a list of all users.</p>
 </dd></dl>
 
 <dl class="function">
 <dt>
 <code class="sig-name descname">/user/countries</code></dt>
-<dd><p><strong>GET</strong> Get a list of countries</p>
+<dd><p><strong>GET</strong> Get a list of countries.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="doi">
+<h2>DOI<a class="headerlink" href="#doi" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt>
+<code class="sig-name descname">/doi/&lt;identifier&gt;</code></dt>
+<dd><p><strong>GET</strong> Get information about the entity with DOI <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-name descname">/doi/add</code></dt>
+<dd><p><strong>GET</strong> Get expected data structure for adding a new doi.</p>
+<p><strong>POST</strong> Add a new DOI.</p>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-name descname">/doi/all</code></dt>
+<dd><p><strong>GET</strong> Get a list of all DOIs.</p>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-name descname">/doi/request/&lt;identifier&gt;</code></dt>
+<dd><p><strong>GET</strong> Get information about the DOI request with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
+<p><strong>PUT</strong> Update information about the DOI request with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-name descname">/doi/request/add</code></dt>
+<dd><p><strong>GET</strong> Add a new DOI request.</p>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-name descname">/doi/request/all</code></dt>
+<dd><p><strong>GET</strong> Get a list of all DOI requests.</p>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-name descname">/doi/request/open</code></dt>
+<dd><p><strong>GET</strong> Get a list of all open DOI requests.</p>
 </dd></dl>
 
 </div>
