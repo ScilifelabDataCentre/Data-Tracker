@@ -332,8 +332,9 @@ def make_log(data_type: str, action: str, data: dict = None):
 
     Saves a complete copy of the new object.
 
-    It is assumed that all values are curated,
-    e.g. that data only contains permitted fields.
+    Note:
+        It is assumed that all values are exactly like in the db,
+        e.g. ``data`` should only contain permitted fields.
 
     Args:
         action (str): type of action (insert, update etc)
