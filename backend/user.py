@@ -1,5 +1,17 @@
-"""User profile and login/logout HTMl endpoints."""
+"""
+User profile, permissions, and login/logout functions and endpoints.
 
+Decorators
+    Decorators used to e.g. assert that a user is logged in.
+
+Helper functions
+    Functions to help with user-related tasks, e.g. setting all variables at login.
+
+Requests
+    User-related API endpoints, including login/logout and user manament.
+"""
+
+from typing import Union  # pylint: disable=unused-import
 import functools
 import logging
 
@@ -10,6 +22,12 @@ import utils
 
 
 blueprint = flask.Blueprint('user', __name__)  # pylint: disable=invalid-name
+
+PERMISSIONS = {'ORDERS': ('ORDERS'),
+               'OWNERS_READ': ('OWNERS_READ'),
+               'USER_MANAGEMENT': ('USER_MANAGEMENT'),
+               'DATA_MANAGEMENT': ('ORDERS', 'OWNERS_READ', 'DATA_MANAGEMENT'),
+               'DOI_REVIEWER': ('DOI_REVIEWER')}
 
 
 # Decorators
@@ -36,7 +54,7 @@ def steward_required(func):
     @functools.wraps(func)
     def wrap(*args, **kwargs):
         if not check_user_permissions('Steward'):
-            flask.abort(flask.Response(status=401))
+            flask.abort(flask.Response(status=403))
         return func(*args, **kwargs)
     return wrap
 
@@ -70,34 +88,11 @@ def admin_required(func):
     return wrap
 
 
-def check_user_permissions(required: str):
-    """
-    Check if the current permissions fulfills the requirement.
-
-    Args:
-        required (str): the required role
-
-    Returns:
-        bool: whether the user has the required permissions or not
-
-    """
-    roles = ['User', 'Steward', 'Admin']
-    if (role := flask.g.current_role) not in roles:
-        logging.warning('Unknown user role: %s', role)
-        return False
-    if roles.index(flask.g.current_role) >= roles.index(required):
-        return True
-
-    logging.warning('Rejected access. User: %s ',
-                    flask.g.current_user)
-    return False
-
-
 # requests
 @blueprint.route('/login')
 def elixir_login():
     """Perform a Elixir AAI login."""
-    return flask.Response(status=500)
+    return flask.Response(status=501)
 
 
 @blueprint.route('/logout')
@@ -173,14 +168,14 @@ def get_current_user():
     Get the current user.
 
     Returns:
-        dict: the current user
+        dict: The current user.
     """
     return get_user(username=flask.session.get('username'))
 
 
 def get_user(username=None, apikey=None):
     """
-    Get data about the user.
+    Get information about the user.
 
     Args:
         username (str): The username (email) of the user
@@ -188,7 +183,6 @@ def get_user(username=None, apikey=None):
 
     Returns:
         dict: The current user
-
     """
     usercoll = flask.g.db['users']
     if username:
@@ -200,3 +194,47 @@ def get_user(username=None, apikey=None):
         if user:
             return user
     return None
+
+
+def check_user_permissions(required: str):
+    """
+    Check if the current permissions fulfills the requirement.
+
+    Args:
+        required (str): the required permission
+
+    Returns:
+        bool: whether the user has the required permissions or not
+    """
+    roles = ['User', 'Steward', 'Admin']
+    if (role := flask.g.current_role) not in roles:
+        logging.warning('Unknown user role: %s', role)
+        return False
+    if roles.index(flask.g.current_role) >= roles.index(required):
+        return True
+
+    logging.warning('Rejected access. User: %s ',
+                    flask.g.current_user)
+    return False
+
+
+def permission_required(permission: str):
+    """
+    Check if the current user permissions fulfills the requirement.
+
+    Args:
+        permission (str): The required permission
+
+    Returns:
+        bool: whether the user has the required permissions or not
+    """
+    user_permissions = set(PERMISSIONS[permission] for permission in flask.g.permissions)
+    permission = True
+    # check permission
+    for value in permissions:
+        if isinstance(value, str):
+            if value not in user_permissions:
+                permission = False
+                break
+
+    return permission
