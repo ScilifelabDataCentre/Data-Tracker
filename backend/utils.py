@@ -1,6 +1,7 @@
 """General helper functions."""
 
 from collections import abc
+from typing import Any
 import datetime
 import logging
 import re
@@ -25,7 +26,7 @@ def gen_csrf_token() -> str:
     Genereate a csrf token.
 
     Returns:
-        str: the csrf token
+        str: The csrf token.
 
     """
     return uuid.uuid4().hex
@@ -39,8 +40,10 @@ def check_mongo_update(document: dict):
     Also make sure indata is not empty.
 
     Args:
-        document (dict): received input to update a document
-
+        document (dict): Received input to update a document.
+    
+    Returns:
+        bool: Whether the document passed the check.
     """
     if not document:
         return False
@@ -56,11 +59,10 @@ def get_dataset(identifier: str):
     Query for a dataset from the database.
 
     Args:
-        identifier (str): the uuid of the dataset
+        identifier (str): The uuid of the dataset.
 
     Returns:
-        dict: the dataset
-
+        dict: The dataset.
     """
     try:
         mongo_uuid = str_to_uuid(identifier)
@@ -80,11 +82,10 @@ def get_project(identifier: str):
     Query for a project from the database.
 
     Args:
-        identifier (str): the uuid of the project
+        identifier (str): The uuid of the project.
 
     Returns:
-        dict: the project
-
+        dict: The project.
     """
     try:
         mongo_uuid = str_to_uuid(identifier)
@@ -101,8 +102,7 @@ def get_dbserver() -> pymongo.mongo_client.MongoClient:
     Get the connection to the MongoDB database server.
 
     Returns:
-        pymongo.mongo_client.MongoClient: the client connection
-
+        pymongo.mongo_client.MongoClient: The client connection.
     """
     return pymongo.MongoClient(host=flask.current_app.config['mongo']['host'],
                                port=flask.current_app.config['mongo']['port'],
@@ -115,11 +115,10 @@ def get_db(dbserver: pymongo.mongo_client.MongoClient) -> pymongo.database.Datab
     Get the connection to the MongoDB database.
 
     Args:
-        dbserver: connection to the db
+        dbserver: Connection to the database.
 
     Returns:
-        pymongo.database.Database: the database connection
-
+        pymongo.database.Database: The database connection.
     """
     codec_options = bson.codec_options.CodecOptions(uuid_representation=bson.binary.STANDARD)
     return dbserver.get_database(flask.current_app.config['mongo']['db'],
@@ -131,8 +130,7 @@ def new_uuid() -> uuid.UUID:
     Generate a uuid for a field in a MongoDB document.
 
     Returns:
-        uuid.UUID: the new uuid in binary format
-
+        uuid.UUID: The new uuid in binary format.
     """
     return uuid.uuid4()
 
@@ -141,29 +139,29 @@ def str_to_uuid(uuid_str: str) -> uuid.UUID:
     """
     Convert str uuid to uuid.UUID.
 
+    Provided as a convenience function if the identifier must be changed in the future.
+
     Args:
-        uuid_str (str): the uuid to be converted
+        uuid_str (str): The uuid to be converted.
 
     Returns:
-        uuid.UUID: the uuid
-
+        uuid.UUID: The uuid.
     """
     return uuid.UUID(uuid_str)
 
 
 # misc
-def convert_keys_to_camel(chunk):
+def convert_keys_to_camel(chunk: Any) -> Any:
     """
     Convert keys given in snake_case to camelCase.
 
     The capitalization of the first letter is preserved.
 
     Args:
-        chunk: Object to convert
+        chunk (Any): Object to convert.
 
     Returns:
-        *: chunk converted to camelCase dict, otherwise chunk
-
+        Any: Chunk converted to camelCase `dict`, otherwise chunk.
     """
     if isinstance(chunk, abc.Sequence) and not isinstance(chunk, str):
         return [convert_keys_to_camel(e) for e in chunk]
@@ -182,7 +180,7 @@ def convert_keys_to_camel(chunk):
     return new_chunk
 
 
-def country_list():
+def country_list() -> list:
     """
     Provide a list of countries.
 
@@ -253,11 +251,10 @@ def is_email(indata: str):
     Check whether a string seems to be an email address or not.
 
     Args:
-        indata (str): data to check
+        indata (str): Data to check.
 
     Returns:
-        bool: is the indata an email address or not
-
+        bool: Is the indata an email address or not.
     """
     return bool(REGEX['email'].search(indata))
 
@@ -277,7 +274,6 @@ def is_owner(dataset: str = None, project: str = None):
 
     Raises:
         ValueError: one of dataset or project must be set, and not both
-
     """
     if dataset and project:
         raise ValueError('Only one of dataset and project should be set')
@@ -304,13 +300,13 @@ def is_owner(dataset: str = None, project: str = None):
 
 def response_json(json_structure: dict):
     """
-    Convert keys to camelCase and run `flask.jsonify()`.
+    Convert keys to camelCase and run ``flask.jsonify()``.
 
     Args:
-        json_structure (dict): structure to prepare
+        json_structure (dict): Structure to prepare.
 
     Returns:
-        flask.Response: prepared response containing json structure with camelBack keys
+        flask.Response: Prepared response containing json structure with camelBack keys.
     """
     data = convert_keys_to_camel(json_structure)
     return flask.jsonify(data)
@@ -321,7 +317,7 @@ def make_timestamp():
     Generate a timestamp of the current time.
 
     returns:
-        datetime.datetime: the current time
+        datetime.datetime: The current time.
     """
     return datetime.datetime.now()
 
@@ -332,15 +328,17 @@ def make_log(data_type: str, action: str, data: dict = None):
 
     Saves a complete copy of the new object.
 
-    Note:
+    Warning:
         It is assumed that all values are exactly like in the db,
         e.g. ``data`` should only contain permitted fields.
 
     Args:
-        action (str): type of action (insert, update etc)
-        data_type (str): the collection name
-        data (dict): the new data for the entry
+        action (str): Type of action (insert, update etc).
+        data_type (str): The collection name.
+        data (dict): The new data for the entry.
 
+    Returns:
+        bool: Whether the log insertion successed.
     """
     flask.g.db['logs'].insert_one({'action': action,
                                    'data_type': data_type,
