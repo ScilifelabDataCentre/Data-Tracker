@@ -22,15 +22,15 @@ Permissions
 Current units
 =============
 
+DOI_REVIEWER
+    May evaluate DOI requests and create DOI entries.
 LOGGED_IN
-    Task require a logged in user (e.g. show user info)
-ORDERS_SELF
-    CRUD permissions for owned orders and datasets for the orders.
+    Task require a logged in user (e.g. show user info). Use the decorator ``user.login_required``.
 DATA_MANAGEMENT
     May modify any order, dataset, or project. Includes ``ORDERS_SELF`` and ``OWNERS_READ``.
+ORDERS_SELF
+    CRUD permissions for owned orders and datasets for the orders.
 OWNERS_READ
     May access all entity owner information.
 USER_MANAGEMENT
     May modify any user.
-DOI_REVIEWER
-    May evaluate and accept DOI requests.
