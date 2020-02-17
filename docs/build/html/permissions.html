@@ -158,22 +158,39 @@
            <div itemprop="articleBody">
             
   <div class="section" id="permissions">
-<h1>Permissions<a class="headerlink" href="#permissions" title="Permalink to this headline">¶</a></h1>
-<p>Permissions are managed by roles. A user may have multiple roles.</p>
+<span id="permissions-page"></span><h1>Permissions<a class="headerlink" href="#permissions" title="Permalink to this headline">¶</a></h1>
+<ul>
+<li><p>Permissions are managed by topics.</p></li>
+<li><p>A user may have multiple topics.</p></li>
+<li><p>The topics are defined in <code class="docutils literal notranslate"><span class="pre">user.py</span></code>.</p></li>
+<li><p>The topics are defined as a dict:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s1">&#39;ENTRY&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;ENTRY&#39;</span><span class="p">,</span> <span class="s1">&#39;ENTRY2&#39;</span><span class="p">),</span>
+  <span class="o">...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>Each topic is defined as key, and any other topics that are considered to cover the same task is included as value.
+- Allows the use a single topic to require permission for an API endpoint.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">permission_required</span></code> is used to check whether a user has the required permission.
+- It is not defined as a decorator, as it may sometimes need to coexist with an ownership check.
+- At the beginning of a request, run e.g. <code class="docutils literal notranslate"><span class="pre">user.permission_required('OWNERS_READ')</span></code>.</p></li>
+</ul>
 <div class="section" id="current-units">
 <h2>Current units<a class="headerlink" href="#current-units" title="Permalink to this headline">¶</a></h2>
 <dl class="simple">
-<dt>LOGGED_IN</dt><dd><p>Task require a logged in user (e.g. show user info)</p>
+<dt>DOI_REVIEWER</dt><dd><p>May evaluate DOI requests and create DOI entries.</p>
+</dd>
+<dt>LOGGED_IN</dt><dd><p>Task require a logged in user (e.g. show user info). Use the decorator <code class="docutils literal notranslate"><span class="pre">user.login_required</span></code>.</p>
+</dd>
+<dt>DATA_MANAGEMENT</dt><dd><p>May modify any order, dataset, or project. Includes <code class="docutils literal notranslate"><span class="pre">ORDERS_SELF</span></code> and <code class="docutils literal notranslate"><span class="pre">OWNERS_READ</span></code>.</p>
 </dd>
 <dt>ORDERS_SELF</dt><dd><p>CRUD permissions for owned orders and datasets for the orders.</p>
-</dd>
-<dt>DATA_MANAGEMENT</dt><dd><p>May modify any order, dataset, or project.</p>
 </dd>
 <dt>OWNERS_READ</dt><dd><p>May access all entity owner information.</p>
 </dd>
 <dt>USER_MANAGEMENT</dt><dd><p>May modify any user.</p>
-</dd>
-<dt>DOI_REVIEWER</dt><dd><p>May evaluate and accept DOI requests.</p>
 </dd>
 </dl>
 </div>

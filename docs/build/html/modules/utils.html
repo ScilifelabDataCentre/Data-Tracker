@@ -152,6 +152,7 @@
 <span></span><span class="sd">&quot;&quot;&quot;General helper functions.&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">abc</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
 <span class="kn">import</span> <span class="nn">datetime</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">re</span>
@@ -176,7 +177,7 @@
 <span class="sd">    Genereate a csrf token.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        str: the csrf token</span>
+<span class="sd">        str: The csrf token.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span><span class="o">.</span><span class="n">hex</span></div>
@@ -190,8 +191,10 @@
 <span class="sd">    Also make sure indata is not empty.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        document (dict): received input to update a document</span>
-
+<span class="sd">        document (dict): Received input to update a document.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: Whether the document passed the check.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">document</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">False</span>
@@ -207,11 +210,10 @@
 <span class="sd">    Query for a dataset from the database.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        identifier (str): the uuid of the dataset</span>
+<span class="sd">        identifier (str): The uuid of the dataset.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        dict: the dataset</span>
-
+<span class="sd">        dict: The dataset.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">mongo_uuid</span> <span class="o">=</span> <span class="n">str_to_uuid</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span>
@@ -231,11 +233,10 @@
 <span class="sd">    Query for a project from the database.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        identifier (str): the uuid of the project</span>
+<span class="sd">        identifier (str): The uuid of the project.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        dict: the project</span>
-
+<span class="sd">        dict: The project.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">mongo_uuid</span> <span class="o">=</span> <span class="n">str_to_uuid</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span>
@@ -252,8 +253,7 @@
 <span class="sd">    Get the connection to the MongoDB database server.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        pymongo.mongo_client.MongoClient: the client connection</span>
-
+<span class="sd">        pymongo.mongo_client.MongoClient: The client connection.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">MongoClient</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;mongo&#39;</span><span class="p">][</span><span class="s1">&#39;host&#39;</span><span class="p">],</span>
                                <span class="n">port</span><span class="o">=</span><span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;mongo&#39;</span><span class="p">][</span><span class="s1">&#39;port&#39;</span><span class="p">],</span>
@@ -266,11 +266,10 @@
 <span class="sd">    Get the connection to the MongoDB database.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        dbserver: connection to the db</span>
+<span class="sd">        dbserver: Connection to the database.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        pymongo.database.Database: the database connection</span>
-
+<span class="sd">        pymongo.database.Database: The database connection.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">codec_options</span> <span class="o">=</span> <span class="n">bson</span><span class="o">.</span><span class="n">codec_options</span><span class="o">.</span><span class="n">CodecOptions</span><span class="p">(</span><span class="n">uuid_representation</span><span class="o">=</span><span class="n">bson</span><span class="o">.</span><span class="n">binary</span><span class="o">.</span><span class="n">STANDARD</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dbserver</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;mongo&#39;</span><span class="p">][</span><span class="s1">&#39;db&#39;</span><span class="p">],</span>
@@ -282,8 +281,7 @@
 <span class="sd">    Generate a uuid for a field in a MongoDB document.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        uuid.UUID: the new uuid in binary format</span>
-
+<span class="sd">        uuid.UUID: The new uuid in binary format.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span></div>
 
@@ -292,29 +290,29 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert str uuid to uuid.UUID.</span>
 
+<span class="sd">    Provided as a convenience function if the identifier must be changed in the future.</span>
+
 <span class="sd">    Args:</span>
-<span class="sd">        uuid_str (str): the uuid to be converted</span>
+<span class="sd">        uuid_str (str): The uuid to be converted.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        uuid.UUID: the uuid</span>
-
+<span class="sd">        uuid.UUID: The uuid.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">(</span><span class="n">uuid_str</span><span class="p">)</span></div>
 
 
 <span class="c1"># misc</span>
-<div class="viewcode-block" id="convert_keys_to_camel"><a class="viewcode-back" href="../utils.html#utils.convert_keys_to_camel">[docs]</a><span class="k">def</span> <span class="nf">convert_keys_to_camel</span><span class="p">(</span><span class="n">chunk</span><span class="p">):</span>
+<div class="viewcode-block" id="convert_keys_to_camel"><a class="viewcode-back" href="../utils.html#utils.convert_keys_to_camel">[docs]</a><span class="k">def</span> <span class="nf">convert_keys_to_camel</span><span class="p">(</span><span class="n">chunk</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert keys given in snake_case to camelCase.</span>
 
 <span class="sd">    The capitalization of the first letter is preserved.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        chunk: Object to convert</span>
+<span class="sd">        chunk (Any): Object to convert.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        *: chunk converted to camelCase dict, otherwise chunk</span>
-
+<span class="sd">        Any: Chunk converted to camelCase `dict`, otherwise chunk.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">chunk</span><span class="p">,</span> <span class="n">abc</span><span class="o">.</span><span class="n">Sequence</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">chunk</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">convert_keys_to_camel</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">chunk</span><span class="p">]</span>
@@ -333,7 +331,7 @@
     <span class="k">return</span> <span class="n">new_chunk</span></div>
 
 
-<div class="viewcode-block" id="country_list"><a class="viewcode-back" href="../utils.html#utils.country_list">[docs]</a><span class="k">def</span> <span class="nf">country_list</span><span class="p">():</span>
+<div class="viewcode-block" id="country_list"><a class="viewcode-back" href="../utils.html#utils.country_list">[docs]</a><span class="k">def</span> <span class="nf">country_list</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Provide a list of countries.</span>
 
@@ -404,11 +402,10 @@
 <span class="sd">    Check whether a string seems to be an email address or not.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        indata (str): data to check</span>
+<span class="sd">        indata (str): Data to check.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        bool: is the indata an email address or not</span>
-
+<span class="sd">        bool: Is the indata an email address or not.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">REGEX</span><span class="p">[</span><span class="s1">&#39;email&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">indata</span><span class="p">))</span></div>
 
@@ -428,7 +425,6 @@
 
 <span class="sd">    Raises:</span>
 <span class="sd">        ValueError: one of dataset or project must be set, and not both</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">dataset</span> <span class="ow">and</span> <span class="n">project</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Only one of dataset and project should be set&#39;</span><span class="p">)</span>
@@ -455,13 +451,13 @@
 
 <div class="viewcode-block" id="response_json"><a class="viewcode-back" href="../utils.html#utils.response_json">[docs]</a><span class="k">def</span> <span class="nf">response_json</span><span class="p">(</span><span class="n">json_structure</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Convert keys to camelCase and run `flask.jsonify()`.</span>
+<span class="sd">    Convert keys to camelCase and run ``flask.jsonify()``.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        json_structure (dict): structure to prepare</span>
+<span class="sd">        json_structure (dict): Structure to prepare.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        flask.Response: prepared response containing json structure with camelBack keys</span>
+<span class="sd">        flask.Response: Prepared response containing json structure with camelBack keys.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">convert_keys_to_camel</span><span class="p">(</span><span class="n">json_structure</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
@@ -472,7 +468,7 @@
 <span class="sd">    Generate a timestamp of the current time.</span>
 
 <span class="sd">    returns:</span>
-<span class="sd">        datetime.datetime: the current time</span>
+<span class="sd">        datetime.datetime: The current time.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span></div>
 
@@ -483,15 +479,17 @@
 
 <span class="sd">    Saves a complete copy of the new object.</span>
 
-<span class="sd">    Note:</span>
+<span class="sd">    Warning:</span>
 <span class="sd">        It is assumed that all values are exactly like in the db,</span>
 <span class="sd">        e.g. ``data`` should only contain permitted fields.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        action (str): type of action (insert, update etc)</span>
-<span class="sd">        data_type (str): the collection name</span>
-<span class="sd">        data (dict): the new data for the entry</span>
+<span class="sd">        action (str): Type of action (insert, update etc).</span>
+<span class="sd">        data_type (str): The collection name.</span>
+<span class="sd">        data (dict): The new data for the entry.</span>
 
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: Whether the log insertion successed.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;logs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">insert_one</span><span class="p">({</span><span class="s1">&#39;action&#39;</span><span class="p">:</span> <span class="n">action</span><span class="p">,</span>
                                    <span class="s1">&#39;data_type&#39;</span><span class="p">:</span> <span class="n">data_type</span><span class="p">,</span>
