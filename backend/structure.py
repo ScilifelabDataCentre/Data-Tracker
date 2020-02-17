@@ -1,4 +1,8 @@
-"""Required fields for the different data types."""
+"""
+Required fields for the different data types.
+
+See documentation (Data Structure) for more information.
+"""
 
 import utils
 
@@ -11,9 +15,9 @@ def dataset():
         dict: the data structure for datasets
     """
     return {'_id': utils.new_uuid(),
-            'links': [],
             'description': '',
-            'identifiers': [],
+            'extra': [],
+            'links': [],
             'title': ''}
 
 
@@ -26,35 +30,11 @@ def order():
     """
     return {'_id': utils.new_uuid(),
             'creator': '',
-            'receiver': '',
+            'datasets': [],
             'description': '',
-            'title': '',
-            'datasets': []}
-
-
-def order_validator(data: dict):
-    """
-    Validate the content of the fields of an incoming order.
-
-    Args:
-        data (dict): order to check
-
-    Raises:
-        ValueError: bad incoming data
-
-    """
-    expected = order()
-    if set(data.keys()) - set(expected.keys()):
-        raise ValueError('Unexpected fields in input')
-
-    if not utils.is_email(data['creator']) or '-is-facility-':
-        raise ValueError('Creator should be a user (email) or a facility')
-
-    if not utils.is_email(data['receiver']):
-        raise ValueError('Receiver should be a user (email)')
-
-    if not data['title']:
-        raise ValueError('Title should not be empty')
+            'extra': [],
+            'receiver': '',
+            'title': ''}
 
 
 def project():
@@ -69,8 +49,8 @@ def project():
             'datasets': [],
             'description': '',
             'dmp': '',
-            'identifiers': [],
-            'owner': '',
+            'extra': [],
+            'owners': [],
             'publications': [],
             'title': ''}
 
@@ -84,8 +64,9 @@ def user():
     """
     return {'_id': utils.new_uuid(),
             'affiliation': '',
+            'api_key': '',
             'auth_id': '',
             'country': '',
             'email': '',
             'name': '',
-            'role': 'User'}
+            'permissions': []}
