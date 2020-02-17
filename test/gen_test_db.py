@@ -13,6 +13,7 @@ import pymongo
 import config
 import structure
 import utils
+from user import PERMISSIONS
 
 
 # helper functions
@@ -27,11 +28,15 @@ def make_description():
     desc = random.choice((lorem.sentence,
                           lorem.paragraph,
                           lorem.text))()
-    desc.replace('\n', '<br/>')
     return desc
 
 
 # generator functions
+
+EXTRA_FIELDS = {'method': ('rna-seq', 'chip-seq', 'X-ray'),
+                'external': ('company1', 'company2', 'company3')}
+EXTRA_KEYS = tuple(EXTRA_FIELDS.keys())
+
 def gen_datasets(db, nr_datasets: int = 500):
     uuids = []
     orders = [entry['_id'] for entry in db['orders'].find()]
@@ -40,9 +45,13 @@ def gen_datasets(db, nr_datasets: int = 500):
         changes = {'title': f'Dataset {i} Title',
                    'description': make_description(),
                    'links': [{'description': f'Download location {j}',
-                                  'url': (f'https://data_source{i}/' +
-                                          f'{random.choice(string.ascii_uppercase)}')}
+                              'url': (f'https://data_source{i}/' +
+                                      f'{random.choice(string.ascii_uppercase)}')}
                                  for j in range(1, random.randint(0, 6))]}
+        # add extra field
+        if random.random() > 0.9:
+            tag = random.choice(EXTRA_KEYS)
+            changes['extra'] = [{tag: random.choice(EXTRA_FIELDS[tag])}]
         dataset.update(changes)
         uuids.append(db['datasets'].insert_one(dataset).inserted_id)
         db['orders'].update_one({'_id': random.choice(orders)},
@@ -57,10 +66,12 @@ def gen_facilities(db, nr_facilities: int = 30):
     for i in range(1, nr_facilities+1):
         user = structure.user()
         changes = {'affiliation': 'University ' + random.choice(string.ascii_uppercase),
+                   'api_key': uuid.uuid4().hex,
+                   'auth_id': '--facility--',
+                   'country': 'Sweden',
+                   'email': f'facility{i}@domain{i}',
                    'name': f'Facility {i}',
-                   'email': f'-facility-{i}',
-                   'country': random.choice(countries),
-                   'auth_id': uuid.uuid4().hex}
+                   'permissions': ['ORDERS_SELF']}
         user.update(changes)
         uuids.append(db['users'].insert_one(user).inserted_id)
 
@@ -69,15 +80,15 @@ def gen_facilities(db, nr_facilities: int = 30):
 
 def gen_orders(db, nr_orders: int = 300):
     uuids = []
-    facilities = tuple(db['users'].find({'email': {'$regex': '^-facility-.*'}}))
-    users = tuple(db['users'].find({'email': {'$regex': '.*@.*'}}))
+    facilities = tuple(db['users'].find({'auth_id': '--facility--'}))
+    users = tuple(db['users'].find({'auth_id': {'$ne': '--facility--'}}))
     for i in range(1, nr_orders+1):
+        receiver_type = random.choice(('email', '_id'))
         order = structure.order()
-        changes = {'title': f'Order {i} Title',
+        changes = {'creator': random.choice(facilities)['_id'],
                    'description': make_description(),
-                   'receiver': random.choice(users)['email'],
-                   'creator': random.choice(facilities)['email']}
-
+                   'receiver': random.choice(users)[receiver_type],
+                   'title': f'Order {i} Title'}
         order.update(changes)
         uuids.append(db['orders'].insert_one(order).inserted_id)
     return uuids
@@ -88,41 +99,52 @@ def gen_projects(db, nr_projects: int = 500):
     users = tuple(db['users'].find())
     for i in range(1, nr_projects+1):
         project = structure.project()
-        changes = {'title': f'Project {i} Title',
+        changes = {'contact': f'email{i}@entity{i}',
                    'description': make_description(),
-                   'owner': random.choice(users)['email'],
-                   'contact': f'email{i}@entity{i}',
                    'datasets': [random.choice(datasets)['_id']
                                 for _ in range(random.randint(0, 5))],
                    'dmp': f'http://dmp-url{i}',
-                   'publications': [f'Title {i}. Journal: 200{j}'
-                                    for j in range(random.randint(0, 5))]}
-
+                   'owners': list(set(random.choice(users)[random.choice(('email', '_id'))]
+                                      for _ in range(random.randint(1,3)))),
+                   'publications': [{'title': f'Title {j}', 'doi': f'doi{j}'}
+                                    for j in range(random.randint(0, 5))],
+                   'title': f'Project {i} Title'}
         project.update(changes)
         db['projects'].insert_one(project)
 
 
 def gen_users(db, nr_users: int = 100):
     uuids = []
-    role_users = [{'name' : 'User Test', 'role' : 'User', 'email' : 'user@example.com',
-                   'country' : 'Sweden', 'affiliation' : 'Test university', 'auth_id' : 'hash3@roles'},
-                  {'name' : 'Steward Test', 'role' : 'Steward', 'email' : 'steward@example.com',
-                   'country' : 'Sweden', 'affiliation' : 'Test university', 'auth_id' : 'hash2@roles'},
-                  {'name' : 'Admin Test', 'role' : 'Admin', 'email' : 'admin@example.com',
-                   'country' : 'Sweden', 'affiliation' : 'Test university', 'auth_id' : 'hash1@roles'}]
+    perm_keys = tuple(PERMISSIONS.keys())
+    # non-random users with specific rights
+    special_users = [{'name': 'Base Test', 'permissions': [], 'email': 'base@example.com'},
+                     {'name': 'Orders Test', 'permissions': ['ORDER_SELF'], 'email': 'orders@example.com'},
+                     {'name': 'Owners Test', 'permissions': ['OWNERS_READ'], 'email': 'owners@example.com'},
+                     {'name': 'Users Test', 'permissions': ['USER_MANAGEMENT'], 'email': 'users@example.com'},
+                     {'name': 'Data Test', 'permissions': ['DATA_MANAGEMENT'], 'email': 'data@example.com'},
+                     {'name': 'Doi Test', 'permissions': ['DOI_REVIEWER'], 'email': 'data@example.com'},
+                     {'name': 'Root Test', 'permissions': list(perm_keys), 'email': 'root@example.com'}]
 
-    base = [structure.user() for _ in range(3)]
-    for i, entry in enumerate(base):
-        entry.update(role_users[i])
-    db['users'].insert_many(base)
+    for i, suser in enumerate(special_users):
+        user = structure.user()
+        user.update(suser)
+        user.update({'affiliation' : 'Test university',
+                     'api_key': uuid.uuid4().hex,
+                     'auth_id' : f'hash{i}@suser',
+                     'country' : 'Sweden'})
+        db['users'].insert_one(user)
+
     countries = utils.country_list()
     for i in range(1, nr_users+1-3):
         user = structure.user()
         changes = {'affiliation': 'University ' + random.choice(string.ascii_uppercase),
-                   'name': f'First Last {i}',
-                   'email': f'user{i}@place{i}',
+                   'api_key': uuid.uuid4().hex,
+                   'auth_id': f'hash{i}@elixir',
                    'country': random.choice(countries),
-                   'auth_id': f'hash{i}@elixir'}
+                   'email': f'user{i}@place{i}',
+                   'name': f'First Last {i}',
+                   'permissions': list(set(random.choice(perm_keys)
+                                           for _ in range(random.randint(0,2))))}
         user.update(changes)
         uuids.append(db['users'].insert_one(user).inserted_id)
     return uuids
@@ -130,7 +152,7 @@ def gen_users(db, nr_users: int = 100):
 
 if __name__ == '__main__':
     CONF = config.read_config()
-    DBSERVER = pymongo.MongoClient(host='localhost',
+    DBSERVER = pymongo.MongoClient(host=CONF['mongo']['host'],
                                    port=CONF['mongo']['port'],
                                    username=CONF['mongo']['user'],
                                    password=CONF['mongo']['password'])
