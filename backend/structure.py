@@ -3,25 +3,9 @@
 import utils
 
 
-def user():
-    """
-    Provide a basic data structure for a user.
-
-    Returns:
-        dict: the data structure for users
-    """
-    return {'_id': utils.new_uuid(),
-            'affiliation': '',
-            'auth_id': '',
-            'country': '',
-            'email': '',
-            'name': '',
-            'role': 'User'}
-
-
 def dataset():
     """
-    Provide a basic data structure for a dataset.
+    Provide a basic data structure for a dataset document.
 
     Returns:
         dict: the data structure for datasets
@@ -35,7 +19,7 @@ def dataset():
 
 def order():
     """
-    Provide a basic data structure for an order.
+    Provide a basic data structure for an order document.
 
     Returns:
         dict: the data structure for orders
@@ -75,7 +59,7 @@ def order_validator(data: dict):
 
 def project():
     """
-    Provide a basic data structure for a project.
+    Provide a basic data structure for a project document.
 
     Returns:
         dict: the data structure for projects
@@ -89,3 +73,19 @@ def project():
             'owner': '',
             'publications': [],
             'title': ''}
+
+
+def user():
+    """
+    Provide a basic data structure for a user document.
+
+    Returns:
+        dict: the data structure for users
+    """
+    return {'_id': utils.new_uuid(),
+            'affiliation': '',
+            'auth_id': '',
+            'country': '',
+            'email': '',
+            'name': '',
+            'role': 'User'}
