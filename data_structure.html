@@ -98,15 +98,14 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#project">Project</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#id2">Fields</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id3">Computed fields:</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#user">User</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id4">Fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Fields</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#log">Log</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id5">Fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">Fields</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#doi">DOI</a><ul>
@@ -117,7 +116,6 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#other-topics">Other topics</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#identifiers">Identifiers</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#permissions">Permissions</a></li>
 </ul>
 </li>
 </ul>
@@ -176,7 +174,7 @@
         
             
             
-              <a href="https://github.com/ScilifelabDataCentre/SciLifeLab-Data-Tracker/blob/develop/docs/source/data_structure.md" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/ScilifelabDataCentre/SciLifeLab-Data-Tracker/blob/develop/docs/source/data_structure.rst" class="fa fa-github"> Edit on GitHub</a>
             
           
         
@@ -192,522 +190,344 @@
             
   <div class="section" id="data-structure">
 <h1>Data Structure<a class="headerlink" href="#data-structure" title="Permalink to this headline">¶</a></h1>
-<p>The Data Tracker is based on a few main components:</p>
-<ul class="simple">
-<li><p>Order</p></li>
-<li><p>Dataset</p></li>
-<li><p>Project</p></li>
-<li><p>User</p></li>
-<li><p>Log</p></li>
-<li><p>DOI</p></li>
-</ul>
+<p>The Data Tracker is based on a few main components:
+* Order
+* Dataset
+* Project
+* User
+* Log
+* DOI</p>
 <div class="section" id="terminology">
 <h2>Terminology<a class="headerlink" href="#terminology" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>Fields:</p>
-<ul>
-<li><p>Fields in the documents for the datatype/collection</p></li>
-</ul>
-</li>
-<li><p>Computed fields:</p>
-<ul>
-<li><p>Values that are either calculated or retrieved from documents in other collection(s)</p></li>
-<li><p>Included when the entity is requested via API</p></li>
-</ul>
-</li>
+<li><p>Fields:
+- Fields in the documents for the datatype/collection.</p></li>
+<li><p>Computed fields:
+- Values that are either calculated or retrieved from documents in other collection(s).
+- Included when the entity is requested via API.</p></li>
 </ul>
 </div>
 <div class="section" id="order">
 <h2>Order<a class="headerlink" href="#order" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>Added automatically when e.g. order in order portal changes to <code class="docutils literal notranslate"><span class="pre">accepted</span></code></p>
-<ul>
-<li><p>Import data from order portal</p></li>
-</ul>
-</li>
-<li><p>Can have any number of associated datasets</p></li>
+<li><p>Added automatically when e.g. order in order portal changes to <cite>accepted</cite>.
+- Import data from order portal.</p></li>
+<li><p>Can have any number of associated datasets.</p></li>
 </ul>
 <div class="section" id="fields">
 <h3>Fields<a class="headerlink" href="#fields" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">_id</span></code></p>
-<ul>
-<li><p>Uuid for the order</p></li>
+<dl class="simple">
+<dt>_id</dt><dd><p>Uuid for the order.</p>
+</dd>
+<dt>Title</dt><dd><p>Title of the order.</p>
+</dd>
+<dt>Description</dt><dd><p>Description in markdown.</p>
+</dd>
+<dt>Creator</dt><dd><ul class="simple">
+<li><p>In most cases, this is the facility generating the data.</p></li>
+<li><p>Can be set to e.g. external if a non-facility wants to add a dataset.</p></li>
 </ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Title</span></code></p>
-<ul>
-<li><p>Name</p></li>
+</dd>
+<dt>Receiver</dt><dd><ul class="simple">
+<li><p>Email or uuid of the user who made the order.</p></li>
+<li><dl class="simple">
+<dt>Input to add will be an email address, which is mapped to the user collection.</dt><dd><ul>
+<li><p>Uuid saved: user exists.</p></li>
+<li><p>Email saved: user does not exist.</p></li>
 </ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Description</span></code></p>
-<ul>
-<li><p>Description in markdown</p></li>
-</ul>
-</li>
-<li><p>Creator (facility name)</p>
-<ul>
-<li><p>Creator can be set to e.g. external if a non-facility wants to add a dataset</p></li>
-</ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Receiver</span></code></p>
-<ul>
-<li><p>Email or uuid of the user who made the order</p></li>
-<li><p>Input to add will be an email address, which is mapped to the user collection</p></li>
-<li><p>Uuid saved: user exists</p></li>
-<li><p>Email saved: user does not exist</p></li>
-</ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Datasets</span></code></p>
-<ul>
-<li><p>All datasets generated for the order</p></li>
-</ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Extra</span> <span class="pre">fields</span></code></p>
-<ul>
-<li><p>Custom fields in the style <code class="docutils literal notranslate"><span class="pre">{'key':</span> <span class="pre">'key_name',</span> <span class="pre">'value':</span> <span class="pre">'data</span> <span class="pre">value'}</span></code></p></li>
-</ul>
+</dd>
+</dl>
 </li>
 </ul>
+</dd>
+<dt>Datasets</dt><dd><p>Datasets generated for the order.</p>
+</dd>
+<dt>Extra fields</dt><dd><p>Custom fields in the style <code class="docutils literal notranslate"><span class="pre">{'key':</span> <span class="pre">'key_name',</span> <span class="pre">'value':</span> <span class="pre">'data</span> <span class="pre">value'}</span></code>.</p>
+</dd>
+</dl>
 </div>
 </div>
 <div class="section" id="dataset">
 <h2>Dataset<a class="headerlink" href="#dataset" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>Data generated by e.g. facility</p></li>
-<li><p>One per “data delivery” from facility</p></li>
-<li><p>Can have identifier(s) (e.g. DOIs)</p></li>
-<li><p>Data links can be added by <code class="docutils literal notranslate"><span class="pre">receiver</span></code></p></li>
+<li><p>Data generated by e.g. facility.</p></li>
+<li><p>One per “data delivery” from facility.</p></li>
+<li><p>Can have identifier(s) (e.g. DOIs).</p></li>
+<li><p>Data links can be added by <code class="docutils literal notranslate"><span class="pre">receiver</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">Receiver</span></code> and <code class="docutils literal notranslate"><span class="pre">creator</span></code> can edit the entry (inherited from <code class="docutils literal notranslate"><span class="pre">order</span></code>)</p></li>
 </ul>
 <div class="section" id="id1">
 <h3>Fields<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
-<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">_id</span></code></p>
-<ul class="simple">
-<li><p>Uuid of the dataset</p></li>
-</ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Title</span></code></p>
-<ul class="simple">
-<li><p>Name</p></li>
-</ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Description</span></code></p>
-<ul class="simple">
-<li><p>Description in markdown</p></li>
-</ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Links</span></code></p>
-<ul>
-<li><p>List of links to where the dataset can be found.</p>
-<ul class="simple">
-<li><p>List entry:</p></li>
-</ul>
+<dl>
+<dt>_id</dt><dd><p>Uuid for the dataset.</p>
+</dd>
+<dt>Title</dt><dd><p>Title of the dataset.</p>
+</dd>
+<dt>Description</dt><dd><p>Description in markdown.</p>
+</dd>
+<dt>Links</dt><dd><ul>
+<li><p>List of links to where the dataset can be found.</p></li>
+<li><p>List entry:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
   <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span>
   <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;https://place&#39;</span><span class="p">,</span>
   <span class="s1">&#39;hashes&#39;</span><span class="p">:</span> <span class="p">{</span>
     <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;sha256&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;files&#39;</span><span class="p">:</span> <span class="p">[</span>
-      <span class="p">{</span>
-        <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;filename&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;hash&#39;</span><span class="p">:</span> <span class="s1">&#39;FEDCBA9...&#39;</span>
-      <span class="p">}</span>
+    <span class="s1">&#39;files&#39;</span><span class="p">:</span> <span class="p">[{</span>
+       <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;filename&#39;</span><span class="p">,</span>
+       <span class="s1">&#39;hash&#39;</span><span class="p">:</span> <span class="s1">&#39;FEDCBA9...&#39;</span>
+      <span class="p">},</span>
+      <span class="o">...</span>
     <span class="p">]</span>
   <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">title</span></code> and <code class="docutils literal notranslate"><span class="pre">url</span></code> are mandatory for each link, <code class="docutils literal notranslate"><span class="pre">hashes</span></code> is optional</p></li>
-</ul>
 </li>
+<li><p><code class="docutils literal notranslate"><span class="pre">title</span></code> and <code class="docutils literal notranslate"><span class="pre">url</span></code> are mandatory for each link, <code class="docutils literal notranslate"><span class="pre">hashes</span></code> is optional.</p></li>
 </ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Extra</span></code></p>
-<ul class="simple">
-<li><p>Custom fields in the style <code class="docutils literal notranslate"><span class="pre">{'key':</span> <span class="pre">'key_name',</span> <span class="pre">'value':</span> <span class="pre">'data</span> <span class="pre">value'}</span></code></p></li>
-</ul>
-</li>
-</ul>
+</dd>
+<dt>Extra</dt><dd><p>Custom fields in the style <code class="docutils literal notranslate"><span class="pre">{'key':</span> <span class="pre">'key_name',</span> <span class="pre">'value':</span> <span class="pre">'data</span> <span class="pre">value'}</span></code>.</p>
+</dd>
+</dl>
 </div>
 <div class="section" id="computed-fields">
 <h3>Computed fields<a class="headerlink" href="#computed-fields" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">Related</span></code></p>
-<ul>
-<li><p>All other datasets from the same order</p></li>
-</ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Projects</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Identifiers</span></code></p>
-<ul>
-<li><p>Local identifier</p></li>
-<li><p>DOIs</p></li>
-</ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Creator</span></code></p>
-<ul>
-<li><p>Inherited from <code class="docutils literal notranslate"><span class="pre">order</span></code></p></li>
-<li><p>Name of e.g. facility that generated the dataset</p></li>
-</ul>
-</li>
-</ul>
+<dl class="simple">
+<dt>Related</dt><dd><p>All other datasets from the same order.</p>
+</dd>
+<dt>Projects</dt><dd><p>All projects associated with the dataset.</p>
+</dd>
+<dt>Identifiers</dt><dd><p>May contain a local identifier and any DOIs generated from the entry.</p>
+</dd>
+<dt>Creator</dt><dd><p>Name of e.g. facility that generated the dataset. Inherited from <code class="docutils literal notranslate"><span class="pre">order</span></code>.</p>
+</dd>
+</dl>
 </div>
 </div>
 <div class="section" id="project">
 <h2>Project<a class="headerlink" href="#project" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>Created by users</p></li>
-<li><p>Can have multiple owners</p></li>
-<li><p>Can have identifiers</p></li>
-<li><p>Intended as a way for a user to have a page to show off their data and be able to get an identifier (DOI)</p></li>
+<li><p>Created by users.</p></li>
+<li><p>Can have multiple owners.</p></li>
+<li><p>Can have identifiers.</p></li>
+<li><p>Intended as a way for a user to have a page to show off their data and be able to get an identifier (DOI).</p></li>
 </ul>
 <div class="section" id="id2">
 <h3>Fields<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
-<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">_id</span></code></p>
-<ul class="simple">
-<li><p>Uuid for the projects</p></li>
+<dl>
+<dt>_id</dt><dd><p>Uuid for the project.</p>
+</dd>
+<dt>Title</dt><dd><p>Title of the project.</p>
+</dd>
+<dt>Description</dt><dd><p>Description in markdown.</p>
+</dd>
+<dt>Contact</dt><dd><p>Contact information (email) for the project.</p>
+</dd>
+<dt>Datasets</dt><dd><ul class="simple">
+<li><p>Datasets associated with the project.</p></li>
+<li><p>Can be added by the <code class="docutils literal notranslate"><span class="pre">receiver</span></code> or <code class="docutils literal notranslate"><span class="pre">creator</span></code> of the dataset.</p></li>
+<li><p>Can be removed by any user listed in <code class="docutils literal notranslate"><span class="pre">owners</span></code>.</p></li>
 </ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Title</span></code></p>
-<ul class="simple">
-<li><p>Name</p></li>
-</ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Description</span></code></p>
-<ul class="simple">
-<li><p>Description in markdown</p></li>
-</ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Contact</span></code></p>
-<ul class="simple">
-<li><p>Contact information (email) for the project</p></li>
-</ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Datasets</span></code></p>
-<ul class="simple">
-<li><p>Datasets connected to the dataset</p></li>
-<li><p>Can be added by <code class="docutils literal notranslate"><span class="pre">receiver</span></code>/<code class="docutils literal notranslate"><span class="pre">creator</span></code> of dataset</p></li>
-<li><p>Can be removed by any user listed in <code class="docutils literal notranslate"><span class="pre">owners</span></code></p></li>
-</ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Publications</span></code></p>
-<ul>
-<li><p>List of publications related to the project</p>
-<ul class="simple">
-<li><p>Entry:</p></li>
-</ul>
+</dd>
+<dt>Publications</dt><dd><ul>
+<li><p>List of publications related to the project.</p></li>
+<li><p>Entry:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
   <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;doi&#39;</span><span class="p">:</span> <span class="s1">&#39;doi-id&#39;</span>
+  <span class="s1">&#39;doi&#39;</span><span class="p">:</span> <span class="s1">&#39;doi-id&#39;</span><span class="p">,</span>
+  <span class="o">...</span>
 <span class="p">}</span>
 </pre></div>
 </div>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">title</span></code>+<code class="docutils literal notranslate"><span class="pre">doi</span></code> mandatory, but maybe include ability to add e.g. <code class="docutils literal notranslate"><span class="pre">journal</span></code>, <code class="docutils literal notranslate"><span class="pre">year</span></code> etc</p></li>
-</ul>
 </li>
+<li><p><code class="docutils literal notranslate"><span class="pre">title</span></code> + <code class="docutils literal notranslate"><span class="pre">doi</span></code> mandatory, but may also add e.g. <code class="docutils literal notranslate"><span class="pre">journal</span></code> and <code class="docutils literal notranslate"><span class="pre">year</span></code>.</p></li>
 </ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">DMP</span></code></p>
-<ul class="simple">
-<li><p>Data management plan</p></li>
-<li><p>URL</p></li>
-</ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Owners</span></code></p>
-<ul class="simple">
-<li><p>List of <code class="docutils literal notranslate"><span class="pre">uuid</span></code>s/<code class="docutils literal notranslate"><span class="pre">email</span></code>s</p></li>
-<li><p>Just like with <code class="docutils literal notranslate"><span class="pre">order</span></code>; <code class="docutils literal notranslate"><span class="pre">email</span></code> can be used if user not in db yet</p>
-<ul>
-<li><p>Allow facilities to prepare project pages</p></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Extra</span> <span class="pre">fields</span></code></p>
-<ul class="simple">
-<li><p>Custom fields in the style <code class="docutils literal notranslate"><span class="pre">{'key':</span> <span class="pre">'key_name',</span> <span class="pre">'value':</span> <span class="pre">'data</span> <span class="pre">value'}</span></code></p></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="section" id="id3">
-<h3>Computed fields:<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">Identifiers</span></code></p>
-<ul>
-<li><p>Local identifier</p></li>
-<li><p>DOIs</p></li>
-</ul>
-</li>
-</ul>
+</dd>
+<dt>DMP</dt><dd><p>Data management plan. Should be provided as an URL.</p>
+</dd>
+<dt>Owners</dt><dd><p>List of <code class="docutils literal notranslate"><span class="pre">uuid</span></code> or <code class="docutils literal notranslate"><span class="pre">email</span></code> entries. Just like <code class="docutils literal notranslate"><span class="pre">order</span></code>, <code class="docutils literal notranslate"><span class="pre">email</span></code> can be used if user not in db yet. Allows e.g. facilities to prepare project pages for a group of datasets.</p>
+</dd>
+<dt>Extra fields</dt><dd><p>Custom fields in the style <code class="docutils literal notranslate"><span class="pre">{'key':</span> <span class="pre">'key_name',</span> <span class="pre">'value':</span> <span class="pre">'data</span> <span class="pre">value'}</span></code>.</p>
+</dd>
+</dl>
+<p>Computed fields:
+—</p>
+<dl class="simple">
+<dt>Identifiers</dt><dd><p>May contain a local identifier and any DOIs generated from the entry.</p>
+</dd>
+</dl>
 </div>
 </div>
 <div class="section" id="user">
 <h2>User<a class="headerlink" href="#user" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>Everyone using the system is a user</p></li>
-<li><p>Login via Elixir AAI</p></li>
-<li><p>On first login, the user will be added to db</p>
 <ul>
-<li><p>Use <code class="docutils literal notranslate"><span class="pre">auth_id</span></code> to recognize user</p></li>
-<li><p>Read e.g. <code class="docutils literal notranslate"><span class="pre">email</span></code> from the login info</p></li>
+<li><p>Everyone using the system is a user.</p></li>
+<li><p>Login via Elixir AAI.</p></li>
+<li><p>On first login, the user will be added to db.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">auth_id</span></code> to recognize user.</p></li>
+<li><p>Read e.g. <code class="docutils literal notranslate"><span class="pre">email</span></code> from the login info.</p></li>
 </ul>
+</div></blockquote>
 </li>
-<li><p>API can also be accessed using an API key</p>
-<ul>
-<li><p>may be created by any user</p></li>
+<li><p>API can also be accessed using an API key.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>API key may be generated by any user.</p></li>
 </ul>
+</div></blockquote>
 </li>
-<li><p>“admin” can create user for facility</p></li>
-<li><p>A user can “claim entries”</p>
-<ul>
-<li><p>Will check all order <code class="docutils literal notranslate"><span class="pre">receiver</span></code>s/project <code class="docutils literal notranslate"><span class="pre">owners</span></code> whether the users email is listed</p>
-<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">Email</span></code> will be replaced with user <code class="docutils literal notranslate"><span class="pre">uuid</span></code></p></li>
+<li><p>A user with the permission <code class="docutils literal notranslate"><span class="pre">USER_MANAGEMENT</span></code>  can create a user entry for a facility.</p></li>
+<li><p>A user can “claim entries”.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Will identify all order <code class="docutils literal notranslate"><span class="pre">receiver</span></code> and project <code class="docutils literal notranslate"><span class="pre">owners</span></code> entries with the users email.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">email</span></code> will be replaced with the users <code class="docutils literal notranslate"><span class="pre">uuid</span></code> upon claim.</p></li>
 </ul>
+</div></blockquote>
 </li>
+<li><p>Facilities cannot log in via Elixir, but must do so via an <code class="docutils literal notranslate"><span class="pre">api_key</span></code>.</p></li>
 </ul>
-</li>
-<li><p>Facilities cannot log in via Elixir, but must do so via <code class="docutils literal notranslate"><span class="pre">api_key</span></code></p></li>
-</ul>
-<div class="section" id="id4">
-<h3>Fields<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">_id</span></code></p>
-<ul>
-<li><p>Uuid for the order</p></li>
-</ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Email</span></code></p>
-<ul>
-<li><p>Email address of the user</p></li>
-</ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Auth_id</span></code></p>
-<ul>
-<li><p>Identifer received from Elixir</p></li>
-<li><p>Is set to <code class="docutils literal notranslate"><span class="pre">--facility--</span></code> for facilities to avoid Elixir login</p></li>
-</ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Api_key</span></code></p>
-<ul>
-<li><p>Key that can be used as an alternative to login for authentication</p></li>
-</ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Name</span></code></p>
-<ul>
-<li><p>Name of the user (can be e.g. name of facility for facility accounts)</p></li>
-</ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Affiliation</span></code></p>
-<ul>
-<li><p>University/company etc</p></li>
-</ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Country</span></code></p>
-<ul>
-<li><p>The country of the user</p></li>
-</ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Permissions</span></code></p>
-<ul>
-<li><p>A list of the extra permissions the user has (see <a class="reference external" href="#permissions">Permissions</a>)</p></li>
-</ul>
-</li>
-</ul>
+<div class="section" id="id3">
+<h3>Fields<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<dl class="simple">
+<dt>_id</dt><dd><p>Uuid for the user.</p>
+</dd>
+<dt>Email</dt><dd><p>Email address of the user.</p>
+</dd>
+<dt>Auth_id</dt><dd><p>Identifer received from Elixir. Will be set to <cite>–facility–</cite> for facilities to prevent Elixir login.</p>
+</dd>
+<dt>Api_key</dt><dd><p>Key that can be used as an alternative to login for authentication.</p>
+</dd>
+<dt>Name</dt><dd><p>Name of the user (can be e.g. name of facility for facility accounts).</p>
+</dd>
+<dt>Affiliation</dt><dd><p>University/company etc.</p>
+</dd>
+<dt>Country</dt><dd><p>The country of the user.</p>
+</dd>
+<dt>Permissions</dt><dd><p>A list of the extra permissions the user has (see <a class="reference internal" href="permissions.html#permissions-page"><span class="std std-ref">Permissions</span></a>).</p>
+</dd>
+</dl>
 </div>
 </div>
 <div class="section" id="log">
 <h2>Log<a class="headerlink" href="#log" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>Whenever an entry (<code class="docutils literal notranslate"><span class="pre">order</span></code>, <code class="docutils literal notranslate"><span class="pre">dataset</span></code>, <code class="docutils literal notranslate"><span class="pre">project</span></code>, or <code class="docutils literal notranslate"><span class="pre">user</span></code>) is changed, a log should be written</p></li>
-<li><p>All logs are in the same collection</p></li>
-<li><p>A function is required to show changes between different versions of an entry</p></li>
+<li><p>Whenever an entry (<code class="docutils literal notranslate"><span class="pre">order</span></code>, <code class="docutils literal notranslate"><span class="pre">dataset</span></code>, <code class="docutils literal notranslate"><span class="pre">project</span></code>, or <code class="docutils literal notranslate"><span class="pre">user</span></code>) is changed, a log should be written.</p></li>
+<li><p>All logs are in the same collection.</p></li>
+<li><p>A special function will be used to show changes between different versions of an entry.</p></li>
 </ul>
-<div class="section" id="id5">
-<h3>Fields<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">_id</span></code></p>
-<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">uuid</span></code> for the log</p></li>
+<div class="section" id="id4">
+<h3>Fields<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<dl class="simple">
+<dt>_id</dt><dd><p>Uuid for the log.</p>
+</dd>
+<dt>Action</dt><dd><p>Type of action (add, edit, or delete).</p>
+</dd>
+<dt>Data_type</dt><dd><p>The collection that was modified (<code class="docutils literal notranslate"><span class="pre">order</span></code>, <code class="docutils literal notranslate"><span class="pre">dataset</span></code>, <code class="docutils literal notranslate"><span class="pre">project</span></code>, or <code class="docutils literal notranslate"><span class="pre">user</span></code>).</p>
+</dd>
+<dt>Data</dt><dd><ul class="simple">
+<li><p>Add/edit: complete copy of the new document.</p></li>
+<li><p>Delete: empty.</p></li>
 </ul>
-</li>
-<li><p>`Action’</p>
-<ul>
-<li><p>Type of action (add, edit, or delete)</p></li>
-</ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Data_type</span></code></p>
-<ul>
-<li><p>The collection that was modified (<code class="docutils literal notranslate"><span class="pre">order</span></code>, <code class="docutils literal notranslate"><span class="pre">dataset</span></code>, <code class="docutils literal notranslate"><span class="pre">project</span></code>, or <code class="docutils literal notranslate"><span class="pre">user</span></code>)</p></li>
-</ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Data</span></code></p>
-<ul>
-<li><p>Add/edit: complete copy of document</p></li>
-<li><p>Delete: empty</p></li>
-</ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Timestamp</span></code></p>
-<ul>
-<li><p>The time the action was performed</p></li>
-</ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">User</span></code></p>
-<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">Uuid</span></code> of the user performing the action</p></li>
-</ul>
-</li>
-</ul>
+</dd>
+<dt>Timestamp</dt><dd><p>The time the action was performed.</p>
+</dd>
+<dt>User</dt><dd><p>Uuid of the user that performed the action.</p>
+</dd>
+</dl>
 </div>
 </div>
 <div class="section" id="doi">
 <h2>DOI<a class="headerlink" href="#doi" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>Two collections</p>
 <ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">doi_req</span></code> - Requests for a DOI</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">doi</span></code> - Accepted DOIs</p></li>
+<li><p>Two collections
+- <code class="docutils literal notranslate"><span class="pre">doi_req</span></code> - Requests for a DOI.
+- <code class="docutils literal notranslate"><span class="pre">doi</span></code> - Accepted DOIs.</p></li>
+<li><p>Users can request a DOI for datasets and projects.</p></li>
+<li><p>Upon request, entry data is copied to <code class="docutils literal notranslate"><span class="pre">doi_req</span></code>.</p></li>
+<li><p>A reviewer will need to check the data for the request.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Required fields.</p></li>
+<li><p>File hashes.</p></li>
 </ul>
+</div></blockquote>
 </li>
-<li><p>Users can request a DOI for datasets and projects</p></li>
-<li><p>Upon request, data is copied to <code class="docutils literal notranslate"><span class="pre">doi_req</span></code></p></li>
-<li><p>A reviewer will need to check the data for the request</p>
-<ul>
-<li><p>Required fields</p></li>
-<li><p>File hashes</p></li>
-</ul>
-</li>
-<li><p>If accepted, the data will be copied to <code class="docutils literal notranslate"><span class="pre">doi</span></code></p></li>
-<li><p>Each DOI document is a complete copy of the entire data structure that was accepted for the DOI</p></li>
+<li><p>If accepted, the data will be copied to <code class="docutils literal notranslate"><span class="pre">doi</span></code>.</p></li>
+<li><p>Each DOI document is a complete copy of the entire data structure that was accepted for the DOI.</p></li>
 <li><p>A DOI will not be updated or deleted.</p></li>
 <li><p>A DOI request may be updated (by reviewer) but not deleted.</p></li>
 </ul>
 <div class="section" id="fields-request">
 <h3>Fields (request)<a class="headerlink" href="#fields-request" title="Permalink to this headline">¶</a></h3>
-<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">_id</span></code></p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">Uuid</span></code> for the request</p></li>
-</ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Data</span></code></p>
-<ul class="simple">
+<dl>
+<dt>_id</dt><dd><p>Uuid for the request.</p>
+</dd>
+<dt>Data</dt><dd><ul class="simple">
 <li><p>A complete copy of all relevant data</p></li>
-<li><p>A project with associated datasets will include copies of the datasets in <code class="docutils literal notranslate"><span class="pre">datasets</span></code> instead of only <code class="docutils literal notranslate"><span class="pre">uuid</span></code>s</p></li>
+<li><p>A project with associated datasets will include copies of the datasets in <code class="docutils literal notranslate"><span class="pre">datasets</span></code> instead of only uuids.</p></li>
 </ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Status</span></code></p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">Requested</span></code>, <code class="docutils literal notranslate"><span class="pre">Accepted</span></code>, <code class="docutils literal notranslate"><span class="pre">Rejected</span></code></p></li>
-</ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">User</span></code></p>
-<ul class="simple">
-<li><p>User that made the request</p></li>
-</ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Updates</span></code></p>
-<ul class="simple">
-<li><p>Mini log system</p></li>
-</ul>
+</dd>
+<dt>Status</dt><dd><p>Requested, Accepted, or Rejected.</p>
+</dd>
+<dt>User</dt><dd><p>User that made the request</p>
+</dd>
+<dt>Updates</dt><dd><p>Mini log system:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
   <span class="s1">&#39;timestamp&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">current</span> <span class="n">time</span><span class="o">&gt;</span><span class="p">,</span>
   <span class="s1">&#39;new_status&#39;</span><span class="p">:</span> <span class="s1">&#39;new_status&#39;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Type</span></code></p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">dataset</span></code> or <code class="docutils literal notranslate"><span class="pre">project</span></code></p></li>
-</ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Comments</span></code></p>
-<ul class="simple">
-<li><p>Comments from the reviewer</p></li>
-</ul>
-</li>
-</ul>
+</dd>
+<dt>Type</dt><dd><p>Datatype for the entry; <code class="docutils literal notranslate"><span class="pre">dataset</span></code> or <code class="docutils literal notranslate"><span class="pre">project</span></code>.</p>
+</dd>
+<dt>Comments</dt><dd><p>List of comments from the reviewer. Entry:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s1">&#39;comment&#39;</span><span class="p">:</span> <span class="s1">&#39;comment&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;timestamp&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">timestamp</span><span class="o">&gt;</span><span class="p">,</span>
+  <span class="s1">&#39;user&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">user</span> <span class="n">uuid</span><span class="o">&gt;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd>
+</dl>
 </div>
 <div class="section" id="computed-fields-request">
 <h3>Computed Fields (request)<a class="headerlink" href="#computed-fields-request" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">Other_requests</span></code></p>
-<ul>
-<li><p>Other requests that have been made for the same entry</p></li>
-<li><p>To allow the reviewer to see e.g. earlier comments</p></li>
-</ul>
-</li>
-</ul>
+<dl class="simple">
+<dt>Other_requests</dt><dd><p>Other requests that have been made for the same entry. Provided in order to allow the reviewer to see e.g. comments on earlier requests.</p>
+</dd>
+</dl>
 </div>
 <div class="section" id="fields-doi-entry">
 <h3>Fields (doi entry)<a class="headerlink" href="#fields-doi-entry" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">_id</span></code></p>
-<ul>
-<li><p>The DOI identifier</p></li>
-</ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">timestamp</span></code></p>
-<ul>
-<li><p>When the entry was created</p></li>
-</ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Data</span></code></p>
-<ul>
-<li><p>The complete entry that has been accepted</p></li>
-</ul>
-</li>
-</ul>
+<dl class="simple">
+<dt>_id</dt><dd><p>The DOI identifier.</p>
+</dd>
+<dt>Timestamp</dt><dd><p>When the entry was created (accepted).</p>
+</dd>
+<dt>Data</dt><dd><p>The complete entry that has been accepted.</p>
+</dd>
+</dl>
 </div>
 </div>
 <div class="section" id="other-topics">
 <h2>Other topics<a class="headerlink" href="#other-topics" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="identifiers">
 <h3>Identifiers<a class="headerlink" href="#identifiers" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li><p>Only uuid initially</p></li>
-<li><p>Can request a “fancier” local identifer for <code class="docutils literal notranslate"><span class="pre">dataset</span></code>/<code class="docutils literal notranslate"><span class="pre">project</span></code></p>
 <ul>
-<li><p>Style similar to:</p>
-<ul>
+<li><p>Only uuid initially.</p></li>
+<li><p>Can request a “fancier” local identifer for <code class="docutils literal notranslate"><span class="pre">dataset</span></code>/<code class="docutils literal notranslate"><span class="pre">project</span></code>.</p>
+<blockquote>
+<div><ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">scilifelab.facility.orderxyz.dataset1</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">scilifelab.projects.title1</span></code></p></li>
 </ul>
-</li>
-</ul>
-</li>
-<li><p>All datasets and projects can request DOI</p>
-<ul>
-<li><p>The required fields will be checked if empty. If not the request will be sent for evaluation by e.g. admin</p></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="section" id="permissions">
-<h3>Permissions<a class="headerlink" href="#permissions" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li><p>“Permission classes” used to evaluate what a user may do</p>
-<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">CREATE_ORDERS</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">MANAGE_USERS</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">EDIT_ANY_DATA</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">READ_OWNERS</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">DOI_REVIEWER</span></code></p></li>
-</ul>
-</li>
-<li><p>“Default groups”</p>
-<ul>
-<li><p>Template for user, giving a specific set of permissions</p></li>
-<li><p>Admin - “all”</p></li>
-<li><p>Facility - “create orders”+”read ownerships”</p></li>
-</ul>
+</div></blockquote>
 </li>
 </ul>
 </div>

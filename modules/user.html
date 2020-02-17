@@ -162,7 +162,7 @@
 <span class="sd">    User-related API endpoints, including login/logout and user manament.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Sequence</span>  <span class="c1"># pylint: disable=unused-import</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>  <span class="c1"># pylint: disable=unused-import</span>
 <span class="kn">import</span> <span class="nn">functools</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 
@@ -174,10 +174,11 @@
 
 <span class="n">blueprint</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">Blueprint</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">)</span>  <span class="c1"># pylint: disable=invalid-name</span>
 
-<span class="n">PERMISSIONS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;ORDERS&#39;</span><span class="p">,</span>
-               <span class="s1">&#39;OWNERS_READ&#39;</span><span class="p">,</span>
-               <span class="s1">&#39;USER_MANAGEMENT&#39;</span><span class="p">,</span>
-               <span class="s1">&#39;DATA_MANAGEMENT&#39;</span><span class="p">]</span>
+<span class="n">PERMISSIONS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;ORDERS&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;ORDERS&#39;</span><span class="p">),</span>
+               <span class="s1">&#39;OWNERS_READ&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;OWNERS_READ&#39;</span><span class="p">),</span>
+               <span class="s1">&#39;USER_MANAGEMENT&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;USER_MANAGEMENT&#39;</span><span class="p">),</span>
+               <span class="s1">&#39;DATA_MANAGEMENT&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;ORDERS&#39;</span><span class="p">,</span> <span class="s1">&#39;OWNERS_READ&#39;</span><span class="p">,</span> <span class="s1">&#39;DATA_MANAGEMENT&#39;</span><span class="p">),</span>
+               <span class="s1">&#39;DOI_REVIEWER&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;DOI_REVIEWER&#39;</span><span class="p">)}</span>
 
 
 <span class="c1"># Decorators</span>
@@ -204,30 +205,7 @@
     <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">wrap</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">check_user_permissions</span><span class="p">(</span><span class="s1">&#39;Steward&#39;</span><span class="p">):</span>
-            <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">401</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">wrap</span></div>
-
-
-<div class="viewcode-block" id="permissions_required"><a class="viewcode-back" href="../user.html#user.permissions_required">[docs]</a><span class="k">def</span> <span class="nf">permissions_required</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Confirm that the current user has the correct permissions.</span>
-
-<span class="sd">    Will look in ``kwarg`` for the parameter ``perm_required``.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        perm_required (Sequence): The required permission terms.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        Callable: The wrapped function.</span>
-
-<span class="sd">    Raises:</span>
-<span class="sd">        werkzeug.exceptions.Unauthorized: User does not have the required permission.</span>
-<span class="sd">    &quot;&quot;&quot;</span>    
-    <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">wrap</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">check_user_permissions</span><span class="p">(</span><span class="s1">&#39;Steward&#39;</span><span class="p">):</span>
-            <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">401</span><span class="p">))</span>
+            <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">403</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">wrap</span></div>
 
@@ -341,14 +319,14 @@
 <span class="sd">    Get the current user.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        dict: the current user</span>
+<span class="sd">        dict: The current user.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">get_user</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">flask</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;username&#39;</span><span class="p">))</span></div>
 
 
 <div class="viewcode-block" id="get_user"><a class="viewcode-back" href="../user.html#user.get_user">[docs]</a><span class="k">def</span> <span class="nf">get_user</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">apikey</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Get data about the user.</span>
+<span class="sd">    Get information about the user.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        username (str): The username (email) of the user</span>
@@ -389,6 +367,28 @@
     <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Rejected access. User: </span><span class="si">%s</span><span class="s1"> &#39;</span><span class="p">,</span>
                     <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span><span class="p">)</span>
     <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="permission_required"><a class="viewcode-back" href="../user.html#user.permission_required">[docs]</a><span class="k">def</span> <span class="nf">permission_required</span><span class="p">(</span><span class="n">permission</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check if the current user permissions fulfills the requirement.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        permission (str): The required permission</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: whether the user has the required permissions or not</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">user_permissions</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">PERMISSIONS</span><span class="p">[</span><span class="n">permission</span><span class="p">]</span> <span class="k">for</span> <span class="n">permission</span> <span class="ow">in</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">permissions</span><span class="p">)</span>
+    <span class="n">permission</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="c1"># check permission</span>
+    <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">permissions</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">user_permissions</span><span class="p">:</span>
+                <span class="n">permission</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">break</span>
+
+    <span class="k">return</span> <span class="n">permission</span></div>
 </pre></div>
 
            </div>

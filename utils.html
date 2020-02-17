@@ -188,35 +188,38 @@
 <p>Also make sure indata is not empty.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>document</strong> (<em>dict</em>) – received input to update a document</p>
+<dd class="field-odd"><p><strong>document</strong> (<em>dict</em>) – Received input to update a document.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Whether the document passed the check.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="utils.convert_keys_to_camel">
-<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">convert_keys_to_camel</code><span class="sig-paren">(</span><em class="sig-param">chunk</em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#convert_keys_to_camel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.convert_keys_to_camel" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">convert_keys_to_camel</code><span class="sig-paren">(</span><em class="sig-param">chunk: Any</em><span class="sig-paren">)</span> &#x2192; Any<a class="reference internal" href="modules/utils.html#convert_keys_to_camel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.convert_keys_to_camel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert keys given in snake_case to camelCase.</p>
 <p>The capitalization of the first letter is preserved.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>chunk</strong> – Object to convert</p>
+<dd class="field-odd"><p><strong>chunk</strong> (<em>Any</em>) – Object to convert.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>chunk converted to camelCase dict, otherwise chunk</p>
+<dd class="field-even"><p>Chunk converted to camelCase <cite>dict</cite>, otherwise chunk.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><ul class="simple">
-<li></li>
-</ul>
-</p>
+<dd class="field-odd"><p>Any</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="utils.country_list">
-<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">country_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#country_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.country_list" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">country_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; list<a class="reference internal" href="modules/utils.html#country_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.country_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Provide a list of countries.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -234,7 +237,7 @@
 <dd><p>Genereate a csrf token.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>the csrf token</p>
+<dd class="field-odd"><p>The csrf token.</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p>str</p>
@@ -248,10 +251,10 @@
 <dd><p>Query for a dataset from the database.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>identifier</strong> (<em>str</em>) – the uuid of the dataset</p>
+<dd class="field-odd"><p><strong>identifier</strong> (<em>str</em>) – The uuid of the dataset.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>the dataset</p>
+<dd class="field-even"><p>The dataset.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>dict</p>
@@ -265,10 +268,10 @@
 <dd><p>Get the connection to the MongoDB database.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>dbserver</strong> – connection to the db</p>
+<dd class="field-odd"><p><strong>dbserver</strong> – Connection to the database.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>the database connection</p>
+<dd class="field-even"><p>The database connection.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>pymongo.database.Database</p>
@@ -282,7 +285,7 @@
 <dd><p>Get the connection to the MongoDB database server.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>the client connection</p>
+<dd class="field-odd"><p>The client connection.</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p>pymongo.mongo_client.MongoClient</p>
@@ -296,10 +299,10 @@
 <dd><p>Query for a project from the database.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>identifier</strong> (<em>str</em>) – the uuid of the project</p>
+<dd class="field-odd"><p><strong>identifier</strong> (<em>str</em>) – The uuid of the project.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>the project</p>
+<dd class="field-even"><p>The project.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>dict</p>
@@ -313,10 +316,10 @@
 <dd><p>Check whether a string seems to be an email address or not.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>indata</strong> (<em>str</em>) – data to check</p>
+<dd class="field-odd"><p><strong>indata</strong> (<em>str</em>) – Data to check.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>is the indata an email address or not</p>
+<dd class="field-even"><p>Is the indata an email address or not.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>bool</p>
@@ -353,18 +356,24 @@
 <code class="sig-prename descclassname">utils.</code><code class="sig-name descname">make_log</code><span class="sig-paren">(</span><em class="sig-param">data_type: str</em>, <em class="sig-param">action: str</em>, <em class="sig-param">data: dict = None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#make_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.make_log" title="Permalink to this definition">¶</a></dt>
 <dd><p>Log a change in the system.</p>
 <p>Saves a complete copy of the new object.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
 <p>It is assumed that all values are exactly like in the db,
 e.g. <code class="docutils literal notranslate"><span class="pre">data</span></code> should only contain permitted fields.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>action</strong> (<em>str</em>) – type of action (insert, update etc)</p></li>
-<li><p><strong>data_type</strong> (<em>str</em>) – the collection name</p></li>
-<li><p><strong>data</strong> (<em>dict</em>) – the new data for the entry</p></li>
+<li><p><strong>action</strong> (<em>str</em>) – Type of action (insert, update etc).</p></li>
+<li><p><strong>data_type</strong> (<em>str</em>) – The collection name.</p></li>
+<li><p><strong>data</strong> (<em>dict</em>) – The new data for the entry.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Whether the log insertion successed.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
 </dd></dl>
@@ -375,7 +384,7 @@ e.g. <code class="docutils literal notranslate"><span class="pre">data</span></c
 <dd><p>Generate a timestamp of the current time.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>the current time</p>
+<dd class="field-odd"><p>The current time.</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p>datetime.datetime</p>
@@ -389,7 +398,7 @@ e.g. <code class="docutils literal notranslate"><span class="pre">data</span></c
 <dd><p>Generate a uuid for a field in a MongoDB document.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>the new uuid in binary format</p>
+<dd class="field-odd"><p>The new uuid in binary format.</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p>uuid.UUID</p>
@@ -400,13 +409,13 @@ e.g. <code class="docutils literal notranslate"><span class="pre">data</span></c
 <dl class="function">
 <dt id="utils.response_json">
 <code class="sig-prename descclassname">utils.</code><code class="sig-name descname">response_json</code><span class="sig-paren">(</span><em class="sig-param">json_structure: dict</em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#response_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.response_json" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert keys to camelCase and run <cite>flask.jsonify()</cite>.</p>
+<dd><p>Convert keys to camelCase and run <code class="docutils literal notranslate"><span class="pre">flask.jsonify()</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>json_structure</strong> (<em>dict</em>) – structure to prepare</p>
+<dd class="field-odd"><p><strong>json_structure</strong> (<em>dict</em>) – Structure to prepare.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>prepared response containing json structure with camelBack keys</p>
+<dd class="field-even"><p>Prepared response containing json structure with camelBack keys.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>flask.Response</p>
@@ -418,12 +427,13 @@ e.g. <code class="docutils literal notranslate"><span class="pre">data</span></c
 <dt id="utils.str_to_uuid">
 <code class="sig-prename descclassname">utils.</code><code class="sig-name descname">str_to_uuid</code><span class="sig-paren">(</span><em class="sig-param">uuid_str: str</em><span class="sig-paren">)</span> &#x2192; uuid.UUID<a class="reference internal" href="modules/utils.html#str_to_uuid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.str_to_uuid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert str uuid to uuid.UUID.</p>
+<p>Provided as a convenience function if the identifier must be changed in the future.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>uuid_str</strong> (<em>str</em>) – the uuid to be converted</p>
+<dd class="field-odd"><p><strong>uuid_str</strong> (<em>str</em>) – The uuid to be converted.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>the uuid</p>
+<dd class="field-even"><p>The uuid.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>uuid.UUID</p>
