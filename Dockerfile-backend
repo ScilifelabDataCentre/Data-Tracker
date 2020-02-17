@@ -2,7 +2,9 @@ FROM python:latest
 
 ADD . /code
 COPY config.yaml.sample /config.yaml
-RUN sed -i 's/mongo_host:.*/mongo_host: "db"/' /config.yaml
+RUN sed -i 's/host:.*/host: "db"/' /config.yaml
+RUN sed -i 's/api: false/api: true/' /config.yaml
+RUN sed -i 's/testing: false/testing: true/' /config.yaml
 WORKDIR /code/backend
 
 ENV PYTHONPATH /code/backend
