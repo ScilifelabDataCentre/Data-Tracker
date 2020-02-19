@@ -98,10 +98,9 @@ def elixir_login():
 @blueprint.route('/logout')
 def logout():
     """Log out the current user."""
-    if 'username' in flask.session:
-        del flask.session['username']
+    flask.session.clear()
     response = flask.redirect("/", code=302)
-    response.set_cookie('_csrf_token', '', expires=0)
+    response.set_cookie('_csrf_token', utils.gen_csrf_token(), 0)
     return response
 
 
@@ -159,7 +158,6 @@ def do_login(username: str):
     flask.session['username'] = username
     flask.session.permanent = True
     response = flask.Response(status=200)
-    response.set_cookie('_csrf_token', utils.gen_csrf_token(), samesite='Lax')
     return response
 
 

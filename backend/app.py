@@ -26,19 +26,23 @@ app.register_blueprint(user.blueprint, url_prefix='/api/user')
 @app.before_request
 def prepare():
     """Open the database connection; get the current user."""
-    if flask.request.method in ('POST', 'PUT', 'DELETE'):
-        utils.check_csrf_token()
+    if flask.request.method != 'GET':
+        utils.verify_csrf_token()
     flask.g.dbserver = utils.get_dbserver()
     flask.g.db = utils.get_db(flask.g.dbserver)
     flask.g.current_user = user.get_current_user()
-    flask.g.current_role = flask.g.current_user['role'] if flask.g.current_user else None
+    flask.g.permissions = flask.g.current_user['permissions'] if flask.g.current_user else None
 
 
 @app.after_request
 def finalize(response):
-    """Close the database connection."""
+    """Finalize the response and clean up."""
+    # close db connection
     if hasattr(flask.g, 'dbserver'):
         flask.g.dbserver.close()
+    # set csrf cookie if not set
+    if not flask.request.cookies.get('_csrf_token'):
+        response.set_cookie('_csrf_token', utils.gen_csrf_token(), samesite='Lax')
     # add some headers for protection
     response.headers['X-Frame-Options'] = 'SAMEORIGIN'
     response.headers['X-XSS-Protection'] = '1; mode=block'
