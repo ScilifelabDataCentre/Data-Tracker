@@ -65,5 +65,6 @@ def init(app):
         config['ENV'] = 'development'
 
     app.config.update(config)
+    app.config['SESSION_COOKIE_NAME'] = 'dt_session'
     app.config['SECRET_KEY'] = config['flask']['secret']
     app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
