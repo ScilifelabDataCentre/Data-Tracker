@@ -12,7 +12,7 @@ import utils
 
 
 app = flask.Flask(__name__)  # pylint: disable=invalid-name
-config.init(app)
+app.config.update(config.init())
 
 if app.config['dev_mode']['api']:
     app.register_blueprint(developer.blueprint, url_prefix='/api/developer')

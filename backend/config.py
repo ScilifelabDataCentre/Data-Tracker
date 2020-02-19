@@ -40,13 +40,12 @@ def read_config(path: str = ''):
         return yaml.load(in_file, Loader=yaml.FullLoader)
 
 
-def init(app):
+def init() -> dict:
     """
-    Read settings and add them to the app config.
+    Read the config from a config.yaml file.
 
-    Args:
-        app: the Flask app
-
+    Returns:
+        dict: The config.
     """
     config_file = ''
     arg = "--config_file"
@@ -64,7 +63,7 @@ def init(app):
         config['TESTING'] = True
         config['ENV'] = 'development'
 
-    app.config.update(config)
-    app.config['SESSION_COOKIE_NAME'] = 'dt_session'
-    app.config['SECRET_KEY'] = config['flask']['secret']
-    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+    config['SESSION_COOKIE_NAME'] = 'dt_session'
+    config['SECRET_KEY'] = config['flask']['secret']
+    config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+    return config
