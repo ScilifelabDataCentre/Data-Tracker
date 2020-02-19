@@ -60,7 +60,9 @@ def init(app):
     config = read_config(config_file)
     if config['dev_mode']['testing']:
         logging.getLogger().setLevel(logging.DEBUG)
+        config['DEBUG'] = True
         config['TESTING'] = True
+        config['ENV'] = 'development'
 
     app.config.update(config)
     app.config['SECRET_KEY'] = config['flask']['secret']
