@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="static/documentation_options.js"></script>
-        <script type="text/javascript" src="static/jquery.js"></script>
-        <script type="text/javascript" src="static/underscore.js"></script>
-        <script type="text/javascript" src="static/doctools.js"></script>
-        <script type="text/javascript" src="static/language_data.js"></script>
+        <script src="static/jquery.js"></script>
+        <script src="static/underscore.js"></script>
+        <script src="static/doctools.js"></script>
+        <script src="static/language_data.js"></script>
     
     <script type="text/javascript" src="static/js/theme.js"></script>
 
@@ -175,12 +175,6 @@
   <div class="section" id="module-utils">
 <span id="utils-py"></span><h1>utils.py<a class="headerlink" href="#module-utils" title="Permalink to this headline">¶</a></h1>
 <p>General helper functions.</p>
-<dl class="function">
-<dt id="utils.check_csrf_token">
-<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">check_csrf_token</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#check_csrf_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.check_csrf_token" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compare the csrf token from the request (header) with the one in the cookie.session.</p>
-</dd></dl>
-
 <dl class="function">
 <dt id="utils.check_mongo_update">
 <code class="sig-prename descclassname">utils.</code><code class="sig-name descname">check_mongo_update</code><span class="sig-paren">(</span><em class="sig-param">document: dict</em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#check_mongo_update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.check_mongo_update" title="Permalink to this definition">¶</a></dt>
@@ -439,6 +433,12 @@ e.g. <code class="docutils literal notranslate"><span class="pre">data</span></c
 <dd class="field-odd"><p>uuid.UUID</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils.verify_csrf_token">
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">verify_csrf_token</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#verify_csrf_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.verify_csrf_token" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compare the csrf token from the request (header) with the one in the cookie.session.</p>
 </dd></dl>
 
 </div>

@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -177,8 +177,8 @@
 <div class="viewcode-block" id="prepare"><a class="viewcode-back" href="../app.html#app.prepare">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">before_request</span>
 <span class="k">def</span> <span class="nf">prepare</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;Open the database connection; get the current user.&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;POST&#39;</span><span class="p">,</span> <span class="s1">&#39;PUT&#39;</span><span class="p">,</span> <span class="s1">&#39;DELETE&#39;</span><span class="p">):</span>
-        <span class="n">utils</span><span class="o">.</span><span class="n">check_csrf_token</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">!=</span> <span class="s1">&#39;GET&#39;</span><span class="p">:</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">verify_csrf_token</span><span class="p">()</span>
     <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">dbserver</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_dbserver</span><span class="p">()</span>
     <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_db</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">dbserver</span><span class="p">)</span>
     <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">get_current_user</span><span class="p">()</span>
@@ -187,9 +187,13 @@
 
 <div class="viewcode-block" id="finalize"><a class="viewcode-back" href="../app.html#app.finalize">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">after_request</span>
 <span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Close the database connection.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Finalize the response and clean up.&quot;&quot;&quot;</span>
+    <span class="c1"># close db connection</span>
     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="p">,</span> <span class="s1">&#39;dbserver&#39;</span><span class="p">):</span>
         <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">dbserver</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="c1"># set csrf cookie if not set</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">cookies</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;_csrf_token&#39;</span><span class="p">):</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">set_cookie</span><span class="p">(</span><span class="s1">&#39;_csrf_token&#39;</span><span class="p">,</span> <span class="n">utils</span><span class="o">.</span><span class="n">gen_csrf_token</span><span class="p">(),</span> <span class="n">samesite</span><span class="o">=</span><span class="s1">&#39;Lax&#39;</span><span class="p">)</span>
     <span class="c1"># add some headers for protection</span>
     <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;X-Frame-Options&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;SAMEORIGIN&#39;</span>
     <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;X-XSS-Protection&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;1; mode=block&#39;</span>

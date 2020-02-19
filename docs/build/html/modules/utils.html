@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -164,7 +164,7 @@
 
 
 <span class="c1"># csrf</span>
-<div class="viewcode-block" id="check_csrf_token"><a class="viewcode-back" href="../utils.html#utils.check_csrf_token">[docs]</a><span class="k">def</span> <span class="nf">check_csrf_token</span><span class="p">():</span>
+<div class="viewcode-block" id="verify_csrf_token"><a class="viewcode-back" href="../utils.html#utils.verify_csrf_token">[docs]</a><span class="k">def</span> <span class="nf">verify_csrf_token</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;Compare the csrf token from the request (header) with the one in the cookie.session.&quot;&quot;&quot;</span>
     <span class="n">token</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;X-CSRFToken&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">token</span> <span class="ow">or</span> <span class="p">(</span><span class="n">token</span> <span class="o">!=</span> <span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">cookies</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;_csrf_token&#39;</span><span class="p">)):</span>
