@@ -84,7 +84,7 @@
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../api.html">API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../data_structure.html">Data Structure</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../permissions.html">Permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../implementation.html">Implementation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../development.html">Development</a></li>
 </ul>
 
@@ -248,17 +248,20 @@
     <span class="k">return</span> <span class="n">result</span></div>
 
 
-<div class="viewcode-block" id="get_dbserver"><a class="viewcode-back" href="../utils.html#utils.get_dbserver">[docs]</a><span class="k">def</span> <span class="nf">get_dbserver</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">mongo_client</span><span class="o">.</span><span class="n">MongoClient</span><span class="p">:</span>
+<div class="viewcode-block" id="get_dbclient"><a class="viewcode-back" href="../utils.html#utils.get_dbclient">[docs]</a><span class="k">def</span> <span class="nf">get_dbclient</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">mongo_client</span><span class="o">.</span><span class="n">MongoClient</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the connection to the MongoDB database server.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        conf: A mapping with the relevant mongo keys available.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        pymongo.mongo_client.MongoClient: The client connection.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">MongoClient</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;mongo&#39;</span><span class="p">][</span><span class="s1">&#39;host&#39;</span><span class="p">],</span>
-                               <span class="n">port</span><span class="o">=</span><span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;mongo&#39;</span><span class="p">][</span><span class="s1">&#39;port&#39;</span><span class="p">],</span>
-                               <span class="n">username</span><span class="o">=</span><span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;mongo&#39;</span><span class="p">][</span><span class="s1">&#39;user&#39;</span><span class="p">],</span>
-                               <span class="n">password</span><span class="o">=</span><span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;mongo&#39;</span><span class="p">][</span><span class="s1">&#39;password&#39;</span><span class="p">])</span></div>
+    <span class="k">return</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">MongoClient</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">conf</span><span class="p">[</span><span class="s1">&#39;mongo&#39;</span><span class="p">][</span><span class="s1">&#39;host&#39;</span><span class="p">],</span>
+                               <span class="n">port</span><span class="o">=</span><span class="n">conf</span><span class="p">[</span><span class="s1">&#39;mongo&#39;</span><span class="p">][</span><span class="s1">&#39;port&#39;</span><span class="p">],</span>
+                               <span class="n">username</span><span class="o">=</span><span class="n">conf</span><span class="p">[</span><span class="s1">&#39;mongo&#39;</span><span class="p">][</span><span class="s1">&#39;user&#39;</span><span class="p">],</span>
+                               <span class="n">password</span><span class="o">=</span><span class="n">conf</span><span class="p">[</span><span class="s1">&#39;mongo&#39;</span><span class="p">][</span><span class="s1">&#39;password&#39;</span><span class="p">])</span></div>
 
 
 <div class="viewcode-block" id="get_db"><a class="viewcode-back" href="../utils.html#utils.get_db">[docs]</a><span class="k">def</span> <span class="nf">get_db</span><span class="p">(</span><span class="n">dbserver</span><span class="p">:</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">mongo_client</span><span class="o">.</span><span class="n">MongoClient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">database</span><span class="o">.</span><span class="n">Database</span><span class="p">:</span>
