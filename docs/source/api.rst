@@ -67,6 +67,11 @@ Dataset
     **GET** Get a list of changes done to the dataset with uuid ``identifier``.
 
 
+.. function:: /dataset/claim
+
+    **POST** Claim datasets (``email``->``UUID``) belonging to the current user.
+
+
 Project
 =======
 .. function:: /project/<identifier>
@@ -88,9 +93,14 @@ Project
     **GET** Get a list of projects created or received by current user or ``username`` (if provided as parameter).
 
 
-.. function:: /order/<identifier>/log
+.. function:: /project/<identifier>/log
 
     **GET** Get a list of changes done to the project with uuid ``identifier``.
+
+
+.. function:: /project/claim
+
+    **POST** Claim projects (``email``->``UUID``) belonging to the current user.
 
 
 User
@@ -100,11 +110,6 @@ User
     **GET** Get information about the current user.
 
     **PUT** Update information about the current user.
-
-
-.. function:: /user/me/claim
-
-    **POST** Claim datasets (``email``->``UUID``) belonging to the current user.
 
 
 .. function:: /user/me/log
