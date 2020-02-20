@@ -117,21 +117,21 @@ def gen_users(db, nr_users: int = 100):
     uuids = []
     perm_keys = tuple(PERMISSIONS.keys())
     # non-random users with specific rights
-    special_users = [{'name': 'Base Test', 'permissions': [], 'email': 'base@example.com'},
-                     {'name': 'Orders Test', 'permissions': ['ORDERS_SELF'], 'email': 'orders@example.com'},
-                     {'name': 'Owners Test', 'permissions': ['OWNERS_READ'], 'email': 'owners@example.com'},
-                     {'name': 'Users Test', 'permissions': ['USER_MANAGEMENT'], 'email': 'users@example.com'},
-                     {'name': 'Data Test', 'permissions': ['DATA_MANAGEMENT'], 'email': 'data@example.com'},
-                     {'name': 'Doi Test', 'permissions': ['DOI_REVIEWER'], 'email': 'data@example.com'},
-                     {'name': 'Root Test', 'permissions': list(perm_keys), 'email': 'root@example.com'}]
+    special_users = [{'name': 'Base Test', 'permissions': [], 'auth_id' : 'base@testers'},
+                     {'name': 'Orders Test', 'permissions': ['ORDERS_SELF'], 'auth_id' : 'orders@testers'},
+                     {'name': 'Owners Test', 'permissions': ['OWNERS_READ'], 'auth_id' : 'owners@testers'},
+                     {'name': 'Users Test', 'permissions': ['USER_MANAGEMENT'], 'auth_id' : 'users@testers'},
+                     {'name': 'Data Test', 'permissions': ['DATA_MANAGEMENT'], 'auth_id' : 'data@testers'},
+                     {'name': 'Doi Test', 'permissions': ['DOI_REVIEWER'], 'auth_id' : 'doi@testers'},
+                     {'name': 'Root Test', 'permissions': list(perm_keys), 'auth_id' : 'root@testers'}]
 
     for i, suser in enumerate(special_users):
         user = structure.user()
         user.update(suser)
         user.update({'affiliation' : 'Test university',
                      'api_key': uuid.uuid4().hex,
-                     'auth_id' : f'hash{i}@suser',
-                     'country' : 'Sweden'})
+                     'country': 'Sweden',
+                     'email': f'{"".join(user["name"].split())}@example.com'})
         db['users'].insert_one(user)
 
     countries = utils.country_list()
