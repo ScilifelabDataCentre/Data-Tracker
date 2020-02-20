@@ -13,7 +13,7 @@ import pymongo
 
 
 # csrf
-def check_csrf_token():
+def verify_csrf_token():
     """Compare the csrf token from the request (header) with the one in the cookie.session."""
     token = flask.request.headers.get('X-CSRFToken')
     if not token or (token != flask.request.cookies.get('_csrf_token')):
@@ -97,31 +97,35 @@ def get_project(identifier: str):
     return result
 
 
-def get_dbserver() -> pymongo.mongo_client.MongoClient:
+def get_dbclient(conf) -> pymongo.mongo_client.MongoClient:
     """
     Get the connection to the MongoDB database server.
+
+    Args:
+        conf: A mapping with the relevant mongo keys available.
 
     Returns:
         pymongo.mongo_client.MongoClient: The client connection.
     """
-    return pymongo.MongoClient(host=flask.current_app.config['mongo']['host'],
-                               port=flask.current_app.config['mongo']['port'],
-                               username=flask.current_app.config['mongo']['user'],
-                               password=flask.current_app.config['mongo']['password'])
+    return pymongo.MongoClient(host=conf['mongo']['host'],
+                               port=conf['mongo']['port'],
+                               username=conf['mongo']['user'],
+                               password=conf['mongo']['password'])
 
 
-def get_db(dbserver: pymongo.mongo_client.MongoClient) -> pymongo.database.Database:
+def get_db(dbserver: pymongo.mongo_client.MongoClient, conf) -> pymongo.database.Database:
     """
     Get the connection to the MongoDB database.
 
     Args:
-        dbserver: Connection to the database.
+        dbserver (pymongo.mongo_client.MongoClient): Connection to the database.
+        conf: A mapping with the relevant mongo keys available.
 
     Returns:
         pymongo.database.Database: The database connection.
     """
     codec_options = bson.codec_options.CodecOptions(uuid_representation=bson.binary.STANDARD)
-    return dbserver.get_database(flask.current_app.config['mongo']['db'],
+    return dbserver.get_database(conf['mongo']['db'],
                                  codec_options=(codec_options))
 
 
