@@ -9,15 +9,21 @@ import user
 blueprint = flask.Blueprint('developer', __name__)  # pylint: disable=invalid-name
 
 
-@blueprint.route('/login/<username>')
-def login(username: str):
+@blueprint.route('/login/<identifier>')
+def login(identifier: str):
     """
     Log in without password.
 
     Args:
-        username (str): The user (auth_id) to log in.
+        identifer (str): User ``auth_id`` or ``api_key``.
     """
-    if user.do_login(username):
+    if len(identifier) == 32 and '@' not in identifier:
+        # api key
+        res = user.do_login(api_key=identifier)
+    else:
+        # auth id
+        res = user.do_login(auth_id=identifier)
+    if res:
         return flask.Response(status=200)
     else:
         return flask.Response(status=500)
@@ -78,6 +84,15 @@ def list_session():
     for key in session:
         session[key] = repr(session[key])
     return flask.jsonify(session)
+
+
+@blueprint.route('/user/me')
+def list_current_user():
+    """List all session variables."""
+    user = flask.g.current_user
+    for key in user:
+        user[key] = repr(user[key])
+    return flask.jsonify(user)
 
 
 @blueprint.route('/config')

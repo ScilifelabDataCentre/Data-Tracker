@@ -140,7 +140,7 @@ def get_current_user_info():
 
 
 # helper functions
-def do_login(auth_id: str, other_data: dict = None):
+def do_login(*, auth_id: str = None, api_key: str = None, other_data: dict = None):
     """
     Set all relevant variables for a logged in user.
 
@@ -151,12 +151,15 @@ def do_login(auth_id: str, other_data: dict = None):
 
     Returns bool: Whether the login succeeded.
     """
-    user = flask.g.db['users'].find_one({'auth_id': auth_id})
-    if not user:
+    if auth_id:
+        user = flask.g.db['users'].find_one({'auth_id': auth_id})
+    elif api_key:
+        user = flask.g.db['users'].find_one({'api_key': api_key})
+    else:
         user = structure.user()
         user['auth_id'] = auth_id
+        user['api_key'] = api_key
         response = flask.g.db['users'].insert_one(user)
-        logging.debug(response)
 
     flask.session['user_id'] = user['_id']
     flask.session.permanent = True
@@ -225,7 +228,5 @@ def has_permission(permission: str):
     user_permissions = set(chain.from_iterable(PERMISSIONS[permission]
                                                for permission in flask.g.permissions))
     if permission not in user_permissions:
-        logging.debug(f'REJECTED User: {flask.g.current_user["name"]}, Needed: {permission}, Permissions: {user_permissions}')
         return False
-    logging.debug(f'ACCEPTED User: {flask.g.current_user["name"]}, Needed: {permission}, Permissions: {user_permissions}')
     return True

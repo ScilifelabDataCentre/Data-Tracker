@@ -39,21 +39,21 @@ def db_connection():
     return utils.get_db(client, conf)
 
 
-def as_user(session: requests.Session, user_type: str, set_csrf: bool = True) -> int:
+def as_user(session: requests.Session, auth_id: str, set_csrf: bool = True) -> int:
     """
     Helper method to log in as requested user.
 
     Session changed in-place.
 
     Args:
-        session (requests.Session): the session to uodate
-        user_type (str): the type of user (key in ``USERS``)
+        session (requests.Session): The session to update.
+        auth_id (str): The auth id of the user.
 
     Returns:
-        int: status_code
+        int: Status code.
     """
-    if user_type != 'no-login':
-        code = session.get(f'{BASE_URL}/api/developer/login/{USERS[user_type]}').status_code
+    if auth_id:
+        code = session.get(f'{BASE_URL}/api/developer/login/{auth_id}').status_code
         assert code == 200
     else:
         code = session.get(f'{BASE_URL}/api/user/logout').status_code
@@ -141,7 +141,7 @@ def make_request_all_roles(url: str, method: str = 'GET', data=None, set_csrf: b
     responses = []
     session = requests.Session()
     for user in USERS:
-        as_user(session, user, set_csrf=set_csrf)
+        as_user(session, USERS[user], set_csrf=set_csrf)
         req = make_request(session, url, data, method, ret_json=False)
         responses.append(Response(data=req.data, code=req.code, role=user))
     return responses

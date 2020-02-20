@@ -9,30 +9,73 @@ import requests
 # pylint: disable = redefined-outer-name, unused-import
 
 from helpers import make_request, as_user, make_request_all_roles,\
-    USERS, random_string, parse_time
+    USERS, random_string, parse_time, db_connection
 
 
 def test_get_order_get_permissions():
     """Test permissions for requesting a order."""
     session = requests.Session()
-    orig = random.choice(make_request(session, '/api/developer/orders')[0]['orders'])
-    responses = make_request_all_roles(f'/api/order/{orig["_id"]}')
-    for response in responses:
-        assert json.loads(response[0])['order'] == orig
-        assert response[1] == 200
 
+    db = db_connection()
+    orders = list(db['orders'].aggregate([{'$match': {'creator': {'$type' : "binData"}}},
+                                          {'$sample': {'size': 2}}]))
+    for order in orders:
+        # to simplify comparison
+        order['_id'] = str(order['_id'])
+        order['receiver'] = str(order['receiver'])
+        owner = db['users'].find_one({'_id': order['creator']})
+        order['creator'] = str(order['creator'])
+        for i, ds in enumerate(order['datasets']):
+            order['datasets'][i] = next(db['datasets'].aggregate([{'$match': {'_id': ds}},
+                                                                  {'$project': {'_id': 0,
+                                                                                'uuid': '$_id',
+                                                                                'title': 1}}]))
+            order['datasets'][i]['uuid'] = str(order['datasets'][i]['uuid'])
+
+        responses = make_request_all_roles(f'/api/order/{order["_id"]}')
+        for response in responses:
+            if response.role in ('data', 'root'):
+                assert response.code == 200
+                assert json.loads(response.data)['order'] == order
+            elif response.role == 'no-login':
+                assert response.code == 401
+                assert not response.data
+            else:
+                assert response.code == 403
+                assert not response.data
+
+        as_user(session, owner['api_key'])
+        response = make_request(session, f'/api/order/{order["_id"]}')
+        assert response.code == 200
+        assert response.data['order'] == order
+    
 
 def test_get_order():
     """
     Request multiple orders by uuid, one at a time.
     """
     session = requests.Session()
-    for _ in range(10):
-        orig = random.choice(make_request(session, '/api/developer/orders')[0]['orders'])
-        response = make_request(session, f'/api/order/{orig["_id"]}')
-        assert response[1] == 200
-        requested = response[0]['order']
-        assert orig == requested
+
+    db = db_connection()
+    orders = list(db['orders'].aggregate([{'$sample': {'size': 10}}]))
+    for order in orders:
+        # to simplify comparison
+        order['_id'] = str(order['_id'])
+        if isinstance(order['receiver'], uuid.UUID):
+            order['receiver'] = str(order['receiver'])
+        order['creator'] = str(order['creator'])
+        for i, ds in enumerate(order['datasets']):
+            order['datasets'][i] = next(db['datasets'].aggregate([{'$match': {'_id': ds}},
+                                                                  {'$project': {'_id': 0,
+                                                                                'uuid': '$_id',
+                                                                                'title': 1}}]))
+            order['datasets'][i]['uuid'] = str(order['datasets'][i]['uuid'])
+
+        as_user(session, 'data@testers')
+        response = make_request(session, f'/api/order/{order["_id"]}')
+        print(response)
+        assert response.code == 200
+        assert response.data['order'] == order
 
 
 def test_get_order_bad():
@@ -42,10 +85,26 @@ def test_get_order_bad():
     All are expected to return 404.
     """
     session = requests.Session()
-    for _ in range(10):
-        response = make_request(session, f'/api/order/{uuid.uuid4().hex}')
-        assert response == (None, 404)
+    for _ in range(5):
+        responses = make_request_all_roles(f'/api/order/{uuid.uuid4()}')
+        for response in responses:
+            print(response.role)
+            if response.role in ('orders', 'data', 'root'):
+                assert response.code == 404
+            elif response.role in ('no-login'):
+                assert response.code == 401
+            else:
+                assert response.code == 403
+            assert not response.data
 
-    for _ in range(10):
-        response = make_request(session, f'/api/order/{random_string()}')
-        assert response == (None, 404)
+    for _ in range(5):
+        responses = make_request_all_roles(f'/api/order/{random_string()}')
+        for response in responses:
+            print(response.role)
+            if response.role in ('orders', 'data', 'root'):
+                assert response.code == 404
+            elif response.role in ('no-login'):
+                assert response.code == 401
+            else:
+                assert response.code == 403
+            assert not response.data
