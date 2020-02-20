@@ -1,4 +1,5 @@
 """Tests for dataset requests."""
+import itertools
 import json
 import uuid
 import requests
@@ -22,6 +23,31 @@ def test_list_datasets():
     for response in responses:
         assert response.code == 200
         assert len(response.data['datasets']) == 500
+
+
+def test_list_user_datasets():
+    """
+    Choose a few users.
+
+    Compare the ids of datasets from the request to a db query.
+    """
+    session = requests.Session()
+    db = db_connection()
+    users = db['users'].aggregate([{'$sample': {'size': 5}}])
+    for user in users:
+        user_orders = list(db['orders'].find({'$or': [{'receiver': user['_id']},
+                                                      {'creator': user['_id']}],
+                                              'datasets': {'$not': {'$size': 0} }},
+                                             {'datasets': 1}))
+        user_datasets = list(itertools.chain.from_iterable(order['datasets']
+                                                           for order in user_orders))
+        user_datasets = [str(uuid) for uuid in user_datasets]
+
+        as_user(session, user['api_key'])
+        response = make_request(session, f'/api/dataset/user')
+        assert len(user_datasets) == len(response.data['datasets'])
+        for ds in response.data['datasets']:
+            assert ds['_id'] in user_datasets
 
 
 def test_random_dataset():

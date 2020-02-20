@@ -98,12 +98,11 @@ def list_datasets():
 @user.login_required
 def list_user_data():
     """List all datasets belonging to current user."""
-    user_projects = tuple(flask.g.db['orders']
-                          .find({'$or': [{'receiver': flask.session['username']},
-                                         {'creator': flask.session['username']}]},
-                                {'datasets': 1}))
-    uuids = tuple(ds for entry in user_projects for ds in entry['datasets'])
-    user_datasets = list(flask.g.db['datasets'].find({'uuid': {'$in': uuids}},
+    user_orders = list(flask.g.db['orders'].find({'$or': [{'receiver': flask.session['user_id']},
+                                                          {'creator': flask.session['user_id']}]},
+                                                 {'datasets': 1}))
+    uuids = list(ds for entry in user_orders for ds in entry['datasets'])
+    user_datasets = list(flask.g.db['datasets'].find({'_id': {'$in': uuids}},
                                                      {'title': 1}))
     return utils.response_json({'datasets': user_datasets})
 
