@@ -43,8 +43,12 @@ def test_list_user_datasets():
                                                            for order in user_orders))
         user_datasets = [str(uuid) for uuid in user_datasets]
 
-        as_user(session, user['api_key'])
+        if user['auth_id'] != '--facility--':
+            as_user(session, user['auth_id'])
+        else:
+            as_user(session, user['api_key'])
         response = make_request(session, f'/api/dataset/user')
+        assert response.code == 200
         assert len(user_datasets) == len(response.data['datasets'])
         for ds in response.data['datasets']:
             assert ds['_id'] in user_datasets
