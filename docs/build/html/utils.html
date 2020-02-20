@@ -85,7 +85,7 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_structure.html">Data Structure</a></li>
-<li class="toctree-l1"><a class="reference internal" href="permissions.html">Permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="implementation.html">Implementation</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="development.html">Development</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="development.quick_environment.html">System for development</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="modules.html">Code reference</a><ul class="current">
@@ -274,15 +274,18 @@
 </dd></dl>
 
 <dl class="function">
-<dt id="utils.get_dbserver">
-<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">get_dbserver</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; pymongo.mongo_client.MongoClient<a class="reference internal" href="modules/utils.html#get_dbserver"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.get_dbserver" title="Permalink to this definition">¶</a></dt>
+<dt id="utils.get_dbclient">
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">get_dbclient</code><span class="sig-paren">(</span><em class="sig-param">conf</em><span class="sig-paren">)</span> &#x2192; pymongo.mongo_client.MongoClient<a class="reference internal" href="modules/utils.html#get_dbclient"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.get_dbclient" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the connection to the MongoDB database server.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>The client connection.</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>conf</strong> – A mapping with the relevant mongo keys available.</p>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>pymongo.mongo_client.MongoClient</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The client connection.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pymongo.mongo_client.MongoClient</p>
 </dd>
 </dl>
 </dd></dl>

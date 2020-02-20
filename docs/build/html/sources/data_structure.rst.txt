@@ -190,7 +190,7 @@ Affiliation
 Country
     The country of the user.
 Permissions
-    A list of the extra permissions the user has (see :ref:`permissions_page`).
+    A list of the extra permissions the user has (see :ref:`permissions_section`).
 
 
 Log

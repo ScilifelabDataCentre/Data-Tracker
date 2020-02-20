@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Permissions &mdash; Data Tracker  documentation</title>
+  <title>Implementation &mdash; Data Tracker  documentation</title>
   
 
   
@@ -86,8 +86,11 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_structure.html">Data Structure</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Permissions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#current-units">Current units</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Implementation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#permissions">Permissions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#current-units">Current units</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#csrf">CSRF</a></li>
 </ul>
 </li>
@@ -137,14 +140,14 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Permissions</li>
+      <li>Implementation</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
             
-              <a href="https://github.com/ScilifelabDataCentre/SciLifeLab-Data-Tracker/blob/develop/docs/source/permissions.rst" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/ScilifelabDataCentre/SciLifeLab-Data-Tracker/blob/develop/docs/source/implementation.rst" class="fa fa-github"> Edit on GitHub</a>
             
           
         
@@ -158,8 +161,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="permissions">
-<span id="permissions-page"></span><h1>Permissions<a class="headerlink" href="#permissions" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="implementation">
+<h1>Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="permissions">
+<span id="permissions-section"></span><h2>Permissions<a class="headerlink" href="#permissions" title="Permalink to this headline">¶</a></h2>
 <ul>
 <li><p>Permissions are managed by topics.</p></li>
 <li><p>A user may have multiple topics.</p></li>
@@ -179,7 +184,7 @@
 - At the beginning of a request, run e.g. <code class="docutils literal notranslate"><span class="pre">user.permission_required('OWNERS_READ')</span></code>.</p></li>
 </ul>
 <div class="section" id="current-units">
-<h2>Current units<a class="headerlink" href="#current-units" title="Permalink to this headline">¶</a></h2>
+<h3>Current units<a class="headerlink" href="#current-units" title="Permalink to this headline">¶</a></h3>
 <dl class="simple">
 <dt>DOI_REVIEWER</dt><dd><p>May evaluate DOI requests and create DOI entries.</p>
 </dd>
@@ -194,6 +199,7 @@
 <dt>USER_MANAGEMENT</dt><dd><p>May modify any user.</p>
 </dd>
 </dl>
+</div>
 </div>
 <div class="section" id="csrf">
 <h2>CSRF<a class="headerlink" href="#csrf" title="Permalink to this headline">¶</a></h2>

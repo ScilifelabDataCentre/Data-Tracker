@@ -86,7 +86,7 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_structure.html">Data Structure</a></li>
-<li class="toctree-l1"><a class="reference internal" href="permissions.html">Permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="implementation.html">Implementation</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="development.html">Development</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="development.quick_environment.html">System for development</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="modules.html">Code reference</a><ul class="current">
@@ -179,11 +179,14 @@
 <p>Read settings from <cite>./config.yaml</cite>, <cite>../config.yaml</cite> or from the provided path.</p>
 <dl class="function">
 <dt id="config.init">
-<code class="sig-prename descclassname">config.</code><code class="sig-name descname">init</code><span class="sig-paren">(</span><em class="sig-param">app</em><span class="sig-paren">)</span><a class="reference internal" href="modules/config.html#init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#config.init" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read settings and add them to the app config.</p>
+<code class="sig-prename descclassname">config.</code><code class="sig-name descname">init</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="modules/config.html#init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#config.init" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read the config from a config.yaml file.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>app</strong> – the Flask app</p>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The config.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
 </dd>
 </dl>
 </dd></dl>

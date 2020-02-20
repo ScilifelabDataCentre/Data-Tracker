@@ -84,7 +84,7 @@
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../api.html">API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../data_structure.html">Data Structure</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../permissions.html">Permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../implementation.html">Implementation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../development.html">Development</a></li>
 </ul>
 
@@ -191,13 +191,12 @@
         <span class="k">return</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">in_file</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">FullLoader</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="init"><a class="viewcode-back" href="../config.html#config.init">[docs]</a><span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="n">app</span><span class="p">):</span>
+<div class="viewcode-block" id="init"><a class="viewcode-back" href="../config.html#config.init">[docs]</a><span class="k">def</span> <span class="nf">init</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Read settings and add them to the app config.</span>
+<span class="sd">    Read the config from a config.yaml file.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        app: the Flask app</span>
-
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: The config.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">config_file</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
     <span class="n">arg</span> <span class="o">=</span> <span class="s2">&quot;--config_file&quot;</span>
@@ -215,10 +214,10 @@
         <span class="n">config</span><span class="p">[</span><span class="s1">&#39;TESTING&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="n">config</span><span class="p">[</span><span class="s1">&#39;ENV&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;development&#39;</span>
 
-    <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;SESSION_COOKIE_NAME&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;dt_session&#39;</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;SECRET_KEY&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;flask&#39;</span><span class="p">][</span><span class="s1">&#39;secret&#39;</span><span class="p">]</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;SESSION_COOKIE_SAMESITE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Lax&#39;</span></div>
+    <span class="n">config</span><span class="p">[</span><span class="s1">&#39;SESSION_COOKIE_NAME&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;dt_session&#39;</span>
+    <span class="n">config</span><span class="p">[</span><span class="s1">&#39;SECRET_KEY&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;flask&#39;</span><span class="p">][</span><span class="s1">&#39;secret&#39;</span><span class="p">]</span>
+    <span class="n">config</span><span class="p">[</span><span class="s1">&#39;SESSION_COOKIE_SAMESITE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Lax&#39;</span>
+    <span class="k">return</span> <span class="n">config</span></div>
 </pre></div>
 
            </div>

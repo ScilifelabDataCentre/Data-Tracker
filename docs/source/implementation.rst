@@ -1,8 +1,10 @@
-.. _permissions_page:
+Implementation
+**************
 
-***********
+.. _permissions_section:
+
 Permissions
-***********
+===========
 
 * Permissions are managed by topics.
 * A user may have multiple topics.
@@ -22,7 +24,7 @@ Permissions
 
 
 Current units
-=============
+-------------
 
 DOI_REVIEWER
     May evaluate DOI requests and create DOI entries.
