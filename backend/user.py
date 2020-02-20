@@ -10,7 +10,7 @@ Helper functions
 Requests
     User-related API endpoints, including login/logout and user manament.
 """
-
+from itertools import chain
 from typing import Union  # pylint: disable=unused-import
 import functools
 import logging
@@ -23,11 +23,11 @@ import utils
 
 blueprint = flask.Blueprint('user', __name__)  # pylint: disable=invalid-name
 
-PERMISSIONS = {'ORDERS_SELF': ('ORDERS_SELF'),
-               'OWNERS_READ': ('OWNERS_READ'),
-               'USER_MANAGEMENT': ('USER_MANAGEMENT'),
+PERMISSIONS = {'ORDERS_SELF': ('ORDERS_SELF',),
+               'OWNERS_READ': ('OWNERS_READ',),
+               'USER_MANAGEMENT': ('USER_MANAGEMENT',),
                'DATA_MANAGEMENT': ('ORDERS_SELF', 'OWNERS_READ', 'DATA_MANAGEMENT'),
-               'DOI_REVIEWER': ('DOI_REVIEWER')}
+               'DOI_REVIEWER': ('DOI_REVIEWER',)}
 
 
 # Decorators
@@ -140,25 +140,27 @@ def get_current_user_info():
 
 
 # helper functions
-def do_login(username: str):
+def do_login(auth_id: str, other_data: dict = None):
     """
     Set all relevant variables for a logged in user.
 
     Users not in db will be added.
 
     Args:
-        username (str): The username (email) of the user
-    """
-    result = flask.g.db['users'].find_one({'email': username})
-    if not result:
-        user = structure.user()
-        user['email'] = username
-        response = flask.g.db['users'].insert_one(user)
+        auth_id (str): Authentication id for the user.
 
-    flask.session['username'] = username
+    Returns bool: Whether the login succeeded.
+    """
+    user = flask.g.db['users'].find_one({'auth_id': auth_id})
+    if not user:
+        user = structure.user()
+        user['auth_id'] = auth_id
+        response = flask.g.db['users'].insert_one(user)
+        logging.debug(response)
+
+    flask.session['user_id'] = user['_id']
     flask.session.permanent = True
-    response = flask.Response(status=200)
-    return response
+    return True
 
 
 def get_current_user():
@@ -168,27 +170,21 @@ def get_current_user():
     Returns:
         dict: The current user.
     """
-    return get_user(username=flask.session.get('username'))
+    return get_user(user_id=flask.session.get('user_id'))
 
 
-def get_user(username=None, apikey=None):
+def get_user(user_id=None):
     """
     Get information about the user.
 
     Args:
-        username (str): The username (email) of the user
-        apikey (str): The api key of the user
+        user_aid (str): The identifier (auth_id) of the user.
 
     Returns:
-        dict: The current user
+        dict: The current user.
     """
-    usercoll = flask.g.db['users']
-    if username:
-        user = usercoll.find_one({'email': username})
-        if user:
-            return user
-    if apikey:
-        user = usercoll.find_one({'apikey': apikey})
+    if user_id:
+        user = flask.g.db['users'].find_one({'_id': user_id})
         if user:
             return user
     return None
@@ -226,7 +222,10 @@ def has_permission(permission: str):
     Returns:
         bool: whether the user has the required permissions or not
     """
-    user_permissions = set(PERMISSIONS[permission] for permission in flask.g.permissions)
+    user_permissions = set(chain.from_iterable(PERMISSIONS[permission]
+                                               for permission in flask.g.permissions))
     if permission not in user_permissions:
+        logging.debug(f'REJECTED User: {flask.g.current_user["name"]}, Needed: {permission}, Permissions: {user_permissions}')
         return False
+    logging.debug(f'ACCEPTED User: {flask.g.current_user["name"]}, Needed: {permission}, Permissions: {user_permissions}')
     return True
