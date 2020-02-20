@@ -29,8 +29,8 @@ def prepare():
 
 
 @blueprint.route('/user', defaults={'username': None}, methods=['GET'])
-@blueprint.route('/user/<userid>', methods=['GET'])
-def list_orders_user(username: str):
+@blueprint.route('/user/<user_id>', methods=['GET'])
+def list_orders_user(user_id: str):
     """
     List all orders belonging to the provided user.
 
@@ -40,7 +40,7 @@ def list_orders_user(username: str):
     Returns:
         flask.Response: Json structure with a list of orders.
     """
-    if username:
+    if user_id:
         if not user.has_permission('OWNERS_READ'):
             flask.abort(status=403)
     else:  # current user
