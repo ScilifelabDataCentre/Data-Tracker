@@ -26,7 +26,7 @@ blueprint = flask.Blueprint('user', __name__)  # pylint: disable=invalid-name
 PERMISSIONS = {'ORDERS_SELF': ('ORDERS_SELF'),
                'OWNERS_READ': ('OWNERS_READ'),
                'USER_MANAGEMENT': ('USER_MANAGEMENT'),
-               'DATA_MANAGEMENT': ('ORDERS', 'OWNERS_READ', 'DATA_MANAGEMENT'),
+               'DATA_MANAGEMENT': ('ORDERS_SELF', 'OWNERS_READ', 'DATA_MANAGEMENT'),
                'DOI_REVIEWER': ('DOI_REVIEWER')}
 
 
@@ -216,7 +216,7 @@ def check_user_permissions(required: str):
     return False
 
 
-def permission_required(permission: str):
+def has_permission(permission: str):
     """
     Check if the current user permissions fulfills the requirement.
 
@@ -227,12 +227,6 @@ def permission_required(permission: str):
         bool: whether the user has the required permissions or not
     """
     user_permissions = set(PERMISSIONS[permission] for permission in flask.g.permissions)
-    permission = True
-    # check permission
-    for value in permissions:
-        if isinstance(value, str):
-            if value not in user_permissions:
-                permission = False
-                break
-
-    return permission
+    if permission not in user_permissions:
+        return False
+    return True

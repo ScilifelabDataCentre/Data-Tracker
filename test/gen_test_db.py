@@ -118,7 +118,7 @@ def gen_users(db, nr_users: int = 100):
     perm_keys = tuple(PERMISSIONS.keys())
     # non-random users with specific rights
     special_users = [{'name': 'Base Test', 'permissions': [], 'email': 'base@example.com'},
-                     {'name': 'Orders Test', 'permissions': ['ORDER_SELF'], 'email': 'orders@example.com'},
+                     {'name': 'Orders Test', 'permissions': ['ORDERS_SELF'], 'email': 'orders@example.com'},
                      {'name': 'Owners Test', 'permissions': ['OWNERS_READ'], 'email': 'owners@example.com'},
                      {'name': 'Users Test', 'permissions': ['USER_MANAGEMENT'], 'email': 'users@example.com'},
                      {'name': 'Data Test', 'permissions': ['DATA_MANAGEMENT'], 'email': 'data@example.com'},
