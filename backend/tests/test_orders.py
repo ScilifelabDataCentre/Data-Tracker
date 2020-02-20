@@ -13,7 +13,12 @@ from helpers import make_request, as_user, make_request_all_roles,\
 
 
 def test_get_order_get_permissions():
-    """Test permissions for requesting a order."""
+    """
+    Test permissions for requesting a order.
+
+    Request the orders using users with each unique permission to confirm
+    that the correct permissions give/prevent access.
+    """
     session = requests.Session()
 
     db = db_connection()
@@ -53,6 +58,8 @@ def test_get_order_get_permissions():
 def test_get_order():
     """
     Request multiple orders by uuid, one at a time.
+
+    Request the order and confirm that it contains the correct data.
     """
     session = requests.Session()
 
@@ -82,7 +89,7 @@ def test_get_order_bad():
     """
     Request orders using bad identifiers.
 
-    All are expected to return 404.
+    All are expected to return 401, 403, or 404 depending on permissions.
     """
     session = requests.Session()
     for _ in range(5):
