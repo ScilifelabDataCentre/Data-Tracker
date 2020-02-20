@@ -7,7 +7,7 @@ import requests
 # pylint: disable = redefined-outer-name, unused-import
 
 from helpers import make_request, as_user, make_request_all_roles,\
-    dataset_for_tests, USERS, random_string, parse_time
+    dataset_for_tests, USERS, random_string, parse_time, db_connection
 
 TEST_DS_LABEL = {'description': 'Test dataset'}
 
@@ -18,42 +18,44 @@ def test_list_datasets():
 
     Should also test e.g. pagination once implemented.
     """
-    responses = make_request_all_roles('/api/dataset/all')
-    assert [response[1] for response in responses] == [200, 200, 200, 200]
+    responses = make_request_all_roles('/api/dataset/all', ret_json=True)
     for response in responses:
-        assert len(json.loads(response[0])['datasets']) == 500
+        assert response.code == 200
+        assert len(response.data['datasets']) == 500
 
 
 def test_random_dataset():
     """Request a random dataset."""
-    responses = make_request_all_roles('/api/dataset/random')
-    assert [response[1] for response in responses] == [200, 200, 200, 200]
+    responses = make_request_all_roles('/api/dataset/random', ret_json=True)
     for response in responses:
-        assert len(json.loads(response[0])['datasets']) == 1
+        assert response.code == 200
+        assert len(response.data['datasets']) == 1
 
 
 def test_random_datasets():
     """Request random datasets."""
     session = requests.Session()
-    as_user(session, USERS['user'])
+    as_user(session, USERS['base'])
     for i in (1, 5, 0):
         response = make_request(session, f'/api/dataset/random/{i}')
-        assert response[1] == 200
-        assert len(response[0]['datasets']) == i
+        assert response.code == 200
+        assert len(response.data['datasets']) == i
 
     response = make_request(session, '/api/dataset/random/-1')
-    assert response[1] == 404
-    assert not response[0]
+    assert response.code == 404
+    assert not response.data
 
 
 def test_get_dataset_get_permissions():
     """Test permissions for requesting a dataset."""
     session = requests.Session()
-    orig = make_request(session, '/api/dataset/random')[0]['datasets'][0]
-    responses = make_request_all_roles(f'/api/dataset/{orig["_id"]}')
-    for response in responses:
-        assert json.loads(response[0])['dataset'] == orig
-        assert response[1] == 200
+    db = db_connection()
+    orders = list(db['datasets'].aggregate([{'$sample': {'size': 2}}]))
+    for order in orders:
+        responses = make_request_all_roles(f'/api/dataset/{order["_id"]}', ret_json=True)
+        for response in responses:
+            assert response.data['dataset']
+            assert response.code == 200
 
 
 def test_get_dataset():
