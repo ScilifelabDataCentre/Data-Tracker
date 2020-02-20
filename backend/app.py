@@ -25,11 +25,11 @@ app.register_blueprint(user.blueprint, url_prefix='/api/user')
 
 @app.before_request
 def prepare():
-    """Open the database connection; get the current user."""
+    """Open the database connection and get the current user."""
     if flask.request.method != 'GET':
         utils.verify_csrf_token()
-    flask.g.dbserver = utils.get_dbserver()
-    flask.g.db = utils.get_db(flask.g.dbserver)
+    flask.g.dbserver = utils.get_dbclient(flask.current_app.config)
+    flask.g.db = utils.get_db(flask.g.dbserver, flask.current_app.config)
     flask.g.current_user = user.get_current_user()
     flask.g.permissions = flask.g.current_user['permissions'] if flask.g.current_user else None
 
@@ -50,9 +50,21 @@ def finalize(response):
 
 
 @app.errorhandler(404)
-def not_found(_):
+def error_not_found(_):
     """Make sure a simple 404 is returned instead of an html page."""
     return flask.Response(status=404)
+
+
+@app.errorhandler(401)
+def error_unauthorized(_):
+    """Make sure a simple 401 is returned instead of an html page."""
+    return flask.Response(status=401)
+
+
+@app.errorhandler(403)
+def error_forbidden(_):
+    """Make sure a simple 403 is returned instead of an html page."""
+    return flask.Response(status=403)
 
 
 @app.route('/api/countries', methods=['GET'])
