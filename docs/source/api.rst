@@ -100,7 +100,12 @@ User
     **GET** Get information about the current user.
 
     **PUT** Update information about the current user.
-    
+
+
+.. function:: /user/me/claim
+
+    **POST** Claim datasets (``email``->``UUID``) belonging to the current user.
+
 
 .. function:: /user/me/log
 

@@ -46,3 +46,9 @@ CSRF
 A csrf cookie with the name ``_csrf_token`` is set the first time a request is made to the system. It must be included with the header ``X-CSRFToken`` for any non-``GET`` request.
 
 All cookies are deleted upon logout.
+
+
+Testing
+=======
+
+All tests are available at ``backend/tests``.

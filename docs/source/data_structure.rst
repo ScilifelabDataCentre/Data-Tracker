@@ -49,6 +49,16 @@ Datasets
 Extra fields
     Custom fields in the style ``{'key': 'key_name', 'value': 'data value'}``.
 
+Computed fields
+---------------
+Datasets
+    When an order is requested, ``datasets`` will also contain the title of each dataset, i.e::
+
+        {
+          'title': 'title',
+          'uuid': 'uuid'
+        }
+
 
 Dataset
 =======
