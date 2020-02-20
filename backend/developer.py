@@ -1,4 +1,6 @@
 """Routes and functions intended to aid development and testing."""
+import copy
+import logging
 
 import flask
 
@@ -13,10 +15,12 @@ def login(username: str):
     Log in without password.
 
     Args:
-        username (str): the user (email) to log in as
+        username (str): The user (auth_id) to log in.
     """
-    response = user.do_login(username)
-    return response
+    if user.do_login(username):
+        return flask.Response(status=200)
+    else:
+        return flask.Response(status=500)
 
 
 @blueprint.route('/hello')
@@ -65,6 +69,25 @@ def list_orders():
     """Get datasets added during testing."""
     orders = tuple(flask.g.db['orders'].find())
     return flask.jsonify({'orders': orders})
+
+
+@blueprint.route('/session')
+def list_session():
+    """List all session variables."""
+    session = copy.deepcopy(flask.session)
+    for key in session:
+        session[key] = repr(session[key])
+    return flask.jsonify(session)
+
+
+@blueprint.route('/config')
+def list_config():
+    """List all session variables."""
+    config = copy.deepcopy(flask.current_app.config)
+    for key in config:
+        config[key] = repr(config[key])
+    return flask.jsonify(config)
+
 
 
 @blueprint.route('/quit')
