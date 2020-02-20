@@ -1,5 +1,6 @@
 """Helper functions for tests, including requests to e.g. change current user."""
 
+import collections
 import datetime
 import json
 import os
@@ -9,18 +10,36 @@ import string
 import pytest
 import requests
 
+import config
+import utils
+
 
 CURR_DIR = os.path.realpath(__file__)
 SETTINGS = json.loads(open(f'{os.path.dirname(CURR_DIR)}/settings_tests.json').read())
 BASE_URL = f'{SETTINGS["host"]}:{SETTINGS["port"]}'
 
 USERS = {'no-login': None,
-         'user': 'user@example.com',
-         'steward': 'steward@example.com',
-         'admin': 'admin@example.com'}
+         'base': 'base@testers',
+         'orders': 'orders@testers',
+         'owners': 'owners@testers',
+         'users': 'users@testers',
+         'data': 'data@testers',
+         'doi': 'doi@testers',
+         'root': 'root@testers'}
+
+Response = collections.namedtuple('Response',
+                                  ['data', 'code', 'role'],
+                                  defaults=[None, None, None])
 
 
-def as_user(session: requests.Session, username: str, set_csrf: bool = True) -> int:
+def db_connection():
+    """Get a connection to the db as defined in the app config."""
+    conf = config.init()
+    client = utils.get_dbclient(conf)
+    return utils.get_db(client, conf)
+
+
+def as_user(session: requests.Session, user_type: str, set_csrf: bool = True) -> int:
     """
     Helper method to log in as requested user.
 
@@ -28,13 +47,13 @@ def as_user(session: requests.Session, username: str, set_csrf: bool = True) -> 
 
     Args:
         session (requests.Session): the session to uodate
-        username (str): the id of the user, 0 means log out
+        user_type (str): the type of user (key in ``USERS``)
 
     Returns:
         int: status_code
     """
-    if username:
-        code = session.get(f'{BASE_URL}/api/developer/login/{username}').status_code
+    if user_type != 'no-login':
+        code = session.get(f'{BASE_URL}/api/developer/login/{USERS[user_type]}').status_code
         assert code == 200
     else:
         code = session.get(f'{BASE_URL}/api/user/logout').status_code
@@ -86,7 +105,6 @@ def make_request(session, url: str, data: dict = None, method='GET', ret_json: b
 
     Returns:
         tuple: (data: dict, status_code: int)
-
     """
     if method == 'GET':
         response = session.get(f'{BASE_URL}{url}')
@@ -107,7 +125,7 @@ def make_request(session, url: str, data: dict = None, method='GET', ret_json: b
         data = response.text
     else:
         data = None
-    return (data, response.status_code)
+    return Response(data=data, code=response.status_code)
 
 
 def make_request_all_roles(url: str, method: str = 'GET', data=None, set_csrf: bool = True) -> list:
@@ -119,13 +137,13 @@ def make_request_all_roles(url: str, method: str = 'GET', data=None, set_csrf: b
 
     Returns:
         list: the results of the performed queries
-
     """
     responses = []
     session = requests.Session()
     for user in USERS:
-        as_user(session, USERS[user], set_csrf=set_csrf)
-        responses.append(make_request(session, url, data, method, ret_json=False))
+        as_user(session, user, set_csrf=set_csrf)
+        req = make_request(session, url, data, method, ret_json=False)
+        responses.append(Response(data=req.data, code=req.code, role=user))
     return responses
 
 
