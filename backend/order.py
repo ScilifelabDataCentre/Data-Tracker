@@ -155,7 +155,7 @@ def add_dataset_post(identifier):  # pylint: disable=too-many-branches
 
             if not utils.make_log('order',
                                   'update',
-                                  f'Dataset added for order {muuid}',
+                                  f'Dataset {result_ds.inserted_id} added for order',
                                   order):
                 logging.error('Log failed for adding dataset to order %s', muuid)
 
