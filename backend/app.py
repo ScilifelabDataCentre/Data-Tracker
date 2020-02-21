@@ -49,11 +49,10 @@ def finalize(response):
     return response
 
 
-@app.errorhandler(404)
-def error_not_found(_):
-    """Make sure a simple 404 is returned instead of an html page."""
-    return flask.Response(status=404)
-
+@app.errorhandler(400)
+def error_bad_request(_):
+    """Make sure a simple 400 is returned instead of an html page."""
+    return flask.Response(status=400)
 
 @app.errorhandler(401)
 def error_unauthorized(_):
@@ -65,6 +64,12 @@ def error_unauthorized(_):
 def error_forbidden(_):
     """Make sure a simple 403 is returned instead of an html page."""
     return flask.Response(status=403)
+
+
+@app.errorhandler(404)
+def error_not_found(_):
+    """Make sure a simple 404 is returned instead of an html page."""
+    return flask.Response(status=404)
 
 
 @app.route('/api/countries', methods=['GET'])
