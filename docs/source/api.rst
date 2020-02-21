@@ -7,6 +7,11 @@ Base URL for the API is ``<url>/api``. All API description have the base implied
 Order
 =====
 
+.. function:: /order/all
+
+    **GET** Get a list of all orders. Can be limited by parameters. Only for users with permission ``DATA_MANAGEMENT``.
+
+
 .. function:: /order/<identifier>
 
     **GET** Get information about the order with uuid ``identifier``.
