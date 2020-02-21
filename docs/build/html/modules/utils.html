@@ -192,7 +192,7 @@
 
 <span class="sd">    Args:</span>
 <span class="sd">        document (dict): Received input to update a document.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Returns:</span>
 <span class="sd">        bool: Whether the document passed the check.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -264,18 +264,19 @@
                                <span class="n">password</span><span class="o">=</span><span class="n">conf</span><span class="p">[</span><span class="s1">&#39;mongo&#39;</span><span class="p">][</span><span class="s1">&#39;password&#39;</span><span class="p">])</span></div>
 
 
-<div class="viewcode-block" id="get_db"><a class="viewcode-back" href="../utils.html#utils.get_db">[docs]</a><span class="k">def</span> <span class="nf">get_db</span><span class="p">(</span><span class="n">dbserver</span><span class="p">:</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">mongo_client</span><span class="o">.</span><span class="n">MongoClient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">database</span><span class="o">.</span><span class="n">Database</span><span class="p">:</span>
+<div class="viewcode-block" id="get_db"><a class="viewcode-back" href="../utils.html#utils.get_db">[docs]</a><span class="k">def</span> <span class="nf">get_db</span><span class="p">(</span><span class="n">dbserver</span><span class="p">:</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">mongo_client</span><span class="o">.</span><span class="n">MongoClient</span><span class="p">,</span> <span class="n">conf</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">database</span><span class="o">.</span><span class="n">Database</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the connection to the MongoDB database.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        dbserver: Connection to the database.</span>
+<span class="sd">        dbserver (pymongo.mongo_client.MongoClient): Connection to the database.</span>
+<span class="sd">        conf: A mapping with the relevant mongo keys available.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        pymongo.database.Database: The database connection.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">codec_options</span> <span class="o">=</span> <span class="n">bson</span><span class="o">.</span><span class="n">codec_options</span><span class="o">.</span><span class="n">CodecOptions</span><span class="p">(</span><span class="n">uuid_representation</span><span class="o">=</span><span class="n">bson</span><span class="o">.</span><span class="n">binary</span><span class="o">.</span><span class="n">STANDARD</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">dbserver</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;mongo&#39;</span><span class="p">][</span><span class="s1">&#39;db&#39;</span><span class="p">],</span>
+    <span class="k">return</span> <span class="n">dbserver</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="n">conf</span><span class="p">[</span><span class="s1">&#39;mongo&#39;</span><span class="p">][</span><span class="s1">&#39;db&#39;</span><span class="p">],</span>
                                  <span class="n">codec_options</span><span class="o">=</span><span class="p">(</span><span class="n">codec_options</span><span class="p">))</span></div>
 
 
@@ -476,7 +477,7 @@
     <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="make_log"><a class="viewcode-back" href="../utils.html#utils.make_log">[docs]</a><span class="k">def</span> <span class="nf">make_log</span><span class="p">(</span><span class="n">data_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="make_log"><a class="viewcode-back" href="../utils.html#utils.make_log">[docs]</a><span class="k">def</span> <span class="nf">make_log</span><span class="p">(</span><span class="n">data_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">comment</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Log a change in the system.</span>
 
@@ -487,18 +488,78 @@
 <span class="sd">        e.g. ``data`` should only contain permitted fields.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        action (str): Type of action (insert, update etc).</span>
+<span class="sd">        action (str): Type of action (add, update, delete).</span>
+<span class="sd">        comment (str): Note about why the change was done</span>
+<span class="sd">            (e.g. &quot;Dataset added via addDataset&quot;).</span>
 <span class="sd">        data_type (str): The collection name.</span>
 <span class="sd">        data (dict): The new data for the entry.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        bool: Whether the log insertion successed.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;logs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">insert_one</span><span class="p">({</span><span class="s1">&#39;action&#39;</span><span class="p">:</span> <span class="n">action</span><span class="p">,</span>
-                                   <span class="s1">&#39;data_type&#39;</span><span class="p">:</span> <span class="n">data_type</span><span class="p">,</span>
-                                   <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="n">data</span><span class="p">,</span>
-                                   <span class="s1">&#39;timestamp&#39;</span><span class="p">:</span> <span class="n">make_timestamp</span><span class="p">(),</span>
-                                   <span class="s1">&#39;user&#39;</span><span class="p">:</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]})</span></div>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;logs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">insert_one</span><span class="p">({</span><span class="s1">&#39;action&#39;</span><span class="p">:</span> <span class="n">action</span><span class="p">,</span>
+                                            <span class="s1">&#39;comment&#39;</span><span class="p">:</span> <span class="n">comment</span><span class="p">,</span>
+                                            <span class="s1">&#39;data_type&#39;</span><span class="p">:</span> <span class="n">data_type</span><span class="p">,</span>
+                                            <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="n">data</span><span class="p">,</span>
+                                            <span class="s1">&#39;timestamp&#39;</span><span class="p">:</span> <span class="n">make_timestamp</span><span class="p">(),</span>
+                                            <span class="s1">&#39;user&#39;</span><span class="p">:</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]})</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">acknowledged</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Log failed: A:</span><span class="si">{action}</span><span class="s1"> C:</span><span class="si">{comment}</span><span class="s1"> D:</span><span class="si">{data}</span><span class="s1"> &#39;</span> <span class="o">+</span>
+                      <span class="sa">f</span><span class="s1">&#39;DT: </span><span class="si">{data_type}</span><span class="s1"> U: </span><span class="si">{flask.g.current_user[&quot;_id&quot;]}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">acknowledged</span></div>
+
+
+<span class="c1"># validate indata</span>
+<div class="viewcode-block" id="validate_infield"><a class="viewcode-back" href="../utils.html#utils.validate_infield">[docs]</a><span class="k">def</span> <span class="nf">validate_infield</span><span class="p">(</span><span class="n">field_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>  <span class="c1"># pylint: disable=too-many-branches</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Validate that the input data matches expectations.</span>
+
+<span class="sd">    Will check the type of data based on the key type.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        field_key (str): The name of the field to validate.</span>
+<span class="sd">        data (Any): The data to validate.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: Whether validation passed.</span>
+
+<span class="sd">    Raise:</span>
+<span class="sd">        ValueError: ``field_key`` not recognized.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">passed</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="n">field_key</span> <span class="o">==</span> <span class="s1">&#39;links&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                    <span class="n">passed</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="k">break</span>
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">entry</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;url&#39;</span><span class="p">,</span> <span class="s1">&#39;description&#39;</span><span class="p">):</span>
+                        <span class="n">passed</span> <span class="o">=</span> <span class="kc">False</span>
+                        <span class="k">break</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+                        <span class="n">passed</span> <span class="o">=</span> <span class="kc">False</span>
+                        <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">passed</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">elif</span> <span class="n">field_key</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;title&#39;</span><span class="p">,</span> <span class="s1">&#39;description&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">passed</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">elif</span> <span class="n">field_key</span> <span class="o">==</span> <span class="s1">&#39;extra&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+                    <span class="n">passed</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">passed</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Field not recognized: </span><span class="si">{field_key}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">passed</span></div>
 </pre></div>
 
            </div>

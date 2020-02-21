@@ -150,6 +150,7 @@
             
   <h1>Source code for developer</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Routes and functions intended to aid development and testing.&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">copy</span>
 
 <span class="kn">import</span> <span class="nn">flask</span>
 
@@ -158,16 +159,23 @@
 <span class="n">blueprint</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">Blueprint</span><span class="p">(</span><span class="s1">&#39;developer&#39;</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">)</span>  <span class="c1"># pylint: disable=invalid-name</span>
 
 
-<div class="viewcode-block" id="login"><a class="viewcode-back" href="../developer.html#developer.login">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/login/&lt;username&gt;&#39;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">login</span><span class="p">(</span><span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="login"><a class="viewcode-back" href="../developer.html#developer.login">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/login/&lt;identifier&gt;&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">login</span><span class="p">(</span><span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Log in without password.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        username (str): the user (email) to log in as</span>
+<span class="sd">        identifer (str): User ``auth_id`` or ``api_key``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">response</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">do_login</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">response</span></div>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span> <span class="o">==</span> <span class="mi">32</span> <span class="ow">and</span> <span class="s1">&#39;@&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">identifier</span><span class="p">:</span>
+        <span class="c1"># api key</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">do_login</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">identifier</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># auth id</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">do_login</span><span class="p">(</span><span class="n">auth_id</span><span class="o">=</span><span class="n">identifier</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">res</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="api_hello"><a class="viewcode-back" href="../developer.html#developer.api_hello">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/hello&#39;</span><span class="p">)</span>
@@ -221,8 +229,28 @@
 <div class="viewcode-block" id="list_session"><a class="viewcode-back" href="../developer.html#developer.list_session">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/session&#39;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">list_session</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;List all session variables.&quot;&quot;&quot;</span>
-    <span class="kn">import</span> <span class="nn">logging</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">session</span><span class="p">)</span></div>
+    <span class="n">session</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+        <span class="n">session</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">repr</span><span class="p">(</span><span class="n">session</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">(</span><span class="n">session</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="list_current_user"><a class="viewcode-back" href="../developer.html#developer.list_current_user">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/user/me&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">list_current_user</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;List all session variables.&quot;&quot;&quot;</span>
+    <span class="n">current_user</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">current_user</span><span class="p">:</span>
+        <span class="n">current_user</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">repr</span><span class="p">(</span><span class="n">current_user</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">(</span><span class="n">current_user</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="list_config"><a class="viewcode-back" href="../developer.html#developer.list_config">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/config&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">list_config</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;List all session variables.&quot;&quot;&quot;</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
+        <span class="n">config</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">repr</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">(</span><span class="n">config</span><span class="p">)</span></div>
 
 
 

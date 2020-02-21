@@ -168,6 +168,12 @@
 <h2>Order<a class="headerlink" href="#order" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt>
+<code class="sig-name descname">/order/all</code></dt>
+<dd><p><strong>GET</strong> Get a list of all orders. Can be limited by parameters. Only for users with permission <code class="docutils literal notranslate"><span class="pre">DATA_MANAGEMENT</span></code>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt>
 <code class="sig-name descname">/order/&lt;identifier&gt;</code></dt>
 <dd><p><strong>GET</strong> Get information about the order with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
 <p><strong>DELETE</strong> Delete the order with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
@@ -229,6 +235,12 @@
 <dd><p><strong>GET</strong> Get a list of changes done to the dataset with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
 </dd></dl>
 
+<dl class="function">
+<dt>
+<code class="sig-name descname">/dataset/claim</code></dt>
+<dd><p><strong>POST</strong> Claim datasets (<code class="docutils literal notranslate"><span class="pre">email</span></code>-&gt;``UUID``) belonging to the current user.</p>
+</dd></dl>
+
 </div>
 <div class="section" id="project">
 <h2>Project<a class="headerlink" href="#project" title="Permalink to this headline">¶</a></h2>
@@ -254,8 +266,14 @@
 
 <dl class="function">
 <dt>
-<code class="sig-name descname">/order/&lt;identifier&gt;/log</code></dt>
+<code class="sig-name descname">/project/&lt;identifier&gt;/log</code></dt>
 <dd><p><strong>GET</strong> Get a list of changes done to the project with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-name descname">/project/claim</code></dt>
+<dd><p><strong>POST</strong> Claim projects (<code class="docutils literal notranslate"><span class="pre">email</span></code>-&gt;``UUID``) belonging to the current user.</p>
 </dd></dl>
 
 </div>
