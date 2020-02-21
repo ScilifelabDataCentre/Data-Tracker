@@ -16,7 +16,7 @@ def dataset():
     """
     return {'_id': utils.new_uuid(),
             'description': '',
-            'extra': [],
+            'extra': {},
             'links': [],
             'title': ''}
 
@@ -32,7 +32,7 @@ def order():
             'creator': '',
             'datasets': [],
             'description': '',
-            'extra': [],
+            'extra': {},
             'receiver': '',
             'title': ''}
 
@@ -49,7 +49,7 @@ def project():
             'datasets': [],
             'description': '',
             'dmp': '',
-            'extra': [],
+            'extra': {},
             'owners': [],
             'publications': [],
             'title': ''}
