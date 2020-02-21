@@ -326,7 +326,7 @@ def make_timestamp():
     return datetime.datetime.now()
 
 
-def make_log(data_type: str, action: str, data: dict = None):
+def make_log(data_type: str, action: str, comment: str, data: dict = None):
     """
     Log a change in the system.
 
@@ -337,18 +337,22 @@ def make_log(data_type: str, action: str, data: dict = None):
         e.g. ``data`` should only contain permitted fields.
 
     Args:
-        action (str): Type of action (insert, update etc).
+        action (str): Type of action (add, update, delete).
+        comment (str): Note about why the change was done
+            (e.g. "Dataset added via addDataset").
         data_type (str): The collection name.
         data (dict): The new data for the entry.
 
     Returns:
         bool: Whether the log insertion successed.
     """
-    flask.g.db['logs'].insert_one({'action': action,
-                                   'data_type': data_type,
-                                   'data': data,
-                                   'timestamp': make_timestamp(),
-                                   'user': flask.g.current_user['_id']})
+    result = flask.g.db['logs'].insert_one({'action': action,
+                                            'comment': comment,
+                                            'data_type': data_type,
+                                            'data': data,
+                                            'timestamp': make_timestamp(),
+                                            'user': flask.g.current_user['_id']})
+    return result.acknowledged
 
 
 # validate indata

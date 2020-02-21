@@ -158,7 +158,7 @@ def delete_dataset(identifier):
     result = flask.g.db['datasets'].delete_one({'_id': muuid})
     if result.deleted_count == 0:
         return flask.Response(status=404)
-    utils.make_log('dataset', 'delete')
+    utils.make_log('dataset', 'delete', f'Delete dataset {muuid}')
 
     for entry in flask.g.db['orders'].find({'datasets': muuid}):
         flask.g.db['orders'].update_one({'_id': entry['_id']},
