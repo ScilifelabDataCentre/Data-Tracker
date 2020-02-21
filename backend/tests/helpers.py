@@ -18,6 +18,8 @@ CURR_DIR = os.path.realpath(__file__)
 SETTINGS = json.loads(open(f'{os.path.dirname(CURR_DIR)}/settings_tests.json').read())
 BASE_URL = f'{SETTINGS["host"]}:{SETTINGS["port"]}'
 
+TEST_LABEL = {'extra': {'testing': 'yes'}}
+
 USERS = {'no-login': None,
          'base': 'base@testers',
          'orders': 'orders@testers',
@@ -76,7 +78,7 @@ def dataset_for_tests():
               'description': 'Test description',
               'title': 'Test title'}
     session = requests.Session()
-    as_user(session, USERS['steward'])
+    as_user(session, USERS['data'])
 
     data, status_code = make_request(session,
                                      '/api/dataset/add',
@@ -128,7 +130,8 @@ def make_request(session, url: str, data: dict = None, method='GET', ret_json: b
     return Response(data=data, code=response.status_code)
 
 
-def make_request_all_roles(url: str, method: str = 'GET', data=None, set_csrf: bool = True) -> list:
+def make_request_all_roles(url: str, method: str = 'GET', data=None,
+                           set_csrf: bool = True, ret_json: bool = False) -> list:
     """
     Perform a query for all roles (anonymous, User, Steward, Admin).
 
@@ -142,7 +145,7 @@ def make_request_all_roles(url: str, method: str = 'GET', data=None, set_csrf: b
     session = requests.Session()
     for user in USERS:
         as_user(session, USERS[user], set_csrf=set_csrf)
-        req = make_request(session, url, data, method, ret_json=False)
+        req = make_request(session, url, data, method, ret_json)
         responses.append(Response(data=req.data, code=req.code, role=user))
     return responses
 
