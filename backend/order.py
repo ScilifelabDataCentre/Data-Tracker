@@ -140,11 +140,10 @@ def add_dataset_post(identifier):  # pylint: disable=too-many-branches
     if not result_ds.acknowledged:
         logging.error('Dataset insert failed: %s', dataset)
     else:
-        if not utils.make_log('dataset',
-                              'add',
-                              f'Dataset added for order {muuid}',
-                              dataset):
-            logging.error('Log failed for adding dataset %s', dataset)
+        utils.make_log('dataset',
+                       'add',
+                       f'Dataset added for order {muuid}',
+                       dataset)
 
         result_o = flask.g.db['orders'].update_one({'_id': muuid},
                                                    {'$push': {'datasets': dataset['_id']}})
@@ -153,10 +152,9 @@ def add_dataset_post(identifier):  # pylint: disable=too-many-branches
         else:
             order = flask.g.db['orders'].find_one({'_id': muuid})
 
-            if not utils.make_log('order',
-                                  'update',
-                                  f'Dataset {result_ds.inserted_id} added for order',
-                                  order):
-                logging.error('Log failed for adding dataset to order %s', muuid)
+            utils.make_log('order',
+                           'update',
+                           f'Dataset {result_ds.inserted_id} added for order',
+                           order)
 
     return utils.response_json({'_id': result_ds.inserted_id})

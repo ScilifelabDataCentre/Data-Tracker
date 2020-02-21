@@ -352,6 +352,9 @@ def make_log(data_type: str, action: str, comment: str, data: dict = None):
                                             'data': data,
                                             'timestamp': make_timestamp(),
                                             'user': flask.g.current_user['_id']})
+    if not result.acknowledged:
+        logging.error(f'Log failed: A:{action} C:{comment} D:{data} ' +
+                      f'DT: {data_type} U: {flask.g.current_user["_id"]}')
     return result.acknowledged
 
 
