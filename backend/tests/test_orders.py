@@ -32,16 +32,24 @@ def test_get_order_get_permissions():
         order['creator'] = str(order['creator'])
         for i, ds in enumerate(order['datasets']):
             order['datasets'][i] = next(db['datasets'].aggregate([{'$match': {'_id': ds}},
-                                                                  {'$project': {'_id': 0,
-                                                                                'uuid': '$_id',
+                                                                  {'$project': {'_id': 1,
                                                                                 'title': 1}}]))
-            order['datasets'][i]['uuid'] = str(order['datasets'][i]['uuid'])
+            order['datasets'][i]['_id'] = str(order['datasets'][i]['_id'])
 
-        responses = make_request_all_roles(f'/api/order/{order["_id"]}')
+        responses = make_request_all_roles(f'/api/order/{order["_id"]}', ret_json=True)
         for response in responses:
             if response.role in ('data', 'root'):
                 assert response.code == 200
-                assert json.loads(response.data)['order'] == order
+                data = response.data['order']
+                for field in order:
+                    if field == 'datasets':
+                        assert len(order[field]) == len(data[field])
+                        for ds in order[field]:
+                            assert ds in data[field]
+                    elif field == '_id':
+                        continue
+                    else:
+                        assert order[field] == data[field]
             elif response.role == 'no-login':
                 assert response.code == 401
                 assert not response.data
@@ -52,7 +60,16 @@ def test_get_order_get_permissions():
         as_user(session, owner['api_key'])
         response = make_request(session, f'/api/order/{order["_id"]}')
         assert response.code == 200
-        assert response.data['order'] == order
+        data = response.data['order']
+        for field in order:
+            if field == 'datasets':
+                assert len(order[field]) == len(data[field])
+                for ds in order[field]:
+                    assert ds in data[field]
+            elif field == '_id':
+                continue
+            else:
+                assert order[field] == data[field]
     
 
 def test_get_order():
@@ -73,16 +90,24 @@ def test_get_order():
         order['creator'] = str(order['creator'])
         for i, ds in enumerate(order['datasets']):
             order['datasets'][i] = next(db['datasets'].aggregate([{'$match': {'_id': ds}},
-                                                                  {'$project': {'_id': 0,
-                                                                                'uuid': '$_id',
+                                                                  {'$project': {'_id': 1,
                                                                                 'title': 1}}]))
-            order['datasets'][i]['uuid'] = str(order['datasets'][i]['uuid'])
+            order['datasets'][i]['_id'] = str(order['datasets'][i]['_id'])
 
         as_user(session, 'data@testers')
         response = make_request(session, f'/api/order/{order["_id"]}')
-        print(response)
         assert response.code == 200
-        assert response.data['order'] == order
+        assert response.code == 200
+        data = response.data['order']
+        for field in order:
+            if field == 'datasets':
+                assert len(order[field]) == len(data[field])
+                for ds in order[field]:
+                    assert ds in data[field]
+            elif field == '_id':
+                continue
+            else:
+                assert order[field] == data[field]
 
 
 def test_get_order_bad():
@@ -95,7 +120,6 @@ def test_get_order_bad():
     for _ in range(5):
         responses = make_request_all_roles(f'/api/order/{uuid.uuid4()}')
         for response in responses:
-            print(response.role)
             if response.role in ('orders', 'data', 'root'):
                 assert response.code == 404
             elif response.role in ('no-login'):
@@ -107,7 +131,6 @@ def test_get_order_bad():
     for _ in range(5):
         responses = make_request_all_roles(f'/api/order/{random_string()}')
         for response in responses:
-            print(response.role)
             if response.role in ('orders', 'data', 'root'):
                 assert response.code == 404
             elif response.role in ('no-login'):

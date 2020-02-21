@@ -78,7 +78,7 @@ def get_order(identifier):
 
     # convert dataset list into {title, _id}
     order['datasets'] = list(flask.g.db['datasets']
-                             .find({'_id': {'$IN': order['datasets']}},
+                             .find({'_id': {'$in': order['datasets']}},
                                    {'_id': 1,
                                     'title': 1}))
 
