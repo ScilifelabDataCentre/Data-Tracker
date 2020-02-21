@@ -31,8 +31,16 @@ def make_description():
     return desc
 
 
-# generator functions
+def make_log(db, action, comment, data_type, data, user):
+    db['logs'].insert_one({'action': action,
+                           'comment': comment,
+                           'data_type': data_type,
+                           'data': data,
+                           'timestamp': utils.make_timestamp(),
+                           'user': user})
 
+
+# generator functions
 EXTRA_FIELDS = {'method': ('rna-seq', 'chip-seq', 'X-ray'),
                 'external': ('company1', 'company2', 'company3')}
 EXTRA_KEYS = tuple(EXTRA_FIELDS.keys())
@@ -54,8 +62,12 @@ def gen_datasets(db, nr_datasets: int = 500):
             changes['extra'] = [{tag: random.choice(EXTRA_FIELDS[tag])}]
         dataset.update(changes)
         uuids.append(db['datasets'].insert_one(dataset).inserted_id)
-        db['orders'].update_one({'_id': random.choice(orders)},
+        make_log(db, action='add', data=dataset, data_type='dataset',comment='Generated', user='root')
+        order_uuid = random.choice(orders)
+        db['orders'].update_one({'_id': order_uuid},
                                 {'$push': {'datasets': uuids[-1]}})
+        order = db['orders'].find_one({'_id': order_uuid})
+        make_log(db, action='update', data=order, data_type='order',comment='Generated - add ds', user='root')
 
     return uuids
 
@@ -74,7 +86,7 @@ def gen_facilities(db, nr_facilities: int = 30):
                    'permissions': ['ORDERS_SELF']}
         user.update(changes)
         uuids.append(db['users'].insert_one(user).inserted_id)
-
+        make_log(db, action='add', data=user, data_type='user',comment='Generated', user='root')
     return uuids
 
 
@@ -91,6 +103,7 @@ def gen_orders(db, nr_orders: int = 300):
                    'title': f'Order {i} Title'}
         order.update(changes)
         uuids.append(db['orders'].insert_one(order).inserted_id)
+        make_log(db, action='add', data=order, data_type='order',comment='Generated', user='root')
     return uuids
 
 
@@ -111,6 +124,7 @@ def gen_projects(db, nr_projects: int = 500):
                    'title': f'Project {i} Title'}
         project.update(changes)
         db['projects'].insert_one(project)
+        make_log(db, action='add', data=project, data_type='project',comment='Generated', user='root')
 
 
 def gen_users(db, nr_users: int = 100):
@@ -133,6 +147,7 @@ def gen_users(db, nr_users: int = 100):
                      'country': 'Sweden',
                      'email': f'{"".join(user["name"].split())}@example.com'})
         db['users'].insert_one(user)
+        make_log(db, action='add', data=user, data_type='user',comment='Generated', user='root')
 
     countries = utils.country_list()
     for i in range(1, nr_users+1-3):
@@ -147,6 +162,7 @@ def gen_users(db, nr_users: int = 100):
                                            for _ in range(random.randint(0,2))))}
         user.update(changes)
         uuids.append(db['users'].insert_one(user).inserted_id)
+        make_log(db, action='add', data=user, data_type='user',comment='Generated', user='root')
     return uuids
 
 
@@ -164,3 +180,5 @@ if __name__ == '__main__':
     gen_orders(DB)
     gen_datasets(DB)
     gen_projects(DB)
+    root_user = DB['users'].find_one({'name': 'Root Test'})
+    DB['logs'].update_many({}, {'$set': {'user': root_user['_id']}})
