@@ -9,7 +9,7 @@ import requests
 # pylint: disable = redefined-outer-name, unused-import
 
 from helpers import make_request, as_user, make_request_all_roles,\
-    USERS, random_string, parse_time, db_connection
+    USERS, random_string, parse_time, db_connection, TEST_LABEL
 
 
 def test_get_order_get_permissions():
@@ -115,3 +115,153 @@ def test_get_order_bad():
             else:
                 assert response.code == 403
             assert not response.data
+
+
+def test_add_dataset_get():
+    """
+    Request data structure for GET addDataset.
+    """
+    expected = {'links': [],
+                'description': '',
+                'title': '',
+                'extra': {}}
+
+    db = db_connection()
+    orders = list(db['orders'].aggregate([{'$sample': {'size': 1}}]))
+
+    for entry in (orders[0]['_id'], random_string(), uuid.uuid4()):
+        responses = make_request_all_roles(f'/api/order/{entry}/addDataset', ret_json=True)
+        for response in responses:
+            if response.role in ('data', 'orders', 'root'):
+                assert response.code == 200
+                assert response.data == expected
+            elif response.role == 'no-login':
+                assert response.code == 401
+                assert not response.data
+            else:
+                assert response.code == 403
+                assert not response.data
+
+
+def test_add_permissions():
+    """
+    Add a default dataset using .post(dataset/add).
+
+    Simple data content, using {identifer: test} to tell that it was added during testing.
+
+    Should require at least Steward.
+    """
+    session = requests.Session()
+
+    db = db_connection()
+    orders = list(db['orders'].aggregate([{'$sample': {'size': 2}}]))
+
+    for order in orders:
+        responses = make_request_all_roles(f'/api/order/{order["_id"]}/addDataset',
+                                           method='POST',
+                                           data=TEST_LABEL,
+                                           ret_json=True)
+        for response in responses:
+            if response.role in ('data', 'root'):
+                assert response.code == 200
+                assert '_id' in response.data
+                assert len(response.data['_id']) == 36
+            elif response.role == 'no-login':
+                assert response.code == 401
+                assert not response.data
+            else:
+                assert response.code == 403
+                assert not response.data
+        # as order creator
+        owner = db['users'].find_one({'_id': order['creator']})
+        as_user(session, owner['api_key'])
+        response = make_request(session,
+                                f'/api/order/{order["_id"]}/addDataset',
+                                method='POST',
+                                data=TEST_LABEL)
+        assert response.code == 200
+        assert '_id' in response.data
+        assert len(response.data['_id']) == 36
+
+
+def test_add_all_fields():
+    """
+    Add a default dataset using .post(dataset/add).
+
+    Should require at least Steward.
+    """
+    indata = {'links': [{'description': 'Test description', 'url': 'http://test_url'}],
+              'title': 'Test title',
+              'description': 'Test description'}
+    indata.update(TEST_LABEL)
+
+    db = db_connection()
+    order = next(db['orders'].aggregate([{'$sample': {'size': 1}}]))
+
+    session = requests.session()
+    as_user(session, USERS['data'])
+
+    response = make_request(session,
+                            f'/api/order/{order["_id"]}/addDataset',
+                            method='POST',
+                            data=indata,
+                            ret_json=True)
+    assert response.code == 200
+    assert '_id' in response.data
+    assert len(response.data['_id']) == 36
+    indata.update({'_id': response.data['_id']})
+    db_ds = db['datasets'].find_one({'_id': uuid.UUID(response.data['_id'])})
+    db_o = db['orders'].find_one({'_id': order['_id']})
+    db_ds['_id'] = str(db_ds['_id'])
+    db_o['datasets'] = [str(uuid) for uuid in db_o['datasets']]
+    assert db_ds == indata
+    assert response.data['_id'] in db_o['datasets']
+
+
+def test_add_bad_fields():
+    """Attempt to add datasets with e.g. forbidden fields."""
+
+    db = db_connection()
+    order = next(db['orders'].aggregate([{'$sample': {'size': 1}}]))
+    session = requests.Session()
+    as_user(session, USERS['data'])
+
+    indata = {'_id': 'asd'}
+    response = make_request(session,
+                            f'/api/order/{order["_id"]}/addDataset',
+                            method='POST',
+                            data=indata)
+    assert response.code == 400
+    assert not response.data
+
+    indata = {'timestamp': 'asd'}
+    response = make_request(session,
+                            f'/api/order/{order["_id"]}/addDataset',
+                            method='POST',
+                            data=indata)
+    assert response.code == 400
+    assert not response.data
+
+    indata = {'extra': [{'asd': 123}]}
+    response = make_request(session,
+                            f'/api/order/{order["_id"]}/addDataset',
+                            method='POST',
+                            data=indata)
+    assert response.code == 400
+    assert not response.data
+
+    indata = {'links': [{'asd': 123}]}
+    response = make_request(session,
+                            f'/api/order/{order["_id"]}/addDataset',
+                            method='POST',
+                            data=indata)
+    assert response.code == 400
+    assert not response.data
+    
+    indata = {'links': 'Some text'}
+    response = make_request(session,
+                            f'/api/order/{order["_id"]}/addDataset',
+                            method='POST',
+                            data=indata)
+    assert response.code == 400
+    assert not response.data
