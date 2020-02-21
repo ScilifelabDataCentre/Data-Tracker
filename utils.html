@@ -258,11 +258,14 @@
 
 <dl class="function">
 <dt id="utils.get_db">
-<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">get_db</code><span class="sig-paren">(</span><em class="sig-param">dbserver: pymongo.mongo_client.MongoClient</em><span class="sig-paren">)</span> &#x2192; pymongo.database.Database<a class="reference internal" href="modules/utils.html#get_db"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.get_db" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">get_db</code><span class="sig-paren">(</span><em class="sig-param">dbserver: pymongo.mongo_client.MongoClient</em>, <em class="sig-param">conf</em><span class="sig-paren">)</span> &#x2192; pymongo.database.Database<a class="reference internal" href="modules/utils.html#get_db"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.get_db" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the connection to the MongoDB database.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>dbserver</strong> – Connection to the database.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dbserver</strong> (<em>pymongo.mongo_client.MongoClient</em>) – Connection to the database.</p></li>
+<li><p><strong>conf</strong> – A mapping with the relevant mongo keys available.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>The database connection.</p>
@@ -350,7 +353,7 @@
 
 <dl class="function">
 <dt id="utils.make_log">
-<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">make_log</code><span class="sig-paren">(</span><em class="sig-param">data_type: str</em>, <em class="sig-param">action: str</em>, <em class="sig-param">data: dict = None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#make_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.make_log" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">make_log</code><span class="sig-paren">(</span><em class="sig-param">data_type: str</em>, <em class="sig-param">action: str</em>, <em class="sig-param">comment: str</em>, <em class="sig-param">data: dict = None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#make_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.make_log" title="Permalink to this definition">¶</a></dt>
 <dd><p>Log a change in the system.</p>
 <p>Saves a complete copy of the new object.</p>
 <div class="admonition warning">
@@ -361,7 +364,9 @@ e.g. <code class="docutils literal notranslate"><span class="pre">data</span></c
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>action</strong> (<em>str</em>) – Type of action (insert, update etc).</p></li>
+<li><p><strong>action</strong> (<em>str</em>) – Type of action (add, update, delete).</p></li>
+<li><p><strong>comment</strong> (<em>str</em>) – Note about why the change was done
+(e.g. “Dataset added via addDataset”).</p></li>
 <li><p><strong>data_type</strong> (<em>str</em>) – The collection name.</p></li>
 <li><p><strong>data</strong> (<em>dict</em>) – The new data for the entry.</p></li>
 </ul>
@@ -434,6 +439,31 @@ e.g. <code class="docutils literal notranslate"><span class="pre">data</span></c
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>uuid.UUID</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils.validate_infield">
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">validate_infield</code><span class="sig-paren">(</span><em class="sig-param">field_key: str</em>, <em class="sig-param">data: Any</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/utils.html#validate_infield"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.validate_infield" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate that the input data matches expectations.</p>
+<p>Will check the type of data based on the key type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>field_key</strong> (<em>str</em>) – The name of the field to validate.</p></li>
+<li><p><strong>data</strong> (<em>Any</em>) – The data to validate.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Whether validation passed.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Raise:</dt><dd><p>ValueError: <code class="docutils literal notranslate"><span class="pre">field_key</span></code> not recognized.</p>
 </dd>
 </dl>
 </dd></dl>

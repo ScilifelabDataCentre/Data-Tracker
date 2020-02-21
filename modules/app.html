@@ -176,11 +176,11 @@
 
 <div class="viewcode-block" id="prepare"><a class="viewcode-back" href="../app.html#app.prepare">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">before_request</span>
 <span class="k">def</span> <span class="nf">prepare</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Open the database connection; get the current user.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Open the database connection and get the current user.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">!=</span> <span class="s1">&#39;GET&#39;</span><span class="p">:</span>
         <span class="n">utils</span><span class="o">.</span><span class="n">verify_csrf_token</span><span class="p">()</span>
     <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">dbserver</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_dbclient</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
-    <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_db</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">dbserver</span><span class="p">)</span>
+    <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_db</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">dbserver</span><span class="p">,</span> <span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
     <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">get_current_user</span><span class="p">()</span>
     <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">permissions</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span><span class="p">[</span><span class="s1">&#39;permissions&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span> <span class="k">else</span> <span class="kc">None</span></div>
 
@@ -200,8 +200,25 @@
     <span class="k">return</span> <span class="n">response</span></div>
 
 
-<div class="viewcode-block" id="not_found"><a class="viewcode-back" href="../app.html#app.not_found">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">errorhandler</span><span class="p">(</span><span class="mi">404</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">not_found</span><span class="p">(</span><span class="n">_</span><span class="p">):</span>
+<div class="viewcode-block" id="error_bad_request"><a class="viewcode-back" href="../app.html#app.error_bad_request">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">errorhandler</span><span class="p">(</span><span class="mi">400</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">error_bad_request</span><span class="p">(</span><span class="n">_</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Make sure a simple 400 is returned instead of an html page.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="error_unauthorized"><a class="viewcode-back" href="../app.html#app.error_unauthorized">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">errorhandler</span><span class="p">(</span><span class="mi">401</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">error_unauthorized</span><span class="p">(</span><span class="n">_</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Make sure a simple 401 is returned instead of an html page.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">401</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="error_forbidden"><a class="viewcode-back" href="../app.html#app.error_forbidden">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">errorhandler</span><span class="p">(</span><span class="mi">403</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">error_forbidden</span><span class="p">(</span><span class="n">_</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Make sure a simple 403 is returned instead of an html page.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">403</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="error_not_found"><a class="viewcode-back" href="../app.html#app.error_not_found">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">errorhandler</span><span class="p">(</span><span class="mi">404</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">error_not_found</span><span class="p">(</span><span class="n">_</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Make sure a simple 404 is returned instead of an html page.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">404</span><span class="p">)</span></div>
 
