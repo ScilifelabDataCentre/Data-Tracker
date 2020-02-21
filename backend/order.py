@@ -83,3 +83,52 @@ def get_order(identifier):
                                                               'title': 1}}]))
 
     return utils.response_json({'order': order})
+
+
+@blueprint.route('/<identifier>/addDataset', methods=['GET'])
+def add_dataset_get():
+    """Provide a basic data structure for adding a dataset."""
+    dataset = structure.dataset()
+    del dataset['_id']
+    return utils.response_json(dataset)
+
+
+@blueprint.route('/<identifier>/addDataset', methods=['POST'])
+@user.login_required
+def add_dataset_post():
+    """Add a dataset."""
+    # permissions
+    if not user.has_permission('ORDERS_SELF'):
+        flask.abort(status=403)
+    try:
+        muuid = utils.str_to_uuid(identifier)
+    except ValueError:
+        flask.abort(status=404)
+    order = flask.g.db['orders'].find_one({'_id': muuid})
+    if not order:
+        flask.abort(status=404)
+    if not (user.has_permission('DATA_MANAGEMENT') or
+        order['creator'] == flask.session['user_id']):
+        return flask.abort(status=403)
+
+    # create new dataset
+    dataset = structure.dataset()
+    indata = json.loads(flask.request.data)
+
+    # indata validation
+    if '_id' in indata:
+        flask.abort(status=400)
+    for key in indata:
+        if key not in dataset:
+            flask.abort(status=400)
+    dataset.update(indata)
+
+    # add to db
+    result = flask.g.db['datasets'].insert_one(dataset)
+    if not result.acknowledged:
+        logging.error('Dataset insert failed: %s', dataset)
+    result = flask.g.db['orders'].update_one({'_id': muuid},
+                                            {'_id': 1})
+    if not result.acknowledged:
+        logging.error('Order insert failed: ADD dataset %s', dataset['_id'])
+    return utils.response_json({'_id': dataset['_id']})

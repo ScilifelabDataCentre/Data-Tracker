@@ -107,41 +107,6 @@ def list_user_data():
     return utils.response_json({'datasets': user_datasets})
 
 
-@blueprint.route('/add', methods=['GET'])
-@user.steward_required
-def add_dataset_get():
-    """Provide a basic data structure for adding a dataset."""
-    dataset = structure.dataset()
-    logging.error(dataset)
-    del dataset['_id']
-    del dataset['identifiers']
-    dataset['projects'] = []
-    return utils.response_json(dataset)
-
-
-@blueprint.route('/add', methods=['POST'])
-@user.steward_required
-def add_dataset_post():
-    """Add a dataset."""
-    dataset = structure.dataset()
-
-    indata = json.loads(flask.request.data)
-    if indata:
-        if not validate_dataset_input(indata):
-            flask.abort(flask.Response(status=400))
-        dataset.update(indata)
-
-    identifier = dataset['_id'].hex
-    if 'projects' in dataset:
-        update_projects(identifier, dataset['projects'])
-        del dataset['projects']
-
-    result = flask.g.db['datasets'].insert_one(dataset)
-    entry = flask.g.db['datasets'].find_one({'_id': result.inserted_id},
-                                            {'_id': 1})
-    return utils.response_json(entry)
-
-
 @blueprint.route('/random', methods=['GET'])
 @blueprint.route('/random/<int:amount>', methods=['GET'])
 def get_random_ds(amount: int = 1):
