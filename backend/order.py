@@ -6,13 +6,16 @@ Special permissions are required to access orders:
 * If you have permission ``ORDERS_SELF`` you have CRUD access to your own orders.
 * If you have permission ``DATA_MANAGER`` you have CRUD access to any orders.
 """
+import logging
+
 import flask
 
-import utils
+import structure
 import user
+import utils
 
+blueprint = flask.Blueprint('order', __name__)  # pylint: disable=invalid-name
 
-blueprint = flask.Blueprint('orders', __name__)  # pylint: disable=invalid-name
 
 @blueprint.before_request
 def prepare():
@@ -85,9 +88,18 @@ def get_order(identifier):
     return utils.response_json({'order': order})
 
 
-@blueprint.route('/<identifier>/addDataset', methods=['GET'])
-def add_dataset_get():
-    """Provide a basic data structure for adding a dataset."""
+@blueprint.route('/<_>/addDataset', methods=['GET'])
+@user.login_required
+def add_dataset_get(_):
+    """
+    Provide a basic data structure for adding a dataset.
+
+    The structure will be returned no matter whether order ``identifier`` exists or not.
+
+    Requires ``ORDERS_SELF`` permission.
+    """
+    if not user.has_permission('ORDERS_SELF'):
+        flask.abort(status=403)
     dataset = structure.dataset()
     del dataset['_id']
     return utils.response_json(dataset)
@@ -95,7 +107,7 @@ def add_dataset_get():
 
 @blueprint.route('/<identifier>/addDataset', methods=['POST'])
 @user.login_required
-def add_dataset_post():
+def add_dataset_post(identifier):
     """Add a dataset."""
     # permissions
     if not user.has_permission('ORDERS_SELF'):
@@ -113,7 +125,7 @@ def add_dataset_post():
 
     # create new dataset
     dataset = structure.dataset()
-    indata = json.loads(flask.request.data)
+    indata = flask.json.loads(flask.request.data)
 
     # indata validation
     if '_id' in indata:
@@ -121,14 +133,17 @@ def add_dataset_post():
     for key in indata:
         if key not in dataset:
             flask.abort(status=400)
+        if not utils.validate_infield(key, indata[key]):
+            logging.debug(f'Key: {key}, Data: {indata[key]}')
+            flask.abort(status=400)
     dataset.update(indata)
 
     # add to db
-    result = flask.g.db['datasets'].insert_one(dataset)
-    if not result.acknowledged:
+    result_ds = flask.g.db['datasets'].insert_one(dataset)
+    if not result_ds.acknowledged:
         logging.error('Dataset insert failed: %s', dataset)
-    result = flask.g.db['orders'].update_one({'_id': muuid},
-                                            {'_id': 1})
-    if not result.acknowledged:
+    result_o = flask.g.db['orders'].update_one({'_id': muuid},
+                                               {'$push': {'datasets': dataset['_id']}})
+    if not result_o.acknowledged:
         logging.error('Order insert failed: ADD dataset %s', dataset['_id'])
-    return utils.response_json({'_id': dataset['_id']})
+    return utils.response_json({'_id': result_ds.inserted_id})
