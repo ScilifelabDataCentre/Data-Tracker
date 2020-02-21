@@ -1,6 +1,5 @@
 """Routes and functions intended to aid development and testing."""
 import copy
-import logging
 
 import flask
 
@@ -25,8 +24,7 @@ def login(identifier: str):
         res = user.do_login(auth_id=identifier)
     if res:
         return flask.Response(status=200)
-    else:
-        return flask.Response(status=500)
+    return flask.Response(status=500)
 
 
 @blueprint.route('/hello')
@@ -89,10 +87,10 @@ def list_session():
 @blueprint.route('/user/me')
 def list_current_user():
     """List all session variables."""
-    user = flask.g.current_user
-    for key in user:
-        user[key] = repr(user[key])
-    return flask.jsonify(user)
+    current_user = flask.g.current_user
+    for key in current_user:
+        current_user[key] = repr(current_user[key])
+    return flask.jsonify(current_user)
 
 
 @blueprint.route('/config')

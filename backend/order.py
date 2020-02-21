@@ -24,7 +24,6 @@ def prepare():
 
     Make sure that the user is logged in and has the required permission.
     """
-    import logging
     if not flask.g.current_user:
         flask.abort(status=401)
     if not user.has_permission('ORDERS_SELF'):
@@ -77,13 +76,11 @@ def get_order(identifier):
             order['creator'] == flask.session['user_id']):
         return flask.abort(status=403)
 
-    # convert dataset list into {title, uuid}
-    for i, ds in enumerate(order['datasets']):
-        order['datasets'][i] = next(flask.g.db['datasets']
-                                    .aggregate([{'$match': {'_id': ds}},
-                                                {'$project': {'_id': 0,
-                                                              'uuid': '$_id',
-                                                              'title': 1}}]))
+    # convert dataset list into {title, _id}
+    order['datasets'] = list(flask.g.db['datasets']
+                             .find({'_id': {'$IN': order['datasets']}},
+                                   {'_id': 1,
+                                    'title': 1}))
 
     return utils.response_json({'order': order})
 
@@ -120,7 +117,7 @@ def add_dataset_post(identifier):
     if not order:
         flask.abort(status=404)
     if not (user.has_permission('DATA_MANAGEMENT') or
-        order['creator'] == flask.session['user_id']):
+            order['creator'] == flask.session['user_id']):
         return flask.abort(status=403)
 
     # create new dataset

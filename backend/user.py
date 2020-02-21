@@ -140,7 +140,7 @@ def get_current_user_info():
 
 
 # helper functions
-def do_login(*, auth_id: str = None, api_key: str = None, other_data: dict = None):
+def do_login(*, auth_id: str = None, api_key: str = None):
     """
     Set all relevant variables for a logged in user.
 
@@ -148,6 +148,7 @@ def do_login(*, auth_id: str = None, api_key: str = None, other_data: dict = Non
 
     Args:
         auth_id (str): Authentication id for the user.
+        api_key (str): API key for the user.
 
     Returns bool: Whether the login succeeded.
     """
@@ -160,6 +161,8 @@ def do_login(*, auth_id: str = None, api_key: str = None, other_data: dict = Non
         user['auth_id'] = auth_id
         user['api_key'] = api_key
         response = flask.g.db['users'].insert_one(user)
+        if not response.acknowledged:
+            logging.error(f'Failed to write user to db: {user}')
 
     flask.session['user_id'] = user['_id']
     flask.session.permanent = True

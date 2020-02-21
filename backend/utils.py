@@ -41,7 +41,7 @@ def check_mongo_update(document: dict):
 
     Args:
         document (dict): Received input to update a document.
-    
+
     Returns:
         bool: Whether the document passed the check.
     """
@@ -352,7 +352,7 @@ def make_log(data_type: str, action: str, data: dict = None):
 
 
 # validate indata
-def validate_infield(field_key: str, data: Any) -> bool:
+def validate_infield(field_key: str, data: Any) -> bool:  # pylint: disable=too-many-branches
     """
     Validate that the input data matches expectations.
 
@@ -392,8 +392,7 @@ def validate_infield(field_key: str, data: Any) -> bool:
     elif field_key == 'extra':
         if isinstance(data, dict):
             for key in data:
-                if (not isinstance(key, str) or
-                    not isinstance(data[key], str)):
+                if not isinstance(key, str) or not isinstance(data[key], str):
                     passed = False
                     break
         else:
