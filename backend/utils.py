@@ -349,3 +349,57 @@ def make_log(data_type: str, action: str, data: dict = None):
                                    'data': data,
                                    'timestamp': make_timestamp(),
                                    'user': flask.g.current_user['_id']})
+
+
+# validate indata
+def validate_infield(field_key: str, data: Any) -> bool:
+    """
+    Validate that the input data matches expectations.
+
+    Will check the type of data based on the key type.
+
+    Args:
+        field_key (str): The name of the field to validate.
+        data (Any): The data to validate.
+
+    Returns:
+        bool: Whether validation passed.
+
+    Raise:
+        ValueError: ``field_key`` not recognized.
+    """
+    passed = True
+    if field_key == 'links':
+        if isinstance(data, list):
+            for entry in data:
+                if not isinstance(entry, dict):
+                    passed = False
+                    break
+                for key in entry:
+                    if key not in ('url', 'description'):
+                        passed = False
+                        break
+                    if not isinstance(entry[key], str):
+                        passed = False
+                        break
+        else:
+            passed = False
+
+    elif field_key in ('title', 'description'):
+        if not isinstance(data, str):
+            passed = False
+
+    elif field_key == 'extra':
+        if isinstance(data, dict):
+            for key in data:
+                if (not isinstance(key, str) or
+                    not isinstance(data[key], str)):
+                    passed = False
+                    break
+        else:
+            passed = False
+
+    else:
+        raise ValueError(f'Field not recognized: {field_key}')
+
+    return passed
