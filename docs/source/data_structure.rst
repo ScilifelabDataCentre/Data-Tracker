@@ -64,7 +64,7 @@ Datasets
 
         {
           'title': 'title',
-          'uuid': 'uuid'
+          '_id': 'uuid'
         }
 
 
