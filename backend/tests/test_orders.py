@@ -164,6 +164,127 @@ def test_get_order_bad():
             assert not response.data
 
 
+def test_list_user_orders_permissions():
+    """
+    Request orders for multiple users by uuid, one at a time.
+
+    Confirm that only the correct permissions can access the data.
+    """
+    session = requests.Session()
+
+    db = db_connection()
+    users = db['users'].aggregate([{'$match': {'permissions': {'$in': ['ORDERS_SELF',
+                                                                       'DATA_MANAGEMENT']}}},
+                                    {'$sample': {'size': 3}}])
+    for user in users:
+        responses = make_request_all_roles('/api/order/user')
+        for response in responses:
+            if response.role in ('orders', 'data', 'root'):
+                assert response.code == 404
+            elif response.role in ('no-login'):
+                assert response.code == 401
+            else:
+                assert response.code == 403
+            assert not response.data
+
+        user_orders = list(db['orders'].find({'$or': [{'receiver': user['_id']},
+                                                      {'creator': user['_id']}]}))
+        responses = make_request_all_roles(f'/api/order/user/{user["_id"]}')
+        for response in responses:
+            if response.role in ('data', 'root'):
+                if user_orders:
+                    assert response.code == 200
+                    assert response.data
+                else:
+                    assert response.code == 404
+                    assert not response.data
+            elif response.role in ('no-login'):
+                assert response.code == 401
+                assert not response.data
+            else:
+                assert response.code == 403
+                assert not response.data
+
+        if user['auth_id'] != '--facility--':
+            as_user(session, user['auth_id'])
+        else:
+            as_user(session, user['api_key'])
+        response = make_request(session, f'/api/order/user')
+        if user_orders:
+            assert response.code == 200
+            assert response.data
+        else:
+            assert response.code == 404
+            assert not response.data
+
+
+def test_list_user_orders():
+    """
+    Request orders for multiple users by uuid, one at a time.
+
+    Request the order list and confirm that it contains the correct data.
+    """
+    session = requests.Session()
+
+    db = db_connection()
+    users = db['users'].aggregate([{'$match': {'permissions': {'$in': ['ORDERS_SELF',
+                                                                       'DATA_MANAGEMENT']}}},
+                                    {'$sample': {'size': 3}}])
+
+    for user in users:
+        user_orders = list(db['orders'].find({'$or': [{'receiver': user['_id']},
+                                                      {'creator': user['_id']}]}))
+        order_uuids = [str(order['_id']) for order in user_orders]
+
+        if user['auth_id'] != '--facility--':
+            as_user(session, user['auth_id'])
+        else:
+            as_user(session, user['api_key'])
+        response = make_request(session, f'/api/order/user')
+        if user_orders:
+            assert response.code == 200
+            assert response.data
+            assert len(user_orders) == len(response.data['orders'])
+            for order in response.data['orders']:
+                assert order['_id'] in order_uuids
+        else:
+            assert response.code == 404
+            assert not response.data
+
+
+def test_list_user_orders_bad():
+    """
+    Request orders for multiple users by uuid, one at a time.
+
+    Confirm that bad requests return nothing
+    """
+    session = requests.Session()
+
+    as_user(session, USERS['data'])
+    for _ in range(5):
+        responses = make_request_all_roles(f'/api/order/user/{uuid.uuid4()}')
+        for response in responses:
+            if response.role in ('data', 'root'):
+                assert response.code == 404
+            elif response.role in ('no-login'):
+                assert response.code == 401
+            else:
+                assert response.code == 403
+            assert not response.data
+
+
+    for _ in range(5):
+        responses = make_request_all_roles(f'/api/order/user/{random_string()}')
+        for response in responses:
+            if response.role in ('data', 'root'):
+                assert response.code == 404
+            elif response.role in ('no-login'):
+                assert response.code == 401
+            else:
+                assert response.code == 403
+            assert not response.data
+
+
 def test_add_dataset_get():
     """
     Request data structure for GET addDataset.
@@ -190,7 +311,7 @@ def test_add_dataset_get():
                 assert not response.data
 
 
-def test_add_permissions():
+def test_add_dataset_permissions():
     """
     Add a default dataset using .post(dataset/add).
 
@@ -231,7 +352,7 @@ def test_add_permissions():
         assert len(response.data['_id']) == 36
 
 
-def test_add_all_fields():
+def test_add_dataset_all_fields():
     """
     Add a default dataset using .post(dataset/add).
 
@@ -265,7 +386,7 @@ def test_add_all_fields():
     assert response.data['_id'] in db_o['datasets']
 
 
-def test_add_bad_fields():
+def test_add_dataset_bad_fields():
     """Attempt to add datasets with e.g. forbidden fields."""
 
     db = db_connection()

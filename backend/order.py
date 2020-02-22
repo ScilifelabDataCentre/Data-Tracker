@@ -65,9 +65,16 @@ def list_orders_user(user_id: str):
     if user_id:
         if not user.has_permission('OWNERS_READ'):
             flask.abort(status=403)
+        try:
+            uuid = utils.str_to_uuid(user_id)
+        except ValueError:
+            return flask.abort(status=404)
     else:  # current user
-        user_id = flask.session['user_id']
-    orders = tuple(flask.g.db['orders'].find({'creator': user_id}))
+        uuid = flask.session['user_id']
+    orders = list(flask.g.db['orders'].find({'$or': [{'receiver': uuid},
+                                                     {'creator': uuid}]}))
+    if not orders:
+        flask.abort(status=404)
 
     return utils.response_json({'orders': orders})
 
@@ -111,12 +118,8 @@ def add_dataset_get(_):
     """
     Provide a basic data structure for adding a dataset.
 
-    The structure will be returned no matter whether order ``identifier`` exists or not.
-
-    Requires ``ORDERS_SELF`` permission.
+    The structure will be returned no matter what "uuid" it is provided.
     """
-    if not user.has_permission('ORDERS_SELF'):
-        flask.abort(status=403)
     dataset = structure.dataset()
     del dataset['_id']
     return utils.response_json(dataset)
