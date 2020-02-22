@@ -11,8 +11,32 @@ import requests
 from helpers import make_request, as_user, make_request_all_roles,\
     USERS, random_string, parse_time, db_connection, TEST_LABEL
 
+def test_list_all_orders():
+    """
+    Check that all orders in the system are listed.
 
-def test_get_order_get_permissions():
+    Check that the number of fields per order is correct.
+    """
+    db = db_connection()
+    nr_orders = db['orders'].count()
+
+    responses = make_request_all_roles(f'/api/order/all', ret_json=True)
+    session = requests.Session()
+    for response in responses:
+        if response.role in ('data', 'root'):
+            assert response.code == 200
+            assert len(response.data['orders']) == nr_orders
+            assert set(response.data['orders'][0].keys()) == {'title', '_id',
+                                                               'creator', 'receiver'}
+        elif response.role == 'no-login':
+            assert response.code == 401
+            assert not response.data
+        else:
+            assert response.code == 403
+            assert not response.data
+
+
+def test_get_order_permissions():
     """
     Test permissions for requesting a order.
 

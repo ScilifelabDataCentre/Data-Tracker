@@ -30,7 +30,27 @@ def prepare():
         flask.abort(status=403)
 
 
-@blueprint.route('/user', defaults={'username': None}, methods=['GET'])
+@blueprint.route('/all', methods=['GET'])
+def list_orders():
+    """
+    List all orders belonging to the provided user.
+
+    Args:
+        userid (str): Uuid of user to find orders for.
+
+    Returns:
+        flask.Response: Json structure with a list of orders.
+    """
+    if not user.has_permission('DATA_MANAGEMENT'):
+        flask.abort(status=403)
+    orders = list(flask.g.db['orders'].find(projection={'_id': 1,
+                                                        'title': 1,
+                                                        'creator': 1,
+                                                        'receiver': 1}))
+    return utils.response_json({'orders': orders})
+
+
+@blueprint.route('/user', defaults={'user_id': None}, methods=['GET'])
 @blueprint.route('/user/<user_id>', methods=['GET'])
 def list_orders_user(user_id: str):
     """
