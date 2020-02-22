@@ -93,7 +93,8 @@ def gen_facilities(db, nr_facilities: int = 30):
 def gen_orders(db, nr_orders: int = 300):
     uuids = []
     facilities = tuple(db['users'].find({'auth_id': '--facility--'}))
-    users = tuple(db['users'].find({'auth_id': {'$ne': '--facility--'}}))
+    users = tuple(db['users'].find({'$and': [{'auth_id': {'$ne': '--facility--'}},
+                                             {'affiliation': {'$ne': 'Test University'}}]}))
     for i in range(1, nr_orders+1):
         receiver_type = random.choice(('email', '_id'))
         order = structure.order()
@@ -109,7 +110,7 @@ def gen_orders(db, nr_orders: int = 300):
 
 def gen_projects(db, nr_projects: int = 500):
     datasets = tuple(db['datasets'].find())
-    users = tuple(db['users'].find())
+    users = tuple(db['users'].find({'affiliation': {'$ne': 'Test University'}}))
     for i in range(1, nr_projects+1):
         project = structure.project()
         changes = {'contact': f'email{i}@entity{i}',
@@ -142,7 +143,7 @@ def gen_users(db, nr_users: int = 100):
     for i, suser in enumerate(special_users):
         user = structure.user()
         user.update(suser)
-        user.update({'affiliation' : 'Test university',
+        user.update({'affiliation' : 'Test University',
                      'api_key': uuid.uuid4().hex,
                      'country': 'Sweden',
                      'email': f'{"".join(user["name"].split())}@example.com'})
