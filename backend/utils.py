@@ -11,6 +11,8 @@ import bson
 import flask
 import pymongo
 
+import structure
+
 
 # csrf
 def verify_csrf_token():
@@ -346,16 +348,33 @@ def make_log(data_type: str, action: str, comment: str, data: dict = None):
     Returns:
         bool: Whether the log insertion successed.
     """
-    result = flask.g.db['logs'].insert_one({'action': action,
-                                            'comment': comment,
-                                            'data_type': data_type,
-                                            'data': data,
-                                            'timestamp': make_timestamp(),
-                                            'user': flask.g.current_user['_id']})
+    log = structure.log()
+    log.update({'action': action,
+                'comment': comment,
+                'data_type': data_type,
+                'data': data,
+                'user': flask.g.current_user['_id']})
+    result = flask.g.db['logs'].insert_one(log)
     if not result.acknowledged:
         logging.error(f'Log failed: A:{action} C:{comment} D:{data} ' +
                       f'DT: {data_type} U: {flask.g.current_user["_id"]}')
     return result.acknowledged
+
+def incremental_logs(logs: list):
+    """
+    Make an incremental log, starting from the first log and
+    keeping only the changed fields in ``data``.
+
+    ``logs`` is changed in-place.
+    """
+    logs.sort(key=lambda x: x['timestamp'])
+    for i in range(len(logs)-1, 0, -1):
+        del_keys = []
+        for key in logs[i]['data']:
+            if logs[i]['data'][key] == logs[i-1]['data'][key]:
+                del_keys.append(key)
+        for key in del_keys:
+            del logs[i]['data'][key]
 
 
 # validate indata

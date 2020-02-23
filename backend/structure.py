@@ -12,7 +12,7 @@ def dataset():
     Provide a basic data structure for a dataset document.
 
     Returns:
-        dict: the data structure for datasets
+        dict: The data structure for a dataset.
     """
     return {'_id': utils.new_uuid(),
             'description': '',
@@ -26,7 +26,7 @@ def order():
     Provide a basic data structure for an order document.
 
     Returns:
-        dict: the data structure for orders
+        dict: The data structure for an order.
     """
     return {'_id': utils.new_uuid(),
             'creator': '',
@@ -42,7 +42,7 @@ def project():
     Provide a basic data structure for a project document.
 
     Returns:
-        dict: the data structure for projects
+        dict: The data structure for a project.
     """
     return {'_id': utils.new_uuid(),
             'contact': '',
@@ -60,7 +60,7 @@ def user():
     Provide a basic data structure for a user document.
 
     Returns:
-        dict: the data structure for users
+        dict: The data structure for a user.
     """
     return {'_id': utils.new_uuid(),
             'affiliation': '',
@@ -70,3 +70,19 @@ def user():
             'email': '',
             'name': '',
             'permissions': []}
+
+
+def log():
+    """
+    Provide a basic data structure for a log document.
+
+    Returns:
+        dict: The data structure for a log.
+    """
+    return {'_id': utils.new_uuid(),
+            'action': '',
+            'comment': '',
+            'data_type': '',
+            'data': '',
+            'timestamp': utils.make_timestamp(),
+            'user': ''}

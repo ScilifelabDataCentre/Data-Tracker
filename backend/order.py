@@ -84,7 +84,7 @@ def get_order(identifier):
     """
     Retrieve the order with the provided uuid.
 
-    ``order['datasets']`` is returned as ``[{uuid, title}, ...]``.
+    ``order['datasets']`` is returned as ``[{_id, title}, ...]``.
 
     Args:
         identifier (str): Uuid for the wanted order.
@@ -93,10 +93,10 @@ def get_order(identifier):
         flask.Response: Json structure for the order.
     """
     try:
-        muuid = utils.str_to_uuid(identifier)
+        uuid = utils.str_to_uuid(identifier)
     except ValueError:
         return flask.abort(status=404)
-    order = flask.g.db['orders'].find_one({'_id': muuid})
+    order = flask.g.db['orders'].find_one({'_id': uuid})
     if not order:
         return flask.abort(status=404)
     if not (user.has_permission('DATA_MANAGEMENT') or
@@ -110,6 +110,40 @@ def get_order(identifier):
                                     'title': 1}))
 
     return utils.response_json({'order': order})
+
+
+@blueprint.route('/<identifier>/log', methods=['GET'])
+def get_order_log(identifier):
+    """
+    List changes to the dataset.
+
+    Logs will be sorted chronologically.
+
+    The ``data`` in each log will be trimmed to only show the changed fields.
+
+    Args:
+        identifier (str): Uuid for the wanted order.
+
+    Returns:
+        flask.Response: Json structure for the logs.
+    """
+    try:
+        uuid = utils.str_to_uuid(identifier)
+    except ValueError:
+        return flask.abort(status=404)
+
+    order = flask.g.db['orders'].find_one({'_id': uuid})
+    if order:
+        is_owner = order['creator'] == flask.session['user_id']
+    logs = list(flask.g.db['logs'].find({'data_type': 'order', 'data._id': uuid}))
+    if not (user.has_permission('DATA_MANAGEMENT') or is_owner):
+        return flask.abort(status=403)
+    if not logs:
+        return flask.abort(status=404)
+
+    utils.incremental_logs(logs)
+
+    return utils.response_json({'logs': logs})
 
 
 @blueprint.route('/<_>/addDataset', methods=['GET'])
