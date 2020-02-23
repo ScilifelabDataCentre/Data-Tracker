@@ -10,6 +10,11 @@ The Data Tracker is based on a few main components:
 * Log
 * DOI
 
+General
+=======
+
+* ``Title`` may never be empty.
+ 
 Terminology
 ===========
 

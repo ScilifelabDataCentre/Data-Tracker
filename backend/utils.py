@@ -414,6 +414,9 @@ def validate_infield(field_key: str, data: Any) -> bool:  # pylint: disable=too-
     elif field_key in ('title', 'description'):
         if not isinstance(data, str):
             passed = False
+        elif field_key == 'title':
+            assert data
+
 
     elif field_key == 'extra':
         if isinstance(data, dict):
