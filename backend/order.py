@@ -142,8 +142,14 @@ def get_order_log(identifier):
         return flask.abort(status=404)
 
     utils.incremental_logs(logs)
+    for log in logs:
+        del log['data_type']
 
-    return utils.response_json({'logs': logs})
+    out_log = {'entry_id': uuid,
+               'data_type': 'order',
+               'logs': logs}
+
+    return utils.response_json(out_log)
 
 
 @blueprint.route('/<_>/addDataset', methods=['GET'])
