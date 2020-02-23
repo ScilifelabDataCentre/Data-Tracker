@@ -11,6 +11,7 @@ import requests
 from helpers import make_request, as_user, make_request_all_roles,\
     USERS, random_string, parse_time, db_connection, TEST_LABEL
 
+
 def test_list_all_orders():
     """
     Check that all orders in the system are listed.
@@ -162,6 +163,54 @@ def test_get_order_bad():
             else:
                 assert response.code == 403
             assert not response.data
+
+
+def test_get_log_permissions():
+    """
+    Request the logs for multiple orders.
+
+    Confirm that only the correct users can access them.
+    """
+    session = requests.session()
+    db = db_connection()
+    orders = db['orders'].aggregate([{'$sample': {'size': 3}}])
+    for order in orders:
+        logs = list(db['logs'].find({'data_type': 'order', 'data._id': order['_id']}))
+        responses = make_request_all_roles(f'/api/order/{order["_id"]}/log', ret_json=True)
+        for response in responses:
+            if response.role in ('data', 'root'):
+                assert len(response.data['logs']) == len(logs)
+                assert response.code == 200
+            elif response.role == 'no-login':
+                assert response.code == 401
+                assert not response.data
+            else:
+                assert response.code == 403
+                assert not response.data
+        owner = db['users'].find_one({'_id': order['creator']})
+        as_user(session, owner['api_key'])
+        response = make_request(session, f'/api/order/{order["_id"]}/log', ret_json=True)
+        assert response.code == 200
+        assert response.data
+
+
+def test_get_log():
+    """
+    Request the logs for multiple orders.
+
+    Confirm that the logs contain only the intended fields.
+    """
+    session = requests.session()
+    db = db_connection()
+    orders = db['orders'].aggregate([{'$sample': {'size': 3}}])
+    for order in orders:
+        logs = list(db['logs'].find({'data_type': 'order', 'data._id': order['_id']}))
+        as_user(session, USERS['data'])
+        response = make_request(session, f'/api/order/{order["_id"]}/log', ret_json=True)
+        assert response.data['dataType'] == 'order'
+        assert response.data['entryId'] == str(order['_id'])
+        assert len(response.data['logs']) == len(logs)
+        assert response.code == 200
 
 
 def test_list_user_orders_permissions():
