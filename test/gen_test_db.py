@@ -32,12 +32,13 @@ def make_description():
 
 
 def make_log(db, action, comment, data_type, data, user):
-    db['logs'].insert_one({'action': action,
-                           'comment': comment,
-                           'data_type': data_type,
-                           'data': data,
-                           'timestamp': utils.make_timestamp(),
-                           'user': user})
+    log = structure.log()
+    log.update({'action': action,
+                'comment': comment,
+                'data_type': data_type,
+                'data': data,
+                'user': user})
+    db['logs'].insert_one(log)
 
 
 # generator functions
