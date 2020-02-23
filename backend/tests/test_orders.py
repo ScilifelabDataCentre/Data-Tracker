@@ -106,7 +106,7 @@ def test_get_order():
     session = requests.Session()
 
     db = db_connection()
-    orders = list(db['orders'].aggregate([{'$sample': {'size': 10}}]))
+    orders = list(db['orders'].aggregate([{'$sample': {'size': 3}}]))
     for order in orders:
         # to simplify comparison
         order['_id'] = str(order['_id'])
@@ -142,7 +142,7 @@ def test_get_order_bad():
     All are expected to return 401, 403, or 404 depending on permissions.
     """
     session = requests.Session()
-    for _ in range(5):
+    for _ in range(2):
         responses = make_request_all_roles(f'/api/order/{uuid.uuid4()}')
         for response in responses:
             if response.role in ('orders', 'data', 'root'):
@@ -153,7 +153,7 @@ def test_get_order_bad():
                 assert response.code == 403
             assert not response.data
 
-    for _ in range(5):
+    for _ in range(2):
         responses = make_request_all_roles(f'/api/order/{random_string()}')
         for response in responses:
             if response.role in ('orders', 'data', 'root'):
@@ -173,7 +173,7 @@ def test_get_log_permissions():
     """
     session = requests.session()
     db = db_connection()
-    orders = db['orders'].aggregate([{'$sample': {'size': 3}}])
+    orders = db['orders'].aggregate([{'$sample': {'size': 2}}])
     for order in orders:
         logs = list(db['logs'].find({'data_type': 'order', 'data._id': order['_id']}))
         responses = make_request_all_roles(f'/api/order/{order["_id"]}/log', ret_json=True)
@@ -202,7 +202,7 @@ def test_get_log():
     """
     session = requests.session()
     db = db_connection()
-    orders = db['orders'].aggregate([{'$sample': {'size': 3}}])
+    orders = db['orders'].aggregate([{'$sample': {'size': 2}}])
     for order in orders:
         logs = list(db['logs'].find({'data_type': 'order', 'data._id': order['_id']}))
         as_user(session, USERS['data'])
@@ -224,7 +224,7 @@ def test_list_user_orders_permissions():
     db = db_connection()
     users = db['users'].aggregate([{'$match': {'permissions': {'$in': ['ORDERS_SELF',
                                                                        'DATA_MANAGEMENT']}}},
-                                    {'$sample': {'size': 3}}])
+                                    {'$sample': {'size': 2}}])
     for user in users:
         responses = make_request_all_roles('/api/order/user')
         for response in responses:
@@ -278,7 +278,7 @@ def test_list_user_orders():
     db = db_connection()
     users = db['users'].aggregate([{'$match': {'permissions': {'$in': ['ORDERS_SELF',
                                                                        'DATA_MANAGEMENT']}}},
-                                    {'$sample': {'size': 3}}])
+                                    {'$sample': {'size': 2}}])
 
     for user in users:
         user_orders = list(db['orders'].find({'$or': [{'receiver': user['_id']},
@@ -310,7 +310,7 @@ def test_list_user_orders_bad():
     session = requests.Session()
 
     as_user(session, USERS['data'])
-    for _ in range(5):
+    for _ in range(2):
         responses = make_request_all_roles(f'/api/order/user/{uuid.uuid4()}')
         for response in responses:
             if response.role in ('data', 'root'):
@@ -321,8 +321,7 @@ def test_list_user_orders_bad():
                 assert response.code == 403
             assert not response.data
 
-
-    for _ in range(5):
+    for _ in range(2):
         responses = make_request_all_roles(f'/api/order/user/{random_string()}')
         for response in responses:
             if response.role in ('data', 'root'):
@@ -365,18 +364,17 @@ def test_add_dataset_permissions():
     Add a default dataset using .post(dataset/add).
 
     Simple data content, using {identifer: test} to tell that it was added during testing.
-
-    Should require at least Steward.
     """
     session = requests.Session()
 
     db = db_connection()
     orders = list(db['orders'].aggregate([{'$sample': {'size': 2}}]))
-
+    indata = {'title': 'Test title'}
+    indata.update(TEST_LABEL)
     for order in orders:
         responses = make_request_all_roles(f'/api/order/{order["_id"]}/addDataset',
                                            method='POST',
-                                           data=TEST_LABEL,
+                                           data=indata,
                                            ret_json=True)
         for response in responses:
             if response.role in ('data', 'root'):
@@ -395,7 +393,7 @@ def test_add_dataset_permissions():
         response = make_request(session,
                                 f'/api/order/{order["_id"]}/addDataset',
                                 method='POST',
-                                data=TEST_LABEL)
+                                data=indata)
         assert response.code == 200
         assert '_id' in response.data
         assert len(response.data['_id']) == 36
@@ -403,9 +401,9 @@ def test_add_dataset_permissions():
 
 def test_add_dataset_all_fields():
     """
-    Add a default dataset using .post(dataset/add).
+    Add a dataset using addDataset.
 
-    Should require at least Steward.
+    Set values in all available fields.
     """
     indata = {'links': [{'description': 'Test description', 'url': 'http://test_url'}],
               'title': 'Test title',
@@ -433,6 +431,36 @@ def test_add_dataset_all_fields():
     db_o['datasets'] = [str(uuid) for uuid in db_o['datasets']]
     assert db_ds == indata
     assert response.data['_id'] in db_o['datasets']
+
+
+def test_add_dataset_log():
+    """
+    Confirm that logs are added correctly when datasets are added.
+
+    Check that both there is both update on order and add on dataset.
+    """
+    indata = {'title': 'Test title'}
+    indata.update(TEST_LABEL)
+
+    db = db_connection()
+    order = next(db['orders'].aggregate([{'$sample': {'size': 1}}]))
+
+    session = requests.session()
+    as_user(session, USERS['data'])
+
+    order_logs = list(db['logs'].find({'data_type': 'order', 'data._id': order['_id']}))
+
+    response = make_request(session,
+                            f'/api/order/{order["_id"]}/addDataset',
+                            method='POST',
+                            data=indata,
+                            ret_json=True)
+
+    order_logs_post = list(db['logs'].find({'data_type': 'order', 'data._id': order['_id']}))
+    assert len(order_logs_post) == len(order_logs)+1
+    ds_logs_post = list(db['logs'].find({'data_type': 'dataset', 'data._id': uuid.UUID(response.data['_id'])}))
+    assert len(ds_logs_post) == 1
+    assert ds_logs_post[0]['action']
 
 
 def test_add_dataset_bad_fields():
