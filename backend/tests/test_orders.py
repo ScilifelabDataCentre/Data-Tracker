@@ -19,7 +19,7 @@ def test_list_all_orders():
     Check that the number of fields per order is correct.
     """
     db = db_connection()
-    nr_orders = db['orders'].count()
+    nr_orders = db['orders'].count_documents({})
 
     responses = make_request_all_roles(f'/api/order/all', ret_json=True)
     session = requests.Session()
