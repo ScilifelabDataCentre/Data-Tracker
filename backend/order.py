@@ -152,6 +152,19 @@ def get_order_log(identifier):
     return utils.response_json(out_log)
 
 
+@blueprint.route('/add', methods=['GET'])
+@user.login_required
+def add_order_get():
+    """
+    Provide a basic data structure for adding an order.
+
+    Not all fields will be available for all users.
+    """
+    dataset = structure.order()
+    del dataset['_id']
+    return utils.response_json(dataset)
+
+
 @blueprint.route('/<_>/addDataset', methods=['GET'])
 @user.login_required
 def add_dataset_get(_):

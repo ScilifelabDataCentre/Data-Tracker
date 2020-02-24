@@ -333,9 +333,33 @@ def test_list_user_orders_bad():
             assert not response.data
 
 
+def test_add_get():
+    """
+    Request data structure from GET add.
+    """
+    expected = {'creator': '',
+                'datasets': [],
+                'description': '',
+                'extra': {},
+                'receiver': '',
+                'title': ''}
+
+    responses = make_request_all_roles('/api/order/add', ret_json=True)
+    for response in responses:
+        if response.role in ('data', 'orders', 'root'):
+            assert response.code == 200
+            assert response.data == expected
+        elif response.role == 'no-login':
+            assert response.code == 401
+            assert not response.data
+        else:
+            assert response.code == 403
+            assert not response.data
+
+
 def test_add_dataset_get():
     """
-    Request data structure for GET addDataset.
+    Request data structure from GET addDataset.
     """
     expected = {'links': [],
                 'description': '',
