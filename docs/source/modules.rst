@@ -4,12 +4,13 @@ Code reference
 .. toctree::
    :maxdepth: 4
 
-   app
-   config
-   dataset
-   developer
-   order
-   project
-   structure
-   user
-   utils
+   code.app
+   code.config
+   code.dataset
+   code.developer
+   code.order
+   code.project
+   code.structure
+   code.user
+   code.utils
+   code.validate

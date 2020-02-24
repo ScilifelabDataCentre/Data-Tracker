@@ -3,6 +3,7 @@ Data Structure
 **************
 
 The Data Tracker is based on a few main components:
+
 * Order
 * Dataset
 * Project
