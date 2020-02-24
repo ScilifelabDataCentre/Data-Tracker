@@ -363,8 +363,10 @@ def make_log(data_type: str, action: str, comment: str, data: dict = None):
 
 def incremental_logs(logs: list):
     """
-    Make an incremental log, starting from the first log and
-    keeping only the changed fields in ``data``.
+    Make an incremental log.
+
+    The log starts from the first log and keeps only
+    the changed fields in ``data``.
 
     ``logs`` is changed in-place.
     """
@@ -378,7 +380,7 @@ def incremental_logs(logs: list):
             del logs[i]['data'][key]
 
 
-def check_email_uuid(user_identifier: str):
+def check_email_uuid(user_identifier: str) -> Union(str, uuid.UUID):
     """
     Check if the provided user is found in the db as email or _id.
 
@@ -391,18 +393,16 @@ def check_email_uuid(user_identifier: str):
 
     Args:
         user_identifier (str): The identifier to look up.
-    
+
     Returns:
-        Union(str, uuid.UUID): The new value for the field.    
+        Union(str, uuid.UUID): The new value for the field.
     """
     if is_email(user_identifier):
         user_entry = flask.g.db['users'].find_one({'email': user_identifier})
         if user_entry:
             return user_entry['_id']
-        else:
-            return user_identifier
+        return user_identifier
     user_entry = flask.g.db['users'].find_one({'_id': str_to_uuid(user_identifier)})
     if user_entry:
         return user_entry['_id']
-    else:
-        return ''
+    return ''

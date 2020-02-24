@@ -5,11 +5,9 @@ Indata can be sent to ``validate_indata``, which will use the corresponding
 functions to check each field.
 """
 import logging
-from typing import Any
 import uuid
 
 import utils
-import config
 
 def validate_indata(indata: dict) -> bool:  # pylint: disable=too-many-branches
     """
@@ -163,7 +161,7 @@ def validate_user(data: str, origin: str) -> bool:
     if utils.is_email(data):
         return True
     try:
-        user_uuid = uuid.UUID(data)
+        uuid.UUID(data)
     except ValueError:
         raise ValueError(f'{origin.capitalize()} - not a valid uuid ({data})')
     return True
