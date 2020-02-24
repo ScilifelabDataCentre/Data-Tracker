@@ -1,5 +1,5 @@
 flake8==3.7.9
 pylint==2.4.4
-pytest-cov-2.8.1
+pytest-cov==2.8.1
 pydocstyle==5.0.2
 lorem==0.1.1
