@@ -163,7 +163,7 @@
 <span class="n">blueprint</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">Blueprint</span><span class="p">(</span><span class="s1">&#39;projects&#39;</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">)</span>  <span class="c1"># pylint: disable=invalid-name</span>
 
 
-<div class="viewcode-block" id="validate_project_input"><a class="viewcode-back" href="../project.html#project.validate_project_input">[docs]</a><span class="k">def</span> <span class="nf">validate_project_input</span><span class="p">(</span><span class="n">indata</span><span class="p">):</span>
+<div class="viewcode-block" id="validate_project_input"><a class="viewcode-back" href="../code.project.html#project.validate_project_input">[docs]</a><span class="k">def</span> <span class="nf">validate_project_input</span><span class="p">(</span><span class="n">indata</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Validate the project input.</span>
 
@@ -195,14 +195,14 @@
     <span class="k">return</span> <span class="kc">True</span></div>
 
 
-<div class="viewcode-block" id="list_project"><a class="viewcode-back" href="../project.html#project.list_project">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/all&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+<div class="viewcode-block" id="list_project"><a class="viewcode-back" href="../code.project.html#project.list_project">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/all&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
 <span class="k">def</span> <span class="nf">list_project</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;Provide a simplified list of all available projects.&quot;&quot;&quot;</span>
     <span class="n">results</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;projects&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">())</span>
     <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">response_json</span><span class="p">({</span><span class="s1">&#39;projects&#39;</span><span class="p">:</span> <span class="n">results</span><span class="p">})</span></div>
 
 
-<div class="viewcode-block" id="get_random"><a class="viewcode-back" href="../project.html#project.get_random">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/random&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+<div class="viewcode-block" id="get_random"><a class="viewcode-back" href="../code.project.html#project.get_random">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/random&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
 <span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/random/&lt;int:amount&gt;&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
 <span class="k">def</span> <span class="nf">get_random</span><span class="p">(</span><span class="n">amount</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -219,7 +219,7 @@
     <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">response_json</span><span class="p">({</span><span class="s1">&#39;projects&#39;</span><span class="p">:</span> <span class="n">results</span><span class="p">})</span></div>
 
 
-<div class="viewcode-block" id="get_project"><a class="viewcode-back" href="../project.html#project.get_project">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;identifier&gt;&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+<div class="viewcode-block" id="get_project"><a class="viewcode-back" href="../code.project.html#project.get_project">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;identifier&gt;&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
 <span class="k">def</span> <span class="nf">get_project</span><span class="p">(</span><span class="n">identifier</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Retrieve the project with uuid &lt;identifier&gt;.</span>
@@ -242,7 +242,7 @@
     <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">response_json</span><span class="p">({</span><span class="s1">&#39;project&#39;</span><span class="p">:</span> <span class="n">result</span><span class="p">})</span></div>
 
 
-<div class="viewcode-block" id="add_project_get"><a class="viewcode-back" href="../project.html#project.add_project_get">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/add&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+<div class="viewcode-block" id="add_project_get"><a class="viewcode-back" href="../code.project.html#project.add_project_get">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/add&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
 <span class="nd">@user</span><span class="o">.</span><span class="n">steward_required</span>
 <span class="k">def</span> <span class="nf">add_project_get</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;Provide a basic data structure for adding a project.&quot;&quot;&quot;</span>
@@ -252,7 +252,7 @@
     <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">response_json</span><span class="p">(</span><span class="n">project</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="add_project_post"><a class="viewcode-back" href="../project.html#project.add_project_post">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/add&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<div class="viewcode-block" id="add_project_post"><a class="viewcode-back" href="../code.project.html#project.add_project_post">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/add&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>
 <span class="nd">@user</span><span class="o">.</span><span class="n">steward_required</span>
 <span class="k">def</span> <span class="nf">add_project_post</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;Add a project.&quot;&quot;&quot;</span>

@@ -35,7 +35,8 @@
   <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="user.py" href="user.html" /> 
+    <link rel="next" title="validate.py" href="code.validate.html" />
+    <link rel="prev" title="user.py" href="code.user.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -89,15 +90,16 @@
 <li class="toctree-l1 current"><a class="reference internal" href="development.html">Development</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="development.quick_environment.html">System for development</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="modules.html">Code reference</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="app.html">app.py</a></li>
-<li class="toctree-l3"><a class="reference internal" href="config.html">config.py</a></li>
-<li class="toctree-l3"><a class="reference internal" href="dataset.html">dataset.py</a></li>
-<li class="toctree-l3"><a class="reference internal" href="developer.html">developer.py</a></li>
-<li class="toctree-l3"><a class="reference internal" href="order.html">order.py</a></li>
-<li class="toctree-l3"><a class="reference internal" href="project.html">project.py</a></li>
-<li class="toctree-l3"><a class="reference internal" href="structure.html">structure.py</a></li>
-<li class="toctree-l3"><a class="reference internal" href="user.html">user.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code.app.html">app.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code.config.html">config.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code.dataset.html">dataset.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code.developer.html">developer.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code.order.html">order.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code.project.html">project.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code.structure.html">structure.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code.user.html">user.py</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">utils.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code.validate.html">validate.py</a></li>
 </ul>
 </li>
 </ul>
@@ -158,7 +160,7 @@
         
             
             
-              <a href="https://github.com/ScilifelabDataCentre/SciLifeLab-Data-Tracker/blob/develop/docs/source/utils.rst" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/ScilifelabDataCentre/SciLifeLab-Data-Tracker/blob/develop/docs/source/code.utils.rst" class="fa fa-github"> Edit on GitHub</a>
             
           
         
@@ -311,6 +313,14 @@
 </dd></dl>
 
 <dl class="function">
+<dt id="utils.incremental_logs">
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">incremental_logs</code><span class="sig-paren">(</span><em class="sig-param">logs: list</em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#incremental_logs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.incremental_logs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make an incremental log, starting from the first log and
+keeping only the changed fields in <code class="docutils literal notranslate"><span class="pre">data</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">logs</span></code> is changed in-place.</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="utils.is_email">
 <code class="sig-prename descclassname">utils.</code><code class="sig-name descname">is_email</code><span class="sig-paren">(</span><em class="sig-param">indata: str</em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#is_email"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.is_email" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check whether a string seems to be an email address or not.</p>
@@ -444,31 +454,6 @@ e.g. <code class="docutils literal notranslate"><span class="pre">data</span></c
 </dd></dl>
 
 <dl class="function">
-<dt id="utils.validate_infield">
-<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">validate_infield</code><span class="sig-paren">(</span><em class="sig-param">field_key: str</em>, <em class="sig-param">data: Any</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/utils.html#validate_infield"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.validate_infield" title="Permalink to this definition">¶</a></dt>
-<dd><p>Validate that the input data matches expectations.</p>
-<p>Will check the type of data based on the key type.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>field_key</strong> (<em>str</em>) – The name of the field to validate.</p></li>
-<li><p><strong>data</strong> (<em>Any</em>) – The data to validate.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Whether validation passed.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>bool</p>
-</dd>
-</dl>
-<dl class="simple">
-<dt>Raise:</dt><dd><p>ValueError: <code class="docutils literal notranslate"><span class="pre">field_key</span></code> not recognized.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
 <dt id="utils.verify_csrf_token">
 <code class="sig-prename descclassname">utils.</code><code class="sig-name descname">verify_csrf_token</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#verify_csrf_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.verify_csrf_token" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compare the csrf token from the request (header) with the one in the cookie.session.</p>
@@ -484,8 +469,10 @@ e.g. <code class="docutils literal notranslate"><span class="pre">data</span></c
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
+        <a href="code.validate.html" class="btn btn-neutral float-right" title="validate.py" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
-        <a href="user.html" class="btn btn-neutral float-left" title="user.py" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+        <a href="code.user.html" class="btn btn-neutral float-left" title="user.py" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

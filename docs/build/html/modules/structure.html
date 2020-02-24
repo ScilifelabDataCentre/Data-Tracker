@@ -158,12 +158,12 @@
 <span class="kn">import</span> <span class="nn">utils</span>
 
 
-<div class="viewcode-block" id="dataset"><a class="viewcode-back" href="../structure.html#structure.dataset">[docs]</a><span class="k">def</span> <span class="nf">dataset</span><span class="p">():</span>
+<div class="viewcode-block" id="dataset"><a class="viewcode-back" href="../code.structure.html#structure.dataset">[docs]</a><span class="k">def</span> <span class="nf">dataset</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Provide a basic data structure for a dataset document.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        dict: the data structure for datasets</span>
+<span class="sd">        dict: The data structure for a dataset.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">utils</span><span class="o">.</span><span class="n">new_uuid</span><span class="p">(),</span>
             <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
@@ -172,12 +172,12 @@
             <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">}</span></div>
 
 
-<div class="viewcode-block" id="order"><a class="viewcode-back" href="../structure.html#structure.order">[docs]</a><span class="k">def</span> <span class="nf">order</span><span class="p">():</span>
+<div class="viewcode-block" id="order"><a class="viewcode-back" href="../code.structure.html#structure.order">[docs]</a><span class="k">def</span> <span class="nf">order</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Provide a basic data structure for an order document.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        dict: the data structure for orders</span>
+<span class="sd">        dict: The data structure for an order.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">utils</span><span class="o">.</span><span class="n">new_uuid</span><span class="p">(),</span>
             <span class="s1">&#39;creator&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
@@ -188,12 +188,12 @@
             <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">}</span></div>
 
 
-<div class="viewcode-block" id="project"><a class="viewcode-back" href="../structure.html#structure.project">[docs]</a><span class="k">def</span> <span class="nf">project</span><span class="p">():</span>
+<div class="viewcode-block" id="project"><a class="viewcode-back" href="../code.structure.html#structure.project">[docs]</a><span class="k">def</span> <span class="nf">project</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Provide a basic data structure for a project document.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        dict: the data structure for projects</span>
+<span class="sd">        dict: The data structure for a project.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">utils</span><span class="o">.</span><span class="n">new_uuid</span><span class="p">(),</span>
             <span class="s1">&#39;contact&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
@@ -206,12 +206,12 @@
             <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">}</span></div>
 
 
-<div class="viewcode-block" id="user"><a class="viewcode-back" href="../structure.html#structure.user">[docs]</a><span class="k">def</span> <span class="nf">user</span><span class="p">():</span>
+<div class="viewcode-block" id="user"><a class="viewcode-back" href="../code.structure.html#structure.user">[docs]</a><span class="k">def</span> <span class="nf">user</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Provide a basic data structure for a user document.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        dict: the data structure for users</span>
+<span class="sd">        dict: The data structure for a user.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">utils</span><span class="o">.</span><span class="n">new_uuid</span><span class="p">(),</span>
             <span class="s1">&#39;affiliation&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
@@ -221,6 +221,22 @@
             <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
             <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
             <span class="s1">&#39;permissions&#39;</span><span class="p">:</span> <span class="p">[]}</span></div>
+
+
+<div class="viewcode-block" id="log"><a class="viewcode-back" href="../code.structure.html#structure.log">[docs]</a><span class="k">def</span> <span class="nf">log</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Provide a basic data structure for a log document.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: The data structure for a log.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">utils</span><span class="o">.</span><span class="n">new_uuid</span><span class="p">(),</span>
+            <span class="s1">&#39;action&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;comment&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;data_type&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;timestamp&#39;</span><span class="p">:</span> <span class="n">utils</span><span class="o">.</span><span class="n">make_timestamp</span><span class="p">(),</span>
+            <span class="s1">&#39;user&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">}</span></div>
 </pre></div>
 
            </div>

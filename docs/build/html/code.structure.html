@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Code reference &mdash; Data Tracker  documentation</title>
+  <title>structure.py &mdash; Data Tracker  documentation</title>
   
 
   
@@ -35,8 +35,8 @@
   <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="app.py" href="code.app.html" />
-    <link rel="prev" title="System for development" href="development.quick_environment.html" /> 
+    <link rel="next" title="user.py" href="code.user.html" />
+    <link rel="prev" title="project.py" href="code.project.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -89,14 +89,14 @@
 <li class="toctree-l1"><a class="reference internal" href="implementation.html">Implementation</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="development.html">Development</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="development.quick_environment.html">System for development</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Code reference</a><ul>
+<li class="toctree-l2 current"><a class="reference internal" href="modules.html">Code reference</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="code.app.html">app.py</a></li>
 <li class="toctree-l3"><a class="reference internal" href="code.config.html">config.py</a></li>
 <li class="toctree-l3"><a class="reference internal" href="code.dataset.html">dataset.py</a></li>
 <li class="toctree-l3"><a class="reference internal" href="code.developer.html">developer.py</a></li>
 <li class="toctree-l3"><a class="reference internal" href="code.order.html">order.py</a></li>
 <li class="toctree-l3"><a class="reference internal" href="code.project.html">project.py</a></li>
-<li class="toctree-l3"><a class="reference internal" href="code.structure.html">structure.py</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">structure.py</a></li>
 <li class="toctree-l3"><a class="reference internal" href="code.user.html">user.py</a></li>
 <li class="toctree-l3"><a class="reference internal" href="code.utils.html">utils.py</a></li>
 <li class="toctree-l3"><a class="reference internal" href="code.validate.html">validate.py</a></li>
@@ -151,14 +151,16 @@
         
           <li><a href="development.html">Development</a> &raquo;</li>
         
-      <li>Code reference</li>
+          <li><a href="modules.html">Code reference</a> &raquo;</li>
+        
+      <li>structure.py</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
             
-              <a href="https://github.com/ScilifelabDataCentre/SciLifeLab-Data-Tracker/blob/develop/docs/source/modules.rst" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/ScilifelabDataCentre/SciLifeLab-Data-Tracker/blob/develop/docs/source/code.structure.rst" class="fa fa-github"> Edit on GitHub</a>
             
           
         
@@ -172,22 +174,80 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="code-reference">
-<h1>Code reference<a class="headerlink" href="#code-reference" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="code.app.html">app.py</a></li>
-<li class="toctree-l1"><a class="reference internal" href="code.config.html">config.py</a></li>
-<li class="toctree-l1"><a class="reference internal" href="code.dataset.html">dataset.py</a></li>
-<li class="toctree-l1"><a class="reference internal" href="code.developer.html">developer.py</a></li>
-<li class="toctree-l1"><a class="reference internal" href="code.order.html">order.py</a></li>
-<li class="toctree-l1"><a class="reference internal" href="code.project.html">project.py</a></li>
-<li class="toctree-l1"><a class="reference internal" href="code.structure.html">structure.py</a></li>
-<li class="toctree-l1"><a class="reference internal" href="code.user.html">user.py</a></li>
-<li class="toctree-l1"><a class="reference internal" href="code.utils.html">utils.py</a></li>
-<li class="toctree-l1"><a class="reference internal" href="code.validate.html">validate.py</a></li>
-</ul>
-</div>
+  <div class="section" id="module-structure">
+<span id="structure-py"></span><h1>structure.py<a class="headerlink" href="#module-structure" title="Permalink to this headline">¶</a></h1>
+<p>Required fields for the different data types.</p>
+<p>See documentation (Data Structure) for more information.</p>
+<dl class="function">
+<dt id="structure.dataset">
+<code class="sig-prename descclassname">structure.</code><code class="sig-name descname">dataset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/structure.html#dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#structure.dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Provide a basic data structure for a dataset document.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The data structure for a dataset.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="structure.log">
+<code class="sig-prename descclassname">structure.</code><code class="sig-name descname">log</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/structure.html#log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#structure.log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Provide a basic data structure for a log document.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The data structure for a log.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="structure.order">
+<code class="sig-prename descclassname">structure.</code><code class="sig-name descname">order</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/structure.html#order"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#structure.order" title="Permalink to this definition">¶</a></dt>
+<dd><p>Provide a basic data structure for an order document.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The data structure for an order.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="structure.project">
+<code class="sig-prename descclassname">structure.</code><code class="sig-name descname">project</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/structure.html#project"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#structure.project" title="Permalink to this definition">¶</a></dt>
+<dd><p>Provide a basic data structure for a project document.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The data structure for a project.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="structure.user">
+<code class="sig-prename descclassname">structure.</code><code class="sig-name descname">user</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/structure.html#user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#structure.user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Provide a basic data structure for a user document.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The data structure for a user.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 
 
@@ -198,10 +258,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="code.app.html" class="btn btn-neutral float-right" title="app.py" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="code.user.html" class="btn btn-neutral float-right" title="user.py" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="development.quick_environment.html" class="btn btn-neutral float-left" title="System for development" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="code.project.html" class="btn btn-neutral float-left" title="project.py" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
