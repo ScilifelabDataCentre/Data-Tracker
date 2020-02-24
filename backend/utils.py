@@ -380,7 +380,7 @@ def incremental_logs(logs: list):
             del logs[i]['data'][key]
 
 
-def check_email_uuid(user_identifier: str) -> Union(str, uuid.UUID):
+def check_email_uuid(user_identifier: str) -> Union[str, uuid.UUID]:
     """
     Check if the provided user is found in the db as email or _id.
 
@@ -395,7 +395,7 @@ def check_email_uuid(user_identifier: str) -> Union(str, uuid.UUID):
         user_identifier (str): The identifier to look up.
 
     Returns:
-        Union(str, uuid.UUID): The new value for the field.
+        Union[str, uuid.UUID]: The new value for the field.
     """
     if is_email(user_identifier):
         user_entry = flask.g.db['users'].find_one({'email': user_identifier})
