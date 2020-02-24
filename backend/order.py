@@ -13,6 +13,7 @@ import flask
 import structure
 import user
 import utils
+import validate
 
 blueprint = flask.Blueprint('order', __name__)  # pylint: disable=invalid-name
 
@@ -165,6 +166,56 @@ def add_order_get():
     return utils.response_json(dataset)
 
 
+@blueprint.route('/add', methods=['POST'])
+@user.login_required
+def add_order(identifier):  # pylint: disable=too-many-branches
+    """Add an order."""
+    # permissions
+    if not user.has_permission('ORDERS_SELF'):
+        flask.abort(status=403)
+
+    # create new order
+    dataset = structure.order()
+    indata = flask.json.loads(flask.request.data)
+
+    # indata validation
+    if '_id' in indata:
+        logging.debug('_id in indata')
+        flask.abort(status=400)
+    for key in indata:
+        if key not in dataset:
+            flask.abort(status=400)
+    if not validate.validate_indata(indata):
+        logging.debug('Validation failed')
+        flask.abort(status=400)
+
+    dataset.update(indata)
+
+    # add to db
+    result_ds = flask.g.db['datasets'].insert_one(dataset)
+    if not result_ds.acknowledged:
+        logging.error('Dataset insert failed: %s', dataset)
+    else:
+        utils.make_log('dataset',
+                       'add',
+                       f'Dataset added for order {muuid}',
+                       dataset)
+
+        result_o = flask.g.db['orders'].update_one({'_id': muuid},
+                                                   {'$push': {'datasets': dataset['_id']}})
+        if not result_o.acknowledged:
+            logging.error('Order insert failed: ADD dataset %s', dataset['_id'])
+        else:
+            order = flask.g.db['orders'].find_one({'_id': muuid})
+
+            utils.make_log('order',
+                           'update',
+                           f'Dataset {result_ds.inserted_id} added for order',
+                           order)
+
+    return utils.response_json({'_id': result_ds.inserted_id})
+
+
 @blueprint.route('/<_>/addDataset', methods=['GET'])
 @user.login_required
 def add_dataset_get(_):
@@ -203,11 +254,10 @@ def add_dataset_post(identifier):  # pylint: disable=too-many-branches
     # indata validation
     if '_id' in indata:
         flask.abort(status=400)
+    if not validate.validate_indata(indata):
+        flask.abort(status=400)
     for key in indata:
         if key not in dataset:
-            flask.abort(status=400)
-        if not utils.validate_infield(key, indata[key]):
-            logging.debug(f'Key: {key}, Data: {indata[key]}')
             flask.abort(status=400)
     dataset.update(indata)
 
