@@ -169,7 +169,7 @@ def add_order_get():
 
 @blueprint.route('/add', methods=['POST'])
 @user.login_required
-def add_order():
+def add_order():  # pylint: disable=too-many-branches
     """
     Add an order.
 
@@ -191,24 +191,18 @@ def add_order():
     if 'creator' in indata:
         if not user.has_permission('DATA_MANAGEMENT'):
             flask.abort(status=403)
-        # valid email or uuid already checked by validate.validate_indata()
-        # check if user with the current creator as email exists
-        if (creator_user := flask.g.db['users'].find_one({'email': indata['creator']})):
-            indata['creator'] = creator_user['_id']
-        # check if user exists for current creator, if so update creator with UUID
-        elif (creator_user := flask.g.db['users'].find_one({'_id': utils.str_to_uuid(indata['creator'])})):
-            indata['creator'] = creator_user['_id']
+        if new_identifier := utils.check_email_uuid(indata['creator']):
+            indata['creator'] = new_identifier
+        else:
+            flask.abort(400)
     else:
         order['creator'] = flask.g.current_user['_id']
     # receiver
     if 'receiver' in indata:
-        # valid email or uuid already checked by validate.validate_indata()
-        # check if user with the current receiver as email exists
-        if (rec_user := flask.g.db['users'].find_one({'email': indata['receiver']})):
-            indata['receiver'] = rec_user['_id']
-        # check if user exists for current receiver, if so update receiver with UUID
-        elif (rec_user := flask.g.db['users'].find_one({'_id': utils.str_to_uuid(indata['receiver'])})):
-            indata['receiver'] = rec_user['_id']
+        if new_identifier := utils.check_email_uuid(indata['receiver']):
+            indata['receiver'] = new_identifier
+        else:
+            flask.abort(400)
 
     for key in indata:
         if key not in order:
@@ -221,10 +215,7 @@ def add_order():
     if not result.acknowledged:
         logging.error('Order insert failed: %s', order)
     else:
-        utils.make_log('order',
-                       'add',
-                       f'Order added',
-                       order)
+        utils.make_log('order', 'add', 'Order added', order)
 
     return utils.response_json({'_id': result.inserted_id})
 

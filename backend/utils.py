@@ -1,7 +1,7 @@
 """General helper functions."""
 
 from collections import abc
-from typing import Any
+from typing import Any, Union
 import datetime
 import logging
 import re
@@ -360,6 +360,7 @@ def make_log(data_type: str, action: str, comment: str, data: dict = None):
                       f'DT: {data_type} U: {flask.g.current_user["_id"]}')
     return result.acknowledged
 
+
 def incremental_logs(logs: list):
     """
     Make an incremental log, starting from the first log and
@@ -375,3 +376,33 @@ def incremental_logs(logs: list):
                 del_keys.append(key)
         for key in del_keys:
             del logs[i]['data'][key]
+
+
+def check_email_uuid(user_identifier: str):
+    """
+    Check if the provided user is found in the db as email or _id.
+
+    If the user is found, return the user.UUID of the user.
+    If the identifier is a uuid, return a user.UUID.
+    If the identifier is an email, return the email.
+
+    Notes:
+       ``user_identifier`` is assumed to be either a valid email or a valid uuid.
+
+    Args:
+        user_identifier (str): The identifier to look up.
+    
+    Returns:
+        Union(str, uuid.UUID): The new value for the field.    
+    """
+    if is_email(user_identifier):
+        user_entry = flask.g.db['users'].find_one({'email': user_identifier})
+        if user_entry:
+            return user_entry['_id']
+        else:
+            return user_identifier
+    user_entry = flask.g.db['users'].find_one({'_id': utils.str_to_uuid(user_identifier)})
+    if user_entry:
+        return user_entry['_id']
+    else:
+        return ''

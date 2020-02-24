@@ -414,13 +414,13 @@ def test_add():
     """
     session = requests.Session()
 
-    indata =  {'creator': '',
-               'description': '',
-               'extra': {},
-               'receiver': '',
-               'title': ''}
-
+    db = db_connection()
+    
+    indata = {'description': 'Test description',
+              'receiver': 'new_email@example.com',
+              'title': 'Test title'}
     indata.update(TEST_LABEL)
+
     responses = make_request_all_roles(f'/api/order/add',
                                        method='POST',
                                        data=indata,
@@ -430,6 +430,12 @@ def test_add():
             assert response.code == 200
             assert '_id' in response.data
             assert len(response.data['_id']) == 36
+            order = db['orders'].find_one({'_id': uuid.UUID(response.data['_id'])})
+            curr_user = db['users'].find_one({'auth_id': USERS[response.role]})
+            assert order['description'] == indata['description']
+            assert order['receiver'] == indata['receiver']
+            assert order['title'] == indata['title']
+            assert order['creator'] == curr_user['_id']
         elif response.role == 'no-login':
             assert response.code == 401
             assert not response.data
