@@ -164,11 +164,12 @@
 <span class="kn">import</span> <span class="nn">structure</span>
 <span class="kn">import</span> <span class="nn">user</span>
 <span class="kn">import</span> <span class="nn">utils</span>
+<span class="kn">import</span> <span class="nn">validate</span>
 
 <span class="n">blueprint</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">Blueprint</span><span class="p">(</span><span class="s1">&#39;order&#39;</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">)</span>  <span class="c1"># pylint: disable=invalid-name</span>
 
 
-<div class="viewcode-block" id="prepare"><a class="viewcode-back" href="../order.html#order.prepare">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">before_request</span>
+<div class="viewcode-block" id="prepare"><a class="viewcode-back" href="../code.order.html#order.prepare">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">before_request</span>
 <span class="k">def</span> <span class="nf">prepare</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    All order request require ``ORDERS_SELF``.</span>
@@ -181,7 +182,27 @@
         <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">403</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="list_orders_user"><a class="viewcode-back" href="../order.html#order.list_orders_user">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/user&#39;</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">},</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+<div class="viewcode-block" id="list_orders"><a class="viewcode-back" href="../code.order.html#order.list_orders">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/all&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">list_orders</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    List all orders belonging to the provided user.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        userid (str): Uuid of user to find orders for.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        flask.Response: Json structure with a list of orders.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">has_permission</span><span class="p">(</span><span class="s1">&#39;DATA_MANAGEMENT&#39;</span><span class="p">):</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">403</span><span class="p">)</span>
+    <span class="n">orders</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;orders&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                                                        <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                                                        <span class="s1">&#39;creator&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                                                        <span class="s1">&#39;receiver&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}))</span>
+    <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">response_json</span><span class="p">({</span><span class="s1">&#39;orders&#39;</span><span class="p">:</span> <span class="n">orders</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="list_orders_user"><a class="viewcode-back" href="../code.order.html#order.list_orders_user">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/user&#39;</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;user_id&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">},</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
 <span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/user/&lt;user_id&gt;&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
 <span class="k">def</span> <span class="nf">list_orders_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -196,19 +217,26 @@
     <span class="k">if</span> <span class="n">user_id</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">has_permission</span><span class="p">(</span><span class="s1">&#39;OWNERS_READ&#39;</span><span class="p">):</span>
             <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">403</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">uuid</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">str_to_uuid</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">404</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>  <span class="c1"># current user</span>
-        <span class="n">user_id</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="s1">&#39;user_id&#39;</span><span class="p">]</span>
-    <span class="n">orders</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;orders&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s1">&#39;creator&#39;</span><span class="p">:</span> <span class="n">user_id</span><span class="p">}))</span>
+        <span class="n">uuid</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="s1">&#39;user_id&#39;</span><span class="p">]</span>
+    <span class="n">orders</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;orders&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s1">&#39;$or&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;receiver&#39;</span><span class="p">:</span> <span class="n">uuid</span><span class="p">},</span>
+                                                     <span class="p">{</span><span class="s1">&#39;creator&#39;</span><span class="p">:</span> <span class="n">uuid</span><span class="p">}]}))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">orders</span><span class="p">:</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">404</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">response_json</span><span class="p">({</span><span class="s1">&#39;orders&#39;</span><span class="p">:</span> <span class="n">orders</span><span class="p">})</span></div>
 
 
-<div class="viewcode-block" id="get_order"><a class="viewcode-back" href="../order.html#order.get_order">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;identifier&gt;&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+<div class="viewcode-block" id="get_order"><a class="viewcode-back" href="../code.order.html#order.get_order">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;identifier&gt;&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
 <span class="k">def</span> <span class="nf">get_order</span><span class="p">(</span><span class="n">identifier</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Retrieve the order with the provided uuid.</span>
 
-<span class="sd">    ``order[&#39;datasets&#39;]`` is returned as ``[{uuid, title}, ...]``.</span>
+<span class="sd">    ``order[&#39;datasets&#39;]`` is returned as ``[{_id, title}, ...]``.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        identifier (str): Uuid for the wanted order.</span>
@@ -217,10 +245,10 @@
 <span class="sd">        flask.Response: Json structure for the order.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">muuid</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">str_to_uuid</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span>
+        <span class="n">uuid</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">str_to_uuid</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">404</span><span class="p">)</span>
-    <span class="n">order</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;orders&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">muuid</span><span class="p">})</span>
+    <span class="n">order</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;orders&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">uuid</span><span class="p">})</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">order</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">404</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">has_permission</span><span class="p">(</span><span class="s1">&#39;DATA_MANAGEMENT&#39;</span><span class="p">)</span> <span class="ow">or</span>
@@ -236,41 +264,113 @@
     <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">response_json</span><span class="p">({</span><span class="s1">&#39;order&#39;</span><span class="p">:</span> <span class="n">order</span><span class="p">})</span></div>
 
 
-<div class="viewcode-block" id="add_order_get"><a class="viewcode-back" href="../order.html#order.add_order_get">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;_&gt;/add&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+<div class="viewcode-block" id="get_order_log"><a class="viewcode-back" href="../code.order.html#order.get_order_log">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;identifier&gt;/log&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">get_order_log</span><span class="p">(</span><span class="n">identifier</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    List changes to the dataset.</span>
+
+<span class="sd">    Logs will be sorted chronologically.</span>
+
+<span class="sd">    The ``data`` in each log will be trimmed to only show the changed fields.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        identifier (str): Uuid for the wanted order.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        flask.Response: Json structure for the logs.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">uuid</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">str_to_uuid</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">404</span><span class="p">)</span>
+
+    <span class="n">order</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;orders&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">uuid</span><span class="p">})</span>
+    <span class="k">if</span> <span class="n">order</span><span class="p">:</span>
+        <span class="n">is_owner</span> <span class="o">=</span> <span class="n">order</span><span class="p">[</span><span class="s1">&#39;creator&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">flask</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="s1">&#39;user_id&#39;</span><span class="p">]</span>
+    <span class="n">logs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;logs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s1">&#39;data_type&#39;</span><span class="p">:</span> <span class="s1">&#39;order&#39;</span><span class="p">,</span> <span class="s1">&#39;data._id&#39;</span><span class="p">:</span> <span class="n">uuid</span><span class="p">}))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">has_permission</span><span class="p">(</span><span class="s1">&#39;DATA_MANAGEMENT&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">is_owner</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">403</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">logs</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">404</span><span class="p">)</span>
+
+    <span class="n">utils</span><span class="o">.</span><span class="n">incremental_logs</span><span class="p">(</span><span class="n">logs</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">log</span> <span class="ow">in</span> <span class="n">logs</span><span class="p">:</span>
+        <span class="k">del</span> <span class="n">log</span><span class="p">[</span><span class="s1">&#39;data_type&#39;</span><span class="p">]</span>
+
+    <span class="n">out_log</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;entry_id&#39;</span><span class="p">:</span> <span class="n">uuid</span><span class="p">,</span>
+               <span class="s1">&#39;data_type&#39;</span><span class="p">:</span> <span class="s1">&#39;order&#39;</span><span class="p">,</span>
+               <span class="s1">&#39;logs&#39;</span><span class="p">:</span> <span class="n">logs</span><span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">response_json</span><span class="p">(</span><span class="n">out_log</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="add_order_get"><a class="viewcode-back" href="../code.order.html#order.add_order_get">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/add&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
 <span class="nd">@user</span><span class="o">.</span><span class="n">login_required</span>
-<span class="k">def</span> <span class="nf">add_order_get</span><span class="p">(</span><span class="n">_</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">add_order_get</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Provide a basic data structure for adding an order.</span>
 
-<span class="sd">    The structure will be returned no matter whether order ``identifier`` exists or not.</span>
-
-<span class="sd">    Requires ``ORDERS_SELF`` permission.</span>
+<span class="sd">    Not all fields will be available for all users.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">has_permission</span><span class="p">(</span><span class="s1">&#39;ORDERS_SELF&#39;</span><span class="p">):</span>
-        <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">403</span><span class="p">)</span>
-    <span class="n">dataset</span> <span class="o">=</span> <span class="n">structure</span><span class="o">.</span><span class="n">dataset</span><span class="p">()</span>
+    <span class="n">dataset</span> <span class="o">=</span> <span class="n">structure</span><span class="o">.</span><span class="n">order</span><span class="p">()</span>
     <span class="k">del</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span>
+    <span class="k">del</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;datasets&#39;</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">response_json</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="add_dataset_get"><a class="viewcode-back" href="../order.html#order.add_dataset_get">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;_&gt;/addDataset&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+<div class="viewcode-block" id="add_order"><a class="viewcode-back" href="../code.order.html#order.add_order">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/add&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="nd">@user</span><span class="o">.</span><span class="n">login_required</span>
+<span class="k">def</span> <span class="nf">add_order</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Add an order.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        flask.Response: Json structure with the ``_id`` of the order.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># create new order</span>
+    <span class="n">order</span> <span class="o">=</span> <span class="n">structure</span><span class="o">.</span><span class="n">order</span><span class="p">()</span>
+    <span class="n">indata</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="c1"># indata validation</span>
+    <span class="k">if</span> <span class="s1">&#39;_id&#39;</span> <span class="ow">in</span> <span class="n">indata</span> <span class="ow">or</span> <span class="s1">&#39;datasets&#39;</span> <span class="ow">in</span> <span class="n">indata</span><span class="p">:</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s1">&#39;creator&#39;</span> <span class="ow">in</span> <span class="n">indata</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">has_permission</span><span class="p">(</span><span class="s1">&#39;DATA_MANAGEMENT&#39;</span><span class="p">):</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">indata</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
+            <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">validate</span><span class="o">.</span><span class="n">validate_indata</span><span class="p">(</span><span class="n">indata</span><span class="p">):</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+
+    <span class="n">dataset</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">indata</span><span class="p">)</span>
+
+    <span class="c1"># add to db</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;orders&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">order</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">acknowledged</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Order insert failed: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">make_log</span><span class="p">(</span><span class="s1">&#39;order&#39;</span><span class="p">,</span>
+                       <span class="s1">&#39;add&#39;</span><span class="p">,</span>
+                       <span class="sa">f</span><span class="s1">&#39;Order added&#39;</span><span class="p">,</span>
+                       <span class="n">dataset</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">response_json</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">result</span><span class="o">.</span><span class="n">inserted_id</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="add_dataset_get"><a class="viewcode-back" href="../code.order.html#order.add_dataset_get">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;_&gt;/addDataset&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
 <span class="nd">@user</span><span class="o">.</span><span class="n">login_required</span>
 <span class="k">def</span> <span class="nf">add_dataset_get</span><span class="p">(</span><span class="n">_</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Provide a basic data structure for adding a dataset.</span>
 
-<span class="sd">    The structure will be returned no matter whether order ``identifier`` exists or not.</span>
-
-<span class="sd">    Requires ``ORDERS_SELF`` permission.</span>
+<span class="sd">    The structure will be returned no matter what &quot;uuid&quot; it is provided.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">has_permission</span><span class="p">(</span><span class="s1">&#39;ORDERS_SELF&#39;</span><span class="p">):</span>
-        <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">403</span><span class="p">)</span>
     <span class="n">dataset</span> <span class="o">=</span> <span class="n">structure</span><span class="o">.</span><span class="n">dataset</span><span class="p">()</span>
     <span class="k">del</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">response_json</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="add_dataset_post"><a class="viewcode-back" href="../order.html#order.add_dataset_post">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;identifier&gt;/addDataset&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<div class="viewcode-block" id="add_dataset_post"><a class="viewcode-back" href="../code.order.html#order.add_dataset_post">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;identifier&gt;/addDataset&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>
 <span class="nd">@user</span><span class="o">.</span><span class="n">login_required</span>
 <span class="k">def</span> <span class="nf">add_dataset_post</span><span class="p">(</span><span class="n">identifier</span><span class="p">):</span>  <span class="c1"># pylint: disable=too-many-branches</span>
     <span class="sd">&quot;&quot;&quot;Add a dataset.&quot;&quot;&quot;</span>
@@ -295,11 +395,10 @@
     <span class="c1"># indata validation</span>
     <span class="k">if</span> <span class="s1">&#39;_id&#39;</span> <span class="ow">in</span> <span class="n">indata</span><span class="p">:</span>
         <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">validate</span><span class="o">.</span><span class="n">validate_indata</span><span class="p">(</span><span class="n">indata</span><span class="p">):</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">indata</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
-            <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">utils</span><span class="o">.</span><span class="n">validate_infield</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">indata</span><span class="p">[</span><span class="n">key</span><span class="p">]):</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Key: </span><span class="si">{key}</span><span class="s1">, Data: </span><span class="si">{indata[key]}</span><span class="s1">&#39;</span><span class="p">)</span>
             <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
     <span class="n">dataset</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">indata</span><span class="p">)</span>
 

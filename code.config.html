@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>structure.py &mdash; Data Tracker  documentation</title>
+  <title>config.py &mdash; Data Tracker  documentation</title>
   
 
   
@@ -35,8 +35,8 @@
   <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="user.py" href="user.html" />
-    <link rel="prev" title="project.py" href="project.html" /> 
+    <link rel="next" title="dataset.py" href="code.dataset.html" />
+    <link rel="prev" title="app.py" href="code.app.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -90,15 +90,16 @@
 <li class="toctree-l1 current"><a class="reference internal" href="development.html">Development</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="development.quick_environment.html">System for development</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="modules.html">Code reference</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="app.html">app.py</a></li>
-<li class="toctree-l3"><a class="reference internal" href="config.html">config.py</a></li>
-<li class="toctree-l3"><a class="reference internal" href="dataset.html">dataset.py</a></li>
-<li class="toctree-l3"><a class="reference internal" href="developer.html">developer.py</a></li>
-<li class="toctree-l3"><a class="reference internal" href="order.html">order.py</a></li>
-<li class="toctree-l3"><a class="reference internal" href="project.html">project.py</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">structure.py</a></li>
-<li class="toctree-l3"><a class="reference internal" href="user.html">user.py</a></li>
-<li class="toctree-l3"><a class="reference internal" href="utils.html">utils.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code.app.html">app.py</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">config.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code.dataset.html">dataset.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code.developer.html">developer.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code.order.html">order.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code.project.html">project.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code.structure.html">structure.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code.user.html">user.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code.utils.html">utils.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code.validate.html">validate.py</a></li>
 </ul>
 </li>
 </ul>
@@ -152,14 +153,14 @@
         
           <li><a href="modules.html">Code reference</a> &raquo;</li>
         
-      <li>structure.py</li>
+      <li>config.py</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
             
-              <a href="https://github.com/ScilifelabDataCentre/SciLifeLab-Data-Tracker/blob/develop/docs/source/structure.rst" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/ScilifelabDataCentre/SciLifeLab-Data-Tracker/blob/develop/docs/source/code.config.rst" class="fa fa-github"> Edit on GitHub</a>
             
           
         
@@ -173,17 +174,17 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-structure">
-<span id="structure-py"></span><h1>structure.py<a class="headerlink" href="#module-structure" title="Permalink to this headline">¶</a></h1>
-<p>Required fields for the different data types.</p>
-<p>See documentation (Data Structure) for more information.</p>
+  <div class="section" id="module-config">
+<span id="config-py"></span><h1>config.py<a class="headerlink" href="#module-config" title="Permalink to this headline">¶</a></h1>
+<p>Settings manager for the data tracker.</p>
+<p>Read settings from <cite>./config.yaml</cite>, <cite>../config.yaml</cite> or from the provided path.</p>
 <dl class="function">
-<dt id="structure.dataset">
-<code class="sig-prename descclassname">structure.</code><code class="sig-name descname">dataset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/structure.html#dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#structure.dataset" title="Permalink to this definition">¶</a></dt>
-<dd><p>Provide a basic data structure for a dataset document.</p>
+<dt id="config.init">
+<code class="sig-prename descclassname">config.</code><code class="sig-name descname">init</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="modules/config.html#init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#config.init" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read the config from a config.yaml file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>the data structure for datasets</p>
+<dd class="field-odd"><p>The config.</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p>dict</p>
@@ -192,43 +193,22 @@
 </dd></dl>
 
 <dl class="function">
-<dt id="structure.order">
-<code class="sig-prename descclassname">structure.</code><code class="sig-name descname">order</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/structure.html#order"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#structure.order" title="Permalink to this definition">¶</a></dt>
-<dd><p>Provide a basic data structure for an order document.</p>
+<dt id="config.read_config">
+<code class="sig-prename descclassname">config.</code><code class="sig-name descname">read_config</code><span class="sig-paren">(</span><em class="sig-param">path: str = ''</em><span class="sig-paren">)</span><a class="reference internal" href="modules/config.html#read_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#config.read_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Look for settings.yaml and parse the settings from there.</p>
+<p>The file is expected to be found in the current, parent or provided folder.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>the data structure for orders</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – The yaml file to use</p>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>dict</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The loaded settings</p>
 </dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="structure.project">
-<code class="sig-prename descclassname">structure.</code><code class="sig-name descname">project</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/structure.html#project"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#structure.project" title="Permalink to this definition">¶</a></dt>
-<dd><p>Provide a basic data structure for a project document.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>the data structure for projects</p>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>dict</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="structure.user">
-<code class="sig-prename descclassname">structure.</code><code class="sig-name descname">user</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/structure.html#user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#structure.user" title="Permalink to this definition">¶</a></dt>
-<dd><p>Provide a basic data structure for a user document.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>the data structure for users</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>dict</p>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>FileNotFoundError</strong> – No settings file found</p>
 </dd>
 </dl>
 </dd></dl>
@@ -243,10 +223,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="user.html" class="btn btn-neutral float-right" title="user.py" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="code.dataset.html" class="btn btn-neutral float-right" title="dataset.py" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="project.html" class="btn btn-neutral float-left" title="project.py" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="code.app.html" class="btn btn-neutral float-left" title="app.py" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

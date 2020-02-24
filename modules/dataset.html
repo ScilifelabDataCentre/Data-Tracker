@@ -164,7 +164,7 @@
 <span class="n">blueprint</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">Blueprint</span><span class="p">(</span><span class="s1">&#39;datasets&#39;</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">)</span>  <span class="c1"># pylint: disable=invalid-name</span>
 
 
-<div class="viewcode-block" id="validate_dataset_input"><a class="viewcode-back" href="../dataset.html#dataset.validate_dataset_input">[docs]</a><span class="k">def</span> <span class="nf">validate_dataset_input</span><span class="p">(</span><span class="n">indata</span><span class="p">):</span>
+<div class="viewcode-block" id="validate_dataset_input"><a class="viewcode-back" href="../code.dataset.html#dataset.validate_dataset_input">[docs]</a><span class="k">def</span> <span class="nf">validate_dataset_input</span><span class="p">(</span><span class="n">indata</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Validate the dataset input.</span>
 
@@ -197,7 +197,7 @@
     <span class="k">return</span> <span class="kc">True</span></div>
 
 
-<div class="viewcode-block" id="update_projects"><a class="viewcode-back" href="../dataset.html#dataset.update_projects">[docs]</a><span class="k">def</span> <span class="nf">update_projects</span><span class="p">(</span><span class="n">dataset_uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">in_projects</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+<div class="viewcode-block" id="update_projects"><a class="viewcode-back" href="../code.dataset.html#dataset.update_projects">[docs]</a><span class="k">def</span> <span class="nf">update_projects</span><span class="p">(</span><span class="n">dataset_uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">in_projects</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Update the dataset list in the projects the dataset is connected to.</span>
 
@@ -236,7 +236,7 @@
                           <span class="n">dataset_uuid</span><span class="p">,</span> <span class="n">proj</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="list_datasets"><a class="viewcode-back" href="../dataset.html#dataset.list_datasets">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/all&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+<div class="viewcode-block" id="list_datasets"><a class="viewcode-back" href="../code.dataset.html#dataset.list_datasets">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/all&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
 <span class="k">def</span> <span class="nf">list_datasets</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;Provide a simplified list of all available datasets.&quot;&quot;&quot;</span>
     <span class="n">results</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;datasets&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
@@ -245,7 +245,7 @@
     <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">response_json</span><span class="p">({</span><span class="s1">&#39;datasets&#39;</span><span class="p">:</span> <span class="n">results</span><span class="p">})</span></div>
 
 
-<div class="viewcode-block" id="list_user_data"><a class="viewcode-back" href="../dataset.html#dataset.list_user_data">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/user&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+<div class="viewcode-block" id="list_user_data"><a class="viewcode-back" href="../code.dataset.html#dataset.list_user_data">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/user&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
 <span class="nd">@user</span><span class="o">.</span><span class="n">login_required</span>
 <span class="k">def</span> <span class="nf">list_user_data</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;List all datasets belonging to current user.&quot;&quot;&quot;</span>
@@ -258,7 +258,7 @@
     <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">response_json</span><span class="p">({</span><span class="s1">&#39;datasets&#39;</span><span class="p">:</span> <span class="n">user_datasets</span><span class="p">})</span></div>
 
 
-<div class="viewcode-block" id="get_random_ds"><a class="viewcode-back" href="../dataset.html#dataset.get_random_ds">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/random&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+<div class="viewcode-block" id="get_random_ds"><a class="viewcode-back" href="../code.dataset.html#dataset.get_random_ds">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/random&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
 <span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/random/&lt;int:amount&gt;&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
 <span class="k">def</span> <span class="nf">get_random_ds</span><span class="p">(</span><span class="n">amount</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -278,7 +278,7 @@
     <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">response_json</span><span class="p">({</span><span class="s1">&#39;datasets&#39;</span><span class="p">:</span> <span class="n">results</span><span class="p">})</span></div>
 
 
-<div class="viewcode-block" id="get_dataset"><a class="viewcode-back" href="../dataset.html#dataset.get_dataset">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;identifier&gt;&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+<div class="viewcode-block" id="get_dataset"><a class="viewcode-back" href="../code.dataset.html#dataset.get_dataset">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;identifier&gt;&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
 <span class="k">def</span> <span class="nf">get_dataset</span><span class="p">(</span><span class="n">identifier</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Retrieve the dataset with uuid &lt;identifier&gt;.</span>
@@ -296,7 +296,7 @@
     <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">response_json</span><span class="p">({</span><span class="s1">&#39;dataset&#39;</span><span class="p">:</span> <span class="n">result</span><span class="p">})</span></div>
 
 
-<div class="viewcode-block" id="delete_dataset"><a class="viewcode-back" href="../dataset.html#dataset.delete_dataset">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;identifier&gt;/delete&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>  <span class="c1"># post to make sure csrf is used</span>
+<div class="viewcode-block" id="delete_dataset"><a class="viewcode-back" href="../code.dataset.html#dataset.delete_dataset">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;identifier&gt;/delete&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>  <span class="c1"># post to make sure csrf is used</span>
 <span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;identifier&gt;&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;DELETE&#39;</span><span class="p">])</span>
 <span class="nd">@user</span><span class="o">.</span><span class="n">steward_required</span>
 <span class="k">def</span> <span class="nf">delete_dataset</span><span class="p">(</span><span class="n">identifier</span><span class="p">):</span>
@@ -326,7 +326,7 @@
     <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="update_dataset"><a class="viewcode-back" href="../dataset.html#dataset.update_dataset">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;identifier&gt;&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;PUT&#39;</span><span class="p">])</span>
+<div class="viewcode-block" id="update_dataset"><a class="viewcode-back" href="../code.dataset.html#dataset.update_dataset">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;identifier&gt;&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;PUT&#39;</span><span class="p">])</span>
 <span class="nd">@user</span><span class="o">.</span><span class="n">steward_or_dsowner_required</span>
 <span class="c1"># require Steward or owning dataset</span>
 <span class="k">def</span> <span class="nf">update_dataset</span><span class="p">(</span><span class="n">identifier</span><span class="p">):</span>

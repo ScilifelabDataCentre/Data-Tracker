@@ -182,7 +182,7 @@
 
 
 <span class="c1"># Decorators</span>
-<div class="viewcode-block" id="login_required"><a class="viewcode-back" href="../user.html#user.login_required">[docs]</a><span class="k">def</span> <span class="nf">login_required</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+<div class="viewcode-block" id="login_required"><a class="viewcode-back" href="../code.user.html#user.login_required">[docs]</a><span class="k">def</span> <span class="nf">login_required</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Confirm that the user is logged in.</span>
 
@@ -196,7 +196,7 @@
     <span class="k">return</span> <span class="n">wrap</span></div>
 
 
-<div class="viewcode-block" id="steward_required"><a class="viewcode-back" href="../user.html#user.steward_required">[docs]</a><span class="k">def</span> <span class="nf">steward_required</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+<div class="viewcode-block" id="steward_required"><a class="viewcode-back" href="../code.user.html#user.steward_required">[docs]</a><span class="k">def</span> <span class="nf">steward_required</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Confirm that the user is logged in and has the &#39;Steward&#39; role.</span>
 
@@ -210,7 +210,7 @@
     <span class="k">return</span> <span class="n">wrap</span></div>
 
 
-<div class="viewcode-block" id="steward_or_dsowner_required"><a class="viewcode-back" href="../user.html#user.steward_or_dsowner_required">[docs]</a><span class="k">def</span> <span class="nf">steward_or_dsowner_required</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+<div class="viewcode-block" id="steward_or_dsowner_required"><a class="viewcode-back" href="../code.user.html#user.steward_or_dsowner_required">[docs]</a><span class="k">def</span> <span class="nf">steward_or_dsowner_required</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Confirm that the user is logged in and has the &#39;Steward&#39; role.</span>
 
@@ -225,7 +225,7 @@
     <span class="k">return</span> <span class="n">wrap</span></div>
 
 
-<div class="viewcode-block" id="admin_required"><a class="viewcode-back" href="../user.html#user.admin_required">[docs]</a><span class="k">def</span> <span class="nf">admin_required</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+<div class="viewcode-block" id="admin_required"><a class="viewcode-back" href="../code.user.html#user.admin_required">[docs]</a><span class="k">def</span> <span class="nf">admin_required</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Confirm that the user is logged in and has the &#39;Admin&#39; role.</span>
 
@@ -240,13 +240,13 @@
 
 
 <span class="c1"># requests</span>
-<div class="viewcode-block" id="elixir_login"><a class="viewcode-back" href="../user.html#user.elixir_login">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/login&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="elixir_login"><a class="viewcode-back" href="../code.user.html#user.elixir_login">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/login&#39;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">elixir_login</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;Perform a Elixir AAI login.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">501</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="logout"><a class="viewcode-back" href="../user.html#user.logout">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/logout&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="logout"><a class="viewcode-back" href="../code.user.html#user.logout">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/logout&#39;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">logout</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;Log out the current user.&quot;&quot;&quot;</span>
     <span class="n">flask</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
@@ -255,7 +255,7 @@
     <span class="k">return</span> <span class="n">response</span></div>
 
 
-<div class="viewcode-block" id="list_users"><a class="viewcode-back" href="../user.html#user.list_users">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/all&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="list_users"><a class="viewcode-back" href="../code.user.html#user.list_users">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/all&#39;</span><span class="p">)</span>
 <span class="nd">@admin_required</span>
 <span class="k">def</span> <span class="nf">list_users</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -268,7 +268,7 @@
 
 
 <span class="c1"># requests</span>
-<div class="viewcode-block" id="get_current_user_info"><a class="viewcode-back" href="../user.html#user.get_current_user_info">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/me&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="get_current_user_info"><a class="viewcode-back" href="../code.user.html#user.get_current_user_info">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/me&#39;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">get_current_user_info</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    List basic information about the current user.</span>
@@ -291,7 +291,7 @@
 
 
 <span class="c1"># helper functions</span>
-<div class="viewcode-block" id="do_login"><a class="viewcode-back" href="../user.html#user.do_login">[docs]</a><span class="k">def</span> <span class="nf">do_login</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">auth_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="do_login"><a class="viewcode-back" href="../code.user.html#user.do_login">[docs]</a><span class="k">def</span> <span class="nf">do_login</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">auth_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Set all relevant variables for a logged in user.</span>
 
@@ -320,7 +320,7 @@
     <span class="k">return</span> <span class="kc">True</span></div>
 
 
-<div class="viewcode-block" id="get_current_user"><a class="viewcode-back" href="../user.html#user.get_current_user">[docs]</a><span class="k">def</span> <span class="nf">get_current_user</span><span class="p">():</span>
+<div class="viewcode-block" id="get_current_user"><a class="viewcode-back" href="../code.user.html#user.get_current_user">[docs]</a><span class="k">def</span> <span class="nf">get_current_user</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the current user.</span>
 
@@ -330,7 +330,7 @@
     <span class="k">return</span> <span class="n">get_user</span><span class="p">(</span><span class="n">user_id</span><span class="o">=</span><span class="n">flask</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user_id&#39;</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="get_user"><a class="viewcode-back" href="../user.html#user.get_user">[docs]</a><span class="k">def</span> <span class="nf">get_user</span><span class="p">(</span><span class="n">user_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="get_user"><a class="viewcode-back" href="../code.user.html#user.get_user">[docs]</a><span class="k">def</span> <span class="nf">get_user</span><span class="p">(</span><span class="n">user_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get information about the user.</span>
 
@@ -347,7 +347,7 @@
     <span class="k">return</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="check_user_permissions"><a class="viewcode-back" href="../user.html#user.check_user_permissions">[docs]</a><span class="k">def</span> <span class="nf">check_user_permissions</span><span class="p">(</span><span class="n">required</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="check_user_permissions"><a class="viewcode-back" href="../code.user.html#user.check_user_permissions">[docs]</a><span class="k">def</span> <span class="nf">check_user_permissions</span><span class="p">(</span><span class="n">required</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if the current permissions fulfills the requirement.</span>
 
@@ -369,7 +369,7 @@
     <span class="k">return</span> <span class="kc">False</span></div>
 
 
-<div class="viewcode-block" id="has_permission"><a class="viewcode-back" href="../user.html#user.has_permission">[docs]</a><span class="k">def</span> <span class="nf">has_permission</span><span class="p">(</span><span class="n">permission</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="has_permission"><a class="viewcode-back" href="../code.user.html#user.has_permission">[docs]</a><span class="k">def</span> <span class="nf">has_permission</span><span class="p">(</span><span class="n">permission</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if the current user permissions fulfills the requirement.</span>
 
