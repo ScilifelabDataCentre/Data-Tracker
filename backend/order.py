@@ -184,14 +184,14 @@ def add_order():
     if '_id' in indata or 'datasets' in indata:
         flask.abort(status=400)
     if 'creator' in indata and not user.has_permission('DATA_MANAGEMENT'):
-        flask.abort(status=400)
+        flask.abort(status=403)
     for key in indata:
-        if key not in dataset:
+        if key not in order:
             flask.abort(status=400)
     if not validate.validate_indata(indata):
         flask.abort(status=400)
 
-    dataset.update(indata)
+    order.update(indata)
 
     # add to db
     result = flask.g.db['orders'].insert_one(order)
@@ -201,7 +201,7 @@ def add_order():
         utils.make_log('order',
                        'add',
                        f'Order added',
-                       dataset)
+                       order)
 
     return utils.response_json({'_id': result.inserted_id})
 

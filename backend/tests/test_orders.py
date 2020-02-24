@@ -338,7 +338,6 @@ def test_add_get():
     Request data structure from GET add.
     """
     expected = {'creator': '',
-                'datasets': [],
                 'description': '',
                 'extra': {},
                 'receiver': '',
@@ -349,6 +348,33 @@ def test_add_get():
         if response.role in ('data', 'orders', 'root'):
             assert response.code == 200
             assert response.data == expected
+        elif response.role == 'no-login':
+            assert response.code == 401
+            assert not response.data
+        else:
+            assert response.code == 403
+            assert not response.data
+
+
+def test_add_permissions():
+    """
+    Add a default dataset using /add POST.
+
+    Test permissions.
+    """
+    session = requests.Session()
+
+    indata = {'title': 'Test title'}
+    indata.update(TEST_LABEL)
+    responses = make_request_all_roles(f'/api/order/add',
+                                       method='POST',
+                                       data=indata,
+                                       ret_json=True)
+    for response in responses:
+        if response.role in ('orders', 'data', 'root'):
+            assert response.code == 200
+            assert '_id' in response.data
+            assert len(response.data['_id']) == 36
         elif response.role == 'no-login':
             assert response.code == 401
             assert not response.data
@@ -385,9 +411,9 @@ def test_add_dataset_get():
 
 def test_add_dataset_permissions():
     """
-    Add a default dataset using .post(dataset/add).
+    Add a dataset using .post(addDataset).
 
-    Simple data content, using {identifer: test} to tell that it was added during testing.
+    Confirm that permissions are handled correctly.
     """
     session = requests.Session()
 
