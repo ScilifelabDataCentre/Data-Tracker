@@ -472,6 +472,44 @@ def test_add_order(use_db):
             assert not response.data
 
 
+def test_add_order_log(use_db):
+    """
+    Add a default dataset using /add POST.
+
+    Confirm that logs are created.
+    """
+    session = requests.Session()
+
+    db = use_db
+
+    indata = {'description': 'Test description',
+              'receiver': 'new_email@example.com',
+              'title': 'Test title'}
+    indata.update(TEST_LABEL)
+
+    responses = make_request_all_roles(f'/api/order/add',
+                                       method='POST',
+                                       data=indata,
+                                       ret_json=True)
+    for response in responses:
+        if response.role in ('orders', 'data', 'root'):
+            assert response.code == 200
+            assert '_id' in response.data
+            assert len(response.data['_id']) == 36
+            order = db['orders'].find_one({'_id': uuid.UUID(response.data['_id'])})
+            logs = list(db['logs'].find({'data_type': 'order',
+                                         'data._id': uuid.UUID(response.data['_id'])}))
+            assert len(logs) == 1
+            assert logs[0]['data'] == order
+            assert logs[0]['action'] == 'add'
+        elif response.role == 'no-login':
+            assert response.code == 401
+            assert not response.data
+        else:
+            assert response.code == 403
+            assert not response.data
+
+
 def test_add_order_bad(use_db):
     """
     Add a default dataset using /add POST.
