@@ -40,6 +40,17 @@ def db_connection():
     client = utils.get_dbclient(conf)
     return utils.get_db(client, conf)
 
+@pytest.fixture
+def use_db():
+    """Get a connection to the db as defined in the app config."""
+    conf = config.init()
+    client = utils.get_dbclient(conf)
+    db = utils.get_db(client, conf)
+    yield db
+    client.close()
+    
+    
+
 
 def as_user(session: requests.Session, auth_id: str, set_csrf: bool = True) -> int:
     """

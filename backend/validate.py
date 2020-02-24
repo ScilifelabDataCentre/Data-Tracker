@@ -11,11 +11,7 @@ import uuid
 import utils
 import config
 
-CONF = config.read_config()
-DB = utils.get_db(utils.get_dbclient(CONF), CONF)
-
-
-def validate_indata(indata: Any) -> bool:  # pylint: disable=too-many-branches
+def validate_indata(indata: dict) -> bool:  # pylint: disable=too-many-branches
     """
     Validate that the input data matches expectations.
 
@@ -28,8 +24,7 @@ def validate_indata(indata: Any) -> bool:  # pylint: disable=too-many-branches
     for the entry must be performed separately.
 
     Args:
-        field_key (str): The name of the field to validate.
-        data (Any): The data to validate.
+        indata (dict): The data to validate.
 
     Returns:
         bool: Whether validation passed.
@@ -70,7 +65,7 @@ def validate_description(data) -> bool:
         ValueError: Validation failed.
     """
     if not isinstance(data, str):
-        raise ValueError('Description - not a string')
+        raise ValueError(f'Description - not a string ({data})')
     return True
 
 
@@ -90,10 +85,10 @@ def validate_extra(data) -> bool:
         ValueError: Validation failed.
     """
     if not isinstance(data, dict):
-        raise ValueError('Extra - must be dict')
+        raise ValueError(f'Extra - must be dict ({data})')
     for key in data:
         if not isinstance(key, str) or not isinstance(data[key], str):
-            raise ValueError('Extra - keys and values must be strings')
+            raise ValueError(f'Extra - keys and values must be strings ({key}, {data[key]})')
     return True
 
 
@@ -170,7 +165,5 @@ def validate_user(data: str, origin: str) -> bool:
     try:
         user_uuid = uuid.UUID(data)
     except ValueError:
-        raise ValueError(f'{origin.capitalize()} - not a valid uuid')
-    if not DB['users'].find_one({'_id': user_uuid}):
-        raise ValueError(f'{origin.capitalize()} - user does not exist')
+        raise ValueError(f'{origin.capitalize()} - not a valid uuid ({data})')
     return True

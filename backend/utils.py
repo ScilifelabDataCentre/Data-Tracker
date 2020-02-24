@@ -401,7 +401,7 @@ def check_email_uuid(user_identifier: str):
             return user_entry['_id']
         else:
             return user_identifier
-    user_entry = flask.g.db['users'].find_one({'_id': utils.str_to_uuid(user_identifier)})
+    user_entry = flask.g.db['users'].find_one({'_id': str_to_uuid(user_identifier)})
     if user_entry:
         return user_entry['_id']
     else:

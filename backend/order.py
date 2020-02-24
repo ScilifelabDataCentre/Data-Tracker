@@ -179,6 +179,7 @@ def add_order():  # pylint: disable=too-many-branches
     # create new order
     order = structure.order()
     indata = flask.json.loads(flask.request.data)
+    logging.debug(indata)
 
     # indata validation
     if not validate.validate_indata(indata):
@@ -199,6 +200,7 @@ def add_order():  # pylint: disable=too-many-branches
         order['creator'] = flask.g.current_user['_id']
     # receiver
     if 'receiver' in indata:
+        logging.debug('receiver')
         if new_identifier := utils.check_email_uuid(indata['receiver']):
             indata['receiver'] = new_identifier
         else:
