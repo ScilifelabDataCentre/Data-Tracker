@@ -163,57 +163,47 @@ def add_order_get():
     """
     dataset = structure.order()
     del dataset['_id']
+    del dataset['datasets']
     return utils.response_json(dataset)
 
 
 @blueprint.route('/add', methods=['POST'])
 @user.login_required
-def add_order(identifier):  # pylint: disable=too-many-branches
-    """Add an order."""
-    # permissions
-    if not user.has_permission('ORDERS_SELF'):
-        flask.abort(status=403)
+def add_order():
+    """
+    Add an order.
 
+    Returns:
+        flask.Response: Json structure with the ``_id`` of the order.
+    """
     # create new order
-    dataset = structure.order()
+    order = structure.order()
     indata = flask.json.loads(flask.request.data)
 
     # indata validation
-    if '_id' in indata:
-        logging.debug('_id in indata')
+    if '_id' in indata or 'datasets' in indata:
+        flask.abort(status=400)
+    if 'creator' in indata and not user.has_permission('DATA_MANAGEMENT'):
         flask.abort(status=400)
     for key in indata:
         if key not in dataset:
             flask.abort(status=400)
     if not validate.validate_indata(indata):
-        logging.debug('Validation failed')
         flask.abort(status=400)
 
     dataset.update(indata)
 
     # add to db
-    result_ds = flask.g.db['datasets'].insert_one(dataset)
-    if not result_ds.acknowledged:
-        logging.error('Dataset insert failed: %s', dataset)
+    result = flask.g.db['orders'].insert_one(order)
+    if not result.acknowledged:
+        logging.error('Order insert failed: %s', order)
     else:
-        utils.make_log('dataset',
+        utils.make_log('order',
                        'add',
-                       f'Dataset added for order {muuid}',
+                       f'Order added',
                        dataset)
 
-        result_o = flask.g.db['orders'].update_one({'_id': muuid},
-                                                   {'$push': {'datasets': dataset['_id']}})
-        if not result_o.acknowledged:
-            logging.error('Order insert failed: ADD dataset %s', dataset['_id'])
-        else:
-            order = flask.g.db['orders'].find_one({'_id': muuid})
-
-            utils.make_log('order',
-                           'update',
-                           f'Dataset {result_ds.inserted_id} added for order',
-                           order)
-
-    return utils.response_json({'_id': result_ds.inserted_id})
+    return utils.response_json({'_id': result.inserted_id})
 
 
 @blueprint.route('/<_>/addDataset', methods=['GET'])

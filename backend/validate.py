@@ -44,7 +44,7 @@ def validate_indata(indata: Any) -> bool:  # pylint: disable=too-many-branches
                 validate_description(indata[field_key])
             elif field_key == 'extra':
                 validate_extra(indata[field_key])
-            elif field_key == 'creator':
+            elif field_key in ('creator', 'receiver'):
                 validate_user(indata[field_key], origin=field_key)
             else:
                 raise ValueError('Unknown key')
