@@ -1,4 +1,5 @@
 """Tests for order requests."""
+import logging
 import json
 import random
 import uuid
@@ -7,6 +8,8 @@ import requests
 
 # avoid pylint errors because of fixtures
 # pylint: disable = redefined-outer-name, unused-import
+
+logging.getLogger().setLevel(logging.DEBUG)
 
 from helpers import make_request, as_user, make_request_all_roles,\
     USERS, random_string, parse_time, db_connection, TEST_LABEL
@@ -365,6 +368,58 @@ def test_add_permissions():
     session = requests.Session()
 
     indata = {'title': 'Test title'}
+    indata.update(TEST_LABEL)
+    responses = make_request_all_roles(f'/api/order/add',
+                                       method='POST',
+                                       data=indata,
+                                       ret_json=True)
+    for response in responses:
+        if response.role in ('orders', 'data', 'root'):
+            assert response.code == 200
+            assert '_id' in response.data
+            assert len(response.data['_id']) == 36
+        elif response.role == 'no-login':
+            assert response.code == 401
+            assert not response.data
+        else:
+            assert response.code == 403
+            assert not response.data
+
+    db = db_connection()
+    user_creator = db['users'].find_one({'auth_id': USERS['base']})
+    indata = {'creator': user_creator['email']}
+    indata.update(TEST_LABEL)
+    responses = make_request_all_roles(f'/api/order/add',
+                                       method='POST',
+                                       data=indata,
+                                       ret_json=True)
+    for response in responses:
+        if response.role in ('data', 'root'):
+            assert response.code == 200
+            assert '_id' in response.data
+            assert len(response.data['_id']) == 36
+        elif response.role == 'no-login':
+            assert response.code == 401
+            assert not response.data
+        else:
+            assert response.code == 403
+            assert not response.data
+    
+
+def test_add():
+    """
+    Add a default dataset using /add POST.
+
+    Test permissions.
+    """
+    session = requests.Session()
+
+    indata =  {'creator': '',
+               'description': '',
+               'extra': {},
+               'receiver': '',
+               'title': ''}
+
     indata.update(TEST_LABEL)
     responses = make_request_all_roles(f'/api/order/add',
                                        method='POST',

@@ -181,15 +181,38 @@ def add_order():
     indata = flask.json.loads(flask.request.data)
 
     # indata validation
-    if '_id' in indata or 'datasets' in indata:
+    if not validate.validate_indata(indata):
+        logging.debug('Validation failed: %s', indata)
         flask.abort(status=400)
-    if 'creator' in indata and not user.has_permission('DATA_MANAGEMENT'):
-        flask.abort(status=403)
+    if '_id' in indata or 'datasets' in indata:
+        logging.debug('Bad fields: %s', indata)
+        flask.abort(status=400)
+    # creator
+    if 'creator' in indata:
+        if not user.has_permission('DATA_MANAGEMENT'):
+            flask.abort(status=403)
+        # valid email or uuid already checked by validate.validate_indata()
+        # check if user with the current creator as email exists
+        if (creator_user := flask.g.db['users'].find_one({'email': indata['creator']})):
+            indata['creator'] = creator_user['_id']
+        # check if user exists for current creator, if so update creator with UUID
+        elif (creator_user := flask.g.db['users'].find_one({'_id': utils.str_to_uuid(indata['creator'])})):
+            indata['creator'] = creator_user['_id']
+    else:
+        order['creator'] = flask.g.current_user['_id']
+    # receiver
+    if 'receiver' in indata:
+        # valid email or uuid already checked by validate.validate_indata()
+        # check if user with the current receiver as email exists
+        if (rec_user := flask.g.db['users'].find_one({'email': indata['receiver']})):
+            indata['receiver'] = rec_user['_id']
+        # check if user exists for current receiver, if so update receiver with UUID
+        elif (rec_user := flask.g.db['users'].find_one({'_id': utils.str_to_uuid(indata['receiver'])})):
+            indata['receiver'] = rec_user['_id']
+
     for key in indata:
         if key not in order:
             flask.abort(status=400)
-    if not validate.validate_indata(indata):
-        flask.abort(status=400)
 
     order.update(indata)
 
