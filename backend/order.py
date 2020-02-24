@@ -238,7 +238,12 @@ def add_dataset_get(_):
 @blueprint.route('/<identifier>/addDataset', methods=['POST'])
 @user.login_required
 def add_dataset_post(identifier):  # pylint: disable=too-many-branches
-    """Add a dataset."""
+    """
+    Add a dataset.
+
+    Args:
+        identifier (str): The order to add the dataset to.
+    """
     # permissions
     if not user.has_permission('ORDERS_SELF'):
         flask.abort(status=403)
