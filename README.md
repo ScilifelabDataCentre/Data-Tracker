@@ -7,6 +7,17 @@ A system for tracking datasets.
 [Documentation](https://scilifelabdatacentre.github.io/SciLifeLab-Data-Tracker/)
 
 
+## Containers
+[Frontend](https://hub.docker.com/repository/docker/scilifelabdatacentre/data-tracker-frontend)
+[Backend](https://hub.docker.com/repository/docker/scilifelabdatacentre/data-tracker-backend)
+
+###
+The backend requires a `config.yaml` file to be mounted to `/config.yaml`.
+
+The frontend assumes that the backend is available at `/api`.
+
+
+
 [travis-badge]: https://travis-ci.org/ScilifelabDataCentre/SciLifeLab-Data-Tracker.svg?branch=develop
 [travis-link]: https://travis-ci.org/ScilifelabDataCentre/SciLifeLab-Data-Tracker
 
