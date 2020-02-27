@@ -1,4 +1,4 @@
-FROM python:latest
+FROM python:alpine
 
 ADD . /code
 COPY config.yaml.sample /config.yaml
