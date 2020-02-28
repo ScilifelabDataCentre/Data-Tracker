@@ -179,7 +179,6 @@ def add_order():  # pylint: disable=too-many-branches
     # create new order
     order = structure.order()
     indata = flask.json.loads(flask.request.data)
-    logging.debug(indata)
 
     # indata validation
     if not validate.validate_indata(indata):
@@ -295,3 +294,33 @@ def add_dataset_post(identifier):  # pylint: disable=too-many-branches
                            order)
 
     return utils.response_json({'_id': result_ds.inserted_id})
+
+
+@blueprint.route('/<identifier>', methods=['DELETE'])
+@user.login_required
+def delete_order(identifier: str):
+    """
+    Delete the order with the given identifier.
+
+    Returns:
+        flask.Response: Status code
+    """
+    try:
+        order_uuid = utils.str_to_uuid(identifier)
+    except ValueError:
+        flask.abort(status=404)
+    order = flask.g.db['orders'].find_one({'_id': order_uuid})
+    if not order:
+        flask.abort(status=404)
+    if not user.has_permission('DATA_MANAGEMENT'):
+        if order['creator'] != flask.g.current_user['_id']:
+            flask.abort(status=403)
+
+    result = flask.g.db['orders'].delete_one(order)
+    if not result.acknowledged:
+        logging.error('Order deletion failed: %s', order_uuid)
+        utils.response_json(status=500)
+    else:
+        utils.make_log('order', 'delete', 'Order deleted')
+
+    return flask.Response(status=200)

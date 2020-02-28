@@ -578,7 +578,6 @@ def test_add_order_bad(use_db):
             assert not response.data
 
 
-
 def test_add_dataset_get(use_db):
     """
     Request data structure from GET addDataset.
@@ -756,3 +755,61 @@ def test_add_dataset_bad_fields(use_db):
                             data=indata)
     assert response.code == 400
     assert not response.data
+
+
+def test_delete_order_permissions(use_db):
+    """
+    Add and delete orders.
+
+    Check permissions for delete.
+    """
+    session = requests.Session()
+
+    db = use_db
+    
+    indata = {'title': 'Permission test'}
+    indata.update(TEST_LABEL)
+
+    as_user(session, USERS['orders'])
+    responses = make_request_all_roles(f'/api/order/add',
+                                       method='POST',
+                                       data=indata,
+                                       ret_json=True)
+    order_uuids = [response.data['_id'] for response in responses if response.code == 200]
+    i = 0
+    for role in USERS:
+        as_user(session, USERS[role])
+        response = make_request(session,
+                                f'/api/order/{order_uuids[i]}',
+                                method='DELETE')
+        if role in ('orders', 'data', 'root'):
+           assert response.code == 200
+           assert not response.data
+           assert not db['orders'].find_one({'_id': order_uuids[i]})
+           i += 1
+        elif role == 'no-login':
+            assert response.code == 401
+            assert not response.data
+        else:
+            assert response.code == 403
+            assert not response.data
+    
+
+def test_delete_order(use_db):
+    """
+    Delete orders that have been added by /add.
+
+    Confirm that the orders are correctly deleted.
+    """
+
+
+def test_delete_order_log(use_db):
+    """
+    Delete orders that have been added by /add.
+
+    Confirm that logs are created.
+    """
+
+
+def test_delete_order_bad(use_db):
+    """Attempt bad order delete requests."""
