@@ -56,29 +56,6 @@ def check_mongo_update(document: dict):
     return True
 
 
-def get_dataset(identifier: str):
-    """
-    Query for a dataset from the database.
-
-    Args:
-        identifier (str): The uuid of the dataset.
-
-    Returns:
-        dict: The dataset.
-    """
-    try:
-        mongo_uuid = str_to_uuid(identifier)
-        result = flask.g.db['datasets'].find_one({'_id': mongo_uuid})
-        if not result:
-            return None
-        result['projects'] = list(flask.g.db['projects']
-                                  .find({'datasets': result['_id']},
-                                        {'title': 1, '_id': 1}))
-    except ValueError:
-        return None
-    return result
-
-
 def get_project(identifier: str):
     """
     Query for a project from the database.
