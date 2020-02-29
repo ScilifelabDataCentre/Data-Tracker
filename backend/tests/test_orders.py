@@ -710,7 +710,6 @@ def test_add_dataset_log(use_db):
 
 def test_add_dataset_bad_fields(use_db):
     """Attempt to add datasets with e.g. forbidden fields."""
-
     db = use_db
     order = next(db['orders'].aggregate([{'$sample': {'size': 1}}]))
     session = requests.Session()
@@ -757,59 +756,76 @@ def test_add_dataset_bad_fields(use_db):
     assert not response.data
 
 
-def test_delete_order_permissions(use_db):
+def test_delete_order(use_db):
     """
     Add and delete orders.
 
-    Check permissions for delete.
+    * Check permissions.
+    * Delete orders added by the /add tests.
+    * Confirm that related datasets are deleted.
+    * Check that logs are created correctly.
     """
     session = requests.Session()
 
     db = use_db
-    
-    indata = {'title': 'Permission test'}
-    indata.update(TEST_LABEL)
 
-    as_user(session, USERS['orders'])
-    responses = make_request_all_roles(f'/api/order/add',
-                                       method='POST',
-                                       data=indata,
-                                       ret_json=True)
-    order_uuids = [response.data['_id'] for response in responses if response.code == 200]
+    orders_user = db['users'].find_one({'auth_id': USERS['orders']})
+    
+    orders = list(db['orders'].find(TEST_LABEL))
     i = 0
-    for role in USERS:
-        as_user(session, USERS[role])
-        response = make_request(session,
-                                f'/api/order/{order_uuids[i]}',
-                                method='DELETE')
-        if role in ('orders', 'data', 'root'):
-           assert response.code == 200
-           assert not response.data
-           assert not db['orders'].find_one({'_id': order_uuids[i]})
-           i += 1
-        elif role == 'no-login':
-            assert response.code == 401
-            assert not response.data
-        else:
-            assert response.code == 403
-            assert not response.data
-    
+    self_delete = False
+    while i < len(orders):
+        for role in USERS:
+            as_user(session, USERS[role])
+            response = make_request(session,
+                                    f'/api/order/{orders[i]["_id"]}',
+                                    method='DELETE')
+            if role in ('orders', 'data', 'root'):
+                if role != 'orders' or orders[i]['creator'] == orders_user['_id']:
+                    assert response.code == 200
+                    assert not response.data
+                    assert not db['orders'].find_one({'_id': orders[i]['_id']})
+                    assert db['logs'].find_one({'data._id': orders[i]['_id'],
+                                                'action': 'delete',
+                                                'data_type': 'order'})
+                    for dataset_uuid in orders[i]['datasets']:
+                        assert not db['datasets'].find_one({'_id': dataset_uuid})
+                        assert db['logs'].find_one({'data._id': dataset_uuid,
+                                                    'action': 'delete',
+                                                    'data_type': 'dataset'})
+                    i += 1
+                    if role == 'orders':
+                        self_delete = True                        
+                else:
+                    assert response.code == 403
+                    assert not response.data
+            elif role == 'no-login':
+                assert response.code == 401
+                assert not response.data
+            else:
+                assert response.code == 403
+                assert not response.data
 
-def test_delete_order(use_db):
-    """
-    Delete orders that have been added by /add.
-
-    Confirm that the orders are correctly deleted.
-    """
-
-
-def test_delete_order_log(use_db):
-    """
-    Delete orders that have been added by /add.
-
-    Confirm that logs are created.
-    """
+    if not self_delete:
+        raise Exception("Order creator with ORDERS_SELF deleting own order not tested")
 
 
 def test_delete_order_bad(use_db):
-    """Attempt bad order delete requests."""
+    """Attempt bad order delete requests."""    
+    session = requests.Session()
+
+    as_user(session, USERS['data'])
+    db = use_db
+    for _ in range(2):
+        response = make_request(session,
+                                f'/api/order/{random_string()}',
+                                method='DELETE')
+    assert response.code == 404
+    assert not response.data
+
+    for _ in range(2):
+        response = make_request(session,
+                                f'/api/order/{uuid.uuid4()}',
+                                method='DELETE')
+    assert response.code == 404
+    assert not response.data

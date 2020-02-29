@@ -316,11 +316,18 @@ def delete_order(identifier: str):
         if order['creator'] != flask.g.current_user['_id']:
             flask.abort(status=403)
 
+    for dataset_uuid in order['datasets']:
+        result = flask.g.db['datasets'].delete_one(dataset_uuid)
+        if not result.acknowledged:
+            logging.error(f'Dataset {dataset_uuid} delete failed (order {order_uuid} deletion):')
+            utils.response_json(status=500)
+        else:
+            utils.make_log('dataset', 'delete', 'Deleting order', {'_id': dataset_uuid})
     result = flask.g.db['orders'].delete_one(order)
     if not result.acknowledged:
         logging.error('Order deletion failed: %s', order_uuid)
         utils.response_json(status=500)
     else:
-        utils.make_log('order', 'delete', 'Order deleted')
+        utils.make_log('order', 'delete', 'Order deleted', {'_id': order_uuid})
 
     return flask.Response(status=200)
