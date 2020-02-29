@@ -9,80 +9,7 @@ import structure
 import utils
 import user
 
-
-blueprint = flask.Blueprint('datasets', __name__)  # pylint: disable=invalid-name
-
-
-def validate_dataset_input(indata):
-    """
-    Validate the dataset input.
-
-    It may only contain valid fields that may be changed by the role of the current user.
-
-    Args:
-        indata: the dataset input
-
-    Returns:
-        bool: whether the dataset input is accepted
-
-    """
-    if not utils.check_mongo_update(indata):
-        return False
-    # check that fields should exist and are not forbidden
-    reference = set(structure.dataset().keys())
-    reference.add('projects')
-    forbidden = {'_id', 'identifiers'}
-    inkeys = set(indata.keys())
-    if not inkeys.issubset(reference) or forbidden&inkeys:
-        logging.debug('Bad input: %s', inkeys)
-        return False
-
-    # check restricted (admin/steward) fields
-    restricted_steward = {'creator', 'projects'}
-    if not user.check_user_permissions('Steward') and restricted_steward&inkeys:
-        logging.debug('Restricted input: %s', inkeys)
-        return False
-
-    return True
-
-
-def update_projects(dataset_uuid: str, in_projects: list):
-    """
-    Update the dataset list in the projects the dataset is connected to.
-
-    Remove the dataset from projects in old_projects that are not in new_projects,
-    and add the dataset to the new projects.
-
-    Args:
-        dataset_uuid (str): the uuid of the dataset
-        new_projects (list): the project uuids (str) the dataset should now be related to
-
-    Raises:
-        ValueError: a project uuid did not match any project in the db
-
-    """
-    ds_uuid = utils.str_to_uuid(dataset_uuid)
-    old_projects = {item['_id']
-                    for item in
-                    flask.g.db['projects'].find({'datasets': ds_uuid},
-                                                {'_id': 1})}
-    new_projects = {uuid.UUID(proj) for proj in in_projects}
-    to_remove = old_projects-new_projects
-    to_add = new_projects-old_projects
-    for proj in to_remove:
-        response = (flask.g.db['projects']
-                    .update({'_id': proj},
-                            {'$pull': {'datasets': ds_uuid}}))
-        if not response['nModified']:
-            logging.error('Dataset %s not listed in project %s',
-                          dataset_uuid, proj)
-    for proj in to_add:
-        response = (flask.g.db['projects']
-                    .update({'_id': proj},
-                            {'$push': {'datasets': ds_uuid}}))
-        if not response['nModified']:
-            logging.error('Dataset %s not listed in project %s',
-                          dataset_uuid, proj)
+blueprint = flask.Blueprint('dataset', __name__)  # pylint: disable=invalid-name
 
 
 @blueprint.route('/all', methods=['GET'])
@@ -123,7 +50,7 @@ def get_random_ds(amount: int = 1):
     results = list(flask.g.db['datasets'].aggregate([{'$sample': {'size': amount}},
                                                      {'$project': {'_id': 1}}]))
     for i, result in enumerate(results):
-        results[i] = utils.get_dataset(result['_id'].hex)
+        results[i] = build_dataset_info(result['_id'].hex)
     return utils.response_json({'datasets': results})
 
 
@@ -139,13 +66,12 @@ def get_dataset(identifier):
         flask.Response: json structure for the dataset
 
     """
-    result = utils.get_dataset(identifier)
+    result = build_dataset_info(identifier)
     if not result:
         return flask.Response(status=404)
     return utils.response_json({'dataset': result})
 
 
-@blueprint.route('/<identifier>/delete', methods=['POST'])  # post to make sure csrf is used
 @blueprint.route('/<identifier>', methods=['DELETE'])
 @user.steward_required
 def delete_dataset(identifier):
@@ -209,3 +135,29 @@ def update_dataset(identifier):
         update_projects(identifier, projects)
 
     return flask.Response(status=200)
+
+
+# helper functions
+def build_dataset_info(identifier: str):
+    """
+    Query for a dataset from the database.
+
+    Args:
+        identifier (str): The uuid of the dataset.
+
+    Returns:
+        dict: The dataset.
+    """
+    try:
+        dataset_uuid = utils.str_to_uuid(identifier)
+    except ValueError:
+        return None
+    dataset = flask.g.db['datasets'].find_one({'_id': dataset_uuid})
+    if not dataset:
+        return None
+    order = flask.g.db['orders'].find_one({'datasets': dataset_uuid})
+    dataset['related'] = list(flask.g.db['datasets'].find({'_id': {'$in': order['datasets']}},
+                                                          {'title': 1}))
+    dataset['projects'] = list(flask.g.db['orders'].find({'datasets': dataset_uuid},
+                                                         {'title': 1}))
+    return dataset

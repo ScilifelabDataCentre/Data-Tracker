@@ -8,9 +8,7 @@ import requests
 # pylint: disable = redefined-outer-name, unused-import
 
 from helpers import make_request, as_user, make_request_all_roles,\
-    dataset_for_tests, USERS, random_string, parse_time, db_connection
-
-TEST_DS_LABEL = {'description': 'Test dataset'}
+    dataset_for_tests, USERS, random_string, parse_time, TEST_LABEL, use_db
 
 
 def test_list_datasets():
@@ -25,14 +23,14 @@ def test_list_datasets():
         assert len(response.data['datasets']) == 500
 
 
-def test_list_user_datasets():
+def test_list_user_datasets(use_db):
     """
     Choose a few users.
 
     Compare the ids of datasets from the request to a db query.
     """
     session = requests.Session()
-    db = db_connection()
+    db = use_db
     users = db['users'].aggregate([{'$sample': {'size': 5}}])
     for user in users:
         user_orders = list(db['orders'].find({'$or': [{'receiver': user['_id']},
@@ -76,10 +74,10 @@ def test_random_datasets():
     assert not response.data
 
 
-def test_get_dataset_get_permissions():
+def test_get_dataset_get_permissions(use_db):
     """Test permissions for requesting a dataset."""
     session = requests.Session()
-    db = db_connection()
+    db = use_db
     orders = list(db['datasets'].aggregate([{'$sample': {'size': 2}}]))
     for order in orders:
         responses = make_request_all_roles(f'/api/dataset/{order["_id"]}', ret_json=True)
@@ -103,27 +101,6 @@ def test_get_dataset():
         assert orig == requested
 
 
-def test_get_dataset_projects_field():
-    """
-    Request multiple datasets by uuid, one at a time.
-
-    Make sure that the projects field contains the correct projects.
-
-    Choose random projects, look up the datasets that should contain the project uuids.
-    Projects are choosen randomly using /api/project/random.
-    """
-    session = requests.Session()
-    for _ in range(10):
-        datasets = []
-        while not datasets:
-            orig = make_request(session, '/api/project/random')[0]['projects'][0]
-            datasets = orig['datasets']
-        ds_uuid = datasets[0]
-        response = make_request(session, f'/api/dataset/{ds_uuid}')
-        assert response[1] == 200
-        assert orig['_id'] in [proj['_id'] for proj in response[0]['dataset']['projects']]
-
-
 def test_get_dataset_bad():
     """
     Request datasets using bad identifiers.
@@ -131,13 +108,15 @@ def test_get_dataset_bad():
     All are expected to return 404.
     """
     session = requests.Session()
-    for _ in range(10):
+    for _ in range(5):
         response = make_request(session, f'/api/dataset/{uuid.uuid4().hex}')
-        assert response == (None, 404)
+        assert response.code == 404
+        assert not response.data
 
-    for _ in range(10):
+    for _ in range(5):
         response = make_request(session, f'/api/dataset/{random_string()}')
-        assert response == (None, 404)
+        assert response.code == 404
+        assert not response.data
 
 
 def test_delete():
@@ -191,7 +170,7 @@ def test_delete_ref_in_projects():
     """
     indata = {'links': [{'description': 'Test description', 'url': 'http://test_url'}],
               'title': 'Test title'}
-    indata.update(TEST_DS_LABEL)
+    indata.update(TEST_LABEL)
 
     session = requests.Session()
     as_user(session, USERS['steward'])
@@ -281,7 +260,7 @@ def test_update(dataset_for_tests):
     indata = {'links': [{'description': 'Test description', 'url': 'http://test2_url'}],
               'description': 'Test description',
               'title': 'Test2 title'}
-    indata.update(TEST_DS_LABEL)
+    indata.update(TEST_LABEL)
 
     session = requests.Session()
     as_user(session, USERS['steward'])
