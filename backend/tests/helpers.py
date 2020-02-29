@@ -48,8 +48,6 @@ def use_db():
     db = utils.get_db(client, conf)
     yield db
     client.close()
-    
-    
 
 
 def as_user(session: requests.Session, auth_id: str, set_csrf: bool = True) -> int:

@@ -312,16 +312,16 @@ def delete_order(identifier: str):
             flask.abort(status=403)
 
     for dataset_uuid in order['datasets']:
-        result = flask.g.db['datasets'].delete_one(dataset_uuid)
+        result = flask.g.db['datasets'].delete_one({'_id': dataset_uuid})
         if not result.acknowledged:
             logging.error(f'Dataset {dataset_uuid} delete failed (order {order_uuid} deletion):')
-            utils.response_json(status=500)
+            flask.abort(status=500)
         else:
             utils.make_log('dataset', 'delete', 'Deleting order', {'_id': dataset_uuid})
     result = flask.g.db['orders'].delete_one(order)
     if not result.acknowledged:
         logging.error('Order deletion failed: %s', order_uuid)
-        utils.response_json(status=500)
+        flask.abort(status=500)
     else:
         utils.make_log('order', 'delete', 'Order deleted', {'_id': order_uuid})
 
@@ -358,7 +358,7 @@ def update_order(identifier: str):  # pylint: disable=too-many-branches
     if '_id' in indata or 'datasets' in indata:
         logging.debug('Bad fields: %s', indata)
         flask.abort(status=400)
-    
+
     # creator
     if 'creator' in indata:
         if not user.has_permission('DATA_MANAGEMENT'):

@@ -1,18 +1,16 @@
 """Tests for order requests."""
 import logging
-import json
-import random
 import uuid
 
 import requests
+
+from helpers import make_request, as_user, make_request_all_roles,\
+    USERS, random_string, TEST_LABEL, use_db
 
 # avoid pylint errors because of fixtures
 # pylint: disable = redefined-outer-name, unused-import
 
 logging.getLogger().setLevel(logging.DEBUG)
-
-from helpers import make_request, as_user, make_request_all_roles,\
-    USERS, random_string, parse_time, TEST_LABEL, use_db
 
 
 def test_list_all_orders(use_db):
@@ -25,13 +23,12 @@ def test_list_all_orders(use_db):
     nr_orders = db['orders'].count_documents({})
 
     responses = make_request_all_roles(f'/api/order/all', ret_json=True)
-    session = requests.Session()
     for response in responses:
         if response.role in ('data', 'root'):
             assert response.code == 200
             assert len(response.data['orders']) == nr_orders
             assert set(response.data['orders'][0].keys()) == {'title', '_id',
-                                                               'creator', 'receiver'}
+                                                              'creator', 'receiver'}
         elif response.role == 'no-login':
             assert response.code == 401
             assert not response.data
@@ -98,7 +95,7 @@ def test_get_order_permissions(use_db):
                 continue
             else:
                 assert order[field] == data[field]
-    
+
 
 def test_get_order(use_db):
     """
@@ -144,13 +141,12 @@ def test_get_order_bad():
 
     All are expected to return 401, 403, or 404 depending on permissions.
     """
-    session = requests.Session()
     for _ in range(2):
         responses = make_request_all_roles(f'/api/order/{uuid.uuid4()}')
         for response in responses:
             if response.role in ('orders', 'data', 'root'):
                 assert response.code == 404
-            elif response.role in ('no-login'):
+            elif response.role == 'no-login':
                 assert response.code == 401
             else:
                 assert response.code == 403
@@ -161,7 +157,7 @@ def test_get_order_bad():
         for response in responses:
             if response.role in ('orders', 'data', 'root'):
                 assert response.code == 404
-            elif response.role in ('no-login'):
+            elif response.role == 'no-login':
                 assert response.code == 401
             else:
                 assert response.code == 403
@@ -227,13 +223,13 @@ def test_list_user_orders_permissions(use_db):
     db = use_db
     users = db['users'].aggregate([{'$match': {'permissions': {'$in': ['ORDERS_SELF',
                                                                        'DATA_MANAGEMENT']}}},
-                                    {'$sample': {'size': 2}}])
+                                   {'$sample': {'size': 2}}])
     for user in users:
         responses = make_request_all_roles('/api/order/user')
         for response in responses:
             if response.role in ('orders', 'data', 'root'):
                 assert response.code == 404
-            elif response.role in ('no-login'):
+            elif response.role == 'no-login':
                 assert response.code == 401
             else:
                 assert response.code == 403
@@ -250,7 +246,7 @@ def test_list_user_orders_permissions(use_db):
                 else:
                     assert response.code == 404
                     assert not response.data
-            elif response.role in ('no-login'):
+            elif response.role == 'no-login':
                 assert response.code == 401
                 assert not response.data
             else:
@@ -281,7 +277,7 @@ def test_list_user_orders(use_db):
     db = use_db
     users = db['users'].aggregate([{'$match': {'permissions': {'$in': ['ORDERS_SELF',
                                                                        'DATA_MANAGEMENT']}}},
-                                    {'$sample': {'size': 2}}])
+                                   {'$sample': {'size': 2}}])
 
     for user in users:
         user_orders = list(db['orders'].find({'$or': [{'receiver': user['_id']},
@@ -318,7 +314,7 @@ def test_list_user_orders_bad():
         for response in responses:
             if response.role in ('data', 'root'):
                 assert response.code == 404
-            elif response.role in ('no-login'):
+            elif response.role == 'no-login':
                 assert response.code == 401
             else:
                 assert response.code == 403
@@ -329,7 +325,7 @@ def test_list_user_orders_bad():
         for response in responses:
             if response.role in ('data', 'root'):
                 assert response.code == 404
-            elif response.role in ('no-login'):
+            elif response.role == 'no-login':
                 assert response.code == 401
             else:
                 assert response.code == 403
@@ -365,8 +361,6 @@ def test_add_order_permissions(use_db):
 
     Test permissions.
     """
-    session = requests.Session()
-
     indata = {'title': 'Test title'}
     indata.update(TEST_LABEL)
     responses = make_request_all_roles(f'/api/order/add',
@@ -404,7 +398,7 @@ def test_add_order_permissions(use_db):
         else:
             assert response.code == 403
             assert not response.data
-    
+
 
 def test_add_order(use_db):
     """
@@ -412,10 +406,8 @@ def test_add_order(use_db):
 
     Confirm that fields are set correctly.
     """
-    session = requests.Session()
-
     db = use_db
-    
+
     indata = {'description': 'Test description',
               'receiver': 'new_email@example.com',
               'title': 'Test title'}
@@ -478,8 +470,6 @@ def test_add_order_log(use_db):
 
     Confirm that logs are created.
     """
-    session = requests.Session()
-
     db = use_db
 
     indata = {'description': 'Test description',
@@ -510,16 +500,12 @@ def test_add_order_log(use_db):
             assert not response.data
 
 
-def test_add_order_bad(use_db):
+def test_add_order_bad():
     """
     Add a default dataset using /add POST.
 
     Bad requests.
     """
-    session = requests.Session()
-
-    db = use_db
-    
     indata = {'description': 'Test description',
               'receiver': 'bad_email@asd',
               'title': 'Test title'}
@@ -543,7 +529,7 @@ def test_add_order_bad(use_db):
               'creator': 'bad_email@asd',
               'title': 'Test title'}
     indata.update(TEST_LABEL)
-    
+
     responses = make_request_all_roles(f'/api/order/add',
                                        method='POST',
                                        data=indata,
@@ -562,7 +548,7 @@ def test_add_order_bad(use_db):
               'creator': str(uuid.uuid4()),
               'title': 'Test title'}
     indata.update(TEST_LABEL)
-    
+
     responses = make_request_all_roles(f'/api/order/add',
                                        method='POST',
                                        data=indata,
@@ -703,7 +689,8 @@ def test_add_dataset_log(use_db):
 
     order_logs_post = list(db['logs'].find({'data_type': 'order', 'data._id': order['_id']}))
     assert len(order_logs_post) == len(order_logs)+1
-    ds_logs_post = list(db['logs'].find({'data_type': 'dataset', 'data._id': uuid.UUID(response.data['_id'])}))
+    ds_logs_post = list(db['logs'].find({'data_type': 'dataset',
+                                         'data._id': uuid.UUID(response.data['_id'])}))
     assert len(ds_logs_post) == 1
     assert ds_logs_post[0]['action']
 
@@ -719,7 +706,7 @@ def test_update_order_permissions(use_db):
     db = use_db
 
     orders_user = db['users'].find_one({'auth_id': USERS['orders']})
-    
+
     orders = list(db['orders'].aggregate([{'$match': {'creator': orders_user['_id']}},
                                           {'$sample': {'size': 3}}]))
 
@@ -743,7 +730,7 @@ def test_update_order_permissions(use_db):
             else:
                 assert response.code == 403
                 assert not response.data
-    
+
 
 def test_update_order(use_db):
     """
@@ -757,9 +744,9 @@ def test_update_order(use_db):
     db = use_db
 
     orders_user = db['users'].find_one({'auth_id': USERS['orders']})
-    
+
     orders = list(db['orders'].aggregate([{'$match': {'creator': orders_user['_id']}},
-                                          {'$sample': {'size': 3}}]))
+                                          {'$sample': {'size': 2}}]))
 
     for order in orders:
         for role in USERS:
@@ -768,9 +755,9 @@ def test_update_order(use_db):
                       'description': f'Test description - updated by {role}',
                       'receiver': f'new_{role}_email@example.com',
                       'extra': {'updated': 'yes'}}
-            indata['extra'].update(TEST_LABEL)
+            indata['extra'].update(TEST_LABEL['extra'])
+            current_user = db['users'].find_one({'auth_id': USERS[role]})
             if role in ('data', 'root'):
-                current_user = db['users'].find_one({'auth_id': USERS[role]})
                 indata.update({'creator': str(current_user['_id'])})
 
             response = make_request(session,
@@ -780,12 +767,17 @@ def test_update_order(use_db):
                                     ret_json=True)
 
             if role in ('orders', 'data', 'root'):
+                print(role, indata)
                 assert response.code == 200
                 assert not response.data
                 new_order = db['orders'].find_one({'_id': order['_id']})
+                new_order['_id'] = str(new_order['_id'])
+                new_order['creator'] = str(new_order['creator'])
+                new_order['receiver'] = str(new_order['receiver'])
+                new_order['datasets'] = [str(ds_uuid) for ds_uuid in new_order['datasets']]
                 for field in indata:
                     assert new_order[field] == indata[field]
-                    assert db['logs'].find_one({'data._id': orders[i]['_id'],
+                    assert db['logs'].find_one({'data._id': order['_id'],
                                                 'action': 'edit',
                                                 'data_type': 'order',
                                                 'user': current_user['_id']})
@@ -803,11 +795,9 @@ def test_update_order_bad(use_db):
 
     Bad requests.
     """
-    session = requests.Session()
-
     db = use_db
-        
-    orders_user = db['users'].find_one({'auth_id': USERS['orders']})    
+
+    orders_user = db['users'].find_one({'auth_id': USERS['orders']})
     orders = list(db['orders'].aggregate([{'$match': {'creator': orders_user['_id']}},
                                           {'$sample': {'size': 2}}]))
 
@@ -833,13 +823,13 @@ def test_update_order_bad(use_db):
         indata = {'description': 'Test description',
                   'creator': str(uuid.uuid4()),
                   'title': 'Test title'}
-    
+
         responses = make_request_all_roles(f'/api/order/{order["_id"]}',
                                            method='PUT',
                                            data=indata,
                                            ret_json=True)
         for response in responses:
-            if response.role in ('orders', 'data', 'root'):
+            if response.role in ('data', 'root'):
                 assert response.code == 400
             elif response.role == 'no-login':
                 assert response.code == 401
@@ -919,7 +909,7 @@ def test_add_dataset_bad_fields(use_db):
                             data=indata)
     assert response.code == 400
     assert not response.data
-    
+
     indata = {'links': 'Some text'}
     response = make_request(session,
                             f'/api/order/{order["_id"]}/addDataset',
@@ -929,14 +919,12 @@ def test_add_dataset_bad_fields(use_db):
     assert not response.data
 
 
-
-
 def test_delete_order(use_db):
     """
     Add and delete orders.
 
     * Check permissions.
-    * Delete orders added by the /add tests.
+    * Delete orders added by the add tests.
     * Confirm that related datasets are deleted.
     * Check that logs are created correctly.
     """
@@ -945,10 +933,10 @@ def test_delete_order(use_db):
     db = use_db
 
     orders_user = db['users'].find_one({'auth_id': USERS['orders']})
-    
-    orders = list(db['orders'].find(TEST_LABEL))
+
+    # must be updated if TEST_LABEL is modified
+    orders = list(db['orders'].find({'extra.testing': 'yes'}))
     i = 0
-    self_delete = False
     while i < len(orders):
         for role in USERS:
             as_user(session, USERS[role])
@@ -969,8 +957,8 @@ def test_delete_order(use_db):
                                                     'action': 'delete',
                                                     'data_type': 'dataset'})
                     i += 1
-                    if role == 'orders':
-                        self_delete = True                        
+                    if i >= len(orders):
+                        break
                 else:
                     assert response.code == 403
                     assert not response.data
@@ -981,16 +969,24 @@ def test_delete_order(use_db):
                 assert response.code == 403
                 assert not response.data
 
-    if not self_delete:
-        raise Exception("Order creator with ORDERS_SELF deleting own order not tested")
+    as_user(session, USERS['orders'])
+    response = make_request(session,
+                            f'/api/order/add',
+                            data={'title': 'tmp'},
+                            method='POST')
+    assert response.code == 200
+    response = make_request(session,
+                            f'/api/order/{response.data["_id"]}',
+                            method='DELETE')
+    assert response.code == 200
+    assert not response.data
 
 
-def test_delete_order_bad(use_db):
-    """Attempt bad order delete requests."""    
+def test_delete_order_bad():
+    """Attempt bad order delete requests."""
     session = requests.Session()
 
     as_user(session, USERS['data'])
-    db = use_db
     for _ in range(2):
         response = make_request(session,
                                 f'/api/order/{random_string()}',
