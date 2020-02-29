@@ -6,15 +6,16 @@ from helpers import make_request, as_user, make_request_all_roles, USERS
 # pylint: disable=redefined-outer-name
 
 def test_logout():
-    """Assure that session is stopped after logging out."""
+    """Assure that session is cleared after logging out."""
     session = requests.Session()
-    as_user(session, USERS['user'])
-    response = make_request(session, '/api/developer/loginhello')
-    assert response == ({'test': 'success'}, 200)
+    as_user(session, USERS['root'])
+    response = make_request(session, '/api/user/me')
+    for field in response.data['user']:
+        assert response.data['user'][field]
     response = make_request(session, '/api/user/logout', ret_json=False)
-
-    response = make_request(session, '/api/developer/loginhello', ret_json=False)
-    assert response == (None, 401)
+    response = make_request(session, '/api/user/me')
+    for field in response.data['user']:
+        assert not response.data['user'][field]
 
 
 def test_list_users():
@@ -23,31 +24,31 @@ def test_list_users():
 
     Assert that admin is required.
     """
-    responses = make_request_all_roles('/api/user/all')
-    assert [response[1] for response in responses] == [401, 401, 401, 200]
+    responses = make_request_all_roles('/api/user/all',
+                                       ret_json=True)
     for response in responses:
-        if response[1] == 401:
-            assert response[0] is None
+        if response.role in ('users', 'root'):
+            assert response.code == 200
+            assert len(response.data['users']) == 137
+        elif response.role == 'no-login':
+            assert response.code == 401
+            assert not response.data
         else:
-            data = json.loads(response[0])
-            assert len(data['users']) == 130
+            assert response.code == 403
+            assert not response.data
 
 
 def test_list_info():
     """
     Retrieve info about current user.
     """
-    responses = make_request_all_roles('/api/user/me')
-    assert [response[1] for response in responses] == [200]*4
-    for i, response in enumerate(responses):
-        data = json.loads(response[0])
-        assert len(data['user']) == 5
-        if i == 0:
-            for field in data['user']:
-                assert not data['user'][field]
-        else:
-            for field in data['user']:
-                assert data['user'][field]
+    responses = make_request_all_roles('/api/user/me',
+                                       ret_json=True)
+    for response in responses:
+        assert response.code == 200
+        assert len(response.data['user']) == 5
+        if response.role != 'no-login':
+            assert response.data['user']['name'] == f'{response.role.capitalize()} Test'
 
 
 def test_country_list():
@@ -56,8 +57,8 @@ def test_country_list():
 
     Should also test e.g. pagination once implemented.
     """
-    responses = helpers.make_request_all_roles('/api/user/countries',
-                                               ret_json=True)
+    responses = make_request_all_roles('/api/user/countries',
+                                       ret_json=True)
     for response in responses:
         assert response.code == 200
         assert len(response.data['countries']) == 240

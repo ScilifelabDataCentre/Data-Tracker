@@ -105,13 +105,15 @@ def logout():
 
 
 @blueprint.route('/all')
-@admin_required
+@login_required
 def list_users():
     """
     List all users.
 
     Admin access should be required.
     """
+    if not has_permission('USER_MANAGEMENT'):
+        flask.abort(403)
     result = tuple(flask.g.db['users'].find())
     return utils.response_json({'users': result})
 
@@ -137,7 +139,7 @@ def get_current_user_info():
                     'country': '',
                     'email': '',
                     'name': '',
-                    'role': ''}
+                    'permissions': ''}
     if data:
         for field in outstructure:
             if field in data:
