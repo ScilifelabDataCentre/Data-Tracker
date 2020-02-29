@@ -154,7 +154,6 @@ def get_order_log(identifier):
 
 
 @blueprint.route('/add', methods=['GET'])
-@user.login_required
 def add_order_get():
     """
     Provide a basic data structure for adding an order.
@@ -168,7 +167,6 @@ def add_order_get():
 
 
 @blueprint.route('/add', methods=['POST'])
-@user.login_required
 def add_order():  # pylint: disable=too-many-branches
     """
     Add an order.
@@ -222,7 +220,6 @@ def add_order():  # pylint: disable=too-many-branches
 
 
 @blueprint.route('/<_>/addDataset', methods=['GET'])
-@user.login_required
 def add_dataset_get(_):
     """
     Provide a basic data structure for adding a dataset.
@@ -235,7 +232,6 @@ def add_dataset_get(_):
 
 
 @blueprint.route('/<identifier>/addDataset', methods=['POST'])
-@user.login_required
 def add_dataset_post(identifier):  # pylint: disable=too-many-branches
     """
     Add a dataset.
@@ -297,7 +293,6 @@ def add_dataset_post(identifier):  # pylint: disable=too-many-branches
 
 
 @blueprint.route('/<identifier>', methods=['DELETE'])
-@user.login_required
 def delete_order(identifier: str):
     """
     Delete the order with the given identifier.
@@ -329,5 +324,69 @@ def delete_order(identifier: str):
         utils.response_json(status=500)
     else:
         utils.make_log('order', 'delete', 'Order deleted', {'_id': order_uuid})
+
+    return flask.Response(status=200)
+
+
+@blueprint.route('/<identifier>', methods=['PUT'])
+def update_order(identifier: str):  # pylint: disable=too-many-branches
+    """
+    Update an existing order.
+
+    Args:
+        identifier (str): Order uuid.
+
+    Returns:
+        flask.Response: Status code of the request.
+    """
+    try:
+        order_uuid = utils.str_to_uuid(identifier)
+    except ValueError:
+        return flask.abort(status=404)
+    order = flask.g.db['orders'].find_one({'_id': order_uuid})
+    if not order:
+        return flask.abort(status=404)
+    if not (user.has_permission('DATA_MANAGEMENT') or
+            order['creator'] == flask.session['user_id']):
+        return flask.abort(status=403)
+
+    indata = flask.json.loads(flask.request.data)
+    # indata validation
+    if not validate.validate_indata(indata):
+        logging.debug('Validation failed: %s', indata)
+        flask.abort(status=400)
+    if '_id' in indata or 'datasets' in indata:
+        logging.debug('Bad fields: %s', indata)
+        flask.abort(status=400)
+    
+    # creator
+    if 'creator' in indata:
+        if not user.has_permission('DATA_MANAGEMENT'):
+            flask.abort(status=403)
+        if new_identifier := utils.check_email_uuid(indata['creator']):
+            indata['creator'] = new_identifier
+        else:
+            flask.abort(400)
+    else:
+        order['creator'] = flask.g.current_user['_id']
+    # receiver
+    if 'receiver' in indata:
+        logging.debug('receiver')
+        if new_identifier := utils.check_email_uuid(indata['receiver']):
+            indata['receiver'] = new_identifier
+        else:
+            flask.abort(400)
+
+    for key in indata:
+        if key not in order:
+            flask.abort(status=400)
+
+    order.update(indata)
+
+    result = flask.g.db['orders'].update_one({'_id': order['_id']}, {'$set': order})
+    if not result.acknowledged:
+        logging.error('Order update failed: %s', order)
+    else:
+        utils.make_log('order', 'edit', 'Order added', order)
 
     return flask.Response(status=200)
