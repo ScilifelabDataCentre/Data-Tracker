@@ -72,12 +72,6 @@ def error_not_found(_):
     return flask.Response(status=404)
 
 
-@app.route('/api/countries', methods=['GET'])
-def add_dataset_get():
-    """Provide a list of countries."""
-    return flask.jsonify({'countries': utils.country_list()})
-
-
 # to allow coverage check for testing
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)

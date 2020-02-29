@@ -116,6 +116,12 @@ def list_users():
     return utils.response_json({'users': result})
 
 
+@app.route('/api/countries', methods=['GET'])
+def add_dataset_get():
+    """Provide a list of countries."""
+    return flask.jsonify({'countries': utils.country_list()})
+
+
 # requests
 @blueprint.route('/me')
 def get_current_user_info():
@@ -228,6 +234,8 @@ def has_permission(permission: str):
     Returns:
         bool: whether the user has the required permissions or not
     """
+    if not flask.g.permissions and permission:
+        return False
     user_permissions = set(chain.from_iterable(PERMISSIONS[permission]
                                                for permission in flask.g.permissions))
     if permission not in user_permissions:

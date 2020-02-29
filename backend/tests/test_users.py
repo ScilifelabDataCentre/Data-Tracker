@@ -48,3 +48,16 @@ def test_list_info():
         else:
             for field in data['user']:
                 assert data['user'][field]
+
+
+def test_country_list():
+    """
+    Request a list of countries
+
+    Should also test e.g. pagination once implemented.
+    """
+    responses = helpers.make_request_all_roles('/api/user/countries',
+                                               ret_json=True)
+    for response in responses:
+        assert response.code == 200
+        assert len(response.data['countries']) == 240
