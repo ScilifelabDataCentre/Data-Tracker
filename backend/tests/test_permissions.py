@@ -7,67 +7,101 @@ import helpers
 # pylint: disable=redefined-outer-name
 
 
-def test_base():
+def test_request_no_permissions_required():
     """Request target with no permission requirements."""
-    responses = helpers.make_request_all_roles('/api/developer/hello')
-    assert [response[1] for response in responses] == [200, 200, 200, 200]
-    assert [json.loads(response[0]) if response[0] else None
-            for response in responses] == [{'test': "success"}]*4
+    responses = helpers.make_request_all_roles('/api/developer/hello', ret_json=True)
+    for response in responses:
+        assert response.code == 200
+        assert response.data == {'test': "success"}
 
 
-def test_login_requirement():
+def test_request_login_required():
+    """Request target with no permission requirements."""
+    responses = helpers.make_request_all_roles('/api/developer/loginhello', ret_json=True)
+    for response in responses:
+        if response.role != 'no-login':
+            assert response.code == 200
+            assert response.data == {'test': "success"}
+        else:
+            assert response.code == 401
+            assert not response.data
+
+
+def test_request_permission_orders_self():
+    """Request requiring ORDERS_SELF permissions."""
+    responses = helpers.make_request_all_roles('/api/developer/hello/ORDERS_SELF', ret_json=True)
+    for response in responses:
+        if response.role in ('orders', 'data', 'root'):
+            assert response.code == 200
+            assert response.data == {'test': "success"}
+        else:
+            assert response.code == 403
+            assert not response.data
+
+
+def test_request_permission_owners_read():
+    """Request requiring OWNERS_READ permissions."""
+    responses = helpers.make_request_all_roles('/api/developer/hello/OWNERS_READ', ret_json=True)
+    for response in responses:
+        if response.role in ('owners', 'data', 'root'):
+            assert response.code == 200
+            assert response.data == {'test': "success"}
+        else:
+            assert response.code == 403
+            assert not response.data
+
+
+def test_request_permission_user_management():
+    """Request requiring USER_MANAGEMENT permissions."""
+    responses = helpers.make_request_all_roles('/api/developer/hello/USER_MANAGEMENT', ret_json=True)
+    for response in responses:
+        if response.role in ('users', 'root'):
+            assert response.code == 200
+            assert response.data == {'test': "success"}
+        else:
+            assert response.code == 403
+            assert not response.data
+
+
+def test_request_permission_data_management():
+    """Request requiring DATA_MANAGEMENT permissions."""
+    responses = helpers.make_request_all_roles('/api/developer/hello/DATA_MANAGEMENT', ret_json=True)
+    for response in responses:
+        if response.role in ('data', 'root'):
+            assert response.code == 200
+            assert response.data == {'test': "success"}
+        else:
+            assert response.code == 403
+            assert not response.data
+
+
+def test_request_permission_doi_reviewer():
     """Request target with no login requirement."""
-    responses = helpers.make_request_all_roles('/api/developer/loginhello')
-    assert [response[1] for response in responses] == [401, 200, 200, 200]
-    assert [json.loads(response[0]) if response[0] else None
-            for response in responses] == [None,
-                                           {'test': "success"},
-                                           {'test': "success"},
-                                           {'test': "success"}]
-
-
-def test_steward_requirement():
-    """Request target with no login requirement."""
-    responses = helpers.make_request_all_roles('/api/developer/stewardhello')
-    assert [response[1] for response in responses] == [401, 401, 200, 200]
-    assert [json.loads(response[0]) if response[0] else None
-            for response in responses] == [None,
-                                           None,
-                                           {'test': "success"},
-                                           {'test': "success"}]
-
-
-def test_admin_requirement():
-    """Request target with no login requirement."""
-    responses = helpers.make_request_all_roles('/api/developer/adminhello')
-    assert [response[1] for response in responses] == [401, 401, 401, 200]
-    assert [json.loads(response[0]) if response[0] else None
-            for response in responses] == [None,
-                                           None,
-                                           None,
-                                           {'test': "success"}]
+    responses = helpers.make_request_all_roles('/api/developer/hello/DOI_REVIEWER', ret_json=True)
+    for response in responses:
+        if response.role in ('doi', 'root'):
+            assert response.code == 200
+            assert response.data == {'test': "success"}
+        else:
+            assert response.code == 403
+            assert not response.data
 
 
 def test_csrf():
-    """
-    Add a default dataset using .post(dataset/add) and confirm that CSRF works correctly.
-
-    Should require at least Steward.
-    """
+    """Perform POST, PUT and DELETE requests to confirm that CSRF works correctly."""
+    
     for method in ('POST', 'PUT', 'DELETE'):
         responses = helpers.make_request_all_roles('/api/developer/csrftest',
-                                                   method=method, set_csrf=False)
-        assert [response[1] for response in responses] == [400, 400, 400, 400]
-        assert [json.loads(response[0]) if response[0] else None
-                for response in responses] == [None,
-                                               None,
-                                               None,
-                                               None]
+                                                   method=method,
+                                                   set_csrf=False,
+                                                   ret_json=True)
+        for response in responses:
+            assert response.code == 400
+            assert not response.data
 
-        responses = helpers.make_request_all_roles('/api/developer/csrftest', method=method)
-        assert [response[1] for response in responses] == [400, 200, 200, 200]
-        assert [json.loads(response[0]) if response[0] else None
-                for response in responses] == [None,
-                                               {'test': 'success'},
-                                               {'test': 'success'},
-                                               {'test': 'success'}]
+        responses = helpers.make_request_all_roles('/api/developer/csrftest',
+                                                   method=method,
+                                                   ret_json=True)
+        for response in responses:
+            assert response.code == 200
+            assert response.data == {'test': "success"}

@@ -40,10 +40,17 @@ def login_hello():
     return flask.jsonify({'test': 'success'})
 
 
-@blueprint.route('/stewardhello')
-@user.steward_required
-def steward_hello():
-    """Test request requiring Steward rights."""
+@blueprint.route('/hello/<permission>')
+def permission_hello(permission: str):
+    """
+    Test request requiring the given permission.
+    
+    Args:
+        permission (str): The permission to test for.
+    """
+    if not user.has_permission(permission):
+        flask.abort(status=403)
+
     return flask.jsonify({'test': 'success'})
 
 
@@ -66,13 +73,6 @@ def get_added_ds():
     added = list(flask.g.db['datasets'].find({'description': 'Test dataset'},
                                              {'_id': 1}))
     return flask.jsonify({'datasets': added})
-
-
-@blueprint.route('/orders')
-def list_orders():
-    """Get datasets added during testing."""
-    orders = tuple(flask.g.db['orders'].find())
-    return flask.jsonify({'orders': orders})
 
 
 @blueprint.route('/session')
