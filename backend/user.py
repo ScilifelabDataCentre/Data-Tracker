@@ -116,8 +116,8 @@ def list_users():
     return utils.response_json({'users': result})
 
 
-@app.route('/api/countries', methods=['GET'])
-def add_dataset_get():
+@blueprint.route('/api/countries', methods=['GET'])
+def list_countries():
     """Provide a list of countries."""
     return flask.jsonify({'countries': utils.country_list()})
 
