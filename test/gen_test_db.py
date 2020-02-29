@@ -152,7 +152,7 @@ def gen_users(db, nr_users: int = 100):
         make_log(db, action='add', data=user, data_type='user',comment='Generated', user='root')
 
     countries = utils.country_list()
-    for i in range(1, nr_users+1-3):
+    for i in range(1, nr_users+1):
         user = structure.user()
         changes = {'affiliation': 'University ' + random.choice(string.ascii_uppercase),
                    'api_key': uuid.uuid4().hex,
