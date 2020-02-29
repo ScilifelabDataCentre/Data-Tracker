@@ -339,7 +339,7 @@ def make_log(data_type: str, action: str, comment: str, data: dict = None):
         e.g. ``data`` should only contain permitted fields.
 
     Args:
-        action (str): Type of action (add, update, delete).
+        action (str): Type of action (add, edit, delete).
         comment (str): Note about why the change was done
             (e.g. "Dataset added via addDataset").
         data_type (str): The collection name.
