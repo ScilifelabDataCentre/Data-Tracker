@@ -73,6 +73,7 @@ def get_dataset(identifier):
 
 
 @blueprint.route('/<identifier>', methods=['DELETE'])
+@user.login_required
 def delete_dataset(identifier: str):
     """
     Delete a dataset.
@@ -85,13 +86,11 @@ def delete_dataset(identifier: str):
     try:
         ds_uuid = utils.str_to_uuid(identifier)
     except ValueError:
-        return flask.Response(status=404)
+        return flask.abort(status=404)
     dataset = flask.g.db['datasets'].find_one({'_id': ds_uuid})
     if not dataset:
-        return flask.Response(status=404)
-    order = flask.g.db['orders'].find_one({'datasets': ds_uuid})
-    if not dataset:
         flask.abort(status=404)
+    order = flask.g.db['orders'].find_one({'datasets': ds_uuid})
     if not user.has_permission('DATA_MANAGEMENT'):
         if order['creator'] != flask.g.current_user['_id']:
             flask.abort(status=403)
@@ -125,8 +124,6 @@ def delete_dataset(identifier: str):
 
 
 @blueprint.route('/<identifier>', methods=['PUT'])
-@user.steward_or_dsowner_required
-# require Steward or owning dataset
 def update_dataset(identifier):
     """
     Update a dataset with new values.
@@ -138,6 +135,17 @@ def update_dataset(identifier):
         flask.Response: success: 200, failure: 400
 
     """
+    try:
+        ds_uuid = utils.str_to_uuid(identifier)
+    except ValueError:
+        return flask.abort(status=404)
+    dataset = flask.g.db['datasets'].find_one({'_id': ds_uuid})
+    if not dataset:
+        flask.abort(status=404)
+    order = flask.g.db['orders'].find_one({'datasets': ds_uuid})
+    if not user.has_permission('DATA_MANAGEMENT'):
+        if order['creator'] != flask.g.current_user['_id']:
+            flask.abort(status=403)
     indata = json.loads(flask.request.data)
     try:
         ds_uuid = utils.str_to_uuid(identifier)
