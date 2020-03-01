@@ -11,18 +11,6 @@ from helpers import make_request, as_user, make_request_all_roles,\
     dataset_for_tests, USERS, random_string, parse_time, TEST_LABEL, use_db
 
 
-def test_list_datasets():
-    """
-    Request a list of all datasets.
-
-    Should also test e.g. pagination once implemented.
-    """
-    responses = make_request_all_roles('/api/dataset/all', ret_json=True)
-    for response in responses:
-        assert response.code == 200
-        assert len(response.data['datasets']) == 500
-
-
 def test_list_user_datasets(use_db):
     """
     Choose a few users.
@@ -119,11 +107,84 @@ def test_get_dataset_bad():
         assert not response.data
 
 
-def test_delete():
+def test_delete_dataset(use_db):
+    """
+    Add and delete datasets.
+
+    * Check permissions.
+    * Delete orders added by the add tests.
+    * Confirm that related dataset entries in orders and projects are deleted.
+    * Check that logs are created correctly.
+    """
+    session = requests.Session()
+
+    db = use_db
+
+    orders_user = db['users'].find_one({'auth_id': USERS['data']})
+
+    # must be updated if TEST_LABEL is modified
+    datasets = list(db['datasets'].find({'extra.testing': 'yes'}))
+    i = 0
+    while i < len(datasets):
+        for role in USERS:
+            as_user(session, USERS[role])
+            order = db['orders'].find_one({'datasets': datasets[i]['_id']})
+            projects = list(db['projects'].find({'datasets': datasets[i]['_id']}))
+            response = make_request(session,
+                                    f'/api/dataset/{datasets[i]["_id"]}',
+                                    method='DELETE')
+            current_user = db['users'].find_one({'auth_id': USERS[role]})
+            if role == 'no-login':
+                assert response.code == 401
+                assert not response.data
+            elif role in ('data', 'root') or order['creator'] == current_user['_id']:
+                assert response.code == 200
+                assert not response.data
+                assert not db['datasets'].find_one({'_id': datasets[i]['_id']})
+                assert db['logs'].find_one({'data._id': datasets[i]['_id'],
+                                            'action': 'delete',
+                                            'data_type': 'dataset'})
+                assert not list(db['orders'].find({'datasets': datasets[i]['_id']}))
+                assert not list(db['projects'].find({'datasets': datasets[i]['_id']}))
+                assert db['logs'].find_one({'data._id': order['_id'],
+                                            'action': 'edit',
+                                            'data_type': 'order',
+                                            'comment': f'Deleted dataset {datasets[i]["_id"]}'})
+                p_logs = list(db['logs'].find({'action': 'edit',
+                                               'data_type': 'project',
+                                               'comment': f'Deleted dataset {datasets[i]["_id"]}'}))
+                assert len(p_logs) == len(projects)
+                i += 1
+                if i >= len(datasets):
+                    break
+            else:
+                assert response.code == 403
+                assert not response.data
+
+
+def test_delete_order_bad():
+    """Attempt bad order delete requests."""
+    session = requests.Session()
+
+    as_user(session, USERS['data'])
+    for _ in range(2):
+        response = make_request(session,
+                                f'/api/order/{random_string()}',
+                                method='DELETE')
+    assert response.code == 404
+    assert not response.data
+
+    for _ in range(2):
+        response = make_request(session,
+                                f'/api/order/{uuid.uuid4()}',
+                                method='DELETE')
+    assert response.code == 404
+    assert not response.data
+
+
+def test_delete(use_db):
     """
     Delete all datasets that were created by the add tests, one at a time.
-
-    Should require at least Steward.
     """
     session = requests.Session()
     response = make_request(session, '/api/developer/test_datasets')
@@ -173,7 +234,7 @@ def test_delete_ref_in_projects():
     indata.update(TEST_LABEL)
 
     session = requests.Session()
-    as_user(session, USERS['steward'])
+    as_user(session, USERS['data'])
     indata['projects'] = [ds['_id']
                           for ds in make_request(session,
                                                  '/api/project/random/5')[0]['projects']]
@@ -199,7 +260,7 @@ def test_delete_bad():
     Should require at least Steward.
     """
     session = requests.Session()
-    as_user(session, USERS['steward'])
+    as_user(session, USERS['data'])
     for _ in range(3):
         ds_uuid = random_string()
         response = make_request(session,
@@ -222,8 +283,14 @@ def test_update_permissions(dataset_for_tests):
     ds_uuid = dataset_for_tests
     indata = {'title': 'Updated title'}
     responses = make_request_all_roles(f'/api/dataset/{ds_uuid}', method='PUT', data=indata)
-    assert [response[1] for response in responses] == [400, 401, 200, 200]
-    assert [response[0] for response in responses] == [None]*4
+    for response in responses:
+        if response.role in ('orders', 'data', 'root'):
+            assert response.code == 200
+        elif response.role == 'no-login':
+            assert response.code == 401
+        else:
+            assert response.code == 403
+        assert not response.data
 
     session = requests.Session()
     project = {'datasets': []}
@@ -263,7 +330,7 @@ def test_update(dataset_for_tests):
     indata.update(TEST_LABEL)
 
     session = requests.Session()
-    as_user(session, USERS['steward'])
+    as_user(session, USERS['data'])
 
     ds_uuid = dataset_for_tests
     responses = make_request_all_roles(f'/api/dataset/{ds_uuid}', method='PUT', data=indata)
@@ -312,7 +379,7 @@ def test_update_projects(dataset_for_tests):
 def test_update_as_owner(dataset_for_tests):
     """Update some datasets as the owner."""
     session = requests.Session()
-    as_user(session, USERS['steward'])
+    as_user(session, USERS['data'])
 
     ds_uuid = dataset_for_tests
 
@@ -357,7 +424,7 @@ def test_update_bad(dataset_for_tests):
 
     ds_uuid = dataset_for_tests
     session = requests.Session()
-    as_user(session, USERS['steward'])
+    as_user(session, USERS['data'])
     indata = {'_id': 'Updated title'}
     response = make_request(session, f'/api/dataset/{ds_uuid}')
 
@@ -374,3 +441,17 @@ def test_update_bad(dataset_for_tests):
     response = make_request(session, f'/api/dataset/{ds_uuid}',
                             method='PUT', data=indata)
     assert response == (None, 400)
+
+
+def test_list_datasets():
+    """
+    Request a list of all datasets.
+
+    Should also test e.g. pagination once implemented.
+    """
+    responses = make_request_all_roles('/api/dataset/all', ret_json=True)
+    for response in responses:
+        assert response.code == 200
+        assert len(response.data['datasets']) == 500
+
+
