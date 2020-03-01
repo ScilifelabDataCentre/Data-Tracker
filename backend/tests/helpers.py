@@ -11,6 +11,7 @@ import pytest
 import requests
 
 import config
+import structure
 import utils
 
 
@@ -39,6 +40,7 @@ def db_connection():
     conf = config.init()
     client = utils.get_dbclient(conf)
     return utils.get_db(client, conf)
+
 
 @pytest.fixture
 def use_db():
@@ -81,27 +83,28 @@ def dataset_for_tests():
 
     Yields the uuid of the added dataset.
     """
-
+    db = db_connection()
     # prepare
-    indata = {'links': [{'description': 'Test description', 'url': 'http://test_url'}],
-              'description': 'Test description',
-              'title': 'Test title'}
+    order_indata = structure.order()
+    order_indata.update({'links': [{'description': 'Test description', 'url': 'http://test_url'}],
+                         'description': 'Added by fixture.',
+                         'title': 'Test title from fixture'})
+    order_indata.update(TEST_LABEL)
     session = requests.Session()
-    as_user(session, USERS['data'])
-
-    data, status_code = make_request(session,
-                                     '/api/dataset/add',
-                                     data=indata,
-                                     method='POST')
-    assert status_code == 200
-    uuid = data['_id']
-
-    yield uuid
+    as_user(session, USERS['orders'])
+    data_user = db['users'].find_one({'auth_id': USERS['data']})
+    order_indata.update({'creator': data_user['_id']})
+    order_indata.update({'receiver': data_user['_id']})
+    
+    dataset_indata = structure.dataset()
+    db['datasets'].insert_one(dataset_indata)
+    order_indata['datasets'].append(dataset_indata['_id'])
+    db['orders'].insert_one(order_indata)
+    yield dataset_indata['_id']
 
     # cleanup
-    _, status_code = make_request(session,
-                                  f'/api/dataset/{uuid}',
-                                  method='DELETE')
+    db['orders'].delete_one(order_indata)
+    db['datasets'].delete_one(dataset_indata)
 
 
 def make_request(session, url: str, data: dict = None, method='GET', ret_json: bool = True) -> dict:
@@ -122,6 +125,9 @@ def make_request(session, url: str, data: dict = None, method='GET', ret_json: b
     elif method == 'POST':
         response = session.post(f'{BASE_URL}{url}',
                                 data=json.dumps(data))
+    elif method == 'PATCH':
+        response = session.patch(f'{BASE_URL}{url}',
+                                 data=json.dumps(data))
     elif method == 'PUT':
         response = session.put(f'{BASE_URL}{url}',
                                data=json.dumps(data))

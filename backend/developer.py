@@ -61,7 +61,7 @@ def admin_hello():
     return flask.jsonify({'test': 'success'})
 
 
-@blueprint.route('/csrftest', methods=['POST', 'PUT', 'DELETE'])
+@blueprint.route('/csrftest', methods=['POST', 'PATCH', 'PUT', 'DELETE'])
 def csrf_test():
     """Test csrf tokens."""
     return flask.jsonify({'test': 'success'})

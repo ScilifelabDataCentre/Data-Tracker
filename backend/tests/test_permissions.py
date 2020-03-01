@@ -90,7 +90,7 @@ def test_request_permission_doi_reviewer():
 def test_csrf():
     """Perform POST, PUT and DELETE requests to confirm that CSRF works correctly."""
     
-    for method in ('POST', 'PUT', 'DELETE'):
+    for method in ('POST', 'PATCH', 'PUT', 'DELETE'):
         responses = helpers.make_request_all_roles('/api/developer/csrftest',
                                                    method=method,
                                                    set_csrf=False,

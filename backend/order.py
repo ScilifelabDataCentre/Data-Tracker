@@ -31,7 +31,7 @@ def prepare():
         flask.abort(status=403)
 
 
-@blueprint.route('/all', methods=['GET'])
+@blueprint.route('/', methods=['GET'])
 def list_orders():
     """
     List all orders belonging to the provided user.
@@ -153,20 +153,7 @@ def get_order_log(identifier):
     return utils.response_json(out_log)
 
 
-@blueprint.route('/add', methods=['GET'])
-def add_order_get():
-    """
-    Provide a basic data structure for adding an order.
-
-    Not all fields will be available for all users.
-    """
-    dataset = structure.order()
-    del dataset['_id']
-    del dataset['datasets']
-    return utils.response_json(dataset)
-
-
-@blueprint.route('/add', methods=['POST'])
+@blueprint.route('/', methods=['POST'])
 def add_order():  # pylint: disable=too-many-branches
     """
     Add an order.
@@ -219,22 +206,10 @@ def add_order():  # pylint: disable=too-many-branches
     return utils.response_json({'_id': result.inserted_id})
 
 
-@blueprint.route('/<_>/addDataset', methods=['GET'])
-def add_dataset_get(_):
-    """
-    Provide a basic data structure for adding a dataset.
-
-    The structure will be returned no matter what "uuid" it is provided.
-    """
-    dataset = structure.dataset()
-    del dataset['_id']
-    return utils.response_json(dataset)
-
-
-@blueprint.route('/<identifier>/addDataset', methods=['POST'])
+@blueprint.route('/<identifier>/dataset', methods=['POST'])
 def add_dataset_post(identifier):  # pylint: disable=too-many-branches
     """
-    Add a dataset.
+    Add a dataset to the given order.
 
     Args:
         identifier (str): The order to add the dataset to.
@@ -328,7 +303,7 @@ def delete_order(identifier: str):
     return flask.Response(status=200)
 
 
-@blueprint.route('/<identifier>', methods=['PUT'])
+@blueprint.route('/<identifier>', methods=['PATCH'])
 def update_order(identifier: str):  # pylint: disable=too-many-branches
     """
     Update an existing order.

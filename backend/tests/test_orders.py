@@ -22,7 +22,7 @@ def test_list_all_orders(use_db):
     db = use_db
     nr_orders = db['orders'].count_documents({})
 
-    responses = make_request_all_roles(f'/api/order/all', ret_json=True)
+    responses = make_request_all_roles(f'/api/order/', ret_json=True)
     for response in responses:
         if response.role in ('data', 'root'):
             assert response.code == 200
@@ -332,38 +332,15 @@ def test_list_user_orders_bad():
             assert not response.data
 
 
-def test_add_order_get():
-    """
-    Request data structure from GET add.
-    """
-    expected = {'creator': '',
-                'description': '',
-                'extra': {},
-                'receiver': '',
-                'title': ''}
-
-    responses = make_request_all_roles('/api/order/add', ret_json=True)
-    for response in responses:
-        if response.role in ('data', 'orders', 'root'):
-            assert response.code == 200
-            assert response.data == expected
-        elif response.role == 'no-login':
-            assert response.code == 401
-            assert not response.data
-        else:
-            assert response.code == 403
-            assert not response.data
-
-
 def test_add_order_permissions(use_db):
     """
-    Add a default dataset using /add POST.
+    Add a default dataset using / POST.
 
     Test permissions.
     """
     indata = {'title': 'Test title'}
     indata.update(TEST_LABEL)
-    responses = make_request_all_roles(f'/api/order/add',
+    responses = make_request_all_roles(f'/api/order/',
                                        method='POST',
                                        data=indata,
                                        ret_json=True)
@@ -383,7 +360,7 @@ def test_add_order_permissions(use_db):
     user_creator = db['users'].find_one({'auth_id': USERS['base']})
     indata = {'creator': user_creator['email']}
     indata.update(TEST_LABEL)
-    responses = make_request_all_roles(f'/api/order/add',
+    responses = make_request_all_roles(f'/api/order/',
                                        method='POST',
                                        data=indata,
                                        ret_json=True)
@@ -402,7 +379,7 @@ def test_add_order_permissions(use_db):
 
 def test_add_order(use_db):
     """
-    Add a default dataset using /add POST.
+    Add a default dataset using / POST.
 
     Confirm that fields are set correctly.
     """
@@ -413,7 +390,7 @@ def test_add_order(use_db):
               'title': 'Test title'}
     indata.update(TEST_LABEL)
 
-    responses = make_request_all_roles(f'/api/order/add',
+    responses = make_request_all_roles(f'/api/order/',
                                        method='POST',
                                        data=indata,
                                        ret_json=True)
@@ -442,7 +419,7 @@ def test_add_order(use_db):
               'title': 'Test title'}
     indata.update(TEST_LABEL)
 
-    responses = make_request_all_roles(f'/api/order/add',
+    responses = make_request_all_roles(f'/api/order/',
                                        method='POST',
                                        data=indata,
                                        ret_json=True)
@@ -466,7 +443,7 @@ def test_add_order(use_db):
 
 def test_add_order_log(use_db):
     """
-    Add a default dataset using /add POST.
+    Add a default dataset using / POST.
 
     Confirm that logs are created.
     """
@@ -477,7 +454,7 @@ def test_add_order_log(use_db):
               'title': 'Test title'}
     indata.update(TEST_LABEL)
 
-    responses = make_request_all_roles(f'/api/order/add',
+    responses = make_request_all_roles(f'/api/order/',
                                        method='POST',
                                        data=indata,
                                        ret_json=True)
@@ -502,7 +479,7 @@ def test_add_order_log(use_db):
 
 def test_add_order_bad():
     """
-    Add a default dataset using /add POST.
+    Add a default dataset using / POST.
 
     Bad requests.
     """
@@ -511,7 +488,7 @@ def test_add_order_bad():
               'title': 'Test title'}
     indata.update(TEST_LABEL)
 
-    responses = make_request_all_roles(f'/api/order/add',
+    responses = make_request_all_roles(f'/api/order/',
                                        method='POST',
                                        data=indata,
                                        ret_json=True)
@@ -530,7 +507,7 @@ def test_add_order_bad():
               'title': 'Test title'}
     indata.update(TEST_LABEL)
 
-    responses = make_request_all_roles(f'/api/order/add',
+    responses = make_request_all_roles(f'/api/order/',
                                        method='POST',
                                        data=indata,
                                        ret_json=True)
@@ -549,7 +526,7 @@ def test_add_order_bad():
               'title': 'Test title'}
     indata.update(TEST_LABEL)
 
-    responses = make_request_all_roles(f'/api/order/add',
+    responses = make_request_all_roles(f'/api/order/',
                                        method='POST',
                                        data=indata,
                                        ret_json=True)
@@ -562,32 +539,6 @@ def test_add_order_bad():
         else:
             assert response.code == 403
             assert not response.data
-
-
-def test_add_dataset_get(use_db):
-    """
-    Request data structure from GET addDataset.
-    """
-    expected = {'links': [],
-                'description': '',
-                'title': '',
-                'extra': {}}
-
-    db = use_db
-    orders = list(db['orders'].aggregate([{'$sample': {'size': 1}}]))
-
-    for entry in (orders[0]['_id'], random_string(), uuid.uuid4()):
-        responses = make_request_all_roles(f'/api/order/{entry}/addDataset', ret_json=True)
-        for response in responses:
-            if response.role in ('data', 'orders', 'root'):
-                assert response.code == 200
-                assert response.data == expected
-            elif response.role == 'no-login':
-                assert response.code == 401
-                assert not response.data
-            else:
-                assert response.code == 403
-                assert not response.data
 
 
 def test_add_dataset_permissions(use_db):
@@ -603,7 +554,7 @@ def test_add_dataset_permissions(use_db):
     indata = {'title': 'Test title'}
     indata.update(TEST_LABEL)
     for order in orders:
-        responses = make_request_all_roles(f'/api/order/{order["_id"]}/addDataset',
+        responses = make_request_all_roles(f'/api/order/{order["_id"]}/dataset',
                                            method='POST',
                                            data=indata,
                                            ret_json=True)
@@ -622,7 +573,7 @@ def test_add_dataset_permissions(use_db):
         owner = db['users'].find_one({'_id': order['creator']})
         as_user(session, owner['api_key'])
         response = make_request(session,
-                                f'/api/order/{order["_id"]}/addDataset',
+                                f'/api/order/{order["_id"]}/dataset',
                                 method='POST',
                                 data=indata)
         assert response.code == 200
@@ -632,7 +583,7 @@ def test_add_dataset_permissions(use_db):
 
 def test_add_dataset_all_fields(use_db):
     """
-    Add a dataset using addDataset.
+    Add a dataset using POST dataset.
 
     Set values in all available fields.
     """
@@ -648,7 +599,7 @@ def test_add_dataset_all_fields(use_db):
     as_user(session, USERS['data'])
 
     response = make_request(session,
-                            f'/api/order/{order["_id"]}/addDataset',
+                            f'/api/order/{order["_id"]}/dataset',
                             method='POST',
                             data=indata,
                             ret_json=True)
@@ -682,7 +633,7 @@ def test_add_dataset_log(use_db):
     order_logs = list(db['logs'].find({'data_type': 'order', 'data._id': order['_id']}))
 
     response = make_request(session,
-                            f'/api/order/{order["_id"]}/addDataset',
+                            f'/api/order/{order["_id"]}/dataset',
                             method='POST',
                             data=indata,
                             ret_json=True)
@@ -716,7 +667,7 @@ def test_update_order_permissions(use_db):
             indata = {'title': f'Test title - updated by {role}'}
             response = make_request(session,
                                     f'/api/order/{order["_id"]}',
-                                    method='PUT',
+                                    method='PATCH',
                                     data=indata,
                                     ret_json=True)
             if role in ('orders', 'data', 'root'):
@@ -762,7 +713,7 @@ def test_update_order(use_db):
 
             response = make_request(session,
                                     f'/api/order/{order["_id"]}',
-                                    method='PUT',
+                                    method='PATCH',
                                     data=indata,
                                     ret_json=True)
 
@@ -791,7 +742,7 @@ def test_update_order(use_db):
 
 def test_update_order_bad(use_db):
     """
-    Add a default dataset using /add POST.
+    Update an existing order.
 
     Bad requests.
     """
@@ -807,7 +758,7 @@ def test_update_order_bad(use_db):
                   'title': 'Test title'}
 
         responses = make_request_all_roles(f'/api/order/{order["_id"]}',
-                                           method='PUT',
+                                           method='PATCH',
                                            data=indata,
                                            ret_json=True)
         for response in responses:
@@ -825,7 +776,7 @@ def test_update_order_bad(use_db):
                   'title': 'Test title'}
 
         responses = make_request_all_roles(f'/api/order/{order["_id"]}',
-                                           method='PUT',
+                                           method='PATCH',
                                            data=indata,
                                            ret_json=True)
         for response in responses:
@@ -842,7 +793,7 @@ def test_update_order_bad(use_db):
     for _ in range(2):
         indata = {'title': 'Test title'}
         responses = make_request_all_roles(f'/api/order/{uuid.uuid4()}',
-                                           method='PUT',
+                                           method='PATCH',
                                            data=indata,
                                            ret_json=True)
         for response in responses:
@@ -857,7 +808,7 @@ def test_update_order_bad(use_db):
 
         indata = {'title': 'Test title'}
         responses = make_request_all_roles(f'/api/order/{random_string}',
-                                           method='PUT',
+                                           method='PATCH',
                                            data=indata,
                                            ret_json=True)
         for response in responses:
@@ -880,7 +831,7 @@ def test_add_dataset_bad_fields(use_db):
 
     indata = {'_id': 'asd'}
     response = make_request(session,
-                            f'/api/order/{order["_id"]}/addDataset',
+                            f'/api/order/{order["_id"]}/dataset',
                             method='POST',
                             data=indata)
     assert response.code == 400
@@ -888,7 +839,7 @@ def test_add_dataset_bad_fields(use_db):
 
     indata = {'timestamp': 'asd'}
     response = make_request(session,
-                            f'/api/order/{order["_id"]}/addDataset',
+                            f'/api/order/{order["_id"]}/dataset',
                             method='POST',
                             data=indata)
     assert response.code == 400
@@ -896,7 +847,7 @@ def test_add_dataset_bad_fields(use_db):
 
     indata = {'extra': [{'asd': 123}]}
     response = make_request(session,
-                            f'/api/order/{order["_id"]}/addDataset',
+                            f'/api/order/{order["_id"]}/dataset',
                             method='POST',
                             data=indata)
     assert response.code == 400
@@ -904,7 +855,7 @@ def test_add_dataset_bad_fields(use_db):
 
     indata = {'links': [{'asd': 123}]}
     response = make_request(session,
-                            f'/api/order/{order["_id"]}/addDataset',
+                            f'/api/order/{order["_id"]}/dataset',
                             method='POST',
                             data=indata)
     assert response.code == 400
@@ -912,7 +863,7 @@ def test_add_dataset_bad_fields(use_db):
 
     indata = {'links': 'Some text'}
     response = make_request(session,
-                            f'/api/order/{order["_id"]}/addDataset',
+                            f'/api/order/{order["_id"]}/dataset',
                             method='POST',
                             data=indata)
     assert response.code == 400
@@ -971,7 +922,7 @@ def test_delete_order(use_db):
 
     as_user(session, USERS['orders'])
     response = make_request(session,
-                            f'/api/order/add',
+                            f'/api/order/',
                             data={'title': 'tmp'},
                             method='POST')
     assert response.code == 200

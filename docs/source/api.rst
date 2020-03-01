@@ -7,9 +7,11 @@ Base URL for the API is ``<url>/api``. All API description have the base implied
 Order
 =====
 
-.. function:: /order/all
+.. function:: /order/
 
     **GET** Get a list of all orders. Can be limited by parameters. Only for users with permission ``DATA_MANAGEMENT``.
+
+    **POST** Add a new order.
 
 
 .. function:: /order/<identifier>
@@ -18,26 +20,17 @@ Order
 
     **DELETE** Delete the order with uuid ``identifier``.
 
-    **PUT** Update the order with uuid ``identifier``.
+    **PATCH** Update the order with uuid ``identifier``.
 
 
-.. function:: /order/add
-
-    **GET** Get an object describing the input fields for **POST**.
-
-    **POST** Add a new order.
-
-
-.. function:: /order/<identifier>/addDataset
-
-    **GET** Get an object describing the input fields for **POST**.
+.. function:: /order/<identifier>/dataset
 
     **POST** Add a new dataset belonging to order with uuid ``identifier``.
 
 
-.. function:: /order/user
+.. function:: /order/user[/<username>]
 
-    **GET** Get a list of orders created or received by current user or ``username`` (if provided as parameter).
+    **GET** Get a list of orders created or received by current user or ``<username>`` (if provided).
     
 
 .. function:: /order/<identifier>/log
@@ -54,10 +47,10 @@ Dataset
 
     **DELETE** Delete the dataset with uuid ``identifier``.
 
-    **PUT** Update the dataset with uuid ``identifier``.
+    **PATCH** Update the dataset with uuid ``identifier``.
 
 
-.. function:: /dataset/all
+.. function:: /dataset/
 
     **GET** Get a list of all datasets. Can be limited by parameters.
 
