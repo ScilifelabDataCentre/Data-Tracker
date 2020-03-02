@@ -86,17 +86,19 @@ def dataset_for_tests():
     db = db_connection()
     # prepare
     order_indata = structure.order()
-    order_indata.update({'links': [{'description': 'Test description', 'url': 'http://test_url'}],
-                         'description': 'Added by fixture.',
+    order_indata.update({'description': 'Added by fixture.',
                          'title': 'Test title from fixture'})
     order_indata.update(TEST_LABEL)
-    session = requests.Session()
-    as_user(session, USERS['orders'])
-    data_user = db['users'].find_one({'auth_id': USERS['data']})
-    order_indata.update({'creator': data_user['_id']})
-    order_indata.update({'receiver': data_user['_id']})
+    orders_user = db['users'].find_one({'auth_id': USERS['orders']})
+    base_user = db['users'].find_one({'auth_id': USERS['base']})
+    order_indata['creator'] = orders_user['_id']
+    order_indata['receiver'] = base_user['_id']
     
     dataset_indata = structure.dataset()
+    dataset_indata.update({'links': [{'description': 'Test description', 'url': 'http://test_url'}],
+                           'description': 'Added by fixture.',
+                           'title': 'Test title from fixture'})
+
     db['datasets'].insert_one(dataset_indata)
     order_indata['datasets'].append(dataset_indata['_id'])
     db['orders'].insert_one(order_indata)
