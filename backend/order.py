@@ -346,7 +346,6 @@ def update_order(identifier: str):  # pylint: disable=too-many-branches
         order['creator'] = flask.g.current_user['_id']
     # receiver
     if 'receiver' in indata:
-        logging.debug('receiver')
         if new_identifier := utils.check_email_uuid(indata['receiver']):
             indata['receiver'] = new_identifier
         else:
@@ -362,6 +361,6 @@ def update_order(identifier: str):  # pylint: disable=too-many-branches
     if not result.acknowledged:
         logging.error('Order update failed: %s', order)
     else:
-        utils.make_log('order', 'edit', 'Order added', order)
+        utils.make_log('order', 'edit', 'Order updated', order)
 
     return flask.Response(status=200)
