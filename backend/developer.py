@@ -44,7 +44,7 @@ def login_hello():
 def permission_hello(permission: str):
     """
     Test request requiring the given permission.
-    
+
     Args:
         permission (str): The permission to test for.
     """
