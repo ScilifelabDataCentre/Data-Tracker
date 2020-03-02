@@ -39,7 +39,23 @@ Order
 
 
 Dataset
+
 =======
+
+.. function:: /dataset/
+
+    **GET** Get a list of all datasets. Can be limited by parameters.
+
+
+.. function:: /dataset/claim
+
+    **POST** Claim datasets (``email``->``UUID``) belonging to the current user.
+
+
+.. function:: /dataset/user
+
+    **GET** Get a list of datasets created or received by current user or ``username`` (if provided as parameter).
+
 
 .. function:: /dataset/<identifier>
 
@@ -50,50 +66,19 @@ Dataset
     **PATCH** Update the dataset with uuid ``identifier``.
 
 
-.. function:: /dataset/
-
-    **GET** Get a list of all datasets. Can be limited by parameters.
-
-
-.. function:: /dataset/user
-
-    **GET** Get a list of datasets created or received by current user or ``username`` (if provided as parameter).
-
-
 .. function:: /dataset/<identifier>/log
 
     **GET** Get a list of changes done to the dataset with uuid ``identifier``.
 
 
-.. function:: /dataset/claim
-
-    **POST** Claim datasets (``email``->``UUID``) belonging to the current user.
-
-
 Project
 =======
-.. function:: /project/<identifier>
 
-    **GET** Get information about the project with uuid ``identifier``.
-
-    **DELETE** Delete the project with uuid ``identifier``.
-
-    **PUT** Update the project with uuid ``identifier``.
-
-
-.. function:: /project/all
+.. function:: /project/
 
     **GET** Get a list of all projects. Can be limited by parameters.
 
-
-.. function:: /project/user
-
-    **GET** Get a list of projects created or received by current user or ``username`` (if provided as parameter).
-
-
-.. function:: /project/<identifier>/log
-
-    **GET** Get a list of changes done to the project with uuid ``identifier``.
+    **POST** Add a new project.
 
 
 .. function:: /project/claim
@@ -101,8 +86,33 @@ Project
     **POST** Claim projects (``email``->``UUID``) belonging to the current user.
 
 
+.. function:: /project/user
+
+    **GET** Get a list of projects created or received by current user or ``username`` (if provided as parameter).
+
+
+.. function:: /project/<identifier>
+
+    **GET** Get information about the project with uuid ``identifier``.
+
+    **DELETE** Delete the project with uuid ``identifier``.
+
+    **PATCH** Update the project with uuid ``identifier``.
+
+
+.. function:: /project/<identifier>/log
+
+    **GET** Get a list of changes done to the project with uuid ``identifier``.
+
+
 User
 ====
+
+.. function:: /user/
+
+    **GET** Get a list of all users.
+
+
 .. function:: /user/me
 
     **GET** Get information about the current user.
@@ -147,11 +157,6 @@ User
     **GET** Log in via elixir.
 
 
-.. function:: /user/all
-
-    **GET** Get a list of all users.
-
-
 .. function:: /user/countries
 
     **GET** Get a list of countries.
@@ -159,40 +164,33 @@ User
 
 DOI
 ===
+
+.. function:: /doi/
+
+    **GET** Get a list of all DOIs.
+
+    **POST** Add a new DOI.
+
+
 .. function:: /doi/<identifier>
 
     **GET** Get information about the entity with DOI ``identifier``.
 
 
-.. function:: /doi/add
+.. function:: /doi/request/
 
-    **GET** Get expected data structure for adding a new doi.
+    **GET** Get a list of all DOI requests.
 
-    **POST** Add a new DOI.
+    **POST** Add a new DOI request.
 
 
-.. function:: /doi/all
+.. function:: /doi/request/open
 
-    **GET** Get a list of all DOIs.
+    **GET** Get a list of all open DOI requests.
 
 
 .. function:: /doi/request/<identifier>
 
     **GET** Get information about the DOI request with uuid ``identifier``.
 
-    **PUT** Update information about the DOI request with uuid ``identifier``.
-
-
-.. function:: /doi/request/add
-
-    **GET** Add a new DOI request.
-
-
-.. function:: /doi/request/all
-
-    **GET** Get a list of all DOI requests.
-
-
-.. function:: /doi/request/open
-
-    **GET** Get a list of all open DOI requests.
+    **PATCH** Update information about the DOI request with uuid ``identifier``.
