@@ -1,11 +1,9 @@
 """Dataset requests."""
 import json
 import logging
-import uuid
 
 import flask
 
-import structure
 import utils
 import user
 import validate
@@ -101,8 +99,7 @@ def delete_dataset(identifier: str):
     if not result.acknowledged:
         logging.error(f'Failed to delete dataset {ds_uuid}')
         return flask.Response(status=500)
-    else:
-        utils.make_log('dataset', 'delete', 'Deleted dataset', data={'_id': ds_uuid})
+    utils.make_log('dataset', 'delete', 'Deleted dataset', data={'_id': ds_uuid})
 
     for entry in flask.g.db['orders'].find({'datasets': ds_uuid}):
         result = flask.g.db['orders'].update_one({'_id': entry['_id']},
@@ -121,7 +118,7 @@ def delete_dataset(identifier: str):
             return flask.Response(status=500)
         new_data = flask.g.db['projects'].find_one({'_id': entry['_id']})
         utils.make_log('project', 'edit', f'Deleted dataset {ds_uuid}', new_data)
- 
+
     return flask.Response(status=200)
 
 

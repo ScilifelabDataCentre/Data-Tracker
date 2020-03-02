@@ -1,12 +1,7 @@
 """Project requests."""
-import json
-import logging
-
 import flask
 
-import structure
 import utils
-import user
 
 
 blueprint = flask.Blueprint('project', __name__)  # pylint: disable=invalid-name
