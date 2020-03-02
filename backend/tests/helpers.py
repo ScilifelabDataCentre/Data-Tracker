@@ -103,8 +103,8 @@ def dataset_for_tests():
     yield dataset_indata['_id']
 
     # cleanup
-    db['orders'].delete_one(order_indata)
-    db['datasets'].delete_one(dataset_indata)
+    db['orders'].delete_one({'_id': order_indata['_id']})
+    db['datasets'].delete_one({'_id': dataset_indata['_id']})
 
 
 def make_request(session, url: str, data: dict = None, method='GET', ret_json: bool = True) -> dict:
