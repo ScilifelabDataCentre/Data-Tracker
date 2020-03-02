@@ -218,43 +218,41 @@ def test_update_empty(dataset_for_tests):
     Should require at least Steward or being the owner of the dataset.
     """
     ds_uuid = dataset_for_tests
-    responses = make_request_all_roles(f'/api/dataset/{ds_uuid}', method='PUT')
-    assert [response[1] for response in responses] == [400, 401, 400, 400]
-    assert [response[0] for response in responses] == [None]*4
+    indata = {}
+    responses = make_request_all_roles(f'/api/dataset/{ds_uuid}', method='PUT', data=indata)
+    for response in responses:
+        if response.role in ('base', 'orders', 'data', 'root'):
+            assert response.code == 200
+        elif response.role == 'no-login':
+            assert response.code == 401
+        else:
+            assert response.code == 403
+        assert not response.data
 
 
-def test_update(dataset_for_tests):
+def test_update(use_db, dataset_for_tests):
     """
     Update a dataset multiple times. Confirm that the update is done correctly.
 
     Should require at least Steward.
     """
-    indata = {'links': [{'description': 'Test description', 'url': 'http://test2_url'}],
-              'description': 'Test description',
-              'title': 'Test2 title'}
+    ds_uuid = dataset_for_tests
+    db = use_db
+    indata = {'links': [{'description': 'Test description from update', 'url': 'http://test_url'}],
+              'description': 'Test description - updated',
+              'title': 'Test title - updated'}
     indata.update(TEST_LABEL)
 
     session = requests.Session()
     as_user(session, USERS['data'])
 
-    ds_uuid = dataset_for_tests
-    responses = make_request_all_roles(f'/api/dataset/{ds_uuid}', method='PUT', data=indata)
-    assert [response[1] for response in responses] == [400, 401, 200, 200]
-    assert [response[0] for response in responses] == [None]*4
-    data = make_request(session, f'/api/dataset/{ds_uuid}')[0]['dataset']
-    for field in indata:
-        assert data[field] == indata[field]
+    response = make_request(session, f'/api/dataset/{ds_uuid}', method='PUT', data=indata)
+    assert response.code == 200
+    assert not response.data
 
-    new_title = random_string()
-    response = make_request(session, f'/api/dataset/{ds_uuid}',
-                            method='PUT', data={'title': new_title})
-    assert response == (None, 200)
-    new_data = make_request(session, f'/api/dataset/{ds_uuid}')[0]['dataset']
-    for field in new_data:
-        if field == 'title':
-            assert new_data[field] == new_title
-        else:
-            assert new_data[field] == data[field]
+    dataset = db['datasets'].find_one({'_id': ds_uuid})
+    for field in indata:
+        assert dataset[field] == indata[field]
 
 
 def test_update_bad(dataset_for_tests):
@@ -263,37 +261,50 @@ def test_update_bad(dataset_for_tests):
 
     Should require at least Steward.
     """
-    for _ in range(3):
+    for _ in range(2):
         indata = {'title': 'Updated title'}
         ds_uuid = random_string()
         responses = make_request_all_roles(f'/api/dataset/{ds_uuid}', method='PUT', data=indata)
-        assert [response[1] for response in responses] == [400, 401, 404, 404]
-        assert [response[0] for response in responses] == [None]*4
+        for response in responses:
+            if response.role in ('base', 'orders', 'data', 'root'):
+                assert response.code == 404
+            elif response.role == 'no-login':
+                assert response.code == 401
+            else:
+                assert response.code == 404
+                assert not response.data
 
         ds_uuid = uuid.uuid4().hex
         responses = make_request_all_roles(f'/api/dataset/{ds_uuid}', method='PUT', data=indata)
-        assert [response[1] for response in responses] == [400, 401, 404, 404]
-        assert [response[0] for response in responses] == [None]*4
+        for response in responses:
+            if response.role in ('base', 'orders', 'data', 'root'):
+                assert response.code == 404
+            elif response.role == 'no-login':
+                assert response.code == 401
+            else:
+                assert response.code == 404
+                assert not response.data
 
     ds_uuid = dataset_for_tests
     session = requests.Session()
     as_user(session, USERS['data'])
-    indata = {'_id': 'Updated title'}
-    response = make_request(session, f'/api/dataset/{ds_uuid}')
-
+    indata = {'title': ''}
     response = make_request(session, f'/api/dataset/{ds_uuid}',
                             method='PUT', data=indata)
-    assert response == (None, 400)
+    assert response.code == 400
+    assert not response.data
 
-    indata = {'_id': 'asd'}
+    indata = {'extra': 'asd'}
     response = make_request(session, f'/api/dataset/{ds_uuid}',
                             method='PUT', data=indata)
-    assert response == (None, 400)
+    assert response.code == 400
+    assert not response.data
 
     indata = {'timestamp': 'asd'}
     response = make_request(session, f'/api/dataset/{ds_uuid}',
                             method='PUT', data=indata)
-    assert response == (None, 400)
+    assert response.code == 400
+    assert not response.data
 
 
 def test_list_datasets():

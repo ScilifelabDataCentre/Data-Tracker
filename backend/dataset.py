@@ -163,6 +163,7 @@ def update_dataset(identifier):
         if key not in dataset:
             flask.abort(status=400)
 
+    dataset.update(indata)
     if indata:
         result = flask.g.db['datasets'].update_one({'_id': dataset['_id']}, {'$set': dataset})
         if not result.acknowledged:
