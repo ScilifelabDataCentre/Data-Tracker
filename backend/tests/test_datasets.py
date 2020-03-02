@@ -107,7 +107,7 @@ def test_get_dataset_bad():
         assert not response.data
 
 
-def test_delete_dataset(use_db):
+def test_delete_dataset(use_db, dataset_for_tests):
     """
     Add and delete datasets.
 
@@ -116,9 +116,9 @@ def test_delete_dataset(use_db):
     * Confirm that related dataset entries in orders and projects are deleted.
     * Check that logs are created correctly.
     """
-    session = requests.Session()
-
     db = use_db
+
+    session = requests.Session()
 
     orders_user = db['users'].find_one({'auth_id': USERS['data']})
 
