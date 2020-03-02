@@ -13,7 +13,7 @@ import validate
 blueprint = flask.Blueprint('dataset', __name__)  # pylint: disable=invalid-name
 
 
-@blueprint.route('/all', methods=['GET'])
+@blueprint.route('/', methods=['GET'])
 def list_datasets():
     """Provide a simplified list of all available datasets."""
     results = list(flask.g.db['datasets'].find(projection={'title': 1,
@@ -125,7 +125,7 @@ def delete_dataset(identifier: str):
     return flask.Response(status=200)
 
 
-@blueprint.route('/<identifier>', methods=['PUT'])
+@blueprint.route('/<identifier>', methods=['PATCH'])
 @user.login_required
 def update_dataset(identifier):
     """

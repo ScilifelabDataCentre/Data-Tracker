@@ -200,7 +200,7 @@ def test_update_permissions(use_db, dataset_for_tests):
     print(db['datasets'].find_one({'_id': ds_uuid}))
     print(db['orders'].find_one({'datasets': ds_uuid}))
     indata = {'title': 'Updated title'}
-    responses = make_request_all_roles(f'/api/dataset/{ds_uuid}', method='PUT', data=indata)
+    responses = make_request_all_roles(f'/api/dataset/{ds_uuid}', method='PATCH', data=indata)
     for response in responses:
         if response.role in ('base', 'orders', 'data', 'root'):
             assert response.code == 200
@@ -219,7 +219,7 @@ def test_update_empty(dataset_for_tests):
     """
     ds_uuid = dataset_for_tests
     indata = {}
-    responses = make_request_all_roles(f'/api/dataset/{ds_uuid}', method='PUT', data=indata)
+    responses = make_request_all_roles(f'/api/dataset/{ds_uuid}', method='PATCH', data=indata)
     for response in responses:
         if response.role in ('base', 'orders', 'data', 'root'):
             assert response.code == 200
@@ -246,7 +246,7 @@ def test_update(use_db, dataset_for_tests):
     session = requests.Session()
     as_user(session, USERS['data'])
 
-    response = make_request(session, f'/api/dataset/{ds_uuid}', method='PUT', data=indata)
+    response = make_request(session, f'/api/dataset/{ds_uuid}', method='PATCH', data=indata)
     assert response.code == 200
     assert not response.data
 
@@ -264,7 +264,7 @@ def test_update_bad(dataset_for_tests):
     for _ in range(2):
         indata = {'title': 'Updated title'}
         ds_uuid = random_string()
-        responses = make_request_all_roles(f'/api/dataset/{ds_uuid}', method='PUT', data=indata)
+        responses = make_request_all_roles(f'/api/dataset/{ds_uuid}', method='PATCH', data=indata)
         for response in responses:
             if response.role in ('base', 'orders', 'data', 'root'):
                 assert response.code == 404
@@ -275,7 +275,7 @@ def test_update_bad(dataset_for_tests):
                 assert not response.data
 
         ds_uuid = uuid.uuid4().hex
-        responses = make_request_all_roles(f'/api/dataset/{ds_uuid}', method='PUT', data=indata)
+        responses = make_request_all_roles(f'/api/dataset/{ds_uuid}', method='PATCH', data=indata)
         for response in responses:
             if response.role in ('base', 'orders', 'data', 'root'):
                 assert response.code == 404
@@ -290,19 +290,19 @@ def test_update_bad(dataset_for_tests):
     as_user(session, USERS['data'])
     indata = {'title': ''}
     response = make_request(session, f'/api/dataset/{ds_uuid}',
-                            method='PUT', data=indata)
+                            method='PATCH', data=indata)
     assert response.code == 400
     assert not response.data
 
     indata = {'extra': 'asd'}
     response = make_request(session, f'/api/dataset/{ds_uuid}',
-                            method='PUT', data=indata)
+                            method='PATCH', data=indata)
     assert response.code == 400
     assert not response.data
 
     indata = {'timestamp': 'asd'}
     response = make_request(session, f'/api/dataset/{ds_uuid}',
-                            method='PUT', data=indata)
+                            method='PATCH', data=indata)
     assert response.code == 400
     assert not response.data
 
@@ -313,9 +313,7 @@ def test_list_datasets():
 
     Should also test e.g. pagination once implemented.
     """
-    responses = make_request_all_roles('/api/dataset/all', ret_json=True)
+    responses = make_request_all_roles('/api/dataset/', ret_json=True)
     for response in responses:
         assert response.code == 200
         assert len(response.data['datasets']) == 500
-
-
