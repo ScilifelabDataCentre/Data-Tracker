@@ -215,8 +215,6 @@ def add_dataset_post(identifier):  # pylint: disable=too-many-branches
         identifier (str): The order to add the dataset to.
     """
     # permissions
-    if not user.has_permission('ORDERS_SELF'):
-        flask.abort(status=403)
     try:
         muuid = utils.str_to_uuid(identifier)
     except ValueError:
@@ -225,7 +223,7 @@ def add_dataset_post(identifier):  # pylint: disable=too-many-branches
     if not order:
         flask.abort(status=404)
     if not (user.has_permission('DATA_MANAGEMENT') or
-            order['creator'] == flask.session['user_id']):
+            order['creator'] == flask.g.current_user['_id']):
         return flask.abort(status=403)
 
     # create new dataset
