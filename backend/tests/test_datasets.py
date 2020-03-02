@@ -253,6 +253,9 @@ def test_update(use_db, dataset_for_tests):
     dataset = db['datasets'].find_one({'_id': ds_uuid})
     for field in indata:
         assert dataset[field] == indata[field]
+    assert db['logs'].find_one({'data._id': ds_uuid,
+                                'action': 'edit',
+                                'data_type': 'dataset'})
 
 
 def test_update_bad(dataset_for_tests):
