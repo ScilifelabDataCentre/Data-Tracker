@@ -8,6 +8,7 @@ import flask
 import structure
 import utils
 import user
+import validate
 
 blueprint = flask.Blueprint('dataset', __name__)  # pylint: disable=invalid-name
 
@@ -90,6 +91,7 @@ def delete_dataset(identifier: str):
     dataset = flask.g.db['datasets'].find_one({'_id': ds_uuid})
     if not dataset:
         flask.abort(status=404)
+    # permission check
     order = flask.g.db['orders'].find_one({'datasets': ds_uuid})
     if not user.has_permission('DATA_MANAGEMENT'):
         if order['creator'] != flask.g.current_user['_id']:
@@ -119,11 +121,12 @@ def delete_dataset(identifier: str):
             return flask.Response(status=500)
         new_data = flask.g.db['projects'].find_one({'_id': entry['_id']})
         utils.make_log('project', 'edit', f'Deleted dataset {ds_uuid}', new_data)
-
+ 
     return flask.Response(status=200)
 
 
 @blueprint.route('/<identifier>', methods=['PUT'])
+@user.login_required
 def update_dataset(identifier):
     """
     Update a dataset with new values.
@@ -142,28 +145,30 @@ def update_dataset(identifier):
     dataset = flask.g.db['datasets'].find_one({'_id': ds_uuid})
     if not dataset:
         flask.abort(status=404)
+    # permissions
     order = flask.g.db['orders'].find_one({'datasets': ds_uuid})
+    logging.debug(f'ORDERDATA: {order}')
     if not user.has_permission('DATA_MANAGEMENT'):
-        if order['creator'] != flask.g.current_user['_id']:
+        if order['creator'] != flask.g.current_user['_id'] and\
+           order['receiver'] != flask.g.current_user['_id']:
             flask.abort(status=403)
+
+    # indata validation
     indata = json.loads(flask.request.data)
-    try:
-        ds_uuid = utils.str_to_uuid(identifier)
-    except ValueError:
-        flask.abort(flask.Response(status=404))
-    if not validate_dataset_input(indata):
-        flask.abort(flask.Response(status=400))
-    projects = None
-    if 'projects' in indata:
-        projects = indata['projects']
-        del indata['projects']
+    if not validate.validate_indata(indata):
+        flask.abort(status=400)
+    if '_id' in indata:
+        flask.abort(status=400)
+    for key in indata:
+        if key not in dataset:
+            flask.abort(status=400)
 
     if indata:
-        response = flask.g.db['datasets'].update_one({'_id': ds_uuid}, {'$set': indata})
-        if response.matched_count == 0:
-            flask.abort(flask.Response(status=404))
-    if projects:
-        update_projects(identifier, projects)
+        result = flask.g.db['datasets'].update_one({'_id': dataset['_id']}, {'$set': dataset})
+        if not result.acknowledged:
+            logging.error('Dataset update failed: %s', dataset)
+        else:
+            utils.make_log('dataset', 'edit', 'Dataset updated', dataset)
 
     return flask.Response(status=200)
 
