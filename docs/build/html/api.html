@@ -86,7 +86,6 @@
               <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#order">Order</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#dataset">Dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#project">Project</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#user">User</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#doi">DOI</a></li>
@@ -168,8 +167,9 @@
 <h2>Order<a class="headerlink" href="#order" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt>
-<code class="sig-name descname">/order/all</code></dt>
+<code class="sig-name descname">/order/</code></dt>
 <dd><p><strong>GET</strong> Get a list of all orders. Can be limited by parameters. Only for users with permission <code class="docutils literal notranslate"><span class="pre">DATA_MANAGEMENT</span></code>.</p>
+<p><strong>POST</strong> Add a new order.</p>
 </dd></dl>
 
 <dl class="function">
@@ -177,27 +177,19 @@
 <code class="sig-name descname">/order/&lt;identifier&gt;</code></dt>
 <dd><p><strong>GET</strong> Get information about the order with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
 <p><strong>DELETE</strong> Delete the order with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
-<p><strong>PUT</strong> Update the order with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
+<p><strong>PATCH</strong> Update the order with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
 </dd></dl>
 
 <dl class="function">
 <dt>
-<code class="sig-name descname">/order/add</code></dt>
-<dd><p><strong>GET</strong> Get an object describing the input fields for <strong>POST</strong>.</p>
-<p><strong>POST</strong> Add a new order.</p>
+<code class="sig-name descname">/order/&lt;identifier&gt;/dataset</code></dt>
+<dd><p><strong>POST</strong> Add a new dataset belonging to order with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
 </dd></dl>
 
 <dl class="function">
 <dt>
-<code class="sig-name descname">/order/&lt;identifier&gt;/addDataset</code></dt>
-<dd><p><strong>GET</strong> Get an object describing the input fields for <strong>POST</strong>.</p>
-<p><strong>POST</strong> Add a new dataset belonging to order with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
-</dd></dl>
-
-<dl class="function">
-<dt>
-<code class="sig-name descname">/order/user</code></dt>
-<dd><p><strong>GET</strong> Get a list of orders created or received by current user or <code class="docutils literal notranslate"><span class="pre">username</span></code> (if provided as parameter).</p>
+<code class="sig-name descname">/order/user[/&lt;username&gt;]</code></dt>
+<dd><p><strong>GET</strong> Get a list of orders created or received by current user or <code class="docutils literal notranslate"><span class="pre">&lt;username&gt;</span></code> (if provided).</p>
 </dd></dl>
 
 <dl class="function">
@@ -206,21 +198,18 @@
 <dd><p><strong>GET</strong> Get a list of changes done to the order with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
 </dd></dl>
 
-</div>
-<div class="section" id="dataset">
-<h2>Dataset<a class="headerlink" href="#dataset" title="Permalink to this headline">¶</a></h2>
+<p>Dataset</p>
+<hr class="docutils" />
 <dl class="function">
 <dt>
-<code class="sig-name descname">/dataset/&lt;identifier&gt;</code></dt>
-<dd><p><strong>GET</strong> Get information about the dataset with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
-<p><strong>DELETE</strong> Delete the dataset with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
-<p><strong>PUT</strong> Update the dataset with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
+<code class="sig-name descname">/dataset/</code></dt>
+<dd><p><strong>GET</strong> Get a list of all datasets. Can be limited by parameters.</p>
 </dd></dl>
 
 <dl class="function">
 <dt>
-<code class="sig-name descname">/dataset/all</code></dt>
-<dd><p><strong>GET</strong> Get a list of all datasets. Can be limited by parameters.</p>
+<code class="sig-name descname">/dataset/claim</code></dt>
+<dd><p><strong>POST</strong> Claim datasets (<code class="docutils literal notranslate"><span class="pre">email</span></code>-&gt;``UUID``) belonging to the current user.</p>
 </dd></dl>
 
 <dl class="function">
@@ -231,14 +220,16 @@
 
 <dl class="function">
 <dt>
-<code class="sig-name descname">/dataset/&lt;identifier&gt;/log</code></dt>
-<dd><p><strong>GET</strong> Get a list of changes done to the dataset with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
+<code class="sig-name descname">/dataset/&lt;identifier&gt;</code></dt>
+<dd><p><strong>GET</strong> Get information about the dataset with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
+<p><strong>DELETE</strong> Delete the dataset with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
+<p><strong>PATCH</strong> Update the dataset with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
 </dd></dl>
 
 <dl class="function">
 <dt>
-<code class="sig-name descname">/dataset/claim</code></dt>
-<dd><p><strong>POST</strong> Claim datasets (<code class="docutils literal notranslate"><span class="pre">email</span></code>-&gt;``UUID``) belonging to the current user.</p>
+<code class="sig-name descname">/dataset/&lt;identifier&gt;/log</code></dt>
+<dd><p><strong>GET</strong> Get a list of changes done to the dataset with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
 </dd></dl>
 
 </div>
@@ -246,16 +237,15 @@
 <h2>Project<a class="headerlink" href="#project" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt>
-<code class="sig-name descname">/project/&lt;identifier&gt;</code></dt>
-<dd><p><strong>GET</strong> Get information about the project with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
-<p><strong>DELETE</strong> Delete the project with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
-<p><strong>PUT</strong> Update the project with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
+<code class="sig-name descname">/project/</code></dt>
+<dd><p><strong>GET</strong> Get a list of all projects. Can be limited by parameters.</p>
+<p><strong>POST</strong> Add a new project.</p>
 </dd></dl>
 
 <dl class="function">
 <dt>
-<code class="sig-name descname">/project/all</code></dt>
-<dd><p><strong>GET</strong> Get a list of all projects. Can be limited by parameters.</p>
+<code class="sig-name descname">/project/claim</code></dt>
+<dd><p><strong>POST</strong> Claim projects (<code class="docutils literal notranslate"><span class="pre">email</span></code>-&gt;``UUID``) belonging to the current user.</p>
 </dd></dl>
 
 <dl class="function">
@@ -266,19 +256,27 @@
 
 <dl class="function">
 <dt>
-<code class="sig-name descname">/project/&lt;identifier&gt;/log</code></dt>
-<dd><p><strong>GET</strong> Get a list of changes done to the project with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
+<code class="sig-name descname">/project/&lt;identifier&gt;</code></dt>
+<dd><p><strong>GET</strong> Get information about the project with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
+<p><strong>DELETE</strong> Delete the project with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
+<p><strong>PATCH</strong> Update the project with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
 </dd></dl>
 
 <dl class="function">
 <dt>
-<code class="sig-name descname">/project/claim</code></dt>
-<dd><p><strong>POST</strong> Claim projects (<code class="docutils literal notranslate"><span class="pre">email</span></code>-&gt;``UUID``) belonging to the current user.</p>
+<code class="sig-name descname">/project/&lt;identifier&gt;/log</code></dt>
+<dd><p><strong>GET</strong> Get a list of changes done to the project with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
 </dd></dl>
 
 </div>
 <div class="section" id="user">
 <h2>User<a class="headerlink" href="#user" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt>
+<code class="sig-name descname">/user/</code></dt>
+<dd><p><strong>GET</strong> Get a list of all users.</p>
+</dd></dl>
+
 <dl class="function">
 <dt>
 <code class="sig-name descname">/user/me</code></dt>
@@ -331,12 +329,6 @@
 
 <dl class="function">
 <dt>
-<code class="sig-name descname">/user/all</code></dt>
-<dd><p><strong>GET</strong> Get a list of all users.</p>
-</dd></dl>
-
-<dl class="function">
-<dt>
 <code class="sig-name descname">/user/countries</code></dt>
 <dd><p><strong>GET</strong> Get a list of countries.</p>
 </dd></dl>
@@ -346,46 +338,35 @@
 <h2>DOI<a class="headerlink" href="#doi" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt>
+<code class="sig-name descname">/doi/</code></dt>
+<dd><p><strong>GET</strong> Get a list of all DOIs.</p>
+<p><strong>POST</strong> Add a new DOI.</p>
+</dd></dl>
+
+<dl class="function">
+<dt>
 <code class="sig-name descname">/doi/&lt;identifier&gt;</code></dt>
 <dd><p><strong>GET</strong> Get information about the entity with DOI <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
 </dd></dl>
 
 <dl class="function">
 <dt>
-<code class="sig-name descname">/doi/add</code></dt>
-<dd><p><strong>GET</strong> Get expected data structure for adding a new doi.</p>
-<p><strong>POST</strong> Add a new DOI.</p>
-</dd></dl>
-
-<dl class="function">
-<dt>
-<code class="sig-name descname">/doi/all</code></dt>
-<dd><p><strong>GET</strong> Get a list of all DOIs.</p>
-</dd></dl>
-
-<dl class="function">
-<dt>
-<code class="sig-name descname">/doi/request/&lt;identifier&gt;</code></dt>
-<dd><p><strong>GET</strong> Get information about the DOI request with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
-<p><strong>PUT</strong> Update information about the DOI request with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
-</dd></dl>
-
-<dl class="function">
-<dt>
-<code class="sig-name descname">/doi/request/add</code></dt>
-<dd><p><strong>GET</strong> Add a new DOI request.</p>
-</dd></dl>
-
-<dl class="function">
-<dt>
-<code class="sig-name descname">/doi/request/all</code></dt>
+<code class="sig-name descname">/doi/request/</code></dt>
 <dd><p><strong>GET</strong> Get a list of all DOI requests.</p>
+<p><strong>POST</strong> Add a new DOI request.</p>
 </dd></dl>
 
 <dl class="function">
 <dt>
 <code class="sig-name descname">/doi/request/open</code></dt>
 <dd><p><strong>GET</strong> Get a list of all open DOI requests.</p>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-name descname">/doi/request/&lt;identifier&gt;</code></dt>
+<dd><p><strong>GET</strong> Get information about the DOI request with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
+<p><strong>PATCH</strong> Update information about the DOI request with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
 </dd></dl>
 
 </div>

@@ -183,16 +183,14 @@
 <li><p>If you have permission <code class="docutils literal notranslate"><span class="pre">DATA_MANAGER</span></code> you have CRUD access to any orders.</p></li>
 </ul>
 <dl class="function">
-<dt id="order.add_dataset_get">
-<code class="sig-prename descclassname">order.</code><code class="sig-name descname">add_dataset_get</code><span class="sig-paren">(</span><em class="sig-param">_</em><span class="sig-paren">)</span><a class="reference internal" href="modules/order.html#add_dataset_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#order.add_dataset_get" title="Permalink to this definition">¶</a></dt>
-<dd><p>Provide a basic data structure for adding a dataset.</p>
-<p>The structure will be returned no matter what “uuid” it is provided.</p>
-</dd></dl>
-
-<dl class="function">
 <dt id="order.add_dataset_post">
 <code class="sig-prename descclassname">order.</code><code class="sig-name descname">add_dataset_post</code><span class="sig-paren">(</span><em class="sig-param">identifier</em><span class="sig-paren">)</span><a class="reference internal" href="modules/order.html#add_dataset_post"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#order.add_dataset_post" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add a dataset.</p>
+<dd><p>Add a dataset to the given order.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>identifier</strong> (<em>str</em>) – The order to add the dataset to.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -210,10 +208,17 @@
 </dd></dl>
 
 <dl class="function">
-<dt id="order.add_order_get">
-<code class="sig-prename descclassname">order.</code><code class="sig-name descname">add_order_get</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/order.html#add_order_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#order.add_order_get" title="Permalink to this definition">¶</a></dt>
-<dd><p>Provide a basic data structure for adding an order.</p>
-<p>Not all fields will be available for all users.</p>
+<dt id="order.delete_order">
+<code class="sig-prename descclassname">order.</code><code class="sig-name descname">delete_order</code><span class="sig-paren">(</span><em class="sig-param">identifier: str</em><span class="sig-paren">)</span><a class="reference internal" href="modules/order.html#delete_order"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#order.delete_order" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete the order with the given identifier.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Status code</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>flask.Response</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -292,6 +297,23 @@
 <code class="sig-prename descclassname">order.</code><code class="sig-name descname">prepare</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/order.html#prepare"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#order.prepare" title="Permalink to this definition">¶</a></dt>
 <dd><p>All order request require <code class="docutils literal notranslate"><span class="pre">ORDERS_SELF</span></code>.</p>
 <p>Make sure that the user is logged in and has the required permission.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="order.update_order">
+<code class="sig-prename descclassname">order.</code><code class="sig-name descname">update_order</code><span class="sig-paren">(</span><em class="sig-param">identifier: str</em><span class="sig-paren">)</span><a class="reference internal" href="modules/order.html#update_order"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#order.update_order" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update an existing order.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>identifier</strong> (<em>str</em>) – Order uuid.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Status code of the request.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>flask.Response</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>

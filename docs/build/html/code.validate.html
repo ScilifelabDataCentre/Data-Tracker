@@ -222,7 +222,7 @@ functions to check each field.</p>
 
 <dl class="function">
 <dt id="validate.validate_indata">
-<code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_indata</code><span class="sig-paren">(</span><em class="sig-param">indata: Any</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_indata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_indata" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_indata</code><span class="sig-paren">(</span><em class="sig-param">indata: dict</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_indata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_indata" title="Permalink to this definition">¶</a></dt>
 <dd><p>Validate that the input data matches expectations.</p>
 <p>Will check the indata based on the key names.</p>
 <p>The validation is only done at the technical level,
@@ -231,10 +231,7 @@ e.g. a check that input is of the correct type.</p>
 for the entry must be performed separately.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>field_key</strong> (<em>str</em>) – The name of the field to validate.</p></li>
-<li><p><strong>data</strong> (<em>Any</em>) – The data to validate.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>indata</strong> (<em>dict</em>) – The data to validate.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Whether validation passed.</p>

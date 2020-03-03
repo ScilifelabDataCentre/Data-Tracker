@@ -178,6 +178,28 @@
 <span id="utils-py"></span><h1>utils.py<a class="headerlink" href="#module-utils" title="Permalink to this headline">¶</a></h1>
 <p>General helper functions.</p>
 <dl class="function">
+<dt id="utils.check_email_uuid">
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">check_email_uuid</code><span class="sig-paren">(</span><em class="sig-param">user_identifier: str</em><span class="sig-paren">)</span> &#x2192; Union[str, uuid.UUID]<a class="reference internal" href="modules/utils.html#check_email_uuid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.check_email_uuid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the provided user is found in the db as email or _id.</p>
+<p>If the user is found, return the user.UUID of the user.
+If the identifier is a uuid, return a user.UUID.
+If the identifier is an email, return the email.</p>
+<p class="rubric">Notes</p>
+<p><code class="docutils literal notranslate"><span class="pre">user_identifier</span></code> is assumed to be either a valid email or a valid uuid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>user_identifier</strong> (<em>str</em>) – The identifier to look up.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The new value for the field.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Union[str, uuid.UUID]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
 <dt id="utils.check_mongo_update">
 <code class="sig-prename descclassname">utils.</code><code class="sig-name descname">check_mongo_update</code><span class="sig-paren">(</span><em class="sig-param">document: dict</em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#check_mongo_update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.check_mongo_update" title="Permalink to this definition">¶</a></dt>
 <dd><p>Make sure that some fields in a document are not changed during an update.</p>
@@ -242,23 +264,6 @@
 </dd></dl>
 
 <dl class="function">
-<dt id="utils.get_dataset">
-<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">get_dataset</code><span class="sig-paren">(</span><em class="sig-param">identifier: str</em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#get_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.get_dataset" title="Permalink to this definition">¶</a></dt>
-<dd><p>Query for a dataset from the database.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>identifier</strong> (<em>str</em>) – The uuid of the dataset.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The dataset.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>dict</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
 <dt id="utils.get_db">
 <code class="sig-prename descclassname">utils.</code><code class="sig-name descname">get_db</code><span class="sig-paren">(</span><em class="sig-param">dbserver: pymongo.mongo_client.MongoClient</em>, <em class="sig-param">conf</em><span class="sig-paren">)</span> &#x2192; pymongo.database.Database<a class="reference internal" href="modules/utils.html#get_db"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.get_db" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the connection to the MongoDB database.</p>
@@ -315,8 +320,9 @@
 <dl class="function">
 <dt id="utils.incremental_logs">
 <code class="sig-prename descclassname">utils.</code><code class="sig-name descname">incremental_logs</code><span class="sig-paren">(</span><em class="sig-param">logs: list</em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#incremental_logs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.incremental_logs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make an incremental log, starting from the first log and
-keeping only the changed fields in <code class="docutils literal notranslate"><span class="pre">data</span></code>.</p>
+<dd><p>Make an incremental log.</p>
+<p>The log starts from the first log and keeps only
+the changed fields in <code class="docutils literal notranslate"><span class="pre">data</span></code>.</p>
 <p><code class="docutils literal notranslate"><span class="pre">logs</span></code> is changed in-place.</p>
 </dd></dl>
 
@@ -374,7 +380,7 @@ e.g. <code class="docutils literal notranslate"><span class="pre">data</span></c
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>action</strong> (<em>str</em>) – Type of action (add, update, delete).</p></li>
+<li><p><strong>action</strong> (<em>str</em>) – Type of action (add, edit, delete).</p></li>
 <li><p><strong>comment</strong> (<em>str</em>) – Note about why the change was done
 (e.g. “Dataset added via addDataset”).</p></li>
 <li><p><strong>data_type</strong> (<em>str</em>) – The collection name.</p></li>

@@ -149,53 +149,16 @@
            <div itemprop="articleBody">
             
   <h1>Source code for project</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Dataset requests.&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-
+<span></span><span class="sd">&quot;&quot;&quot;Project requests.&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">flask</span>
 
-<span class="kn">import</span> <span class="nn">structure</span>
 <span class="kn">import</span> <span class="nn">utils</span>
-<span class="kn">import</span> <span class="nn">user</span>
 
 
-<span class="n">blueprint</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">Blueprint</span><span class="p">(</span><span class="s1">&#39;projects&#39;</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">)</span>  <span class="c1"># pylint: disable=invalid-name</span>
+<span class="n">blueprint</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">Blueprint</span><span class="p">(</span><span class="s1">&#39;project&#39;</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">)</span>  <span class="c1"># pylint: disable=invalid-name</span>
 
 
-<div class="viewcode-block" id="validate_project_input"><a class="viewcode-back" href="../code.project.html#project.validate_project_input">[docs]</a><span class="k">def</span> <span class="nf">validate_project_input</span><span class="p">(</span><span class="n">indata</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Validate the project input.</span>
-
-<span class="sd">    It may only contain valid fields that may be changed by the role of the current user.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        indata: the project input</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        bool: whether the project input is accepted</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">utils</span><span class="o">.</span><span class="n">check_mongo_update</span><span class="p">(</span><span class="n">indata</span><span class="p">):</span>
-        <span class="k">return</span> <span class="kc">False</span>
-    <span class="c1"># check that fields should exist and are not forbidden</span>
-    <span class="n">reference</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">structure</span><span class="o">.</span><span class="n">project</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-    <span class="n">forbidden</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;identifier&#39;</span><span class="p">}</span>
-    <span class="n">inkeys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">indata</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">inkeys</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="n">reference</span><span class="p">)</span> <span class="ow">or</span> <span class="n">forbidden</span><span class="o">&amp;</span><span class="n">inkeys</span><span class="p">:</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Bad input: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">inkeys</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">False</span>
-
-    <span class="c1"># check restricted (admin/steward) fields</span>
-    <span class="n">restricted_steward</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;owner&#39;</span><span class="p">,</span> <span class="s1">&#39;datasets&#39;</span><span class="p">}</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">check_user_permissions</span><span class="p">(</span><span class="s1">&#39;Steward&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">restricted_steward</span><span class="o">&amp;</span><span class="n">inkeys</span><span class="p">:</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Restricted input: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">inkeys</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">False</span>
-
-    <span class="k">return</span> <span class="kc">True</span></div>
-
-
-<div class="viewcode-block" id="list_project"><a class="viewcode-back" href="../code.project.html#project.list_project">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/all&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+<div class="viewcode-block" id="list_project"><a class="viewcode-back" href="../code.project.html#project.list_project">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
 <span class="k">def</span> <span class="nf">list_project</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;Provide a simplified list of all available projects.&quot;&quot;&quot;</span>
     <span class="n">results</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;projects&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">())</span>
@@ -240,40 +203,6 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">404</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">response_json</span><span class="p">({</span><span class="s1">&#39;project&#39;</span><span class="p">:</span> <span class="n">result</span><span class="p">})</span></div>
-
-
-<div class="viewcode-block" id="add_project_get"><a class="viewcode-back" href="../code.project.html#project.add_project_get">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/add&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
-<span class="nd">@user</span><span class="o">.</span><span class="n">steward_required</span>
-<span class="k">def</span> <span class="nf">add_project_get</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Provide a basic data structure for adding a project.&quot;&quot;&quot;</span>
-    <span class="n">project</span> <span class="o">=</span> <span class="n">structure</span><span class="o">.</span><span class="n">project</span><span class="p">()</span>
-    <span class="k">del</span> <span class="n">project</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span>
-    <span class="k">del</span> <span class="n">project</span><span class="p">[</span><span class="s1">&#39;identifiers&#39;</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">response_json</span><span class="p">(</span><span class="n">project</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="add_project_post"><a class="viewcode-back" href="../code.project.html#project.add_project_post">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/add&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>
-<span class="nd">@user</span><span class="o">.</span><span class="n">steward_required</span>
-<span class="k">def</span> <span class="nf">add_project_post</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Add a project.&quot;&quot;&quot;</span>
-    <span class="n">project</span> <span class="o">=</span> <span class="n">structure</span><span class="o">.</span><span class="n">project</span><span class="p">()</span>
-
-    <span class="n">indata</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">indata</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">validate_project_input</span><span class="p">(</span><span class="n">indata</span><span class="p">):</span>
-            <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">))</span>
-        <span class="n">project</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">indata</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="s1">&#39;datasets&#39;</span> <span class="ow">in</span> <span class="n">project</span><span class="p">:</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">project</span><span class="p">[</span><span class="s1">&#39;datasets&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">utils</span><span class="o">.</span><span class="n">str_to_uuid</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span> <span class="k">for</span> <span class="n">ds</span> <span class="ow">in</span> <span class="n">project</span><span class="p">[</span><span class="s1">&#39;datasets&#39;</span><span class="p">]]</span>
-        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-            <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">))</span>
-
-    <span class="n">result</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;projects&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>
-    <span class="n">entry</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;projects&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">result</span><span class="o">.</span><span class="n">inserted_id</span><span class="p">},</span>
-                                            <span class="p">{</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
-    <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">response_json</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span></div>
 </pre></div>
 
            </div>
