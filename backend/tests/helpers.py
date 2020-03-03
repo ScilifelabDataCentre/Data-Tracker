@@ -83,6 +83,20 @@ def dataset_for_tests():
 
     Yields the uuid of the added dataset.
     """
+    uuids = add_dataset()
+    yield uuids[1]
+
+    # cleanup
+    delete_dataset(*uuids)
+
+
+def add_dataset():
+    """
+    Add an order with a dataset.
+
+    Returns:
+        tuple: (order_uuid, dataset_uuid)
+    """
     db = db_connection()
     # prepare
     order_indata = structure.order()
@@ -98,15 +112,21 @@ def dataset_for_tests():
     dataset_indata.update({'links': [{'description': 'Test description', 'url': 'http://test_url'}],
                            'description': 'Added by fixture.',
                            'title': 'Test title from fixture'})
+    dataset_indata.update(TEST_LABEL)
 
     db['datasets'].insert_one(dataset_indata)
     order_indata['datasets'].append(dataset_indata['_id'])
     db['orders'].insert_one(order_indata)
-    yield dataset_indata['_id']
+    return (order_indata['_id'], dataset_indata['_id'])
 
-    # cleanup
-    db['orders'].delete_one({'_id': order_indata['_id']})
-    db['datasets'].delete_one({'_id': dataset_indata['_id']})
+
+def delete_dataset(order_uuid, dataset_uuid):
+    """
+    Delete an order and a dataset added by ``add_dataset()``.
+    """
+    db = db_connection()
+    db['orders'].delete_one({'_id': order_uuid})
+    db['datasets'].delete_one({'_id': dataset_uuid})
 
 
 def make_request(session, url: str, data: dict = None, method='GET', ret_json: bool = True) -> dict:

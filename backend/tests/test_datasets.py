@@ -8,7 +8,8 @@ import requests
 # pylint: disable = redefined-outer-name, unused-import
 
 from helpers import make_request, as_user, make_request_all_roles,\
-    dataset_for_tests, USERS, random_string, parse_time, TEST_LABEL, use_db
+    dataset_for_tests, USERS, random_string, parse_time, TEST_LABEL, use_db,\
+    add_dataset, delete_dataset
 
 
 def test_list_user_datasets(use_db):
@@ -107,7 +108,7 @@ def test_get_dataset_bad():
         assert not response.data
 
 
-def test_delete_dataset(use_db, dataset_for_tests):
+def test_delete_dataset(use_db):
     """
     Add and delete datasets.
 
@@ -119,6 +120,8 @@ def test_delete_dataset(use_db, dataset_for_tests):
     db = use_db
 
     session = requests.Session()
+
+    uuids = [add_dataset() for _ in range(5)]
 
     orders_user = db['users'].find_one({'auth_id': USERS['data']})
 
@@ -164,6 +167,8 @@ def test_delete_dataset(use_db, dataset_for_tests):
             else:
                 assert response.code == 403
                 assert not response.data
+    for uuid_group in uuids:
+        delete_dataset(*uuid_group)
 
 
 def test_delete_bad():
