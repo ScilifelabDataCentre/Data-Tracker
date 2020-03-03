@@ -191,10 +191,17 @@
     <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">({</span><span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="s1">&#39;success&#39;</span><span class="p">})</span></div>
 
 
-<div class="viewcode-block" id="steward_hello"><a class="viewcode-back" href="../code.developer.html#developer.steward_hello">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/stewardhello&#39;</span><span class="p">)</span>
-<span class="nd">@user</span><span class="o">.</span><span class="n">steward_required</span>
-<span class="k">def</span> <span class="nf">steward_hello</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Test request requiring Steward rights.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="permission_hello"><a class="viewcode-back" href="../code.developer.html#developer.permission_hello">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/hello/&lt;permission&gt;&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">permission_hello</span><span class="p">(</span><span class="n">permission</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Test request requiring the given permission.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        permission (str): The permission to test for.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">has_permission</span><span class="p">(</span><span class="n">permission</span><span class="p">):</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">403</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">({</span><span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="s1">&#39;success&#39;</span><span class="p">})</span></div>
 
 
@@ -205,7 +212,7 @@
     <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">({</span><span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="s1">&#39;success&#39;</span><span class="p">})</span></div>
 
 
-<div class="viewcode-block" id="csrf_test"><a class="viewcode-back" href="../code.developer.html#developer.csrf_test">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/csrftest&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">,</span> <span class="s1">&#39;PUT&#39;</span><span class="p">,</span> <span class="s1">&#39;DELETE&#39;</span><span class="p">])</span>
+<div class="viewcode-block" id="csrf_test"><a class="viewcode-back" href="../code.developer.html#developer.csrf_test">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/csrftest&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">,</span> <span class="s1">&#39;PATCH&#39;</span><span class="p">,</span> <span class="s1">&#39;PUT&#39;</span><span class="p">,</span> <span class="s1">&#39;DELETE&#39;</span><span class="p">])</span>
 <span class="k">def</span> <span class="nf">csrf_test</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;Test csrf tokens.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">({</span><span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="s1">&#39;success&#39;</span><span class="p">})</span></div>
@@ -217,13 +224,6 @@
     <span class="n">added</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;datasets&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;Test dataset&#39;</span><span class="p">},</span>
                                              <span class="p">{</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}))</span>
     <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">({</span><span class="s1">&#39;datasets&#39;</span><span class="p">:</span> <span class="n">added</span><span class="p">})</span></div>
-
-
-<div class="viewcode-block" id="list_orders"><a class="viewcode-back" href="../code.developer.html#developer.list_orders">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/orders&#39;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">list_orders</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Get datasets added during testing.&quot;&quot;&quot;</span>
-    <span class="n">orders</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;orders&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">())</span>
-    <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">({</span><span class="s1">&#39;orders&#39;</span><span class="p">:</span> <span class="n">orders</span><span class="p">})</span></div>
 
 
 <div class="viewcode-block" id="list_session"><a class="viewcode-back" href="../code.developer.html#developer.list_session">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/session&#39;</span><span class="p">)</span>

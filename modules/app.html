@@ -223,12 +223,6 @@
     <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">404</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="add_dataset_get"><a class="viewcode-back" href="../code.app.html#app.add_dataset_get">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/api/countries&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
-<span class="k">def</span> <span class="nf">add_dataset_get</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Provide a list of countries.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">({</span><span class="s1">&#39;countries&#39;</span><span class="p">:</span> <span class="n">utils</span><span class="o">.</span><span class="n">country_list</span><span class="p">()})</span></div>
-
-
 <span class="c1"># to allow coverage check for testing</span>
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
     <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">5000</span><span class="p">)</span>

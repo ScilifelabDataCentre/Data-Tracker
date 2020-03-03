@@ -178,9 +178,32 @@
 <span id="dataset-py"></span><h1>dataset.py<a class="headerlink" href="#module-dataset" title="Permalink to this headline">¶</a></h1>
 <p>Dataset requests.</p>
 <dl class="function">
+<dt id="dataset.build_dataset_info">
+<code class="sig-prename descclassname">dataset.</code><code class="sig-name descname">build_dataset_info</code><span class="sig-paren">(</span><em class="sig-param">identifier: str</em><span class="sig-paren">)</span><a class="reference internal" href="modules/dataset.html#build_dataset_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataset.build_dataset_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query for a dataset from the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>identifier</strong> (<em>str</em>) – The uuid of the dataset.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The dataset.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
 <dt id="dataset.delete_dataset">
-<code class="sig-prename descclassname">dataset.</code><code class="sig-name descname">delete_dataset</code><span class="sig-paren">(</span><em class="sig-param">identifier</em><span class="sig-paren">)</span><a class="reference internal" href="modules/dataset.html#delete_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataset.delete_dataset" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">dataset.</code><code class="sig-name descname">delete_dataset</code><span class="sig-paren">(</span><em class="sig-param">identifier: str</em><span class="sig-paren">)</span><a class="reference internal" href="modules/dataset.html#delete_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataset.delete_dataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete a dataset.</p>
+<p>Can be deleted only by creator or user with DATA_MANAGEMENT permissions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>identifier</strong> (<em>str</em>) – The dataset uuid.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -242,43 +265,6 @@
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>flask.Response</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="dataset.update_projects">
-<code class="sig-prename descclassname">dataset.</code><code class="sig-name descname">update_projects</code><span class="sig-paren">(</span><em class="sig-param">dataset_uuid: str</em>, <em class="sig-param">in_projects: list</em><span class="sig-paren">)</span><a class="reference internal" href="modules/dataset.html#update_projects"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataset.update_projects" title="Permalink to this definition">¶</a></dt>
-<dd><p>Update the dataset list in the projects the dataset is connected to.</p>
-<p>Remove the dataset from projects in old_projects that are not in new_projects,
-and add the dataset to the new projects.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>dataset_uuid</strong> (<em>str</em>) – the uuid of the dataset</p></li>
-<li><p><strong>new_projects</strong> (<em>list</em>) – the project uuids (str) the dataset should now be related to</p></li>
-</ul>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><p><strong>ValueError</strong> – a project uuid did not match any project in the db</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="dataset.validate_dataset_input">
-<code class="sig-prename descclassname">dataset.</code><code class="sig-name descname">validate_dataset_input</code><span class="sig-paren">(</span><em class="sig-param">indata</em><span class="sig-paren">)</span><a class="reference internal" href="modules/dataset.html#validate_dataset_input"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataset.validate_dataset_input" title="Permalink to this definition">¶</a></dt>
-<dd><p>Validate the dataset input.</p>
-<p>It may only contain valid fields that may be changed by the role of the current user.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>indata</strong> – the dataset input</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>whether the dataset input is accepted</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
 </dd></dl>
