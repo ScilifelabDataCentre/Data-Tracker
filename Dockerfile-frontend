@@ -3,6 +3,4 @@ FROM node:latest
 ADD . /code
 WORKDIR /code/frontend
 
-RUN npm install -g yarn
-
 CMD ["yarn", "run", "serve"]
