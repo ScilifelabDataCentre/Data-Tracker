@@ -212,6 +212,21 @@ def test_get_log(use_db):
         assert response.code == 200
 
 
+def test_get_log_bad():
+    """
+    Request the logs for multiple orders.
+
+    Confirm that bad identifiers give response 404.
+    """
+    session = requests.session()
+    for _ in range(2):
+        as_user(session, USERS['data'])
+        response = make_request(session, f'/api/order/{uuid.uuid4()}/log', ret_json=True)
+        assert response.code == 404
+        response = make_request(session, f'/api/order/{random_string()}/log', ret_json=True)
+        assert response.code == 404
+
+
 def test_list_user_orders_permissions(use_db):
     """
     Request orders for multiple users by uuid, one at a time.
