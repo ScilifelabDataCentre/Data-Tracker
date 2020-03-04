@@ -531,13 +531,12 @@ def test_add_order_bad():
             assert response.code == 403
             assert not response.data
 
+    session = requests.Session()
+    as_user(session, USERS['data'])
     indata = {'_id': str(uuid.uuid4()),
               'receiver': 'bad_email@asd',
               'title': 'Test title'}
     indata.update(TEST_LABEL)
-
-    session = requests.Session()
-    as_user(session, USERS['data'])
     response = make_request(session,
                              f'/api/order/',
                              method='POST',
@@ -550,8 +549,6 @@ def test_add_order_bad():
               'receiver': 'bad_email@asd',
               'title': 'Test title'}
     indata.update(TEST_LABEL)
-
-    as_user(session, USERS['data'])
     response = make_request(session,
                              f'/api/order/',
                              method='POST',
