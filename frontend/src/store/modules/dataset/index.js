@@ -32,19 +32,20 @@ const actions = {
     });
   },
 
-  getDatasets ({ commit }) {
+  getDatasets ({ commit, dispatch }) {
     return new Promise((resolve, reject) => {
       axios
-        .get('/api/dataset/all')
+        .get('/api/dataset/')
         .then((response) => {
           commit('UPDATE_DATASETS', response.data.datasets);
           resolve(response);
         })
-      .catch((err) => {
-        reject(err);
+        .catch((err) => {
+          dispatch('updateNotification', ['Unable to retrieve dataset list', 'warning'])
+          reject(err);
       });
     });
-  },                  
+  },
 
   deleteDataset (context, dataset_id) {
     return new Promise((resolve, reject) => {
