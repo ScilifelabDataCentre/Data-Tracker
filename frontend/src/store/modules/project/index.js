@@ -17,7 +17,7 @@ const mutations = {
 }
 
 const actions = {
-  getProject ({ commit }, id) {
+  getProject ({ commit, dispatch }, id) {
     return new Promise((resolve, reject) => {
       axios
         .get('/api/project/' + id)
@@ -26,21 +26,23 @@ const actions = {
           resolve(response);
         })
         .catch((err) => {
+          dispatch('updateNotification', ['Unable to retrieve project', 'warning'])
           reject(err);
         });
     });
   },
 
-  getProjects ({ commit }) {
+  getProjects ({ commit, dispatch }) {
     return new Promise((resolve, reject) => {
       axios
-        .get('/api/project/all')
+        .get('/api/project/')
         .then((response) => {
           commit('UPDATE_PROJECTS', response.data.projects);
           resolve(response);
         })
-      .catch((err) => {
-        reject(err);
+        .catch((err) => {
+          dispatch('updateNotification', ['Unable to retrieve project list', 'warning'])
+          reject(err);
       });
     });
   },
