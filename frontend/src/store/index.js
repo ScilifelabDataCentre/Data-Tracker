@@ -24,6 +24,9 @@ const actions = {
     return new Promise((resolve) => {
       commit('UPDATE_NOTIFICATION', {'message': notification[0],
                                      'type': notification[1]});
+      setTimeout(() => commit('UPDATE_NOTIFICATION', {'message': "",
+                                                      'type': ""}),
+                 3000);
       resolve();
     });
   },
