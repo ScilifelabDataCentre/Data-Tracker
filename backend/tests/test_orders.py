@@ -13,30 +13,6 @@ from helpers import make_request, as_user, make_request_all_roles,\
 logging.getLogger().setLevel(logging.DEBUG)
 
 
-def test_list_all_orders(use_db):
-    """
-    Check that all orders in the system are listed.
-
-    Check that the number of fields per order is correct.
-    """
-    db = use_db
-    nr_orders = db['orders'].count_documents({})
-
-    responses = make_request_all_roles(f'/api/order/', ret_json=True)
-    for response in responses:
-        if response.role in ('data', 'root'):
-            assert response.code == 200
-            assert len(response.data['orders']) == nr_orders
-            assert set(response.data['orders'][0].keys()) == {'title', '_id',
-                                                              'creator', 'receiver'}
-        elif response.role == 'no-login':
-            assert response.code == 401
-            assert not response.data
-        else:
-            assert response.code == 403
-            assert not response.data
-
-
 def test_get_order_permissions(use_db):
     """
     Test permissions for requesting a order.
@@ -986,3 +962,27 @@ def test_delete_order_bad():
                                 method='DELETE')
     assert response.code == 404
     assert not response.data
+
+
+def test_list_all_orders(use_db):
+    """
+    Check that all orders in the system are listed.
+
+    Check that the number of fields per order is correct.
+    """
+    db = use_db
+    nr_orders = db['orders'].count_documents({})
+
+    responses = make_request_all_roles(f'/api/order/', ret_json=True)
+    for response in responses:
+        if response.role in ('data', 'root'):
+            assert response.code == 200
+            assert len(response.data['orders']) == nr_orders
+            assert set(response.data['orders'][0].keys()) == {'title', '_id',
+                                                              'creator', 'receiver'}
+        elif response.role == 'no-login':
+            assert response.code == 401
+            assert not response.data
+        else:
+            assert response.code == 403
+            assert not response.data
