@@ -536,20 +536,28 @@ def test_add_order_bad():
               'title': 'Test title'}
     indata.update(TEST_LABEL)
 
-    responses = make_request_all_roles(f'/api/order/',
-                                       method='POST',
-                                       data=indata,
-                                       ret_json=True)
-    for response in responses:
-        if response.role in ('orders', 'data', 'root'):
-            assert response.code == 400
-        elif response.role == 'no-login':
-            assert response.code == 401
-            assert not response.data
-        else:
-            assert response.code == 403
-            assert not response.data
+    session = requests.Session()
+    as_user(session, USERS['data'])
+    response = make_request(session,
+                             f'/api/order/',
+                             method='POST',
+                             data=indata,
+                             ret_json=True)
+    assert response.code == 400
+    assert not response.data
 
+    indata = {'datasets': [],
+              'receiver': 'bad_email@asd',
+              'title': 'Test title'}
+    indata.update(TEST_LABEL)
+
+    as_user(session, USERS['data'])
+    response = make_request(session,
+                             f'/api/order/',
+                             method='POST',
+                             data=indata,
+                             ret_json=True)
+    assert response.code == 400
 
 
 def test_add_dataset_permissions(use_db):
