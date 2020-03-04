@@ -114,19 +114,28 @@ def add_dataset():
                            'title': 'Test title from fixture'})
     dataset_indata.update(TEST_LABEL)
 
+    project_indata = structure.project()
+    project_indata.update({'description': 'Added by fixture.',
+                           'title': 'Test title from fixture',
+                           'owners': [base_user['_id']]})
+    project_indata.update(TEST_LABEL)
+
     db['datasets'].insert_one(dataset_indata)
     order_indata['datasets'].append(dataset_indata['_id'])
+    project_indata['datasets'].append(dataset_indata['_id'])
     db['orders'].insert_one(order_indata)
-    return (order_indata['_id'], dataset_indata['_id'])
+    db['projects'].insert_one(project_indata)
+    return (order_indata['_id'], dataset_indata['_id'], project_indata['_id'])
 
 
-def delete_dataset(order_uuid, dataset_uuid):
+def delete_dataset(order_uuid, dataset_uuid, project_uuid):
     """
     Delete an order and a dataset added by ``add_dataset()``.
     """
     db = db_connection()
     db['orders'].delete_one({'_id': order_uuid})
     db['datasets'].delete_one({'_id': dataset_uuid})
+    db['projects'].delete_one({'_id': project_uuid})
 
 
 def make_request(session, url: str, data: dict = None, method='GET', ret_json: bool = True) -> dict:
