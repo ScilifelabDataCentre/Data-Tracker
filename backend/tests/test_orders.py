@@ -216,27 +216,29 @@ def test_list_user_orders_permissions(use_db):
                                                                        'DATA_MANAGEMENT']}}},
                                    {'$sample': {'size': 2}}])
     for user in users:
-        responses = make_request_all_roles('/api/order/user')
+        responses = make_request_all_roles('/api/order/user', ret_json=True)
         for response in responses:
             if response.role in ('orders', 'data', 'root'):
-                assert response.code == 404
+                assert response.code == 200
+                assert len(response.data['orders']) == 0
             elif response.role == 'no-login':
                 assert response.code == 401
+                assert not response.data
             else:
                 assert response.code == 403
-            assert not response.data
+                assert not response.data
 
         user_orders = list(db['orders'].find({'$or': [{'receiver': user['_id']},
                                                       {'creator': user['_id']}]}))
-        responses = make_request_all_roles(f'/api/order/user/{user["_id"]}')
+        responses = make_request_all_roles(f'/api/order/user/{user["_id"]}', ret_json=True)
         for response in responses:
             if response.role in ('data', 'root'):
                 if user_orders:
                     assert response.code == 200
                     assert response.data
                 else:
-                    assert response.code == 404
-                    assert not response.data
+                    assert response.code == 200
+                    assert len(response.data['orders']) == 0
             elif response.role == 'no-login':
                 assert response.code == 401
                 assert not response.data
@@ -253,8 +255,8 @@ def test_list_user_orders_permissions(use_db):
             assert response.code == 200
             assert response.data
         else:
-            assert response.code == 404
-            assert not response.data
+            assert response.code == 200
+            assert len(response.data['orders']) == 0
 
 
 def test_list_user_orders(use_db):
@@ -287,8 +289,8 @@ def test_list_user_orders(use_db):
             for order in response.data['orders']:
                 assert order['_id'] in order_uuids
         else:
-            assert response.code == 404
-            assert not response.data
+            assert response.code == 200
+            assert len(response.data['orders']) == 0
 
 
 def test_list_user_orders_bad():
@@ -307,9 +309,10 @@ def test_list_user_orders_bad():
                 assert response.code == 404
             elif response.role == 'no-login':
                 assert response.code == 401
+                assert not response.data
             else:
                 assert response.code == 403
-            assert not response.data
+                assert not response.data
 
     for _ in range(2):
         responses = make_request_all_roles(f'/api/order/user/{random_string()}')
