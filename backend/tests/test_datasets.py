@@ -88,6 +88,7 @@ def test_get_dataset():
         assert response[1] == 200
         requested = response[0]['dataset']
         assert orig == requested
+        assert requested['_id'] not in requested['related']
 
 
 def test_get_dataset_bad():
