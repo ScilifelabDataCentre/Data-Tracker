@@ -67,13 +67,16 @@ def list_orders_user(user_id: str):
         if not user.has_permission('OWNERS_READ'):
             flask.abort(status=403)
         try:
-            uuid = utils.str_to_uuid(user_id)
+            user_uuid = utils.str_to_uuid(user_id)
         except ValueError:
             return flask.abort(status=404)
+        else:
+            if not flask.g.db['users'].find_one({'_id': user_uuid}):
+                return flask.abort(status=404)
     else:  # current user
-        uuid = flask.session['user_id']
-    orders = list(flask.g.db['orders'].find({'$or': [{'receiver': uuid},
-                                                     {'creator': uuid}]}))
+        user_uuid = flask.session['user_id']
+    orders = list(flask.g.db['orders'].find({'$or': [{'receiver': user_uuid},
+                                                     {'creator': user_uuid}]}))
     return utils.response_json({'orders': orders})
 
 
