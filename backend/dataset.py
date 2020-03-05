@@ -28,8 +28,8 @@ def list_user_data():
                                                           {'creator': flask.session['user_id']}]},
                                                  {'datasets': 1}))
     uuids = list(ds for entry in user_orders for ds in entry['datasets'])
-    user_datasets = list(flask.g.db['datasets'].find({'_id': {'$in': uuids}},
-                                                     {'title': 1}))
+    user_datasets = list(flask.g.db['datasets'].find({'_id': {'$in': uuids}}))
+
     return utils.response_json({'datasets': user_datasets})
 
 
