@@ -74,9 +74,6 @@ def list_orders_user(user_id: str):
         uuid = flask.session['user_id']
     orders = list(flask.g.db['orders'].find({'$or': [{'receiver': uuid},
                                                      {'creator': uuid}]}))
-    if not orders:
-        flask.abort(status=404)
-
     return utils.response_json({'orders': orders})
 
 
