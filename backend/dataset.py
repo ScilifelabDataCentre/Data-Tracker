@@ -192,6 +192,7 @@ def build_dataset_info(identifier: str):
     order = flask.g.db['orders'].find_one({'datasets': dataset_uuid})
     dataset['related'] = list(flask.g.db['datasets'].find({'_id': {'$in': order['datasets']}},
                                                           {'title': 1}))
+    dataset['related'].remove({'_id': dataset['_id'], 'title': dataset['title']})
     dataset['projects'] = list(flask.g.db['projects'].find({'datasets': dataset_uuid},
                                                            {'title': 1}))
     creator = flask.g.db['users'].find_one({'_id': order['creator']})['name']
