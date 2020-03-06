@@ -88,7 +88,16 @@
 <li class="toctree-l1"><a class="reference internal" href="data_structure.html">Data Structure</a></li>
 <li class="toctree-l1"><a class="reference internal" href="implementation.html">Implementation</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="development.html">Development</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">System for development</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">System for development</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#prepare-config-file">Prepare config file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#install-npm-modules">Install NPM modules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#local-yarn-or-npm">Local yarn or npm</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#copy-folder-from-container">Copy folder from container</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#build-and-activate-the-containers">Build and activate the containers</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="modules.html">Code reference</a></li>
 </ul>
 </li>
@@ -162,9 +171,37 @@
             
   <div class="section" id="system-for-development">
 <h1>System for development<a class="headerlink" href="#system-for-development" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="prepare-config-file">
+<h2>Prepare config file<a class="headerlink" href="#prepare-config-file" title="Permalink to this headline">¶</a></h2>
 <p>Prepare a <code class="docutils literal notranslate"><span class="pre">config.yaml</span></code> file. Just renaming <code class="docutils literal notranslate"><span class="pre">config.yaml.sample</span></code> to <code class="docutils literal notranslate"><span class="pre">config.yaml</span></code> and setting the two <code class="docutils literal notranslate"><span class="pre">dev</span></code> variables to true should be enough.</p>
-<p>The npm modules must be installed for the frontend using <code class="docutils literal notranslate"><span class="pre">yarn</span></code>. Either install them using the local binaries or uncomment the relevant lines in <code class="docutils literal notranslate"><span class="pre">Dockerfile-frontend</span></code>.</p>
-<p>Build and activate the containers:</p>
+</div>
+<div class="section" id="install-npm-modules">
+<h2>Install NPM modules<a class="headerlink" href="#install-npm-modules" title="Permalink to this headline">¶</a></h2>
+<p>The npm modules must be installed for the frontend.</p>
+<div class="section" id="local-yarn-or-npm">
+<h3>Local yarn or npm<a class="headerlink" href="#local-yarn-or-npm" title="Permalink to this headline">¶</a></h3>
+<p>Make sure you have <code class="docutils literal notranslate"><span class="pre">npm</span></code> or <code class="docutils literal notranslate"><span class="pre">yarn'</span> <span class="pre">installed</span> <span class="pre">locally</span> <span class="pre">and</span> <span class="pre">run</span> <span class="pre">the</span> <span class="pre">corresponding</span> <span class="pre">command</span> <span class="pre">in</span> <span class="pre">the</span> </code>frontend` folder:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">npm</span> <span class="n">install</span>
+
+<span class="n">yarn</span> <span class="n">install</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="copy-folder-from-container">
+<h3>Copy folder from container<a class="headerlink" href="#copy-folder-from-container" title="Permalink to this headline">¶</a></h3>
+<p>Uncomment all rows in <code class="docutils literal notranslate"><span class="pre">Dockerfile-frontend</span></code>.</p>
+<p>Build and start all containers:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span><span class="o">-</span><span class="n">compose</span> <span class="n">up</span>
+</pre></div>
+</div>
+<p>Copy the generated <code class="docutils literal notranslate"><span class="pre">node_modules</span></code> from the container to the <code class="docutils literal notranslate"><span class="pre">frontend</span></code> folder:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">cp</span> <span class="n">project_portal_frontend_1</span><span class="p">:</span><span class="o">/</span><span class="n">node_modules</span> <span class="n">frontend</span><span class="o">/</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="build-and-activate-the-containers">
+<h2>Build and activate the containers<a class="headerlink" href="#build-and-activate-the-containers" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span><span class="o">-</span><span class="n">compose</span> <span class="n">up</span>
 </pre></div>
 </div>
@@ -172,6 +209,7 @@
 <p>Randomized test data can be generated by <code class="docutils literal notranslate"><span class="pre">test/gen_test_db.py</span></code>. Run it using e.g.:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PYTHON_PATH</span><span class="o">=</span><span class="n">backend</span> <span class="n">python3</span> <span class="n">test</span><span class="o">/</span><span class="n">gen_test_db</span><span class="o">.</span><span class="n">py</span>
 </pre></div>
+</div>
 </div>
 </div>
 

@@ -3,4 +3,7 @@ FROM node:latest
 ADD . /code
 WORKDIR /code/frontend
 
+#RUN yarn install
+#RUN cp -r node_modules /
+
 CMD ["yarn", "run", "serve"]

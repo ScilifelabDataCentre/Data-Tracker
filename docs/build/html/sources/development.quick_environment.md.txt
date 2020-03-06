@@ -1,10 +1,38 @@
 # System for development
 
+## Prepare config file
+
 Prepare a `config.yaml` file. Just renaming `config.yaml.sample` to `config.yaml` and setting the two `dev` variables to true should be enough.
 
-The npm modules must be installed for the frontend using `yarn`. Either install them using the local binaries or uncomment the relevant lines in `Dockerfile-frontend`.
+## Install NPM modules
 
-Build and activate the containers:
+The npm modules must be installed for the frontend.
+
+### Local yarn or npm
+
+Make sure you have `npm` or `yarn' installed locally and run the corresponding command in the `frontend` folder:
+
+```
+npm install
+
+yarn install
+```
+
+### Copy folder from container
+
+Uncomment all rows in `Dockerfile-frontend`.
+
+Build and start all containers:
+```
+docker-compose up
+```
+
+Copy the generated `node_modules` from the container to the `frontend` folder:
+```
+docker cp project_portal_frontend_1:/node_modules frontend/
+```
+
+## Build and activate the containers
 
 ```
 docker-compose up
