@@ -525,7 +525,7 @@ def test_add_order_bad():
                                        data=indata,
                                        ret_json=True)
     for response in responses:
-        if response.role in ('data', 'root'):
+        if response.role in ('orders', 'data', 'root'):
             assert response.code == 400
         elif response.role == 'no-login':
             assert response.code == 401

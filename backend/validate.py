@@ -4,6 +4,8 @@ Validators for indata.
 Indata can be sent to ``validate_indata``, which will use the corresponding
 functions to check each field.
 """
+import flask
+
 import logging
 import uuid
 
