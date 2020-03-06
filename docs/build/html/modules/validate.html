@@ -190,12 +190,66 @@
                 <span class="n">validate_extra</span><span class="p">(</span><span class="n">indata</span><span class="p">[</span><span class="n">field_key</span><span class="p">])</span>
             <span class="k">elif</span> <span class="n">field_key</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;creator&#39;</span><span class="p">,</span> <span class="s1">&#39;receiver&#39;</span><span class="p">):</span>
                 <span class="n">validate_user</span><span class="p">(</span><span class="n">indata</span><span class="p">[</span><span class="n">field_key</span><span class="p">],</span> <span class="n">origin</span><span class="o">=</span><span class="n">field_key</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">field_key</span> <span class="o">==</span> <span class="s1">&#39;owners&#39;</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">owners</span><span class="p">:</span>
+                    <span class="n">validate_user</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="n">field_key</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">field_key</span> <span class="o">==</span> <span class="s1">&#39;contact&#39;</span><span class="p">:</span>
+                <span class="n">validate_contact</span><span class="p">(</span><span class="n">indata</span><span class="p">[</span><span class="n">field_key</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">field_key</span> <span class="o">==</span> <span class="s1">&#39;dmp&#39;</span><span class="p">:</span>
+                <span class="n">validate_dmp</span><span class="p">(</span><span class="n">indata</span><span class="p">[</span><span class="n">field_key</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">field_key</span> <span class="o">==</span> <span class="s1">&#39;publications&#39;</span><span class="p">:</span>
+                <span class="n">validate_links</span><span class="p">(</span><span class="n">indata</span><span class="p">[</span><span class="n">field_key</span><span class="p">])</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Unknown key&#39;</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Indata validation failed: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">False</span>
     <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="validate_contact"><a class="viewcode-back" href="../code.validate.html#validate.validate_contact">[docs]</a><span class="k">def</span> <span class="nf">validate_contact</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Validate input for the ``contact`` field.</span>
+
+<span class="sd">    It must be a string.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data: The data to be validated.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: Validation passed.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: Validation failed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Contact - not a string (</span><span class="si">{data}</span><span class="s1">)&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="validate_datasets"><a class="viewcode-back" href="../code.validate.html#validate.validate_datasets">[docs]</a><span class="k">def</span> <span class="nf">validate_datasets</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Validate input for the ``title`` field.</span>
+
+<span class="sd">    It must be a list of uuids. Validate that the datasets exist in the db.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data (str): The data to be validated.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: Validation passed.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: Validation failed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">ds_entry</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">ds_uuid</span> <span class="o">=</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Datasets - not a valid uuid (</span><span class="si">{data}</span><span class="s1">)&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;datasets&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">ds_uuid</span><span class="p">}):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Datasets - uuid not in db (</span><span class="si">{data}</span><span class="s1">)&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
 
 
 <div class="viewcode-block" id="validate_description"><a class="viewcode-back" href="../code.validate.html#validate.validate_description">[docs]</a><span class="k">def</span> <span class="nf">validate_description</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -215,6 +269,26 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Description - not a string (</span><span class="si">{data}</span><span class="s1">)&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="validate_dmp"><a class="viewcode-back" href="../code.validate.html#validate.validate_dmp">[docs]</a><span class="k">def</span> <span class="nf">validate_dmp</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Validate input for the ``dmp`` field.</span>
+
+<span class="sd">    It must be a string.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data: The data to be validated.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: Validation passed.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: Validation failed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;DMP - not a string (</span><span class="si">{data}</span><span class="s1">)&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="kc">True</span></div>
 
 
@@ -257,20 +331,47 @@
 <span class="sd">        ValueError: Validation failed.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Links- must be a list&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Links - must be a list&#39;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Links - list must contain dicts&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Links - must be a list of dicts&#39;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">entry</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;url&#39;</span><span class="p">,</span> <span class="s1">&#39;description&#39;</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Links - bad key in dict&#39;</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Links - values must be type str&#39;</span><span class="p">)</span>
-
     <span class="k">return</span> <span class="kc">True</span></div>
 
 
-<div class="viewcode-block" id="validate_title"><a class="viewcode-back" href="../code.validate.html#validate.validate_title">[docs]</a><span class="k">def</span> <span class="nf">validate_title</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<div class="viewcode-block" id="validate_publications"><a class="viewcode-back" href="../code.validate.html#validate.validate_publications">[docs]</a><span class="k">def</span> <span class="nf">validate_publications</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Validate input for the ``publications`` field.</span>
+
+<span class="sd">    It must have the form ``[{&#39;url&#39;: value, &#39;description&#39;: value}, ...]``.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data: The data to be validated.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: Validation passed.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: Validation failed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Publications - must be a list&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Publications - must be a list of dicts&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">entry</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;title&#39;</span><span class="p">,</span> <span class="s1">&#39;doi&#39;</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Publications - bad key in dict&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Publications - values must be type str&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="validate_title"><a class="viewcode-back" href="../code.validate.html#validate.validate_title">[docs]</a><span class="k">def</span> <span class="nf">validate_title</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Validate input for the ``title`` field.</span>
 
@@ -288,7 +389,7 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Title - not a string&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Title - must be non-empty&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Title - must not be empty&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="kc">True</span></div>
 
 
@@ -297,6 +398,7 @@
 <span class="sd">    Validate input for the ``title`` field.</span>
 
 <span class="sd">    It must be a non-empty string.</span>
+<span class="sd">    If uuid, confirms that uuid is present in db.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        data (str): The data to be validated.</span>
@@ -312,9 +414,11 @@
     <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">is_email</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">True</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">user_uuid</span> <span class="o">=</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;{origin.capitalize()} - not a valid uuid (</span><span class="si">{data}</span><span class="s1">)&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;users&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">user_uuid</span><span class="p">}):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;{origin.capitalize()} - uuid not in db (</span><span class="si">{data}</span><span class="s1">)&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="kc">True</span></div>
 </pre></div>
 

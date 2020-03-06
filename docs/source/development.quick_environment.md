@@ -1,5 +1,7 @@
 # System for development
 
+Prepare a `config.yaml` file. Just renaming `config.yaml.sample` to `config.yaml` and setting the two `dev` variables to true should be enough.
+
 Build and activate the containers:
 
 ```
