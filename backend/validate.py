@@ -76,6 +76,31 @@ def validate_contact(data) -> bool:
     return True
 
 
+def validate_datasets(data: list) -> bool:
+    """
+    Validate input for the ``title`` field.
+
+    It must be a list of uuids. Validate that the datasets exist in the db.
+
+    Args:
+        data (str): The data to be validated.
+
+    Returns:
+        bool: Validation passed.
+
+    Raises:
+        ValueError: Validation failed.
+    """
+    for ds_entry in data:
+        try:
+            ds_uuid = uuid.UUID(data)
+        except ValueError:
+            raise ValueError(f'Datasets - not a valid uuid ({data})')
+        if not flask.g.db['datasets'].find_one({'_id': ds_uuid}):
+            raise ValueError(f'Datasets - uuid not in db ({data})')
+        return True
+
+
 def validate_description(data) -> bool:
     """
     Validate input for the ``description`` field.
@@ -222,6 +247,7 @@ def validate_user(data: str, origin: str) -> bool:
     Validate input for the ``title`` field.
 
     It must be a non-empty string.
+    If uuid, confirms that uuid is present in db.
 
     Args:
         data (str): The data to be validated.
@@ -237,7 +263,9 @@ def validate_user(data: str, origin: str) -> bool:
     if utils.is_email(data):
         return True
     try:
-        uuid.UUID(data)
+        user_uuid = uuid.UUID(data)
     except ValueError:
         raise ValueError(f'{origin.capitalize()} - not a valid uuid ({data})')
+    if not flask.g.db['users'].find_one({'_id': user_uuid}):
+        raise ValueError(f'{origin.capitalize()} - uuid not in db ({data})')
     return True
