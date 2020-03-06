@@ -39,11 +39,40 @@ def validate_indata(indata: dict) -> bool:  # pylint: disable=too-many-branches
                 validate_extra(indata[field_key])
             elif field_key in ('creator', 'receiver'):
                 validate_user(indata[field_key], origin=field_key)
+            elif field_key == 'owners':
+                for entry in owners:
+                    validate_user(entry, origin=field_key)
+            elif field_key == 'contact':
+                validate_contact(indata[field_key])
+            elif field_key == 'dmp':
+                validate_dmp(indata[field_key])
+            elif field_key == 'publications':
+                validate_links(indata[field_key])
             else:
                 raise ValueError('Unknown key')
     except ValueError as err:
         logging.info('Indata validation failed: %s', err)
         return False
+    return True
+
+
+def validate_contact(data) -> bool:
+    """
+    Validate input for the ``contact`` field.
+
+    It must be a string.
+
+    Args:
+        data: The data to be validated.
+
+    Returns:
+        bool: Validation passed.
+
+    Raises:
+        ValueError: Validation failed.
+    """
+    if not isinstance(data, str):
+        raise ValueError(f'Contact - not a string ({data})')
     return True
 
 
@@ -64,6 +93,26 @@ def validate_description(data) -> bool:
     """
     if not isinstance(data, str):
         raise ValueError(f'Description - not a string ({data})')
+    return True
+
+
+def validate_dmp(data) -> bool:
+    """
+    Validate input for the ``dmp`` field.
+
+    It must be a string.
+
+    Args:
+        data: The data to be validated.
+
+    Returns:
+        bool: Validation passed.
+
+    Raises:
+        ValueError: Validation failed.
+    """
+    if not isinstance(data, str):
+        raise ValueError(f'DMP - not a string ({data})')
     return True
 
 
@@ -106,20 +155,47 @@ def validate_links(data: list) -> bool:
         ValueError: Validation failed.
     """
     if not isinstance(data, list):
-        raise ValueError('Links- must be a list')
+        raise ValueError('Links - must be a list')
     for entry in data:
         if not isinstance(entry, dict):
-            raise ValueError('Links - list must contain dicts')
+            raise ValueError('Links - must be a list of dicts')
         for key in entry:
             if key not in ('url', 'description'):
                 raise ValueError('Links - bad key in dict')
             if not isinstance(entry[key], str):
                 raise ValueError('Links - values must be type str')
-
     return True
 
 
-def validate_title(data) -> bool:
+def validate_publications(data: list) -> bool:
+    """
+    Validate input for the ``publications`` field.
+
+    It must have the form ``[{'url': value, 'description': value}, ...]``.
+
+    Args:
+        data: The data to be validated.
+
+    Returns:
+        bool: Validation passed.
+
+    Raises:
+        ValueError: Validation failed.
+    """
+    if not isinstance(data, list):
+        raise ValueError('Publications - must be a list')
+    for entry in data:
+        if not isinstance(entry, dict):
+            raise ValueError('Publications - must be a list of dicts')
+        for key in entry:
+            if key not in ('title', 'doi'):
+                raise ValueError('Publications - bad key in dict')
+            if not isinstance(entry[key], str):
+                raise ValueError('Publications - values must be type str')
+    return True
+
+
+def validate_title(data: str) -> bool:
     """
     Validate input for the ``title`` field.
 
@@ -137,7 +213,7 @@ def validate_title(data) -> bool:
     if not isinstance(data, str):
         raise ValueError('Title - not a string')
     if not data:
-        raise ValueError('Title - must be non-empty')
+        raise ValueError('Title - must not be empty')
     return True
 
 
