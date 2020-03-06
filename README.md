@@ -4,6 +4,8 @@
 
 A system for tracking datasets.
 
+[Setting up a development system](https://scilifelabdatacentre.github.io/SciLifeLab-Data-Tracker/development.quick_environment.html)
+
 [Documentation](https://scilifelabdatacentre.github.io/SciLifeLab-Data-Tracker/)
 
 
@@ -11,7 +13,6 @@ A system for tracking datasets.
 [Frontend](https://hub.docker.com/repository/docker/scilifelabdatacentre/data-tracker-frontend)
 [Backend](https://hub.docker.com/repository/docker/scilifelabdatacentre/data-tracker-backend)
 
-###
 The backend requires a `config.yaml` file to be mounted to `/config.yaml`.
 
 The frontend assumes that the backend is available at `/api`.
