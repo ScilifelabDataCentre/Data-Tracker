@@ -39,7 +39,6 @@ Order
 
 
 Dataset
-
 =======
 
 .. function:: /dataset/
