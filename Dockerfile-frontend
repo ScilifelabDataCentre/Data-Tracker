@@ -1,9 +1,9 @@
 FROM node:latest
 
-#RUN yarn install
-#RUN yarn build
-
 ADD . /code
 WORKDIR /code/frontend
+
+#RUN yarn install
+#RUN yarn build
 
 CMD ["yarn", "run", "serve"]
