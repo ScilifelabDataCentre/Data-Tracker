@@ -163,6 +163,7 @@
   <div class="section" id="system-for-development">
 <h1>System for development<a class="headerlink" href="#system-for-development" title="Permalink to this headline">¶</a></h1>
 <p>Prepare a <code class="docutils literal notranslate"><span class="pre">config.yaml</span></code> file. Just renaming <code class="docutils literal notranslate"><span class="pre">config.yaml.sample</span></code> to <code class="docutils literal notranslate"><span class="pre">config.yaml</span></code> and setting the two <code class="docutils literal notranslate"><span class="pre">dev</span></code> variables to true should be enough.</p>
+<p>The npm modules must be installed for the frontend using <code class="docutils literal notranslate"><span class="pre">yarn</span></code>. Either install them using the local binaries or uncomment the relevant lines in <code class="docutils literal notranslate"><span class="pre">Dockerfile-frontend</span></code>.</p>
 <p>Build and activate the containers:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span><span class="o">-</span><span class="n">compose</span> <span class="n">up</span>
 </pre></div>

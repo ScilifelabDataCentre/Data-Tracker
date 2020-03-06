@@ -2,6 +2,8 @@
 
 Prepare a `config.yaml` file. Just renaming `config.yaml.sample` to `config.yaml` and setting the two `dev` variables to true should be enough.
 
+The npm modules must be installed for the frontend using `yarn`. Either install them using the local binaries or uncomment the relevant lines in `Dockerfile-frontend`.
+
 Build and activate the containers:
 
 ```
