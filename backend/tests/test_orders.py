@@ -328,7 +328,7 @@ def test_list_user_orders_bad():
 
 def test_add_order_permissions(use_db):
     """
-    Add a default dataset using / POST.
+    Add an order.
 
     Test permissions.
     """
@@ -373,7 +373,7 @@ def test_add_order_permissions(use_db):
 
 def test_add_order(use_db):
     """
-    Add a default dataset using / POST.
+    Add an order.
 
     Confirm that fields are set correctly.
     """
@@ -437,7 +437,7 @@ def test_add_order(use_db):
 
 def test_add_order_log(use_db):
     """
-    Add a default dataset using / POST.
+    Add an order.
 
     Confirm that logs are created.
     """
@@ -473,7 +473,7 @@ def test_add_order_log(use_db):
 
 def test_add_order_bad():
     """
-    Add a default dataset using / POST.
+    Add an order.
 
     Bad requests.
     """
