@@ -4,10 +4,10 @@ Validators for indata.
 Indata can be sent to ``validate_indata``, which will use the corresponding
 functions to check each field.
 """
-import flask
-
 import logging
 import uuid
+
+import flask
 
 import utils
 
@@ -42,7 +42,7 @@ def validate_indata(indata: dict) -> bool:  # pylint: disable=too-many-branches
             elif field_key in ('creator', 'receiver'):
                 validate_user(indata[field_key], origin=field_key)
             elif field_key == 'owners':
-                for entry in owners:
+                for entry in indata[field_key]:
                     validate_user(entry, origin=field_key)
             elif field_key == 'contact':
                 validate_contact(indata[field_key])
@@ -95,7 +95,7 @@ def validate_datasets(data: list) -> bool:
     """
     for ds_entry in data:
         try:
-            ds_uuid = uuid.UUID(data)
+            ds_uuid = uuid.UUID(ds_entry)
         except ValueError:
             raise ValueError(f'Datasets - not a valid uuid ({data})')
         if not flask.g.db['datasets'].find_one({'_id': ds_uuid}):
