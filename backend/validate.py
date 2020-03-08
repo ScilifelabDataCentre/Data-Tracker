@@ -49,7 +49,9 @@ def validate_indata(indata: dict) -> bool:  # pylint: disable=too-many-branches
             elif field_key == 'dmp':
                 validate_dmp(indata[field_key])
             elif field_key == 'publications':
-                validate_links(indata[field_key])
+                validate_publications(indata[field_key])
+            elif field_key == 'datasets':
+                validate_datasets(indata[field_key])
             else:
                 raise ValueError('Unknown key')
     except ValueError as err:
@@ -80,7 +82,7 @@ def validate_contact(data) -> bool:
 
 def validate_datasets(data: list) -> bool:
     """
-    Validate input for the ``title`` field.
+    Validate input for the ``datasets`` field.
 
     It must be a list of uuids. Validate that the datasets exist in the db.
 
