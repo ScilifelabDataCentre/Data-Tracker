@@ -45,49 +45,6 @@ def login_required(func):
     return wrap
 
 
-def steward_required(func):
-    """
-    Confirm that the user is logged in and has the 'Steward' role.
-
-    Otherwise abort with status 401 Unauthorized.
-    """
-    @functools.wraps(func)
-    def wrap(*args, **kwargs):
-        if not check_user_permissions('Steward'):
-            flask.abort(flask.Response(status=403))
-        return func(*args, **kwargs)
-    return wrap
-
-
-def steward_or_dsowner_required(func):
-    """
-    Confirm that the user is logged in and has the 'Steward' role.
-
-    Otherwise abort with status 401 Unauthorized.
-    """
-    @functools.wraps(func)
-    def wrap(*args, **kwargs):
-        if not check_user_permissions('Steward')\
-           and not utils.is_owner(dataset=kwargs['identifier']):
-            flask.abort(flask.Response(status=401))
-        return func(*args, **kwargs)
-    return wrap
-
-
-def admin_required(func):
-    """
-    Confirm that the user is logged in and has the 'Admin' role.
-
-    Otherwise return status 401 Unauthorized.
-    """
-    @functools.wraps(func)
-    def wrap(*args, **kwargs):
-        if not check_user_permissions('Admin'):
-            flask.abort(flask.Response(status=401))
-        return func(*args, **kwargs)
-    return wrap
-
-
 # requests
 @blueprint.route('/login')
 def elixir_login():
