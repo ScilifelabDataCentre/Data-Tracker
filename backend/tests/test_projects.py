@@ -154,20 +154,20 @@ def test_add_project_permissions(use_db):
             assert not response.data
     
     
-
-
 def test_add_project(use_db):
     """
     Add a project.
 
-    Confirm that fields are set correctly.
+    Confirm:
+    * fields are set correctly
+    * logs are created
     """
     db = use_db
 
     dataset_info = next(db['datasets'].aggregate([{'$sample': {'size': 1}}]))
     order_info = db['orders'].find_one({'datasets': dataset_info['_id']})
     session = requests.Session()
-    user_info = db['users'].find_one({'_id': order_info['receiver']})
+    user_info = db['users'].find_one({'_id': order_info['creator']})
 
     as_user(session, user_info['api_key'])
     
@@ -178,7 +178,7 @@ def test_add_project(use_db):
               'publications': [{'title': 'A test publication title',
                                 'doi': 'doi://a_test_doi_value'}],
               'title': 'Test title',
-              'datasets': [dataset]}
+              'datasets': [str(dataset_info['_id'])]}
     indata.update(TEST_LABEL)
 
     response = make_request(session,
@@ -197,6 +197,12 @@ def test_add_project(use_db):
     assert project['publications'] == indata['publications']
     assert str(project['datasets'][0]) == indata['datasets'][0]
 
+    # log
+    assert db['logs'].find_one({'data._id': uuid.UUID(response.data['_id']),
+                                'data_type': 'project',
+                                'user': user_info['_id'],
+                                'action': 'add'})
+    
     as_user(session, USERS['data'])
     
     response = make_request(session,
@@ -215,41 +221,13 @@ def test_add_project(use_db):
     assert project['publications'] == indata['publications']
     assert str(project['datasets'][0]) == indata['datasets'][0]
 
-
-def test_add_project_log(use_db):
-    """
-    Add a default dataset using / POST.
-
-    Confirm that logs are created.
-    """
-    db = use_db
-
-    indata = {'description': 'Test description',
-              'receiver': 'new_email@example.com',
-              'title': 'Test title'}
-    indata.update(TEST_LABEL)
-
-    responses = make_request_all_roles(f'/api/project/',
-                                       method='POST',
-                                       data=indata,
-                                       ret_json=True)
-    for response in responses:
-        if response.role in ('projects', 'data', 'root'):
-            assert response.code == 200
-            assert '_id' in response.data
-            assert len(response.data['_id']) == 36
-            project = db['projects'].find_one({'_id': uuid.UUID(response.data['_id'])})
-            logs = list(db['logs'].find({'data_type': 'project',
-                                         'data._id': uuid.UUID(response.data['_id'])}))
-            assert len(logs) == 1
-            assert logs[0]['data'] == project
-            assert logs[0]['action'] == 'add'
-        elif response.role == 'no-login':
-            assert response.code == 401
-            assert not response.data
-        else:
-            assert response.code == 403
-            assert not response.data
+    data_user = db['users'].find_one({'auth_id': USERS['data']})
+    
+    # log
+    assert db['logs'].find_one({'data._id': uuid.UUID(response.data['_id']),
+                                'data_type': 'project',
+                                'user': data_user['_id'],
+                                'action': 'add'})
 
 
 def test_add_project_bad():
@@ -258,8 +236,41 @@ def test_add_project_bad():
 
     Bad requests.
     """
+    indata = {'title': ''}
+    indata.update(TEST_LABEL)
+
+    responses = make_request_all_roles(f'/api/project/',
+                                       method='POST',
+                                       data=indata,
+                                       ret_json=True)
+    for response in responses:
+        if response.role == 'no-login':
+            assert response.code == 401
+            assert not response.data
+        else:
+            assert response.code == 400
+            assert not response.data
+
+
+    indata = {'bad_tag': 'content',
+              'title': 'title'}
+
+    indata.update(TEST_LABEL)
+
+    responses = make_request_all_roles(f'/api/project/',
+                                       method='POST',
+                                       data=indata,
+                                       ret_json=True)
+    for response in responses:
+        if response.role == 'no-login':
+            assert response.code == 401
+            assert not response.data
+        else:
+            assert response.code == 400
+            assert not response.data
+
     indata = {'description': 'Test description',
-              'receiver': 'bad_email@asd',
+              'owners': [str(uuid.uuid4())],
               'title': 'Test title'}
     indata.update(TEST_LABEL)
 
@@ -268,57 +279,17 @@ def test_add_project_bad():
                                        data=indata,
                                        ret_json=True)
     for response in responses:
-        if response.role in ('projects', 'data', 'root'):
-            assert response.code == 400
-        elif response.role == 'no-login':
+        if response.role == 'no-login':
             assert response.code == 401
             assert not response.data
         else:
-            assert response.code == 403
-            assert not response.data
-
-    indata = {'description': 'Test description',
-              'creator': 'bad_email@asd',
-              'title': 'Test title'}
-    indata.update(TEST_LABEL)
-
-    responses = make_request_all_roles(f'/api/project/',
-                                       method='POST',
-                                       data=indata,
-                                       ret_json=True)
-    for response in responses:
-        if response.role in ('projects', 'data', 'root'):
             assert response.code == 400
-        elif response.role == 'no-login':
-            assert response.code == 401
-            assert not response.data
-        else:
-            assert response.code == 403
-            assert not response.data
-
-    indata = {'description': 'Test description',
-              'creator': str(uuid.uuid4()),
-              'title': 'Test title'}
-    indata.update(TEST_LABEL)
-
-    responses = make_request_all_roles(f'/api/project/',
-                                       method='POST',
-                                       data=indata,
-                                       ret_json=True)
-    for response in responses:
-        if response.role in ('data', 'root'):
-            assert response.code == 400
-        elif response.role == 'no-login':
-            assert response.code == 401
-            assert not response.data
-        else:
-            assert response.code == 403
             assert not response.data
 
     session = requests.Session()
     as_user(session, USERS['data'])
     indata = {'_id': str(uuid.uuid4()),
-              'receiver': 'bad_email@asd',
+              'owners': [str(uuid.uuid4())],
               'title': 'Test title'}
     indata.update(TEST_LABEL)
     response = make_request(session,
@@ -329,8 +300,7 @@ def test_add_project_bad():
     assert response.code == 400
     assert not response.data
 
-    indata = {'datasets': [],
-              'receiver': 'bad_email@asd',
+    indata = {'datasets': [str(uuid.uuid4())],
               'title': 'Test title'}
     indata.update(TEST_LABEL)
     response = make_request(session,

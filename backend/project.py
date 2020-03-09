@@ -1,4 +1,6 @@
 """Project requests."""
+import logging
+
 import flask
 
 import structure
@@ -73,7 +75,7 @@ def add_project():  # pylint: disable=too-many-branches
     if not validate.validate_indata(indata):
         logging.debug('Validation failed: %s', indata)
         flask.abort(status=400)
-        
+
     if '_id' in indata:
         logging.debug('Bad field (_id) in indata: %s', indata)
         flask.abort(status=400)
@@ -88,14 +90,18 @@ def add_project():  # pylint: disable=too-many-branches
             user_uuid = utils.str_to_uuid(indata['owners'][0])
             if user_uuid != flask.g.current_user['_id']:
                 flask.abort(status=400)
+    else:
+        indata['owners'] = flask.g.current_user['_id']
 
     if 'datasets' in indata:
         if not user.has_permission('DATA_MANAGEMENT'):
             for ds_uuid_str in indata['datasets']:
                 ds_uuid = utils.str_to_uuid(ds_uuid_str)
                 order_info = flask.g.db['orders'].find_one({'datasets': ds_uuid})
+                if not order_info:
+                    flask.abort(status=400)
                 if order_info['creator'] != flask.g.current_user['_id'] and\
-                    order_info['receiver'] != flask.g.current_user['_id']:
+                   order_info['receiver'] != flask.g.current_user['_id']:
                     flask.abort(status=400)
 
     for key in indata:
