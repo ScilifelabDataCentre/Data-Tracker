@@ -54,13 +54,6 @@ def permission_hello(permission: str):
     return flask.jsonify({'test': 'success'})
 
 
-@blueprint.route('/adminhello')
-@user.admin_required
-def admin_hello():
-    """Test request requiring Admin rights."""
-    return flask.jsonify({'test': 'success'})
-
-
 @blueprint.route('/csrftest', methods=['POST', 'PATCH', 'PUT', 'DELETE'])
 def csrf_test():
     """Test csrf tokens."""
