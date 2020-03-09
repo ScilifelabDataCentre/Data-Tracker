@@ -196,49 +196,6 @@
     <span class="k">return</span> <span class="n">wrap</span></div>
 
 
-<div class="viewcode-block" id="steward_required"><a class="viewcode-back" href="../code.user.html#user.steward_required">[docs]</a><span class="k">def</span> <span class="nf">steward_required</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Confirm that the user is logged in and has the &#39;Steward&#39; role.</span>
-
-<span class="sd">    Otherwise abort with status 401 Unauthorized.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">wrap</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">check_user_permissions</span><span class="p">(</span><span class="s1">&#39;Steward&#39;</span><span class="p">):</span>
-            <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">403</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">wrap</span></div>
-
-
-<div class="viewcode-block" id="steward_or_dsowner_required"><a class="viewcode-back" href="../code.user.html#user.steward_or_dsowner_required">[docs]</a><span class="k">def</span> <span class="nf">steward_or_dsowner_required</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Confirm that the user is logged in and has the &#39;Steward&#39; role.</span>
-
-<span class="sd">    Otherwise abort with status 401 Unauthorized.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">wrap</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">check_user_permissions</span><span class="p">(</span><span class="s1">&#39;Steward&#39;</span><span class="p">)</span>\
-           <span class="ow">and</span> <span class="ow">not</span> <span class="n">utils</span><span class="o">.</span><span class="n">is_owner</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;identifier&#39;</span><span class="p">]):</span>
-            <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">401</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">wrap</span></div>
-
-
-<div class="viewcode-block" id="admin_required"><a class="viewcode-back" href="../code.user.html#user.admin_required">[docs]</a><span class="k">def</span> <span class="nf">admin_required</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Confirm that the user is logged in and has the &#39;Admin&#39; role.</span>
-
-<span class="sd">    Otherwise return status 401 Unauthorized.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">wrap</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">check_user_permissions</span><span class="p">(</span><span class="s1">&#39;Admin&#39;</span><span class="p">):</span>
-            <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">401</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">wrap</span></div>
-
-
 <span class="c1"># requests</span>
 <div class="viewcode-block" id="elixir_login"><a class="viewcode-back" href="../code.user.html#user.elixir_login">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/login&#39;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">elixir_login</span><span class="p">():</span>

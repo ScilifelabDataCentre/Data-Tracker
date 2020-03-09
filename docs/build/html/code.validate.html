@@ -202,7 +202,7 @@ functions to check each field.</p>
 <dl class="function">
 <dt id="validate.validate_datasets">
 <code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_datasets</code><span class="sig-paren">(</span><em class="sig-param">data: list</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_datasets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_datasets" title="Permalink to this definition">¶</a></dt>
-<dd><p>Validate input for the <code class="docutils literal notranslate"><span class="pre">title</span></code> field.</p>
+<dd><p>Validate input for the <code class="docutils literal notranslate"><span class="pre">datasets</span></code> field.</p>
 <p>It must be a list of uuids. Validate that the datasets exist in the db.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -330,7 +330,7 @@ for the entry must be performed separately.</p>
 <dt id="validate.validate_publications">
 <code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_publications</code><span class="sig-paren">(</span><em class="sig-param">data: list</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_publications"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_publications" title="Permalink to this definition">¶</a></dt>
 <dd><p>Validate input for the <code class="docutils literal notranslate"><span class="pre">publications</span></code> field.</p>
-<p>It must have the form <code class="docutils literal notranslate"><span class="pre">[{'url':</span> <span class="pre">value,</span> <span class="pre">'description':</span> <span class="pre">value},</span> <span class="pre">...]</span></code>.</p>
+<p>It must have the form <code class="docutils literal notranslate"><span class="pre">[{'title':</span> <span class="pre">value,</span> <span class="pre">'doi':</span> <span class="pre">value},</span> <span class="pre">...]</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>data</strong> – The data to be validated.</p>
