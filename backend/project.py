@@ -155,7 +155,7 @@ def delete_project(identifier: str):
 
 @blueprint.route('/<identifier>', methods=['PATCH'])
 @user.login_required
-def update_project():  # pylint: disable=too-many-branches
+def update_project(identifier):  # pylint: disable=too-many-branches
     """
     Add a project.
 
@@ -169,6 +169,7 @@ def update_project():  # pylint: disable=too-many-branches
     project = flask.g.db['projects'].find_one({'_id': ds_uuid})
     if not project:
         flask.abort(status=404)
+    indata = flask.json.loads(flask.request.data)
 
     # permission check
     if not user.has_permission('DATA_MANAGEMENT'):
@@ -191,8 +192,6 @@ def update_project():  # pylint: disable=too-many-branches
             user_uuid = utils.str_to_uuid(indata['owners'][0])
             if user_uuid != flask.g.current_user['_id']:
                 flask.abort(status=400)
-    else:
-        indata['owners'] = flask.g.current_user['_id']
 
     if 'datasets' in indata:
         if not user.has_permission('DATA_MANAGEMENT'):
@@ -217,4 +216,4 @@ def update_project():  # pylint: disable=too-many-branches
     else:
         utils.make_log('project', 'edit', 'Project added', project)
 
-    return utils.response_json({'_id': result.inserted_id})
+    return flask.Response(status=200)

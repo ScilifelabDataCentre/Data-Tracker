@@ -4,7 +4,7 @@ import uuid
 import requests
 
 from helpers import make_request, as_user, make_request_all_roles,\
-    USERS, random_string, use_db, TEST_LABEL
+    USERS, random_string, use_db, TEST_LABEL, project_for_tests
 # pylint: disable=redefined-outer-name
 
 def test_random_project():
@@ -311,6 +311,178 @@ def test_add_project_bad():
     assert response.code == 400
 
 
+def test_update_project_permissions(use_db, project_for_tests):
+    """
+    Update a project.
+
+    Test permissions.
+    """
+    session = requests.Session()
+
+    db = use_db
+    project_uuid = project_for_tests
+    print(db['projects'].find_one({'_id': project_uuid}))
+
+    for role in USERS:
+        as_user(session, USERS[role])
+        indata = {'title': f'Test title - updated by {role}'}
+        response = make_request(session,
+                                f'/api/project/{project_uuid}',
+                                method='PATCH',
+                                data=indata,
+                                ret_json=True)
+        if role in ('base', 'data', 'root'):
+            assert response.code == 200
+            assert not response.data
+            new_project = db['projects'].find_one({'_id': project_uuid})
+            assert new_project['title'] == f'Test title - updated by {role}'
+        elif role == 'no-login':
+            assert response.code == 401
+            assert not response.data
+        else:
+            assert response.code == 403
+            assert not response.data
+
+
+def test_update_project(use_db):
+    """
+    Update existing projects.
+
+    Confirm that fields are set correctly.
+    Confirm that logs are created.
+    """
+    session = requests.Session()
+
+    db = use_db
+
+    projects_user = db['users'].find_one({'auth_id': USERS['projects']})
+
+    projects = list(db['projects'].aggregate([{'$match': {'creator': projects_user['_id']}},
+                                          {'$sample': {'size': 2}}]))
+
+    for project in projects:
+        for role in USERS:
+            as_user(session, USERS[role])
+            indata = {'title': f'Test title - updated by {role}',
+                      'description': f'Test description - updated by {role}',
+                      'receiver': f'new_{role}_email@example.com',
+                      'extra': {'updated': 'yes'}}
+            indata['extra'].update(TEST_LABEL['extra'])
+            current_user = db['users'].find_one({'auth_id': USERS[role]})
+            if role in ('data', 'root'):
+                indata.update({'creator': str(current_user['_id'])})
+
+            response = make_request(session,
+                                    f'/api/project/{project["_id"]}',
+                                    method='PATCH',
+                                    data=indata,
+                                    ret_json=True)
+
+            if role in ('projects', 'data', 'root'):
+                print(role, indata)
+                assert response.code == 200
+                assert not response.data
+                new_project = db['projects'].find_one({'_id': project['_id']})
+                new_project['_id'] = str(new_project['_id'])
+                new_project['creator'] = str(new_project['creator'])
+                new_project['receiver'] = str(new_project['receiver'])
+                new_project['datasets'] = [str(ds_uuid) for ds_uuid in new_project['datasets']]
+                for field in indata:
+                    assert new_project[field] == indata[field]
+                    assert db['logs'].find_one({'data._id': project['_id'],
+                                                'action': 'edit',
+                                                'data_type': 'project',
+                                                'user': current_user['_id']})
+            elif role == 'no-login':
+                assert response.code == 401
+                assert not response.data
+            else:
+                assert response.code == 403
+                assert not response.data
+
+
+def test_update_project_bad(use_db):
+    """
+    Update an existing project.
+
+    Bad requests.
+    """
+    db = use_db
+
+    projects_user = db['users'].find_one({'auth_id': USERS['projects']})
+    projects = list(db['projects'].aggregate([{'$match': {'creator': projects_user['_id']}},
+                                          {'$sample': {'size': 2}}]))
+
+    for project in projects:
+        indata = {'description': 'Test description',
+                  'receiver': 'bad_email@asd',
+                  'title': 'Test title'}
+
+        responses = make_request_all_roles(f'/api/project/{project["_id"]}',
+                                           method='PATCH',
+                                           data=indata,
+                                           ret_json=True)
+        for response in responses:
+            if response.role in ('projects', 'data', 'root'):
+                assert response.code == 400
+            elif response.role == 'no-login':
+                assert response.code == 401
+                assert not response.data
+            else:
+                assert response.code == 403
+                assert not response.data
+
+        indata = {'description': 'Test description',
+                  'creator': str(uuid.uuid4()),
+                  'title': 'Test title'}
+
+        responses = make_request_all_roles(f'/api/project/{project["_id"]}',
+                                           method='PATCH',
+                                           data=indata,
+                                           ret_json=True)
+        for response in responses:
+            if response.role in ('data', 'root'):
+                assert response.code == 400
+            elif response.role == 'no-login':
+                assert response.code == 401
+                assert not response.data
+            else:
+                assert response.code == 403
+                assert not response.data
+
+
+    for _ in range(2):
+        indata = {'title': 'Test title'}
+        responses = make_request_all_roles(f'/api/project/{uuid.uuid4()}',
+                                           method='PATCH',
+                                           data=indata,
+                                           ret_json=True)
+        for response in responses:
+            if response.role in ('projects', 'data', 'root'):
+                assert response.code == 404
+            elif response.role == 'no-login':
+                assert response.code == 401
+                assert not response.data
+            else:
+                assert response.code == 403
+                assert not response.data
+
+        indata = {'title': 'Test title'}
+        responses = make_request_all_roles(f'/api/project/{random_string}',
+                                           method='PATCH',
+                                           data=indata,
+                                           ret_json=True)
+        for response in responses:
+            if response.role in ('projects', 'data', 'root'):
+                assert response.code == 404
+            elif response.role == 'no-login':
+                assert response.code == 401
+                assert not response.data
+            else:
+                assert response.code == 403
+                assert not response.data
+
+
 def test_delete_project(use_db):
     """
     Add and delete projects.
@@ -411,3 +583,5 @@ def test_list_projects():
     for response in responses:
         assert response.code == 200
         assert len(response.data['projects']) == 500
+
+
