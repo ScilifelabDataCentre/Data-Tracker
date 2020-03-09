@@ -91,7 +91,7 @@ def add_project():  # pylint: disable=too-many-branches
             if user_uuid != flask.g.current_user['_id']:
                 flask.abort(status=400)
     else:
-        indata['owners'] = flask.g.current_user['_id']
+        indata['owners'] = [flask.g.current_user['_id']]
 
     if 'datasets' in indata:
         if not user.has_permission('DATA_MANAGEMENT'):
@@ -116,5 +116,105 @@ def add_project():  # pylint: disable=too-many-branches
         logging.error('Project insert failed: %s', project)
     else:
         utils.make_log('project', 'add', 'Project added', project)
+
+    return utils.response_json({'_id': result.inserted_id})
+
+
+@blueprint.route('/<identifier>', methods=['DELETE'])
+@user.login_required
+def delete_project(identifier: str):
+    """
+    Delete a project.
+
+    Can be deleted only by an owner or user with DATA_MANAGEMENT permissions.
+
+    Args:
+        identifier (str): The project uuid.
+    """
+    try:
+        ds_uuid = utils.str_to_uuid(identifier)
+    except ValueError:
+        return flask.abort(status=404)
+    project = flask.g.db['projects'].find_one({'_id': ds_uuid})
+    if not project:
+        flask.abort(status=404)
+
+    # permission check
+    if not user.has_permission('DATA_MANAGEMENT'):
+        if flask.g.current_user['_id'] not in project['owners']:
+            flask.abort(status=403)
+
+    result = flask.g.db['projects'].delete_one({'_id': ds_uuid})
+    if not result.acknowledged:
+        logging.error(f'Failed to delete project {ds_uuid}')
+        return flask.Response(status=500)
+    utils.make_log('project', 'delete', 'Deleted project', data={'_id': ds_uuid})
+
+    return flask.Response(status=200)
+
+
+@blueprint.route('/<identifier>', methods=['PATCH'])
+@user.login_required
+def update_project():  # pylint: disable=too-many-branches
+    """
+    Add a project.
+
+    Returns:
+        flask.Response: Json structure with the ``_id`` of the project.
+    """
+    try:
+        ds_uuid = utils.str_to_uuid(identifier)
+    except ValueError:
+        return flask.abort(status=404)
+    project = flask.g.db['projects'].find_one({'_id': ds_uuid})
+    if not project:
+        flask.abort(status=404)
+
+    # permission check
+    if not user.has_permission('DATA_MANAGEMENT'):
+        if flask.g.current_user['_id'] not in project['owners']:
+            flask.abort(status=403)
+
+    # indata validation
+    if not validate.validate_indata(indata):
+        logging.debug('Validation failed: %s', indata)
+        flask.abort(status=400)
+
+    if '_id' in indata:
+        logging.debug('Bad field (_id) in indata: %s', indata)
+        flask.abort(status=400)
+
+    if 'owners' in indata and indata['owners']:
+        if not user.has_permission('DATA_MANAGEMENT'):
+            if len(indata['owners']) != 1:
+                flask.abort(status=400)
+            user_uuid = utils.str_to_uuid(indata['owners'][0])
+            if user_uuid != flask.g.current_user['_id']:
+                flask.abort(status=400)
+    else:
+        indata['owners'] = flask.g.current_user['_id']
+
+    if 'datasets' in indata:
+        if not user.has_permission('DATA_MANAGEMENT'):
+            for ds_uuid_str in indata['datasets']:
+                ds_uuid = utils.str_to_uuid(ds_uuid_str)
+                order_info = flask.g.db['orders'].find_one({'datasets': ds_uuid})
+                if not order_info:
+                    flask.abort(status=400)
+                if order_info['creator'] != flask.g.current_user['_id'] and\
+                   order_info['receiver'] != flask.g.current_user['_id']:
+                    flask.abort(status=400)
+
+    for key in indata:
+        if key not in project:
+            flask.abort(status=400)
+
+    project.update(indata)
+            
+    result = flask.g.db['projects'].update_one({'_id': project['_id']}, {'$set': project})
+    if not result.acknowledged:
+        logging.error('Project update failed: %s', indata)
+    else:
+        utils.make_log('project', 'edit', 'Project added', project)
 
     return utils.response_json({'_id': result.inserted_id})

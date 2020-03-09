@@ -311,6 +311,96 @@ def test_add_project_bad():
     assert response.code == 400
 
 
+def test_delete_project(use_db):
+    """
+    Add and delete projects.
+
+    * Check permissions.
+    * Delete projects added by the add tests.
+    * Confirm that related datasets are deleted.
+    * Check that logs are created correctly.
+    """
+    session = requests.Session()
+
+    db = use_db
+
+    # must be updated if TEST_LABEL is modified
+    projects = list(db['projects'].find({'extra.testing': 'yes'}))
+    i = 0
+    while i < len(projects):
+        for role in USERS:
+            as_user(session, USERS[role])
+            response = make_request(session,
+                                    f'/api/project/{projects[i]["_id"]}',
+                                    method='DELETE')
+            if role in ('data', 'root'):
+                assert response.code == 200
+                assert not response.data
+                assert not db['projects'].find_one({'_id': projects[i]['_id']})
+                assert db['logs'].find_one({'data._id': projects[i]['_id'],
+                                            'action': 'delete',
+                                            'data_type': 'project'})
+                i += 1
+                if i >= len(projects):
+                    break
+            elif role == 'no-login':
+                assert response.code == 401
+                assert not response.data
+            else:
+                current_user = db['users'].find_one({'auth_id': USERS[role]})
+                if current_user['_id'] in projects[i]['owners']:
+                    assert response.code == 200
+                    assert not response.data
+                    assert not db['projects'].find_one({'_id': projects[i]['_id']})
+                    assert db['logs'].find_one({'data._id': projects[i]['_id'],
+                                                'action': 'delete',
+                                                'data_type': 'project'})
+                    for dataset_uuid in projects[i]['datasets']:
+                        assert not db['datasets'].find_one({'_id': dataset_uuid})
+                        assert db['logs'].find_one({'data._id': dataset_uuid,
+                                                    'action': 'delete',
+                                                    'data_type': 'dataset'})
+                    i += 1
+                    if i >= len(projects):
+                        break
+
+                else:
+                    assert response.code == 403
+                    assert not response.data
+
+    as_user(session, USERS['base'])
+    response = make_request(session,
+                            f'/api/project/',
+                            data={'title': 'tmp'},
+                            method='POST')
+    assert response.code == 200
+    response = make_request(session,
+                            f'/api/project/{response.data["_id"]}',
+                            method='DELETE')
+    assert response.code == 200
+    assert not response.data
+
+
+def test_delete_project_bad():
+    """Attempt bad project delete requests."""
+    session = requests.Session()
+
+    as_user(session, USERS['data'])
+    for _ in range(2):
+        response = make_request(session,
+                                f'/api/project/{random_string()}',
+                                method='DELETE')
+    assert response.code == 404
+    assert not response.data
+
+    for _ in range(2):
+        response = make_request(session,
+                                f'/api/project/{uuid.uuid4()}',
+                                method='DELETE')
+    assert response.code == 404
+    assert not response.data
+
+
 def test_list_projects():
     """
     Request a list of all projects.
