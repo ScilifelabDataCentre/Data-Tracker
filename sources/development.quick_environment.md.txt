@@ -6,7 +6,7 @@ Prepare a `config.yaml` file. Just renaming `config.yaml.sample` to `config.yaml
 
 ## Install NPM modules
 
-The npm modules must be installed for the frontend.
+The npm modules must be installed for the frontend. Either install them using a local installation of `yarn` or `npm` or copy the folder from the container.
 
 ### Local yarn or npm
 
