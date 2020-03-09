@@ -150,10 +150,14 @@
             
   <h1>Source code for project</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Project requests.&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
 <span class="kn">import</span> <span class="nn">flask</span>
 
+<span class="kn">import</span> <span class="nn">structure</span>
+<span class="kn">import</span> <span class="nn">user</span>
 <span class="kn">import</span> <span class="nn">utils</span>
-
+<span class="kn">import</span> <span class="nn">validate</span>
 
 <span class="n">blueprint</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">Blueprint</span><span class="p">(</span><span class="s1">&#39;project&#39;</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">)</span>  <span class="c1"># pylint: disable=invalid-name</span>
 
@@ -203,6 +207,166 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">404</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">response_json</span><span class="p">({</span><span class="s1">&#39;project&#39;</span><span class="p">:</span> <span class="n">result</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="add_project"><a class="viewcode-back" href="../code.project.html#project.add_project">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="nd">@user</span><span class="o">.</span><span class="n">login_required</span>
+<span class="k">def</span> <span class="nf">add_project</span><span class="p">():</span>  <span class="c1"># pylint: disable=too-many-branches</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Add a project.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        flask.Response: Json structure with the ``_id`` of the project.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># create new project</span>
+    <span class="n">project</span> <span class="o">=</span> <span class="n">structure</span><span class="o">.</span><span class="n">project</span><span class="p">()</span>
+    <span class="n">indata</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="c1"># indata validation</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">validate</span><span class="o">.</span><span class="n">validate_indata</span><span class="p">(</span><span class="n">indata</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Validation failed: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">indata</span><span class="p">)</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s1">&#39;_id&#39;</span> <span class="ow">in</span> <span class="n">indata</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Bad field (_id) in indata: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">indata</span><span class="p">)</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s1">&#39;title&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">indata</span><span class="p">:</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s1">&#39;owners&#39;</span> <span class="ow">in</span> <span class="n">indata</span> <span class="ow">and</span> <span class="n">indata</span><span class="p">[</span><span class="s1">&#39;owners&#39;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">has_permission</span><span class="p">(</span><span class="s1">&#39;DATA_MANAGEMENT&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">indata</span><span class="p">[</span><span class="s1">&#39;owners&#39;</span><span class="p">])</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+            <span class="n">user_uuid</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">str_to_uuid</span><span class="p">(</span><span class="n">indata</span><span class="p">[</span><span class="s1">&#39;owners&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">user_uuid</span> <span class="o">!=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]:</span>
+                <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">indata</span><span class="p">[</span><span class="s1">&#39;owners&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="s1">&#39;datasets&#39;</span> <span class="ow">in</span> <span class="n">indata</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">has_permission</span><span class="p">(</span><span class="s1">&#39;DATA_MANAGEMENT&#39;</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">ds_uuid_str</span> <span class="ow">in</span> <span class="n">indata</span><span class="p">[</span><span class="s1">&#39;datasets&#39;</span><span class="p">]:</span>
+                <span class="n">ds_uuid</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">str_to_uuid</span><span class="p">(</span><span class="n">ds_uuid_str</span><span class="p">)</span>
+                <span class="n">order_info</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;orders&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;datasets&#39;</span><span class="p">:</span> <span class="n">ds_uuid</span><span class="p">})</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">order_info</span><span class="p">:</span>
+                    <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">order_info</span><span class="p">[</span><span class="s1">&#39;creator&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span> <span class="ow">and</span>\
+                   <span class="n">order_info</span><span class="p">[</span><span class="s1">&#39;receiver&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]:</span>
+                    <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">indata</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">project</span><span class="p">:</span>
+            <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+
+    <span class="n">project</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">indata</span><span class="p">)</span>
+
+    <span class="c1"># add to db</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;projects&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">acknowledged</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Project insert failed: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">project</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">make_log</span><span class="p">(</span><span class="s1">&#39;project&#39;</span><span class="p">,</span> <span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="s1">&#39;Project added&#39;</span><span class="p">,</span> <span class="n">project</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">response_json</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">result</span><span class="o">.</span><span class="n">inserted_id</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="delete_project"><a class="viewcode-back" href="../code.project.html#project.delete_project">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;identifier&gt;&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;DELETE&#39;</span><span class="p">])</span>
+<span class="nd">@user</span><span class="o">.</span><span class="n">login_required</span>
+<span class="k">def</span> <span class="nf">delete_project</span><span class="p">(</span><span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Delete a project.</span>
+
+<span class="sd">    Can be deleted only by an owner or user with DATA_MANAGEMENT permissions.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        identifier (str): The project uuid.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">ds_uuid</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">str_to_uuid</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">404</span><span class="p">)</span>
+    <span class="n">project</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;projects&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">ds_uuid</span><span class="p">})</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">project</span><span class="p">:</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">404</span><span class="p">)</span>
+
+    <span class="c1"># permission check</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">has_permission</span><span class="p">(</span><span class="s1">&#39;DATA_MANAGEMENT&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">project</span><span class="p">[</span><span class="s1">&#39;owners&#39;</span><span class="p">]:</span>
+            <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">403</span><span class="p">)</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;projects&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">delete_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">ds_uuid</span><span class="p">})</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">acknowledged</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Failed to delete project </span><span class="si">{ds_uuid}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+    <span class="n">utils</span><span class="o">.</span><span class="n">make_log</span><span class="p">(</span><span class="s1">&#39;project&#39;</span><span class="p">,</span> <span class="s1">&#39;delete&#39;</span><span class="p">,</span> <span class="s1">&#39;Deleted project&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">ds_uuid</span><span class="p">})</span>
+
+    <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="update_project"><a class="viewcode-back" href="../code.project.html#project.update_project">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;identifier&gt;&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;PATCH&#39;</span><span class="p">])</span>
+<span class="nd">@user</span><span class="o">.</span><span class="n">login_required</span>
+<span class="k">def</span> <span class="nf">update_project</span><span class="p">():</span>  <span class="c1"># pylint: disable=too-many-branches</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Add a project.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        flask.Response: Json structure with the ``_id`` of the project.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">ds_uuid</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">str_to_uuid</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">404</span><span class="p">)</span>
+    <span class="n">project</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;projects&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">ds_uuid</span><span class="p">})</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">project</span><span class="p">:</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">404</span><span class="p">)</span>
+
+    <span class="c1"># permission check</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">has_permission</span><span class="p">(</span><span class="s1">&#39;DATA_MANAGEMENT&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">project</span><span class="p">[</span><span class="s1">&#39;owners&#39;</span><span class="p">]:</span>
+            <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">403</span><span class="p">)</span>
+
+    <span class="c1"># indata validation</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">validate</span><span class="o">.</span><span class="n">validate_indata</span><span class="p">(</span><span class="n">indata</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Validation failed: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">indata</span><span class="p">)</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s1">&#39;_id&#39;</span> <span class="ow">in</span> <span class="n">indata</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Bad field (_id) in indata: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">indata</span><span class="p">)</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s1">&#39;owners&#39;</span> <span class="ow">in</span> <span class="n">indata</span> <span class="ow">and</span> <span class="n">indata</span><span class="p">[</span><span class="s1">&#39;owners&#39;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">has_permission</span><span class="p">(</span><span class="s1">&#39;DATA_MANAGEMENT&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">indata</span><span class="p">[</span><span class="s1">&#39;owners&#39;</span><span class="p">])</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+            <span class="n">user_uuid</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">str_to_uuid</span><span class="p">(</span><span class="n">indata</span><span class="p">[</span><span class="s1">&#39;owners&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">user_uuid</span> <span class="o">!=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]:</span>
+                <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">indata</span><span class="p">[</span><span class="s1">&#39;owners&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="s1">&#39;datasets&#39;</span> <span class="ow">in</span> <span class="n">indata</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">has_permission</span><span class="p">(</span><span class="s1">&#39;DATA_MANAGEMENT&#39;</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">ds_uuid_str</span> <span class="ow">in</span> <span class="n">indata</span><span class="p">[</span><span class="s1">&#39;datasets&#39;</span><span class="p">]:</span>
+                <span class="n">ds_uuid</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">str_to_uuid</span><span class="p">(</span><span class="n">ds_uuid_str</span><span class="p">)</span>
+                <span class="n">order_info</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;orders&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;datasets&#39;</span><span class="p">:</span> <span class="n">ds_uuid</span><span class="p">})</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">order_info</span><span class="p">:</span>
+                    <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">order_info</span><span class="p">[</span><span class="s1">&#39;creator&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span> <span class="ow">and</span>\
+                   <span class="n">order_info</span><span class="p">[</span><span class="s1">&#39;receiver&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]:</span>
+                    <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">indata</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">project</span><span class="p">:</span>
+            <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;projects&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">project</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]},</span> <span class="p">{</span><span class="s1">&#39;$set&#39;</span><span class="p">:</span> <span class="n">indata</span><span class="p">})</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">acknowledged</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Project insert failed: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">project</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">make_log</span><span class="p">(</span><span class="s1">&#39;project&#39;</span><span class="p">,</span> <span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="s1">&#39;Project added&#39;</span><span class="p">,</span> <span class="n">project</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">response_json</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">result</span><span class="o">.</span><span class="n">inserted_id</span><span class="p">})</span></div>
 </pre></div>
 
            </div>

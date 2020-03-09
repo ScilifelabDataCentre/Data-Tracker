@@ -10,7 +10,7 @@ The npm modules must be installed for the frontend.
 
 ### Local yarn or npm
 
-Make sure you have `npm` or `yarn' installed locally and run the corresponding command in the `frontend` folder:
+Make sure you have `npm` or `yarn` installed locally and run the corresponding command in the `frontend` folder:
 
 ```
 npm install

@@ -178,6 +178,32 @@
 <span id="project-py"></span><h1>project.py<a class="headerlink" href="#module-project" title="Permalink to this headline">¶</a></h1>
 <p>Project requests.</p>
 <dl class="function">
+<dt id="project.add_project">
+<code class="sig-prename descclassname">project.</code><code class="sig-name descname">add_project</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/project.html#add_project"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#project.add_project" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a project.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Json structure with the <code class="docutils literal notranslate"><span class="pre">_id</span></code> of the project.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>flask.Response</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="project.delete_project">
+<code class="sig-prename descclassname">project.</code><code class="sig-name descname">delete_project</code><span class="sig-paren">(</span><em class="sig-param">identifier: str</em><span class="sig-paren">)</span><a class="reference internal" href="modules/project.html#delete_project"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#project.delete_project" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete a project.</p>
+<p>Can be deleted only by an owner or user with DATA_MANAGEMENT permissions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>identifier</strong> (<em>str</em>) – The project uuid.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
 <dt id="project.get_project">
 <code class="sig-prename descclassname">project.</code><code class="sig-name descname">get_project</code><span class="sig-paren">(</span><em class="sig-param">identifier</em><span class="sig-paren">)</span><a class="reference internal" href="modules/project.html#get_project"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#project.get_project" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieve the project with uuid &lt;identifier&gt;.</p>
@@ -215,6 +241,20 @@
 <dt id="project.list_project">
 <code class="sig-prename descclassname">project.</code><code class="sig-name descname">list_project</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/project.html#list_project"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#project.list_project" title="Permalink to this definition">¶</a></dt>
 <dd><p>Provide a simplified list of all available projects.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="project.update_project">
+<code class="sig-prename descclassname">project.</code><code class="sig-name descname">update_project</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/project.html#update_project"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#project.update_project" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a project.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Json structure with the <code class="docutils literal notranslate"><span class="pre">_id</span></code> of the project.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>flask.Response</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
