@@ -200,7 +200,7 @@ def validate_publications(data: list) -> bool:
     """
     Validate input for the ``publications`` field.
 
-    It must have the form ``[{'url': value, 'description': value}, ...]``.
+    It must have the form ``[{'title': value, 'doi': value}, ...]``.
 
     Args:
         data: The data to be validated.
