@@ -34,48 +34,6 @@ def gen_csrf_token() -> str:
     return uuid.uuid4().hex
 
 
-# db input/output
-def check_mongo_update(document: dict):
-    """
-    Make sure that some fields in a document are not changed during an update.
-
-    Also make sure indata is not empty.
-
-    Args:
-        document (dict): Received input to update a document.
-
-    Returns:
-        bool: Whether the document passed the check.
-    """
-    if not document:
-        return False
-    forbidden = ('_id')
-    for field in forbidden:
-        if field in document:
-            return False
-    return True
-
-
-def get_project(identifier: str):
-    """
-    Query for a project from the database.
-
-    Args:
-        identifier (str): The uuid of the project.
-
-    Returns:
-        dict: The project.
-    """
-    try:
-        mongo_uuid = str_to_uuid(identifier)
-        result = flask.g.db['projects'].find_one({'_id': mongo_uuid})
-        if not result:
-            return None
-    except ValueError:
-        return None
-    return result
-
-
 def get_dbclient(conf) -> pymongo.mongo_client.MongoClient:
     """
     Get the connection to the MongoDB database server.
