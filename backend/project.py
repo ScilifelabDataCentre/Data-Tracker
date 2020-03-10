@@ -207,7 +207,7 @@ def update_project(identifier):  # pylint: disable=too-many-branches
             flask.abort(status=400)
 
     project.update(indata)
-            
+
     result = flask.g.db['projects'].update_one({'_id': project['_id']}, {'$set': project})
     if not result.acknowledged:
         logging.error('Project update failed: %s', indata)
