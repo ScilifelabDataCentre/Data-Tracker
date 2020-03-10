@@ -4,7 +4,7 @@ import uuid
 import requests
 
 from helpers import make_request, as_user, make_request_all_roles,\
-    USERS, random_string, use_db, TEST_LABEL, project_for_tests, add_dataset
+    USERS, random_string, use_db, TEST_LABEL, project_for_tests, add_dataset, delete_dataset
 # pylint: disable=redefined-outer-name
 
 def test_random_project():
@@ -424,6 +424,7 @@ def test_update_project(use_db):
                                 'data_type': 'project',
                                 'user': user_info['_id'],
                                 'action': 'edit'})
+    delete_dataset(*uuids)
 
 
 def test_update_project_bad(use_db):
@@ -501,6 +502,8 @@ def test_update_project_bad(use_db):
             else:
                 assert response.code == 404
                 assert not response.data
+
+    delete_dataset(*uuids)
 
 
 def test_delete_project(use_db):
