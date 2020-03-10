@@ -4,7 +4,7 @@ import uuid
 import requests
 
 from helpers import make_request, as_user, make_request_all_roles,\
-    USERS, random_string, use_db, TEST_LABEL, project_for_tests
+    USERS, random_string, use_db, TEST_LABEL, project_for_tests, add_dataset
 # pylint: disable=redefined-outer-name
 
 def test_random_project():
@@ -351,54 +351,79 @@ def test_update_project(use_db):
     Confirm that fields are set correctly.
     Confirm that logs are created.
     """
-    session = requests.Session()
-
     db = use_db
 
-    projects_user = db['users'].find_one({'auth_id': USERS['projects']})
+    uuids = add_dataset()
+    project_info = db['projects'].find_one({'_id': uuids[2]})
+    user_info = db['users'].find_one({'auth_id': USERS['base']})
+    
+    indata = {'description': 'Test description updated',
+              'contact': 'user_updated@example.com',
+              'dmp': 'https://dmp_updated_url_test',
+              'owners': [str(project_info['owners'][0])],
+              'publications': [{'title': 'Updated publication title',
+                                'doi': 'doi://updated_doi_value'}],
+              'title': 'Test title updated',
+              'datasets': [str(uuids[1])]}
+    indata.update(TEST_LABEL)
 
-    projects = list(db['projects'].aggregate([{'$match': {'creator': projects_user['_id']}},
-                                          {'$sample': {'size': 2}}]))
+    session = requests.Session()
+    as_user(session, USERS['base'])
 
-    for project in projects:
-        for role in USERS:
-            as_user(session, USERS[role])
-            indata = {'title': f'Test title - updated by {role}',
-                      'description': f'Test description - updated by {role}',
-                      'receiver': f'new_{role}_email@example.com',
-                      'extra': {'updated': 'yes'}}
-            indata['extra'].update(TEST_LABEL['extra'])
-            current_user = db['users'].find_one({'auth_id': USERS[role]})
-            if role in ('data', 'root'):
-                indata.update({'creator': str(current_user['_id'])})
+    response = make_request(session,
+                            f'/api/project/{project_info["_id"]}',
+                            method='PATCH',
+                            data=indata,
+                            ret_json=True)
+    assert response.code == 200
+    project = db['projects'].find_one({'_id': project_info['_id']})
+    assert project['description'] == indata['description']
+    assert str(project['owners'][0]) == indata['owners'][0]
+    assert project['title'] == indata['title']
+    assert project['dmp'] == indata['dmp']
+    assert project['publications'] == indata['publications']
+    assert str(project['datasets'][0]) == indata['datasets'][0]
 
-            response = make_request(session,
-                                    f'/api/project/{project["_id"]}',
-                                    method='PATCH',
-                                    data=indata,
-                                    ret_json=True)
+    # log
+    assert db['logs'].find_one({'data._id': project_info['_id'],
+                                'data_type': 'project',
+                                'user': user_info['_id'],
+                                'action': 'edit'})
+    
+    as_user(session, USERS['data'])
+    user_info = db['users'].find_one({'auth_id': USERS['data']})
 
-            if role in ('projects', 'data', 'root'):
-                print(role, indata)
-                assert response.code == 200
-                assert not response.data
-                new_project = db['projects'].find_one({'_id': project['_id']})
-                new_project['_id'] = str(new_project['_id'])
-                new_project['creator'] = str(new_project['creator'])
-                new_project['receiver'] = str(new_project['receiver'])
-                new_project['datasets'] = [str(ds_uuid) for ds_uuid in new_project['datasets']]
-                for field in indata:
-                    assert new_project[field] == indata[field]
-                    assert db['logs'].find_one({'data._id': project['_id'],
-                                                'action': 'edit',
-                                                'data_type': 'project',
-                                                'user': current_user['_id']})
-            elif role == 'no-login':
-                assert response.code == 401
-                assert not response.data
-            else:
-                assert response.code == 403
-                assert not response.data
+    indata = {'description': 'Test description updated2',
+              'contact': 'user_updated@example.com2',
+              'dmp': 'https://dmp_updated_url_test2',
+              'owners': [str(user_info['_id'])],
+              'publications': [{'title': 'Updated publication title2',
+                                'doi': 'doi://updated_doi_value'}],
+              'title': 'Test title updated',
+              'datasets': [str(uuids[1]), str(uuids[1])]}
+    indata.update(TEST_LABEL)
+    
+    response = make_request(session,
+                            f'/api/project/{project_info["_id"]}',
+                            method='PATCH',
+                            data=indata,
+                            ret_json=True)
+    assert response.code == 200
+    project = db['projects'].find_one({'_id': project_info['_id']})
+    assert project['description'] == indata['description']
+    assert str(project['owners'][0]) == indata['owners'][0]
+    assert project['title'] == indata['title']
+    assert project['dmp'] == indata['dmp']
+    assert project['publications'] == indata['publications']
+    assert str(project['datasets'][0]) == indata['datasets'][0]
+
+    data_user = db['users'].find_one({'auth_id': USERS['data']})
+    
+    # log
+    assert db['logs'].find_one({'data._id': project_info['_id'],
+                                'data_type': 'project',
+                                'user': user_info['_id'],
+                                'action': 'edit'})
 
 
 def test_update_project_bad(use_db):
@@ -409,7 +434,7 @@ def test_update_project_bad(use_db):
     """
     db = use_db
 
-    projects_user = db['users'].find_one({'auth_id': USERS['projects']})
+    base_user = db['users'].find_one({'auth_id': USERS['base']})
     projects = list(db['projects'].aggregate([{'$match': {'creator': projects_user['_id']}},
                                           {'$sample': {'size': 2}}]))
 
@@ -527,11 +552,6 @@ def test_delete_project(use_db):
                     assert db['logs'].find_one({'data._id': projects[i]['_id'],
                                                 'action': 'delete',
                                                 'data_type': 'project'})
-                    for dataset_uuid in projects[i]['datasets']:
-                        assert not db['datasets'].find_one({'_id': dataset_uuid})
-                        assert db['logs'].find_one({'data._id': dataset_uuid,
-                                                    'action': 'delete',
-                                                    'data_type': 'dataset'})
                     i += 1
                     if i >= len(projects):
                         break

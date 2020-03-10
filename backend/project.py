@@ -178,11 +178,9 @@ def update_project(identifier):  # pylint: disable=too-many-branches
 
     # indata validation
     if not validate.validate_indata(indata):
-        logging.debug('Validation failed: %s', indata)
         flask.abort(status=400)
 
     if '_id' in indata:
-        logging.debug('Bad field (_id) in indata: %s', indata)
         flask.abort(status=400)
 
     if 'owners' in indata and indata['owners']:
@@ -214,6 +212,6 @@ def update_project(identifier):  # pylint: disable=too-many-branches
     if not result.acknowledged:
         logging.error('Project update failed: %s', indata)
     else:
-        utils.make_log('project', 'edit', 'Project added', project)
+        utils.make_log('project', 'edit', 'Project updated', project)
 
     return flask.Response(status=200)
