@@ -1,6 +1,6 @@
 <template>
 <div class="dataset-browser">
-  <h3 class="subtitle is-3">Datasets</h3>
+  <h1 class="title is-2">Datasets</h1>
   <router-link v-if="user.role === 'Steward' || user.role === 'Admin'" to="/dataset/add">
     <img class="icon-add" :src="require('../../assets/open-iconic/svg/plus.svg')" alt="Add" />
   </router-link>
