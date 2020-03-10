@@ -204,25 +204,20 @@ def project_for_tests():
     Yields the uuid of the added project.
     """
     # prepare
+    db = db_connection()
     session = requests.Session()
-    as_user(session, 5)
-    payload = {'project': {'title': 'A Unique Title for a Project',
-                           'description': 'Description for a project.',
-                           'creator': 'Creator'}}
+    as_user(session, USERS['data'])
+    project_indata = structure.project()
+    base_user = db['users'].find_one({'auth_id': USERS['base']})
+    project_indata.update({'description': 'Added by fixture.',
+                           'title': 'Test title from fixture',
+                           'owners': [base_user['_id']]})
+    project_indata.update(TEST_LABEL)
+    db['projects'].insert_one(project_indata)
 
-    data, status_code = make_request(session,
-                                     '/api/project/add',
-                                     payload)
-    assert status_code == 200
+    yield project_indata['_id']
 
-    proj_id = data['_id']
-    yield proj_id
-
-    # cleanup
-    payload = {'_id': proj_id}
-    make_request(session,
-                 '/api/project/delete',
-                 payload)
+    db['projects'].delete_one({'_id': project_indata['_id']})
 
 
 def random_string(min_length: int = 1, max_length: int = 150):

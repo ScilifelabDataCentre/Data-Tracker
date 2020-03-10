@@ -434,47 +434,46 @@ def test_update_project_bad(use_db):
     """
     db = use_db
 
-    base_user = db['users'].find_one({'auth_id': USERS['base']})
-    projects = list(db['projects'].aggregate([{'$match': {'creator': projects_user['_id']}},
-                                          {'$sample': {'size': 2}}]))
+    uuids = add_dataset()
+    project_info = db['projects'].find_one({'_id': uuids[2]})
+    user_info = db['users'].find_one({'auth_id': USERS['base']})
+    data_user_info = db['users'].find_one({'auth_id': USERS['base']})
 
-    for project in projects:
-        indata = {'description': 'Test description',
-                  'receiver': 'bad_email@asd',
-                  'title': 'Test title'}
+    indata = {'bad_tag': 'value'}
 
-        responses = make_request_all_roles(f'/api/project/{project["_id"]}',
-                                           method='PATCH',
-                                           data=indata,
-                                           ret_json=True)
-        for response in responses:
-            if response.role in ('projects', 'data', 'root'):
-                assert response.code == 400
-            elif response.role == 'no-login':
-                assert response.code == 401
-                assert not response.data
-            else:
-                assert response.code == 403
-                assert not response.data
+    responses = make_request_all_roles(f'/api/project/{project_info["_id"]}',
+                                       method='PATCH',
+                                       data=indata,
+                                       ret_json=True)
+    for response in responses:
+        if response.role in ('base', 'data', 'root'):
+            assert response.code == 400
+            assert not response.data
+        elif response.role == 'no-login':
+            assert response.code == 401
+            assert not response.data
+        else:
+            assert response.code == 403
+            assert not response.data
 
-        indata = {'description': 'Test description',
-                  'creator': str(uuid.uuid4()),
-                  'title': 'Test title'}
+    indata = {'description': 'Test description',
+              'owners': [str(uuid.uuid4())],
+              'title': 'Test title'}
 
-        responses = make_request_all_roles(f'/api/project/{project["_id"]}',
-                                           method='PATCH',
-                                           data=indata,
-                                           ret_json=True)
-        for response in responses:
-            if response.role in ('data', 'root'):
-                assert response.code == 400
-            elif response.role == 'no-login':
-                assert response.code == 401
-                assert not response.data
-            else:
-                assert response.code == 403
-                assert not response.data
-
+    responses = make_request_all_roles(f'/api/project/{project_info["_id"]}',
+                                       method='PATCH',
+                                       data=indata,
+                                       ret_json=True)
+    for response in responses:
+        if response.role in ('base', 'data', 'root'):
+            assert response.code == 400
+            assert not response.data
+        elif response.role == 'no-login':
+            assert response.code == 401
+            assert not response.data
+        else:
+            assert response.code == 403
+            assert not response.data
 
     for _ in range(2):
         indata = {'title': 'Test title'}
@@ -483,28 +482,24 @@ def test_update_project_bad(use_db):
                                            data=indata,
                                            ret_json=True)
         for response in responses:
-            if response.role in ('projects', 'data', 'root'):
-                assert response.code == 404
-            elif response.role == 'no-login':
+            if response.role == 'no-login':
                 assert response.code == 401
                 assert not response.data
             else:
-                assert response.code == 403
+                assert response.code == 404
                 assert not response.data
 
         indata = {'title': 'Test title'}
-        responses = make_request_all_roles(f'/api/project/{random_string}',
+        responses = make_request_all_roles(f'/api/project/{random_string()}',
                                            method='PATCH',
                                            data=indata,
                                            ret_json=True)
         for response in responses:
-            if response.role in ('projects', 'data', 'root'):
-                assert response.code == 404
-            elif response.role == 'no-login':
+            if response.role == 'no-login':
                 assert response.code == 401
                 assert not response.data
             else:
-                assert response.code == 403
+                assert response.code == 404
                 assert not response.data
 
 
