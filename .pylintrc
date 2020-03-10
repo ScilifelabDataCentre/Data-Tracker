@@ -63,7 +63,7 @@ disable=logging-too-many-args,
         logging-not-lazy,
         logging-fstring-interpolation,
         logging-format-interpolation,
-
+	wrong-import-order,
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
