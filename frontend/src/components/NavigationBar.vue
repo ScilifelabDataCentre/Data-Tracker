@@ -1,5 +1,5 @@
 <template>
-<nav class="navbar" role="navigation" aria-label="main navigation">
+<nav class="navbar is-light" role="navigation" aria-label="main navigation">
   <div class="navbar-brand">
     <div class="navbar-item">
       SciLifeLab Data Tracker
@@ -67,4 +67,5 @@ export default {
     height:1em;
     width:1em;
 }
+
 </style>
