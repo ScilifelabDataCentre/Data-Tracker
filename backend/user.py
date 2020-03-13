@@ -7,11 +7,11 @@ Decorators
 Helper functions
     Functions to help with user-related tasks, e.g. setting all variables at login.
 
+
 Requests
     User-related API endpoints, including login/logout and user manament.
 """
 from itertools import chain
-from typing import Union  # pylint: disable=unused-import
 import functools
 import logging
 
@@ -19,7 +19,6 @@ import flask
 
 import structure
 import utils
-
 
 blueprint = flask.Blueprint('user', __name__)  # pylint: disable=invalid-name
 
@@ -159,28 +158,6 @@ def get_user(user_id=None):
         if user:
             return user
     return None
-
-
-def check_user_permissions(required: str):
-    """
-    Check if the current permissions fulfills the requirement.
-
-    Args:
-        required (str): the required permission
-
-    Returns:
-        bool: whether the user has the required permissions or not
-    """
-    roles = ['User', 'Steward', 'Admin']
-    if (role := flask.g.current_role) not in roles:
-        logging.warning('Unknown user role: %s', role)
-        return False
-    if roles.index(flask.g.current_role) >= roles.index(required):
-        return True
-
-    logging.warning('Rejected access. User: %s ',
-                    flask.g.current_user)
-    return False
 
 
 def has_permission(permission: str):
