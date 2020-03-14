@@ -75,6 +75,7 @@ def list_users():
 
 
 # requests
+@blueprint.route('/me')
 @blueprint.route('/me/')
 def get_current_user_info():
     """
@@ -107,13 +108,13 @@ def update_current_user_info():
     """
     user_data = flask.g.current_user
     indata = flask.json.loads(flask.request.data)
-    if not (validation := utils.basic_check_indata(indata, reference_data, ('_id',
-                                                                            'api_key',
-                                                                            'auth_id',
-                                                                            'email',
-                                                                            'permissions'))):
-        if not validation[0]:
-            flask.abort(status=validation[1])
+    validation = utils.basic_check_indata(indata, reference_data, ('_id',
+                                                                   'api_key',
+                                                                   'auth_id',
+                                                                   'email',
+                                                                   'permissions'))
+    if not validation[0]:
+        flask.abort(status=validation[1])
 
     user_data.update(indata)
 
