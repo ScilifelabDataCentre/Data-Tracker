@@ -88,7 +88,6 @@ def get_current_user_info():
 
     Returns:
         flask.Response: json structure for the user
-
     """
     data = flask.g.current_user
     outstructure = {'affiliation': '',
@@ -101,6 +100,38 @@ def get_current_user_info():
             if field in data:
                 outstructure[field] = data[field]
     return flask.jsonify({'user': outstructure})
+
+
+@blueprint.route('/me/', methods=['PATCH'])
+@login_required
+def update_current_user_info():
+    """
+    Update the information about the current user.
+
+    Returns:
+        flask.Response: Response code
+    """
+    user_data = flask.g.current_user
+    indata = flask.json.loads(flask.request.data)
+    if not (validation := utils.basic_check_indata(indata, reference_data, ('_id',
+                                                                            'api_key',
+                                                                            'auth_id',
+                                                                            'email',
+                                                                            'permissions'))):
+        if not validation[0]:
+            flask.abort(status=validation[1])
+
+    user_data.update(indata)
+
+    result = flask.g.db['users'].update_one({'_id': user_data['_id']},
+                                            {'$set': user_data})
+    if not result.acknowledged:
+        logging.error('User update failed: %s', indata)
+        flask.Response(status=500)
+    else:
+        utils.make_log('user', 'edit', 'User self-updated', user_data)
+
+    return flask.Response(status=200)
 
 
 # helper functions
