@@ -12,6 +12,41 @@ import flask
 import pymongo
 
 import structure
+import validate
+
+
+def basic_check_indata(indata: dict,
+                       reference_data: dict,
+                       prohibited: Union[tuple, list]) -> tuple:
+    """
+    Perform basic checks of indata.
+
+    * All fields are allowed in the entity type
+    * All fields are of the correct type
+    * All prohibited fields are unchanged (if update)
+
+    Args:
+        indata (dict): The incoming data.
+        reference_data (dict): Either the old data or a reference dict.
+        prohibited (Union[tuple, list]): Fields that may not be modified.
+            If they are included in ``indata``, their values must be equal to the 
+            values in ``reference_data``. Defaults to ``None``.
+
+    Returns:
+        tuple: (``bool``: hether the check passed, ``code``: Suggested http code)
+    """
+    if prohibited_fields is None:
+        prohibited_fields = []
+
+    for key in indata:
+        if key in prohibited:
+            if indata[key] != reference_data[key]:
+                return (False, 403)
+        if key not in user_data:
+            return (False, 400)
+        if not validate.validate_field(key, indata[key]):
+            return (False, 400)
+    return (True, 200)
 
 
 # csrf
