@@ -4,6 +4,7 @@ Validators for indata.
 Indata can be sent to ``validate_indata``, which will use the corresponding
 functions to check each field.
 """
+from typing import Any
 import logging
 import uuid
 
@@ -11,11 +12,12 @@ import flask
 
 import utils
 
-def validate_indata(indata: dict) -> bool:  # pylint: disable=too-many-branches
+
+def validate_field(field_key: str, field_data: Any) -> bool:  # pylint: disable=too-many-branches
     """
     Validate that the input data matches expectations.
 
-    Will check the indata based on the key names.
+    Will check the data based on the key name.
 
     The validation is only done at the technical level,
     e.g. a check that input is of the correct type.
@@ -24,39 +26,75 @@ def validate_indata(indata: dict) -> bool:  # pylint: disable=too-many-branches
     for the entry must be performed separately.
 
     Args:
-        indata (dict): The data to validate.
+        field_key (str): The field to validate.
+        field_value (Any): The value to validate.
 
     Returns:
         bool: Whether validation passed.
     """
     try:
-        for field_key in indata:
-            if field_key == 'links':
-                validate_links(indata[field_key])
-            elif field_key == 'title':
-                validate_title(indata[field_key])
-            elif field_key == 'description':
-                validate_description(indata[field_key])
-            elif field_key == 'extra':
-                validate_extra(indata[field_key])
-            elif field_key in ('creator', 'receiver'):
-                validate_user(indata[field_key], origin=field_key)
-            elif field_key == 'owners':
-                for entry in indata[field_key]:
-                    validate_user(entry, origin=field_key)
-            elif field_key == 'contact':
-                validate_contact(indata[field_key])
-            elif field_key == 'dmp':
-                validate_dmp(indata[field_key])
-            elif field_key == 'publications':
-                validate_publications(indata[field_key])
-            elif field_key == 'datasets':
-                validate_datasets(indata[field_key])
-            else:
-                raise ValueError('Unknown key')
+        if field_key == 'links':
+            validate_links(field_value)
+        elif field_key == 'title':
+            validate_title(field_value)
+        elif field_key == 'description':
+            validate_description(field_value)
+        elif field_key == 'extra':
+            validate_extra(field_value)
+        elif field_key in ('creator', 'receiver'):
+            validate_user(field_value, origin=field_key)
+        elif field_key == 'owners':
+            for entry in field_value:
+                validate_user(entry, origin=field_key)
+        elif field_key == 'contact':
+            validate_contact(field_value)
+        elif field_key == 'dmp':
+            validate_dmp(field_value)
+        elif field_key == 'publications':
+            validate_publications(field_value)
+        elif field_key == 'datasets':
+            validate_datasets(field_value)
+        else:
+            raise ValueError('Unknown key')
     except ValueError as err:
         logging.info('Indata validation failed: %s', err)
         return False
+    return True
+
+
+def validate_indata(indata: dict) -> bool:  # pylint: disable=too-many-branches
+    """
+    Wrapper function to check the fields of a whole dict.
+
+    Args:
+        indata (dict): The data to validate.
+
+    Returns:
+        bool: Whether validation passed.
+    """
+    for field_key in indata:
+        if not validate_field(field_key, indata[field_key]):
+            return False
+    return True
+
+
+def validate_affiliation(data) -> bool:
+    """
+    Validate input for the ``affiliation`` field.
+
+    It must be a string.
+
+    Args:
+        data: The data to be validated.
+
+    Returns:
+        bool: Validation passed.
+
+    Raises:
+        ValueError: Validation failed.
+    """
+    if not isinstance(data, str):
+        raise ValueError(f'Affiliation - not a string ({data})')
     return True
 
 
