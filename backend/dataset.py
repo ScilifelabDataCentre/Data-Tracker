@@ -144,27 +144,21 @@ def update_dataset(identifier):
         flask.abort(status=404)
     # permissions
     order = flask.g.db['orders'].find_one({'datasets': ds_uuid})
-    logging.debug(f'ORDERDATA: {order}')
     if not user.has_permission('DATA_MANAGEMENT'):
         if order['creator'] != flask.g.current_user['_id'] and\
            order['receiver'] != flask.g.current_user['_id']:
             flask.abort(status=403)
 
-    # indata validation
     indata = json.loads(flask.request.data)
-    if not validate.validate_indata(indata):
-        flask.abort(status=400)
-    if '_id' in indata:
-        flask.abort(status=400)
-    for key in indata:
-        if key not in dataset:
-            flask.abort(status=400)
-
+    validation = utils.basic_check_indata(indata, dataset, prohibited=('_id'))
+    if not validation[0]:
+        flask.abort(status=validation[1])
     dataset.update(indata)
     if indata:
         result = flask.g.db['datasets'].update_one({'_id': dataset['_id']}, {'$set': dataset})
         if not result.acknowledged:
             logging.error('Dataset update failed: %s', dataset)
+            flask.abort(status=500)
         else:
             utils.make_log('dataset', 'edit', 'Dataset updated', dataset)
 
