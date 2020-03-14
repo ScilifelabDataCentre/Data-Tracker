@@ -74,14 +74,12 @@ def gen_datasets(db, nr_datasets: int = 500):
 
 
 def gen_facilities(db, nr_facilities: int = 30):
-    countries = utils.country_list()
     uuids = []
     for i in range(1, nr_facilities+1):
         user = structure.user()
         changes = {'affiliation': 'University ' + random.choice(string.ascii_uppercase),
                    'api_key': uuid.uuid4().hex,
                    'auth_id': '--facility--',
-                   'country': 'Sweden',
                    'email': f'facility{i}@domain{i}',
                    'name': f'Facility {i}',
                    'permissions': ['ORDERS_SELF']}
@@ -146,18 +144,15 @@ def gen_users(db, nr_users: int = 100):
         user.update(suser)
         user.update({'affiliation' : 'Test University',
                      'api_key': uuid.uuid4().hex,
-                     'country': 'Sweden',
                      'email': f'{"".join(user["name"].split())}@example.com'})
         db['users'].insert_one(user)
         make_log(db, action='add', data=user, data_type='user',comment='Generated', user='root')
 
-    countries = utils.country_list()
     for i in range(1, nr_users+1):
         user = structure.user()
         changes = {'affiliation': 'University ' + random.choice(string.ascii_uppercase),
                    'api_key': uuid.uuid4().hex,
                    'auth_id': f'hash{i}@elixir',
-                   'country': random.choice(countries),
                    'email': f'user{i}@place{i}',
                    'name': f'First Last {i}',
                    'permissions': list(set(random.choice(perm_keys)

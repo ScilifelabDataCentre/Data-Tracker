@@ -66,7 +66,6 @@ def user():
             'affiliation': '',
             'api_key': '',
             'auth_id': '',
-            'country': '',
             'email': '',
             'name': '',
             'permissions': []}
