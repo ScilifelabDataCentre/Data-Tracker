@@ -35,16 +35,17 @@ def basic_check_indata(indata: dict,
     Returns:
         tuple: (``bool``: hether the check passed, ``code``: Suggested http code)
     """
-    if prohibited_fields is None:
-        prohibited_fields = []
+    if prohibited is None:
+        prohibited = []
 
     for key in indata:
         if key in prohibited:
             if indata[key] != reference_data[key]:
                 return (False, 403)
-        if key not in user_data:
+        if key not in reference_data:
             return (False, 400)
         if not validate.validate_field(key, indata[key]):
+            logging.debug('correct')
             return (False, 400)
     return (True, 200)
 
