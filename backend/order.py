@@ -51,7 +51,7 @@ def list_orders():
     return utils.response_json({'orders': orders})
 
 
-@blueprint.route('/user', defaults={'user_id': None}, methods=['GET'])
+@blueprint.route('/user/', defaults={'user_id': None}, methods=['GET'])
 @blueprint.route('/user/<user_id>', methods=['GET'])
 def list_orders_user(user_id: str):
     """
@@ -80,7 +80,7 @@ def list_orders_user(user_id: str):
     return utils.response_json({'orders': orders})
 
 
-@blueprint.route('/<identifier>', methods=['GET'])
+@blueprint.route('/<identifier>/', methods=['GET'])
 def get_order(identifier):
     """
     Retrieve the order with the provided uuid.
@@ -113,7 +113,7 @@ def get_order(identifier):
     return utils.response_json({'order': order})
 
 
-@blueprint.route('/<identifier>/log', methods=['GET'])
+@blueprint.route('/<identifier>/log/', methods=['GET'])
 def get_order_log(identifier):
     """
     List changes to the dataset.
@@ -206,7 +206,7 @@ def add_order():  # pylint: disable=too-many-branches
     return utils.response_json({'_id': result.inserted_id})
 
 
-@blueprint.route('/<identifier>/dataset', methods=['POST'])
+@blueprint.route('/<identifier>/dataset/', methods=['POST'])
 def add_dataset_post(identifier):  # pylint: disable=too-many-branches
     """
     Add a dataset to the given order.
@@ -265,7 +265,7 @@ def add_dataset_post(identifier):  # pylint: disable=too-many-branches
     return utils.response_json({'_id': result_ds.inserted_id})
 
 
-@blueprint.route('/<identifier>', methods=['DELETE'])
+@blueprint.route('/<identifier>/', methods=['DELETE'])
 def delete_order(identifier: str):
     """
     Delete the order with the given identifier.
@@ -301,7 +301,7 @@ def delete_order(identifier: str):
     return flask.Response(status=200)
 
 
-@blueprint.route('/<identifier>', methods=['PATCH'])
+@blueprint.route('/<identifier>/', methods=['PATCH'])
 def update_order(identifier: str):  # pylint: disable=too-many-branches
     """
     Update an existing order.

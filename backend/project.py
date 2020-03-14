@@ -18,7 +18,7 @@ def list_project():
     return utils.response_json({'projects': results})
 
 
-@blueprint.route('/random', methods=['GET'])
+@blueprint.route('/random/', methods=['GET'])
 @blueprint.route('/random/<int:amount>', methods=['GET'])
 def get_random(amount: int = 1):
     """
@@ -35,7 +35,7 @@ def get_random(amount: int = 1):
     return utils.response_json({'projects': results})
 
 
-@blueprint.route('/<identifier>', methods=['GET'])
+@blueprint.route('/<identifier>/', methods=['GET'])
 def get_project(identifier):
     """
     Retrieve the project with uuid <identifier>.
@@ -120,7 +120,7 @@ def add_project():  # pylint: disable=too-many-branches
     return utils.response_json({'_id': result.inserted_id})
 
 
-@blueprint.route('/<identifier>', methods=['DELETE'])
+@blueprint.route('/<identifier>/', methods=['DELETE'])
 @user.login_required
 def delete_project(identifier: str):
     """
@@ -153,7 +153,7 @@ def delete_project(identifier: str):
     return flask.Response(status=200)
 
 
-@blueprint.route('/<identifier>', methods=['PATCH'])
+@blueprint.route('/<identifier>/', methods=['PATCH'])
 @user.login_required
 def update_project(identifier):  # pylint: disable=too-many-branches
     """

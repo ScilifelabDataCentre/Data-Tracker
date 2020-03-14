@@ -20,7 +20,7 @@ def list_datasets():
     return utils.response_json({'datasets': results})
 
 
-@blueprint.route('/user', methods=['GET'])
+@blueprint.route('/user/', methods=['GET'])
 @user.login_required
 def list_user_data():
     """List all datasets belonging to current user."""
@@ -33,8 +33,8 @@ def list_user_data():
     return utils.response_json({'datasets': user_datasets})
 
 
-@blueprint.route('/random', methods=['GET'])
-@blueprint.route('/random/<int:amount>', methods=['GET'])
+@blueprint.route('/random/', methods=['GET'])
+@blueprint.route('/random/<int:amount>/', methods=['GET'])
 def get_random_ds(amount: int = 1):
     """
     Retrieve random dataset(s).
@@ -53,7 +53,7 @@ def get_random_ds(amount: int = 1):
     return utils.response_json({'datasets': results})
 
 
-@blueprint.route('/<identifier>', methods=['GET'])
+@blueprint.route('/<identifier>/', methods=['GET'])
 def get_dataset(identifier):
     """
     Retrieve the dataset with uuid <identifier>.
@@ -71,7 +71,7 @@ def get_dataset(identifier):
     return utils.response_json({'dataset': result})
 
 
-@blueprint.route('/<identifier>', methods=['DELETE'])
+@blueprint.route('/<identifier>/', methods=['DELETE'])
 @user.login_required
 def delete_dataset(identifier: str):
     """
@@ -122,7 +122,7 @@ def delete_dataset(identifier: str):
     return flask.Response(status=200)
 
 
-@blueprint.route('/<identifier>', methods=['PATCH'])
+@blueprint.route('/<identifier>/', methods=['PATCH'])
 @user.login_required
 def update_dataset(identifier):
     """

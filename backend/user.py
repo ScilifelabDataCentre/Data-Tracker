@@ -45,13 +45,13 @@ def login_required(func):
 
 
 # requests
-@blueprint.route('/login')
+@blueprint.route('/login/')
 def elixir_login():
     """Perform a Elixir AAI login."""
     return flask.Response(status=501)
 
 
-@blueprint.route('/logout')
+@blueprint.route('/logout/')
 def logout():
     """Log out the current user."""
     flask.session.clear()
@@ -81,7 +81,7 @@ def list_countries():
 
 
 # requests
-@blueprint.route('/me')
+@blueprint.route('/me/')
 def get_current_user_info():
     """
     List basic information about the current user.
