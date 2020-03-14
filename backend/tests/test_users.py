@@ -24,7 +24,7 @@ def test_list_users():
 
     Assert that admin is required.
     """
-    responses = make_request_all_roles('/api/user/all',
+    responses = make_request_all_roles('/api/user/',
                                        ret_json=True)
     for response in responses:
         if response.role in ('users', 'root'):

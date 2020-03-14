@@ -60,7 +60,7 @@ def logout():
     return response
 
 
-@blueprint.route('/all')
+@blueprint.route('/')
 @login_required
 def list_users():
     """
