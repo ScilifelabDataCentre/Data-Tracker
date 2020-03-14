@@ -12,7 +12,6 @@ import flask
 
 import utils
 
-
 def validate_field(field_key: str, field_value: Any) -> bool:  # pylint: disable=too-many-branches
     """
     Validate that the input data matches expectations.
@@ -35,12 +34,12 @@ def validate_field(field_key: str, field_value: Any) -> bool:  # pylint: disable
     try:
         if field_key in ('affiliation',
                          'contact',
-                         'description'
+                         'description',
                          'dmp',
                          'name'):
             validate_string(field_value)
         elif field_key in ('creator', 'receiver'):
-            validate_user(field_value, origin=field_key)
+            validate_user(field_value)
         elif field_key == 'datasets':
             validate_datasets(field_value)
         elif field_key == 'email':
@@ -51,7 +50,7 @@ def validate_field(field_key: str, field_value: Any) -> bool:  # pylint: disable
             validate_links(field_value)
         elif field_key == 'owners':
             for entry in field_value:
-                validate_user(entry, origin=field_key)
+                validate_user(entry)
         elif field_key == 'publications':
             validate_publications(field_value)
         elif field_key == 'title':
@@ -59,7 +58,7 @@ def validate_field(field_key: str, field_value: Any) -> bool:  # pylint: disable
         else:
             raise ValueError('Unknown key')
     except ValueError as err:
-        logging.info('Indata validation failed: %s - %s', field_key, err)
+        logging.debug('Indata validation failed: %s - %s', field_key, err)
         return False
     return True
 
@@ -99,9 +98,9 @@ def validate_datasets(data: list) -> bool:
         try:
             ds_uuid = uuid.UUID(ds_entry)
         except ValueError:
-            raise ValueError(f'Datasets - not a valid uuid ({data})')
+            raise ValueError(f'Not a valid uuid ({data})')
         if not flask.g.db['datasets'].find_one({'_id': ds_uuid}):
-            raise ValueError(f'Datasets - uuid not in db ({data})')
+            raise ValueError(f'Uuid not in db ({data})')
         return True
 
 
@@ -239,13 +238,13 @@ def validate_title(data: str) -> bool:
     Raises:
         ValueError: Validation failed.
     """
-    validate_string(data)
-    if not data:
-        raise ValueError('Must not be empty')
+    if validate_string(data):
+        if not data:
+            raise ValueError('Must not be empty')
     return True
 
 
-def validate_user(data: str, origin: str) -> bool:
+def validate_user(data: str) -> bool:
     """
     Validate input for the ``title`` field.
 
@@ -254,7 +253,6 @@ def validate_user(data: str, origin: str) -> bool:
 
     Args:
         data (str): The data to be validated.
-        origin (str): The key the function was called for.
 
     Returns:
         bool: Validation passed.
@@ -268,7 +266,7 @@ def validate_user(data: str, origin: str) -> bool:
     try:
         user_uuid = uuid.UUID(data)
     except ValueError:
-        raise ValueError(f'{origin.capitalize()} - not a valid uuid ({data})')
+        raise ValueError(f'Not a valid uuid ({data})')
     if not flask.g.db['users'].find_one({'_id': user_uuid}):
-        raise ValueError(f'{origin.capitalize()} - uuid not in db ({data})')
+        raise ValueError(f'Uuid not in db ({data})')
     return True
