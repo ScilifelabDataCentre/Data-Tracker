@@ -74,12 +74,6 @@ def list_users():
     return utils.response_json({'users': result})
 
 
-@blueprint.route('/countries', methods=['GET'])
-def list_countries():
-    """Provide a list of countries."""
-    return flask.jsonify({'countries': utils.country_list()})
-
-
 # requests
 @blueprint.route('/me/')
 def get_current_user_info():

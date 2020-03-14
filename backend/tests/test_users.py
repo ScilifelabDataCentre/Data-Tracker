@@ -39,9 +39,7 @@ def test_list_users():
 
 
 def test_list_info():
-    """
-    Retrieve info about current user.
-    """
+    """Retrieve info about current user."""
     responses = make_request_all_roles('/api/user/me',
                                        ret_json=True)
     for response in responses:
@@ -49,16 +47,3 @@ def test_list_info():
         assert len(response.data['user']) == 5
         if response.role != 'no-login':
             assert response.data['user']['name'] == f'{response.role.capitalize()} Test'
-
-
-def test_country_list():
-    """
-    Request a list of countries
-
-    Should also test e.g. pagination once implemented.
-    """
-    responses = make_request_all_roles('/api/user/countries',
-                                       ret_json=True)
-    for response in responses:
-        assert response.code == 200
-        assert len(response.data['countries']) == 240
