@@ -86,7 +86,6 @@ def get_current_user_info():
     """
     data = flask.g.current_user
     outstructure = {'affiliation': '',
-                    'country': '',
                     'email': '',
                     'name': '',
                     'permissions': ''}
