@@ -76,12 +76,9 @@ def add_project():  # pylint: disable=too-many-branches
         logging.debug('Validation failed: %s', indata)
         flask.abort(status=400)
 
-    if '_id' in indata:
-        logging.debug('Bad field (_id) in indata: %s', indata)
-        flask.abort(status=400)
-
-    if 'title' not in indata:
-        flask.abort(status=400)
+    validation = utils.basic_check_indata(indata, project, prohibited=('_id'))
+    if not validation[0]:
+        flask.abort(status=validation[1])
 
     if 'owners' in indata and indata['owners']:
         if not user.has_permission('DATA_MANAGEMENT'):
@@ -103,10 +100,6 @@ def add_project():  # pylint: disable=too-many-branches
                 if order_info['creator'] != flask.g.current_user['_id'] and\
                    order_info['receiver'] != flask.g.current_user['_id']:
                     flask.abort(status=400)
-
-    for key in indata:
-        if key not in project:
-            flask.abort(status=400)
 
     project.update(indata)
 
@@ -177,11 +170,9 @@ def update_project(identifier):  # pylint: disable=too-many-branches
             flask.abort(status=403)
 
     # indata validation
-    if not validate.validate_indata(indata):
-        flask.abort(status=400)
-
-    if '_id' in indata:
-        flask.abort(status=400)
+    validation = utils.basic_check_indata(indata, project, prohibited=('_id'))
+    if not validation[0]:
+        flask.abort(status=validation[1])
 
     if 'owners' in indata and indata['owners']:
         if not user.has_permission('DATA_MANAGEMENT'):
@@ -201,10 +192,6 @@ def update_project(identifier):  # pylint: disable=too-many-branches
                 if order_info['creator'] != flask.g.current_user['_id'] and\
                    order_info['receiver'] != flask.g.current_user['_id']:
                     flask.abort(status=400)
-
-    for key in indata:
-        if key not in project:
-            flask.abort(status=400)
 
     project.update(indata)
 
