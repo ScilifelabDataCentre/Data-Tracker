@@ -297,7 +297,7 @@ def test_add_project_bad():
                              method='POST',
                              data=indata,
                              ret_json=True)
-    assert response.code == 400
+    assert response.code == 403
     assert not response.data
 
     indata = {'datasets': [str(uuid.uuid4())],
