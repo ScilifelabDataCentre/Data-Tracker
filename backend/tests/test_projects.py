@@ -327,7 +327,7 @@ def test_update_project_permissions(use_db, project_for_tests):
         as_user(session, USERS[role])
         indata = {'title': f'Test title - updated by {role}'}
         response = make_request(session,
-                                f'/api/project/{project_uuid}',
+                                f'/api/project/{project_uuid}/',
                                 method='PATCH',
                                 data=indata,
                                 ret_json=True)
@@ -371,7 +371,7 @@ def test_update_project(use_db):
     as_user(session, USERS['base'])
 
     response = make_request(session,
-                            f'/api/project/{project_info["_id"]}',
+                            f'/api/project/{project_info["_id"]}/',
                             method='PATCH',
                             data=indata,
                             ret_json=True)
@@ -404,7 +404,7 @@ def test_update_project(use_db):
     indata.update(TEST_LABEL)
     
     response = make_request(session,
-                            f'/api/project/{project_info["_id"]}',
+                            f'/api/project/{project_info["_id"]}/',
                             method='PATCH',
                             data=indata,
                             ret_json=True)
@@ -442,7 +442,7 @@ def test_update_project_bad(use_db):
 
     indata = {'bad_tag': 'value'}
 
-    responses = make_request_all_roles(f'/api/project/{project_info["_id"]}',
+    responses = make_request_all_roles(f'/api/project/{project_info["_id"]}/',
                                        method='PATCH',
                                        data=indata,
                                        ret_json=True)
@@ -461,7 +461,7 @@ def test_update_project_bad(use_db):
               'owners': [str(uuid.uuid4())],
               'title': 'Test title'}
 
-    responses = make_request_all_roles(f'/api/project/{project_info["_id"]}',
+    responses = make_request_all_roles(f'/api/project/{project_info["_id"]}/',
                                        method='PATCH',
                                        data=indata,
                                        ret_json=True)
@@ -478,7 +478,7 @@ def test_update_project_bad(use_db):
 
     for _ in range(2):
         indata = {'title': 'Test title'}
-        responses = make_request_all_roles(f'/api/project/{uuid.uuid4()}',
+        responses = make_request_all_roles(f'/api/project/{uuid.uuid4()}/',
                                            method='PATCH',
                                            data=indata,
                                            ret_json=True)
@@ -491,7 +491,7 @@ def test_update_project_bad(use_db):
                 assert not response.data
 
         indata = {'title': 'Test title'}
-        responses = make_request_all_roles(f'/api/project/{random_string()}',
+        responses = make_request_all_roles(f'/api/project/{random_string()}/',
                                            method='PATCH',
                                            data=indata,
                                            ret_json=True)
@@ -526,7 +526,7 @@ def test_delete_project(use_db):
         for role in USERS:
             as_user(session, USERS[role])
             response = make_request(session,
-                                    f'/api/project/{projects[i]["_id"]}',
+                                    f'/api/project/{projects[i]["_id"]}/',
                                     method='DELETE')
             if role in ('data', 'root'):
                 assert response.code == 200
@@ -565,7 +565,7 @@ def test_delete_project(use_db):
                             method='POST')
     assert response.code == 200
     response = make_request(session,
-                            f'/api/project/{response.data["_id"]}',
+                            f'/api/project/{response.data["_id"]}/',
                             method='DELETE')
     assert response.code == 200
     assert not response.data
@@ -578,14 +578,14 @@ def test_delete_project_bad():
     as_user(session, USERS['data'])
     for _ in range(2):
         response = make_request(session,
-                                f'/api/project/{random_string()}',
+                                f'/api/project/{random_string()}/',
                                 method='DELETE')
     assert response.code == 404
     assert not response.data
 
     for _ in range(2):
         response = make_request(session,
-                                f'/api/project/{uuid.uuid4()}',
+                                f'/api/project/{uuid.uuid4()}/',
                                 method='DELETE')
     assert response.code == 404
     assert not response.data
@@ -601,5 +601,3 @@ def test_list_projects():
     for response in responses:
         assert response.code == 200
         assert len(response.data['projects']) == 500
-
-
