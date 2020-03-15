@@ -537,7 +537,6 @@ def test_add_order_bad():
     session = requests.Session()
     as_user(session, USERS['data'])
     indata = {'_id': str(uuid.uuid4()),
-              'receiver': 'bad_email@asd',
               'title': 'Test title'}
     indata.update(TEST_LABEL)
     response = make_request(session,
@@ -545,7 +544,7 @@ def test_add_order_bad():
                              method='POST',
                              data=indata,
                              ret_json=True)
-    assert response.code == 400
+    assert response.code == 403
     assert not response.data
 
     indata = {'datasets': [],
@@ -853,7 +852,7 @@ def test_add_dataset_bad_fields(use_db):
                             f'/api/order/{order["_id"]}/dataset/',
                             method='POST',
                             data=indata)
-    assert response.code == 400
+    assert response.code == 403
     assert not response.data
 
     indata = {'timestamp': 'asd'}

@@ -164,13 +164,9 @@ def add_order():  # pylint: disable=too-many-branches
     order = structure.order()
     indata = flask.json.loads(flask.request.data)
 
-    # indata validation
-    if not validate.validate_indata(indata):
-        logging.debug('Validation failed: %s', indata)
-        flask.abort(status=400)
-    if '_id' in indata or 'datasets' in indata:
-        logging.debug('Bad fields: %s', indata)
-        flask.abort(status=400)
+    validation = utils.basic_check_indata(indata, order, ['_id'])
+    if not validation[0]:
+        flask.abort(status=validation[1])
     # creator
     if 'creator' in indata:
         if not user.has_permission('DATA_MANAGEMENT'):
@@ -187,10 +183,6 @@ def add_order():  # pylint: disable=too-many-branches
             indata['receiver'] = new_identifier
         else:
             flask.abort(400)
-
-    for key in indata:
-        if key not in order:
-            flask.abort(status=400)
 
     order.update(indata)
 
@@ -228,14 +220,9 @@ def add_dataset_post(identifier):  # pylint: disable=too-many-branches
     dataset = structure.dataset()
     indata = flask.json.loads(flask.request.data)
 
-    # indata validation
-    if '_id' in indata:
-        flask.abort(status=400)
-    if not validate.validate_indata(indata):
-        flask.abort(status=400)
-    for key in indata:
-        if key not in dataset:
-            flask.abort(status=400)
+    validation = utils.basic_check_indata(indata, dataset, ['_id'])
+    if not validation[0]:
+        flask.abort(status=validation[1])
     dataset.update(indata)
 
     # add to db
@@ -322,13 +309,9 @@ def update_order(identifier: str):  # pylint: disable=too-many-branches
         return flask.abort(status=403)
 
     indata = flask.json.loads(flask.request.data)
-    # indata validation
-    if not validate.validate_indata(indata):
-        logging.debug('Validation failed: %s', indata)
-        flask.abort(status=400)
-    if '_id' in indata or 'datasets' in indata:
-        logging.debug('Bad fields: %s', indata)
-        flask.abort(status=400)
+    validation = utils.basic_check_indata(indata, order, ['_id', 'datasets'])
+    if not validation[0]:
+        flask.abort(status=validation[1])
 
     # creator
     if 'creator' in indata:
