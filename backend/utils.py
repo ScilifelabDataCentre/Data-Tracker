@@ -38,6 +38,10 @@ def basic_check_indata(indata: dict,
     if prohibited is None:
         prohibited = []
 
+    if 'title' in reference_data:
+        if not reference_data['title'] and 'title' not in indata:
+            return (False, 400)
+
     for key in indata:
         if key in prohibited:
             if indata[key] != reference_data[key]:
