@@ -52,7 +52,7 @@ def list_orders():
 
 
 @blueprint.route('/user/', defaults={'user_id': None}, methods=['GET'])
-@blueprint.route('/user/<user_id>', methods=['GET'])
+@blueprint.route('/user/<user_id>/', methods=['GET'])
 def list_orders_user(user_id: str):
     """
     List all orders belonging to the provided user.
@@ -70,9 +70,8 @@ def list_orders_user(user_id: str):
             user_uuid = utils.str_to_uuid(user_id)
         except ValueError:
             return flask.abort(status=404)
-        else:
-            if not flask.g.db['users'].find_one({'_id': user_uuid}):
-                return flask.abort(status=404)
+        if not flask.g.db['users'].find_one({'_id': user_uuid}):
+            return flask.abort(status=404)
     else:  # current user
         user_uuid = flask.session['user_id']
     orders = list(flask.g.db['orders'].find({'$or': [{'receiver': user_uuid},
@@ -184,7 +183,6 @@ def add_order():  # pylint: disable=too-many-branches
         order['creator'] = flask.g.current_user['_id']
     # receiver
     if 'receiver' in indata:
-        logging.debug('receiver')
         if new_identifier := utils.check_email_uuid(indata['receiver']):
             indata['receiver'] = new_identifier
         else:
