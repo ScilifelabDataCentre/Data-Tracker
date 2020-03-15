@@ -6,7 +6,6 @@ import flask
 import structure
 import user
 import utils
-import validate
 
 blueprint = flask.Blueprint('project', __name__)  # pylint: disable=invalid-name
 
@@ -72,10 +71,6 @@ def add_project():  # pylint: disable=too-many-branches
     indata = flask.json.loads(flask.request.data)
 
     # indata validation
-    if not validate.validate_indata(indata):
-        logging.debug('Validation failed: %s', indata)
-        flask.abort(status=400)
-
     validation = utils.basic_check_indata(indata, project, prohibited=('_id'))
     if not validation[0]:
         flask.abort(status=validation[1])

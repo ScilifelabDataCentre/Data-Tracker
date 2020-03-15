@@ -13,7 +13,6 @@ import flask
 import structure
 import user
 import utils
-import validate
 
 blueprint = flask.Blueprint('order', __name__)  # pylint: disable=invalid-name
 

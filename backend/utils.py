@@ -29,7 +29,7 @@ def basic_check_indata(indata: dict,
         indata (dict): The incoming data.
         reference_data (dict): Either the old data or a reference dict.
         prohibited (Union[tuple, list]): Fields that may not be modified.
-            If they are included in ``indata``, their values must be equal to the 
+            If they are included in ``indata``, their values must be equal to the
             values in ``reference_data``. Defaults to ``None``.
 
     Returns:
@@ -175,45 +175,6 @@ def is_email(indata: str):
         bool: Is the indata an email address or not.
     """
     return bool(REGEX['email'].search(indata))
-
-
-def is_owner(dataset: str = None, project: str = None):
-    """
-    Check if the current user owns the given dataset or project.
-
-    If both a dataset and a project is provided, an exception will be raised.
-
-    Args:
-        dataset (str): the dataset to check
-        project (str): the project to check
-
-    Returns:
-        bool: whether the current owns the dataset/project
-
-    Raises:
-        ValueError: one of dataset or project must be set, and not both
-    """
-    if dataset and project:
-        raise ValueError('Only one of dataset and project should be set')
-    if dataset:
-        try:
-            muuid = str_to_uuid(dataset)
-        except ValueError:
-            flask.abort(flask.Response(status=401))
-        projects = list(flask.g.db['projects'].find({'datasets': muuid},
-                                                    {'owner': 1, 'datasets': 1, '_id': 0}))
-        owners = [project['owner'] for project in projects]
-    elif project:
-        proj_data = get_project(project)
-        if not proj_data:
-            flask.abort(status=404)
-        owners = [project['owner']]
-    else:
-        raise ValueError('Either dataset or project must be set')
-
-    if flask.g.current_user['email'] in owners:
-        return True
-    return False
 
 
 def response_json(json_structure: dict):

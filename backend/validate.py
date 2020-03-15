@@ -65,7 +65,7 @@ def validate_field(field_key: str, field_value: Any) -> bool:  # pylint: disable
 
 def validate_indata(indata: dict) -> bool:
     """
-    Wrapper function to check the fields of a whole dict.
+    Check the fields of a whole dict by wrapping ``validate_field()``.
 
     Args:
         indata (dict): The data to validate.
@@ -221,7 +221,7 @@ def validate_string(data: str) -> bool:
     if not isinstance(data, str):
         raise ValueError(f'Not a string ({data})')
     return True
-    
+
 
 def validate_title(data: str) -> bool:
     """

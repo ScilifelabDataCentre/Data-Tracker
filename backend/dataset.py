@@ -6,7 +6,6 @@ import flask
 
 import utils
 import user
-import validate
 
 blueprint = flask.Blueprint('dataset', __name__)  # pylint: disable=invalid-name
 
