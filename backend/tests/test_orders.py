@@ -352,7 +352,8 @@ def test_add_order_permissions(use_db):
 
     db = use_db
     user_creator = db['users'].find_one({'auth_id': USERS['base']})
-    indata = {'creator': user_creator['email']}
+    indata = {'creator': user_creator['email'],
+              'title': 'test title'}
     indata.update(TEST_LABEL)
     responses = make_request_all_roles(f'/api/order/',
                                        method='POST',
@@ -847,7 +848,8 @@ def test_add_dataset_bad_fields(use_db):
     session = requests.Session()
     as_user(session, USERS['data'])
 
-    indata = {'_id': 'asd'}
+    indata = {'_id': 'asd',
+              'title': 'test title'}
     response = make_request(session,
                             f'/api/order/{order["_id"]}/dataset/',
                             method='POST',
@@ -855,7 +857,8 @@ def test_add_dataset_bad_fields(use_db):
     assert response.code == 403
     assert not response.data
 
-    indata = {'timestamp': 'asd'}
+    indata = {'timestamp': 'asd',
+              'title': 'test title'}
     response = make_request(session,
                             f'/api/order/{order["_id"]}/dataset/',
                             method='POST',
@@ -863,7 +866,8 @@ def test_add_dataset_bad_fields(use_db):
     assert response.code == 400
     assert not response.data
 
-    indata = {'extra': [{'asd': 123}]}
+    indata = {'extra': [{'asd': 123}],
+              'title': 'test title'}
     response = make_request(session,
                             f'/api/order/{order["_id"]}/dataset/',
                             method='POST',
@@ -871,7 +875,8 @@ def test_add_dataset_bad_fields(use_db):
     assert response.code == 400
     assert not response.data
 
-    indata = {'links': [{'asd': 123}]}
+    indata = {'links': [{'asd': 123}],
+              'title': 'test title'}
     response = make_request(session,
                             f'/api/order/{order["_id"]}/dataset/',
                             method='POST',
@@ -879,7 +884,8 @@ def test_add_dataset_bad_fields(use_db):
     assert response.code == 400
     assert not response.data
 
-    indata = {'links': 'Some text'}
+    indata = {'links': 'Some text',
+              'title': 'test title'}
     response = make_request(session,
                             f'/api/order/{order["_id"]}/dataset/',
                             method='POST',
