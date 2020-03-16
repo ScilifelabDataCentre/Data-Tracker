@@ -40,16 +40,18 @@ def basic_check_indata(indata: dict,
 
     if 'title' in reference_data:
         if not reference_data['title'] and 'title' not in indata:
+            logging.debug('Title empty')
             return (False, 400)
 
     for key in indata:
         if key in prohibited:
             if indata[key] != reference_data[key]:
+                logging.debug('Prohibited key (%s) with new value', key)
                 return (False, 403)
         if key not in reference_data:
+            logging.debug('Bad key (%s)', key)
             return (False, 400)
         if not validate.validate_field(key, indata[key]):
-            logging.debug('correct')
             return (False, 400)
     return (True, 200)
 
