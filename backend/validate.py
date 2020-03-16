@@ -16,7 +16,7 @@ def validate_field(field_key: str, field_value: Any) -> bool:  # pylint: disable
     """
     Validate that the input data matches expectations.
 
-    Will check the data based on the key name.
+    Will check the data based on the key.
 
     The validation is only done at the technical level,
     e.g. a check that input is of the correct type.
