@@ -94,13 +94,13 @@ def get_order(identifier):
     try:
         uuid = utils.str_to_uuid(identifier)
     except ValueError:
-        return flask.abort(status=404)
+        flask.abort(status=404)
     order = flask.g.db['orders'].find_one({'_id': uuid})
     if not order:
-        return flask.abort(status=404)
+        flask.abort(status=404)
     if not (user.has_permission('DATA_MANAGEMENT') or
             order['creator'] == flask.session['user_id']):
-        return flask.abort(status=403)
+        flask.abort(status=403)
 
     # convert dataset list into {title, _id}
     order['datasets'] = list(flask.g.db['datasets']
