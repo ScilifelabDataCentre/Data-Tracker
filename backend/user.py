@@ -75,7 +75,6 @@ def list_users():
 
 
 # requests
-@blueprint.route('/me')
 @blueprint.route('/me/')
 def get_current_user_info():
     """
