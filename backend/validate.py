@@ -6,7 +6,6 @@ functions to check each field.
 """
 from typing import Any, Union
 import logging
-import re
 import uuid
 
 import flask
@@ -14,7 +13,7 @@ import flask
 from user import PERMISSIONS
 import utils
 
-def validate_field(field_key: str, field_value: Any) -> bool:  # pylint: disable=too-many-branches
+def validate_field(field_key: str, field_value: Any) -> bool:
     """
     Validate that the input data matches expectations.
 
@@ -34,34 +33,10 @@ def validate_field(field_key: str, field_value: Any) -> bool:  # pylint: disable
         bool: Whether validation passed.
     """
     try:
-        if field_key in ('affiliation',
-                         'api_key',
-                         'auth_id',
-                         'contact',
-                         'description',
-                         'dmp',
-                         'name'):
-            validate_string(field_value)
-        elif field_key in ('creator', 'receiver'):
-            validate_user(field_value)
-        elif field_key == 'datasets':
-            validate_datasets(field_value)
-        elif field_key == 'email':
-            validate_email(field_value)
-        elif field_key == 'extra':
-            validate_extra(field_value)
-        elif field_key == 'links':
-            validate_links(field_value)
-        elif field_key == 'owners':
-            validate_user(field_value)
-        elif field_key == 'permissions':
-            validate_permissions(field_value)
-        elif field_key == 'publications':
-            validate_publications(field_value)
-        elif field_key == 'title':
-            validate_title(field_value)
-        else:
-            raise ValueError('Unknown key')
+        VALIDATION_MAPPER[field_key](field_value)
+    except KeyError as err:
+        logging.debug('Unknown key: %s', field_key)
+        return False
     except ValueError as err:
         logging.debug('Indata validation failed: %s - %s', field_key, err)
         return False
@@ -289,3 +264,22 @@ def validate_user(data: Union[str, list]) -> bool:
         if not flask.g.db['users'].find_one({'_id': user_uuid}):
             raise ValueError(f'Uuid not in db ({data})')
         return True
+
+
+VALIDATION_MAPPER = {'affiliation': validate_string,
+                     'api_key': validate_string,
+                     'auth_id': validate_string,
+                     'contact': validate_string,
+                     'description': validate_string,
+                     'dmp': validate_string,
+                     'name': validate_string,
+                     'creator': validate_user,
+                     'receiver': validate_user,
+                     'datasets': validate_datasets,
+                     'email': validate_email,
+                     'extra': validate_extra,
+                     'links': validate_links,
+                     'owners': validate_user,
+                     'permissions': validate_permissions,
+                     'publications': validate_publications,
+                     'title': validate_title}
