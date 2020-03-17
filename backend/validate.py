@@ -4,12 +4,14 @@ Validators for indata.
 Indata can be sent to ``validate_indata``, which will use the corresponding
 functions to check each field.
 """
-from typing import Any
+from typing import Any, Union
 import logging
+import re
 import uuid
 
 import flask
 
+from user import PERMISSIONS
 import utils
 
 def validate_field(field_key: str, field_value: Any) -> bool:  # pylint: disable=too-many-branches
@@ -33,6 +35,8 @@ def validate_field(field_key: str, field_value: Any) -> bool:  # pylint: disable
     """
     try:
         if field_key in ('affiliation',
+                         'api_key',
+                         'auth_id',
                          'contact',
                          'description',
                          'dmp',
@@ -49,8 +53,9 @@ def validate_field(field_key: str, field_value: Any) -> bool:  # pylint: disable
         elif field_key == 'links':
             validate_links(field_value)
         elif field_key == 'owners':
-            for entry in field_value:
-                validate_user(entry)
+            validate_user(field_value)
+        elif field_key == 'permissions':
+            validate_permissions(field_value)
         elif field_key == 'publications':
             validate_publications(field_value)
         elif field_key == 'title':
@@ -60,22 +65,6 @@ def validate_field(field_key: str, field_value: Any) -> bool:  # pylint: disable
     except ValueError as err:
         logging.debug('Indata validation failed: %s - %s', field_key, err)
         return False
-    return True
-
-
-def validate_indata(indata: dict) -> bool:
-    """
-    Check the fields of a whole dict by wrapping ``validate_field()``.
-
-    Args:
-        indata (dict): The data to validate.
-
-    Returns:
-        bool: Whether validation passed.
-    """
-    for field_key in indata:
-        if not validate_field(field_key, indata[field_key]):
-            return False
     return True
 
 
@@ -120,9 +109,9 @@ def validate_email(data) -> bool:
         ValueError: Validation failed.
     """
     if not isinstance(data, str):
-        raise ValueError(f'Email - not a strin ({data})')
+        raise ValueError(f'Not a string ({data})')
     if not utils.is_email(data):
-        raise ValueError(f'Email - not a valid email address ({data})')
+        raise ValueError(f'Not a valid email address ({data})')
     return True
 
 
@@ -142,10 +131,10 @@ def validate_extra(data) -> bool:
         ValueError: Validation failed.
     """
     if not isinstance(data, dict):
-        raise ValueError(f'Extra - must be dict ({data})')
+        raise ValueError(f'Must be dict ({data})')
     for key in data:
         if not isinstance(key, str) or not isinstance(data[key], str):
-            raise ValueError(f'Extra - keys and values must be strings ({key}, {data[key]})')
+            raise ValueError(f'Keys and values must be strings ({key}, {data[key]})')
     return True
 
 
@@ -165,15 +154,38 @@ def validate_links(data: list) -> bool:
         ValueError: Validation failed.
     """
     if not isinstance(data, list):
-        raise ValueError('Links - must be a list')
+        raise ValueError('Must be a list')
     for entry in data:
         if not isinstance(entry, dict):
-            raise ValueError('Links - must be a list of dicts')
+            raise ValueError('Must be a list of dicts')
         for key in entry:
             if key not in ('url', 'description'):
-                raise ValueError('Links - bad key in dict')
+                raise ValueError('Bad key in dict')
             if not isinstance(entry[key], str):
-                raise ValueError('Links - values must be type str')
+                raise ValueError('Values must be type str')
+    return True
+
+
+def validate_permissions(data: list) -> bool:
+    """
+    Validate input for the ``permissions`` field.
+
+    It must be a list containing permissions found in ``PERMISSIONS``.
+
+    Args:
+        data (list): The data to be validated.
+
+    Returns:
+        bool: Validation passed.
+
+    Raises:
+        ValueError: Validation failed.
+    """
+    if not isinstance(data, list):
+        raise ValueError('Must be a list')
+    for entry in data:
+        if entry not in PERMISSIONS:
+            raise ValueError(f'Bad entry ({entry})')
     return True
 
 
@@ -184,7 +196,7 @@ def validate_publications(data: list) -> bool:
     It must have the form ``[{'title': value, 'doi': value}, ...]``.
 
     Args:
-        data: The data to be validated.
+        data (list): The data to be validated.
 
     Returns:
         bool: Validation passed.
@@ -193,15 +205,15 @@ def validate_publications(data: list) -> bool:
         ValueError: Validation failed.
     """
     if not isinstance(data, list):
-        raise ValueError('Publications - must be a list')
+        raise ValueError('Must be a list')
     for entry in data:
         if not isinstance(entry, dict):
-            raise ValueError('Publications - must be a list of dicts')
+            raise ValueError('Must be a list of dicts')
         for key in entry:
             if key not in ('title', 'doi'):
-                raise ValueError('Publications - bad key in dict')
+                raise ValueError('Bad key in dict')
             if not isinstance(entry[key], str):
-                raise ValueError('Publications - values must be type str')
+                raise ValueError('Values must be type str')
     return True
 
 
@@ -244,7 +256,7 @@ def validate_title(data: str) -> bool:
     return True
 
 
-def validate_user(data: str) -> bool:
+def validate_user(data: Union[str, list]) -> bool:
     """
     Validate input for the ``title`` field.
 
@@ -252,7 +264,7 @@ def validate_user(data: str) -> bool:
     If uuid, confirms that uuid is present in db.
 
     Args:
-        data (str): The data to be validated.
+        data (Union[str, list]): The data to be validated.
 
     Returns:
         bool: Validation passed.
@@ -260,13 +272,20 @@ def validate_user(data: str) -> bool:
     Raises:
         ValueError: Validation failed.
     """
+    if isinstance(data, str):
+        user_uuids = [data]
+    elif isinstance(data, list):
+        user_uuids = data
+    else:
+        raise ValueError(f'Bad data type ({data})')
     # Non-registered user (email instead of uuid)
-    if utils.is_email(data):
+    for u_uuid in user_uuids:
+        if utils.is_email(u_uuid):
+            return True
+        try:
+            user_uuid = uuid.UUID(u_uuid)
+        except ValueError:
+            raise ValueError(f'Not a valid uuid ({data})')
+        if not flask.g.db['users'].find_one({'_id': user_uuid}):
+            raise ValueError(f'Uuid not in db ({data})')
         return True
-    try:
-        user_uuid = uuid.UUID(data)
-    except ValueError:
-        raise ValueError(f'Not a valid uuid ({data})')
-    if not flask.g.db['users'].find_one({'_id': user_uuid}):
-        raise ValueError(f'Uuid not in db ({data})')
-    return True
