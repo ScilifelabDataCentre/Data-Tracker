@@ -1,3 +1,4 @@
+---
 mongo:
   host: "db"
   port: 27017
