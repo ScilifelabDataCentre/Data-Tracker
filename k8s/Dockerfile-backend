@@ -7,6 +7,6 @@ ENV PYTHONPATH /code
 
 RUN pip3 install -r /code/requirements.txt
 
-# Must mount the file /config.yaml before starting
+# Must mount the file /config/config.yaml before starting
 
-CMD ["python3", "app.py", "--config_file", "/config.yaml"]
+CMD ["python3", "app.py", "--config_file", "/config/config.yaml"]
