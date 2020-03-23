@@ -26,7 +26,7 @@ const actions = {
   getUser ({ commit }) {
     return new Promise((resolve, reject) => {
       axios
-        .get('/api/user/me')
+        .get('/api/user/me/')
         .then((response) => {
           commit('UPDATE_USER', response.data.user);
           resolve(response);
@@ -40,7 +40,7 @@ const actions = {
   getUserOrders ({ commit }) {
     return new Promise((resolve, reject) => {
       axios
-        .get('/api/order/user')
+        .get('/api/order/user/')
         .then((response) => {
           commit('UPDATE_USER_ORDERS', response.data.orders);
           resolve(response);
@@ -54,7 +54,7 @@ const actions = {
   getUserDatasets ({ commit }) {
     return new Promise((resolve, reject) => {
       axios
-        .get('/api/dataset/user')
+        .get('/api/dataset/user/')
         .then((response) => {
           commit('UPDATE_USER_DATASETS', response.data.datasets);
           resolve(response);
@@ -68,7 +68,7 @@ const actions = {
   getUserProjects ({ commit }) {
     return new Promise((resolve, reject) => {
       axios
-        .get('/api/project/user')
+        .get('/api/project/user/')
         .then((response) => {
           commit('UPDATE_USER_PROJECTS', response.data.projects);
           resolve(response);

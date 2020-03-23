@@ -20,7 +20,7 @@ const actions = {
   getProject ({ commit, dispatch }, id) {
     return new Promise((resolve, reject) => {
       axios
-        .get('/api/project/' + id)
+        .get('/api/project/' + id + '/')
         .then((response) => {
           commit('UPDATE_PROJECT', response.data.project);
           resolve(response);
@@ -70,7 +70,7 @@ const actions = {
       const newProject = {'project': payload};
       let url = '';
       if (newProject.project.id === -1) {
-        url = '/api/project/add';
+        url = '/api/project/add/';
       }
       else {
         url = '/api/project/' + newProject.project.id + '/update';

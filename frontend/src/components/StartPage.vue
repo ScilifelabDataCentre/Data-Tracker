@@ -40,12 +40,12 @@ export default {
 
   mounted () {
     axios
-      .get('/api/dataset/random')
+      .get('/api/dataset/random/')
       .then((response) => {            
         this.random_ds = response.data;
       });
     axios
-      .get('/api/project/random')
+      .get('/api/project/random/')
       .then((response) => {            
         this.random_proj = response.data;
       });

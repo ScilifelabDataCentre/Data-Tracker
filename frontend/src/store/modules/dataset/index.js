@@ -20,7 +20,7 @@ const actions = {
   getDataset ({ commit, dispatch }, id) {
     return new Promise((resolve, reject) => {
       axios
-        .get('/api/dataset/' + id)
+        .get('/api/dataset/' + id + '/')
         .then((response) => {
           commit('UPDATE_DATASET', response.data.dataset);
           resolve(response);
@@ -50,7 +50,7 @@ const actions = {
   deleteDataset (context, dataset_id) {
     return new Promise((resolve, reject) => {
       axios
-        .delete('/api/dataset/' + dataset_id,
+        .delete('/api/dataset/' + dataset_id + '/',
                 {},
                 {
                   headers: getCsrfHeader(),
@@ -72,7 +72,7 @@ const actions = {
         url = '/api/dataset/add';
       }
       else {
-        url = '/api/dataset/' + newDataset.uuid + '/edit';
+        url = '/api/dataset/' + newDataset.uuid + '/edit/';
       }
       delete newDataset.uuid;
       delete newDataset.timestamp;
