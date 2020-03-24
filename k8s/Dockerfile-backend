@@ -7,6 +7,6 @@ ENV PYTHONPATH /code
 
 RUN pip3 install -r /code/requirements.txt
 
-# Must mount the file /code/config.yaml before starting
+# Must mount the file /config.yaml before starting
 
 CMD ["gunicorn", "-w", "3", "-k", "gthread", "--bind", "0.0.0.0:8000", "app:app"]
