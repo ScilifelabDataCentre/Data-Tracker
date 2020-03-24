@@ -1,12 +1,12 @@
 FROM python:alpine
 
 COPY ./backend/ /code/
-WORKDIR /code
+WORKDIR /code/
 
 ENV PYTHONPATH /code
 
 RUN pip3 install -r /code/requirements.txt
 
-# Must mount the file /config/config.yaml before starting
+# Must mount the file /code/config.yaml before starting
 
-CMD ["python3", "app.py", "--config_file", "/config/config.yaml"]
+CMD ["gunicorn", "-w", "3", "-k", "gthread", "--bind", "0.0.0.0:8000", "app:app"]
