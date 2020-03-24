@@ -6,6 +6,7 @@ WORKDIR /code/
 ENV PYTHONPATH /code
 
 RUN pip3 install -r /code/requirements.txt
+RUN pip3 install gunicorn
 
 # Must mount the file /config.yaml before starting
 
