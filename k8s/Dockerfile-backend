@@ -10,4 +10,4 @@ RUN pip3 install gunicorn
 
 # Must mount the file /config.yaml before starting
 
-CMD ["gunicorn", "-w", "3", "-k", "gthread", "--bind", "0.0.0.0:8000", "app:app"]
+CMD ["gunicorn", "-w", "3", "-k", "gthread", "--bind", "0.0.0.0:8000", "app:app", "--access-logfile", "-"]
