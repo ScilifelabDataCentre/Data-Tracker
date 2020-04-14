@@ -39,7 +39,7 @@ def login_required(func):
     @functools.wraps(func)
     def wrap(*args, **kwargs):
         if not flask.g.current_user:
-            flask.abort(flask.Response(status=401))
+            flask.abort(status=401)
         return func(*args, **kwargs)
     return wrap
 
@@ -102,9 +102,10 @@ def update_current_user_info():
     Update the information about the current user.
 
     Returns:
-        flask.Response: Response code
+        flask.Response: Response code.
     """
     user_data = flask.g.current_user
+
     indata = flask.json.loads(flask.request.data)
     validation = utils.basic_check_indata(indata, user_data, ('_id',
                                                               'api_key',
@@ -123,6 +124,47 @@ def update_current_user_info():
         flask.Response(status=500)
     else:
         utils.make_log('user', 'edit', 'User self-updated', user_data)
+
+    return flask.Response(status=200)
+
+
+@blueprint.route('/<identifier>/', methods=['PATCH'])
+@login_required
+def update_user_info(identifier: str):
+    """
+    Update the information about a user.
+
+    Args:
+        identifier (str): The uuid of the user to modify.
+
+    Returns:
+        flask.Response: Response code.
+    """
+    if not has_permission('USER_MANAGEMENT'):
+        flask.abort(403)
+
+    try:
+        user_uuid = utils.str_to_uuid(identifier)
+    except ValueError:
+        flask.abort(status=404)
+
+    if not (user_data := flask.g.db['users'].find_one({'_id': user_uuid})):  # pylint: disable=superfluous-parens
+        flask.abort(status=404)
+
+    indata = flask.json.loads(flask.request.data)
+    validation = utils.basic_check_indata(indata, user_data, ('_id',
+                                                              'api_key'))
+    if not validation[0]:
+        flask.abort(status=validation[1])
+
+    if indata:
+        result = flask.g.db['users'].update_one({'_id': user_data['_id']},
+                                                {'$set': indata})
+        if not result.acknowledged:
+            logging.error('User update failed: %s', indata)
+            flask.Response(status=500)
+        else:
+            utils.make_log('user', 'edit', 'User updated', user_data)
 
     return flask.Response(status=200)
 
