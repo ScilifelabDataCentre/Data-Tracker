@@ -178,6 +178,34 @@
 <span id="utils-py"></span><h1>utils.py<a class="headerlink" href="#module-utils" title="Permalink to this headline">¶</a></h1>
 <p>General helper functions.</p>
 <dl class="function">
+<dt id="utils.basic_check_indata">
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">basic_check_indata</code><span class="sig-paren">(</span><em class="sig-param">indata: dict, reference_data: dict, prohibited: Union[tuple, list]</em><span class="sig-paren">)</span> &#x2192; tuple<a class="reference internal" href="modules/utils.html#basic_check_indata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.basic_check_indata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform basic checks of indata.</p>
+<ul class="simple">
+<li><p>All fields are allowed in the entity type</p></li>
+<li><p>All fields are of the correct type</p></li>
+<li><p>All prohibited fields are unchanged (if update)</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>indata</strong> (<em>dict</em>) – The incoming data.</p></li>
+<li><p><strong>reference_data</strong> (<em>dict</em>) – Either the old data or a reference dict.</p></li>
+<li><p><strong>prohibited</strong> (<em>Union</em><em>[</em><em>tuple</em><em>, </em><em>list</em><em>]</em>) – Fields that may not be modified.
+If they are included in <code class="docutils literal notranslate"><span class="pre">indata</span></code>, their values must be equal to the
+values in <code class="docutils literal notranslate"><span class="pre">reference_data</span></code>. Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(<code class="docutils literal notranslate"><span class="pre">bool</span></code>: hether the check passed, <code class="docutils literal notranslate"><span class="pre">code</span></code>: Suggested http code)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
 <dt id="utils.check_email_uuid">
 <code class="sig-prename descclassname">utils.</code><code class="sig-name descname">check_email_uuid</code><span class="sig-paren">(</span><em class="sig-param">user_identifier: str</em><span class="sig-paren">)</span> &#x2192; Union[str, uuid.UUID]<a class="reference internal" href="modules/utils.html#check_email_uuid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.check_email_uuid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if the provided user is found in the db as email or _id.</p>
@@ -200,24 +228,6 @@ If the identifier is an email, return the email.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="utils.check_mongo_update">
-<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">check_mongo_update</code><span class="sig-paren">(</span><em class="sig-param">document: dict</em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#check_mongo_update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.check_mongo_update" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make sure that some fields in a document are not changed during an update.</p>
-<p>Also make sure indata is not empty.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>document</strong> (<em>dict</em>) – Received input to update a document.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Whether the document passed the check.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>bool</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
 <dt id="utils.convert_keys_to_camel">
 <code class="sig-prename descclassname">utils.</code><code class="sig-name descname">convert_keys_to_camel</code><span class="sig-paren">(</span><em class="sig-param">chunk: Any</em><span class="sig-paren">)</span> &#x2192; Any<a class="reference internal" href="modules/utils.html#convert_keys_to_camel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.convert_keys_to_camel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert keys given in snake_case to camelCase.</p>
@@ -231,20 +241,6 @@ If the identifier is an email, return the email.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>Any</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="utils.country_list">
-<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">country_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; list<a class="reference internal" href="modules/utils.html#country_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.country_list" title="Permalink to this definition">¶</a></dt>
-<dd><p>Provide a list of countries.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>A selection of countries.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>list</p>
 </dd>
 </dl>
 </dd></dl>
@@ -301,23 +297,6 @@ If the identifier is an email, return the email.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="utils.get_project">
-<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">get_project</code><span class="sig-paren">(</span><em class="sig-param">identifier: str</em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#get_project"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.get_project" title="Permalink to this definition">¶</a></dt>
-<dd><p>Query for a project from the database.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>identifier</strong> (<em>str</em>) – The uuid of the project.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The project.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>dict</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
 <dt id="utils.incremental_logs">
 <code class="sig-prename descclassname">utils.</code><code class="sig-name descname">incremental_logs</code><span class="sig-paren">(</span><em class="sig-param">logs: list</em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#incremental_logs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.incremental_logs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Make an incremental log.</p>
@@ -339,30 +318,6 @@ the changed fields in <code class="docutils literal notranslate"><span class="pr
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>bool</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="utils.is_owner">
-<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">is_owner</code><span class="sig-paren">(</span><em class="sig-param">dataset: str = None</em>, <em class="sig-param">project: str = None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#is_owner"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.is_owner" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check if the current user owns the given dataset or project.</p>
-<p>If both a dataset and a project is provided, an exception will be raised.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>dataset</strong> (<em>str</em>) – the dataset to check</p></li>
-<li><p><strong>project</strong> (<em>str</em>) – the project to check</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>whether the current owns the dataset/project</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>bool</p>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><p><strong>ValueError</strong> – one of dataset or project must be set, and not both</p>
 </dd>
 </dl>
 </dd></dl>

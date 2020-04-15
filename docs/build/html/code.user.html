@@ -186,18 +186,18 @@
 </dd>
 </dl>
 <dl class="function">
-<dt id="user.check_user_permissions">
-<code class="sig-prename descclassname">user.</code><code class="sig-name descname">check_user_permissions</code><span class="sig-paren">(</span><em class="sig-param">required: str</em><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#check_user_permissions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#user.check_user_permissions" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check if the current permissions fulfills the requirement.</p>
+<dt id="user.delete_user">
+<code class="sig-prename descclassname">user.</code><code class="sig-name descname">delete_user</code><span class="sig-paren">(</span><em class="sig-param">identifier: str</em><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#delete_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#user.delete_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete a user.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>required</strong> (<em>str</em>) – the required permission</p>
+<dd class="field-odd"><p><strong>identifier</strong> (<em>str</em>) – The uuid of the user to modify.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>whether the user has the required permissions or not</p>
+<dd class="field-even"><p>Response code.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>bool</p>
+<dd class="field-odd"><p>flask.Response</p>
 </dd>
 </dl>
 </dd></dl>
@@ -287,12 +287,6 @@
 </dd></dl>
 
 <dl class="function">
-<dt id="user.list_countries">
-<code class="sig-prename descclassname">user.</code><code class="sig-name descname">list_countries</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#list_countries"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#user.list_countries" title="Permalink to this definition">¶</a></dt>
-<dd><p>Provide a list of countries.</p>
-</dd></dl>
-
-<dl class="function">
 <dt id="user.list_users">
 <code class="sig-prename descclassname">user.</code><code class="sig-name descname">list_users</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#list_users"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#user.list_users" title="Permalink to this definition">¶</a></dt>
 <dd><p>List all users.</p>
@@ -310,6 +304,37 @@
 <dt id="user.logout">
 <code class="sig-prename descclassname">user.</code><code class="sig-name descname">logout</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#logout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#user.logout" title="Permalink to this definition">¶</a></dt>
 <dd><p>Log out the current user.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="user.update_current_user_info">
+<code class="sig-prename descclassname">user.</code><code class="sig-name descname">update_current_user_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#update_current_user_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#user.update_current_user_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the information about the current user.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Response code.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>flask.Response</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="user.update_user_info">
+<code class="sig-prename descclassname">user.</code><code class="sig-name descname">update_user_info</code><span class="sig-paren">(</span><em class="sig-param">identifier: str</em><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#update_user_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#user.update_user_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the information about a user.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>identifier</strong> (<em>str</em>) – The uuid of the user to modify.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Response code.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>flask.Response</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>

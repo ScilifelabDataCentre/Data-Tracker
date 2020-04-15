@@ -110,16 +110,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#id5">Fields</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#doi">DOI</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#fields-request">Fields (request)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#computed-fields-request">Computed Fields (request)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#fields-doi-entry">Fields (doi entry)</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#other-topics">Other topics</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#identifiers">Identifiers</a></li>
-</ul>
-</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="implementation.html">Implementation</a></li>
@@ -452,7 +442,7 @@
 <ul class="simple">
 <li><p>Whenever an entry (<code class="docutils literal notranslate"><span class="pre">order</span></code>, <code class="docutils literal notranslate"><span class="pre">dataset</span></code>, <code class="docutils literal notranslate"><span class="pre">project</span></code>, or <code class="docutils literal notranslate"><span class="pre">user</span></code>) is changed, a log should be written.</p></li>
 <li><p>All logs are in the same collection.</p></li>
-<li><p>A special function will be used to show changes between different versions of an entry.</p></li>
+<li><p>The log needs parsing to show changes between different versions of an entry.</p></li>
 </ul>
 <div class="section" id="id5">
 <h3>Fields<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
@@ -466,8 +456,8 @@
 <dt>Data_type</dt><dd><p>The collection that was modified (<code class="docutils literal notranslate"><span class="pre">order</span></code>, <code class="docutils literal notranslate"><span class="pre">dataset</span></code>, <code class="docutils literal notranslate"><span class="pre">project</span></code>, or <code class="docutils literal notranslate"><span class="pre">user</span></code>).</p>
 </dd>
 <dt>Data</dt><dd><ul class="simple">
-<li><p>Add/edit: complete copy of the new document.</p></li>
-<li><p>Delete: empty.</p></li>
+<li><p>Add/edit: complete copy of the new/updated document.</p></li>
+<li><p>Delete: the <code class="docutils literal notranslate"><span class="pre">_id</span></code> of the document.</p></li>
 </ul>
 </dd>
 <dt>Timestamp</dt><dd><p>The time the action was performed.</p>
@@ -475,98 +465,6 @@
 <dt>User</dt><dd><p>Uuid of the user that performed the action.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="doi">
-<h2>DOI<a class="headerlink" href="#doi" title="Permalink to this headline">¶</a></h2>
-<ul>
-<li><p>Two collections
-- <code class="docutils literal notranslate"><span class="pre">doi_req</span></code> - Requests for a DOI.
-- <code class="docutils literal notranslate"><span class="pre">doi</span></code> - Accepted DOIs.</p></li>
-<li><p>Users can request a DOI for datasets and projects.</p></li>
-<li><p>Upon request, entry data is copied to <code class="docutils literal notranslate"><span class="pre">doi_req</span></code>.</p></li>
-<li><p>A reviewer will need to check the data for the request.</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>Required fields.</p></li>
-<li><p>File hashes.</p></li>
-</ul>
-</div></blockquote>
-</li>
-<li><p>If accepted, the data will be copied to <code class="docutils literal notranslate"><span class="pre">doi</span></code>.</p></li>
-<li><p>Each DOI document is a complete copy of the entire data structure that was accepted for the DOI.</p></li>
-<li><p>A DOI will not be updated or deleted.</p></li>
-<li><p>A DOI request may be updated (by reviewer) but not deleted.</p></li>
-</ul>
-<div class="section" id="fields-request">
-<h3>Fields (request)<a class="headerlink" href="#fields-request" title="Permalink to this headline">¶</a></h3>
-<dl>
-<dt>_id</dt><dd><p>Uuid for the request.</p>
-</dd>
-<dt>Data</dt><dd><ul class="simple">
-<li><p>A complete copy of all relevant data</p></li>
-<li><p>A project with associated datasets will include copies of the datasets in <code class="docutils literal notranslate"><span class="pre">datasets</span></code> instead of only uuids.</p></li>
-</ul>
-</dd>
-<dt>Status</dt><dd><p>Requested, Accepted, or Rejected.</p>
-</dd>
-<dt>User</dt><dd><p>User that made the request</p>
-</dd>
-<dt>Updates</dt><dd><p>Mini log system:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="s1">&#39;timestamp&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">current</span> <span class="n">time</span><span class="o">&gt;</span><span class="p">,</span>
-  <span class="s1">&#39;new_status&#39;</span><span class="p">:</span> <span class="s1">&#39;new_status&#39;</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</dd>
-<dt>Type</dt><dd><p>Datatype for the entry; <code class="docutils literal notranslate"><span class="pre">dataset</span></code> or <code class="docutils literal notranslate"><span class="pre">project</span></code>.</p>
-</dd>
-<dt>Comments</dt><dd><p>List of comments from the reviewer. Entry:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="s1">&#39;comment&#39;</span><span class="p">:</span> <span class="s1">&#39;comment&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;timestamp&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">timestamp</span><span class="o">&gt;</span><span class="p">,</span>
-  <span class="s1">&#39;user&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">user</span> <span class="n">uuid</span><span class="o">&gt;</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</dd>
-</dl>
-</div>
-<div class="section" id="computed-fields-request">
-<h3>Computed Fields (request)<a class="headerlink" href="#computed-fields-request" title="Permalink to this headline">¶</a></h3>
-<dl class="simple">
-<dt>Other_requests</dt><dd><p>Other requests that have been made for the same entry. Provided in order to allow the reviewer to see e.g. comments on earlier requests.</p>
-</dd>
-</dl>
-</div>
-<div class="section" id="fields-doi-entry">
-<h3>Fields (doi entry)<a class="headerlink" href="#fields-doi-entry" title="Permalink to this headline">¶</a></h3>
-<dl class="simple">
-<dt>_id</dt><dd><p>The DOI identifier.</p>
-</dd>
-<dt>Timestamp</dt><dd><p>When the entry was created (accepted).</p>
-</dd>
-<dt>Data</dt><dd><p>The complete entry that has been accepted.</p>
-</dd>
-</dl>
-</div>
-</div>
-<div class="section" id="other-topics">
-<h2>Other topics<a class="headerlink" href="#other-topics" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="identifiers">
-<h3>Identifiers<a class="headerlink" href="#identifiers" title="Permalink to this headline">¶</a></h3>
-<ul>
-<li><p>Only uuid initially.</p></li>
-<li><p>Can request a “fancier” local identifer for <code class="docutils literal notranslate"><span class="pre">dataset</span></code>/<code class="docutils literal notranslate"><span class="pre">project</span></code>.</p>
-<blockquote>
-<div><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">scilifelab.facility.orderxyz.dataset1</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">scilifelab.projects.title1</span></code></p></li>
-</ul>
-</div></blockquote>
-</li>
-</ul>
 </div>
 </div>
 </div>

@@ -224,7 +224,7 @@ Log
 
 * Whenever an entry (``order``, ``dataset``, ``project``, or ``user``) is changed, a log should be written.
 * All logs are in the same collection.
-* A special function will be used to show changes between different versions of an entry.
+* The log needs parsing to show changes between different versions of an entry.
 
 Fields
 ------
@@ -237,87 +237,9 @@ Comment
 Data_type
     The collection that was modified (``order``, ``dataset``, ``project``, or ``user``).
 Data
-    * Add/edit: complete copy of the new document.
-    * Delete: empty.
+    * Add/edit: complete copy of the new/updated document.
+    * Delete: the ``_id`` of the document.
 Timestamp
     The time the action was performed.
 User
     Uuid of the user that performed the action.
-
-
-DOI
-===
-* Two collections
-  - ``doi_req`` - Requests for a DOI.
-  - ``doi`` - Accepted DOIs.
-* Users can request a DOI for datasets and projects.
-* Upon request, entry data is copied to ``doi_req``.
-* A reviewer will need to check the data for the request.
-
-   - Required fields.
-     
-   - File hashes.
-
-* If accepted, the data will be copied to ``doi``.
-* Each DOI document is a complete copy of the entire data structure that was accepted for the DOI.
-* A DOI will not be updated or deleted.
-* A DOI request may be updated (by reviewer) but not deleted.
-
-
-Fields (request)
-----------------
-_id
-    Uuid for the request.
-Data
-    * A complete copy of all relevant data
-    * A project with associated datasets will include copies of the datasets in ``datasets`` instead of only uuids.
-Status
-    Requested, Accepted, or Rejected.
-User
-    User that made the request
-Updates
-    Mini log system::
-
-       {
-         'timestamp': <current time>,
-         'new_status': 'new_status'
-       }
-
-Type
-    Datatype for the entry; ``dataset`` or ``project``.
-Comments
-    List of comments from the reviewer. Entry::
-
-       {
-         'comment': 'comment',
-         'timestamp': <timestamp>,
-         'user': <user uuid>
-       }
-
-Computed Fields (request)
--------------------------
-Other_requests
-    Other requests that have been made for the same entry. Provided in order to allow the reviewer to see e.g. comments on earlier requests.
-
-
-Fields (doi entry)
-------------------
-_id
-    The DOI identifier.
-Timestamp
-    When the entry was created (accepted).
-Data
-    The complete entry that has been accepted.
-
-
-Other topics
-============
-
-Identifiers
------------
-* Only uuid initially.
-* Can request a "fancier" local identifer for ``dataset``/``project``.
-
-   - ``scilifelab.facility.orderxyz.dataset1``
-      
-   - ``scilifelab.projects.title1``

@@ -163,6 +163,48 @@
 <span class="kn">import</span> <span class="nn">pymongo</span>
 
 <span class="kn">import</span> <span class="nn">structure</span>
+<span class="kn">import</span> <span class="nn">validate</span>
+
+
+<div class="viewcode-block" id="basic_check_indata"><a class="viewcode-back" href="../code.utils.html#utils.basic_check_indata">[docs]</a><span class="k">def</span> <span class="nf">basic_check_indata</span><span class="p">(</span><span class="n">indata</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+                       <span class="n">reference_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+                       <span class="n">prohibited</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Perform basic checks of indata.</span>
+
+<span class="sd">    * All fields are allowed in the entity type</span>
+<span class="sd">    * All fields are of the correct type</span>
+<span class="sd">    * All prohibited fields are unchanged (if update)</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        indata (dict): The incoming data.</span>
+<span class="sd">        reference_data (dict): Either the old data or a reference dict.</span>
+<span class="sd">        prohibited (Union[tuple, list]): Fields that may not be modified.</span>
+<span class="sd">            If they are included in ``indata``, their values must be equal to the</span>
+<span class="sd">            values in ``reference_data``. Defaults to ``None``.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple: (``bool``: hether the check passed, ``code``: Suggested http code)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">prohibited</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">prohibited</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">if</span> <span class="s1">&#39;title&#39;</span> <span class="ow">in</span> <span class="n">reference_data</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">reference_data</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="s1">&#39;title&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">indata</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Title empty&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">indata</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">prohibited</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">indata</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">!=</span> <span class="n">reference_data</span><span class="p">[</span><span class="n">key</span><span class="p">]:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Prohibited key (</span><span class="si">%s</span><span class="s1">) with new value&#39;</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+                <span class="k">return</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="mi">403</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">reference_data</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Bad key (</span><span class="si">%s</span><span class="s1">)&#39;</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">validate</span><span class="o">.</span><span class="n">validate_field</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">indata</span><span class="p">[</span><span class="n">key</span><span class="p">]):</span>
+            <span class="k">return</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span></div>
 
 
 <span class="c1"># csrf</span>
@@ -183,48 +225,6 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span><span class="o">.</span><span class="n">hex</span></div>
-
-
-<span class="c1"># db input/output</span>
-<div class="viewcode-block" id="check_mongo_update"><a class="viewcode-back" href="../code.utils.html#utils.check_mongo_update">[docs]</a><span class="k">def</span> <span class="nf">check_mongo_update</span><span class="p">(</span><span class="n">document</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Make sure that some fields in a document are not changed during an update.</span>
-
-<span class="sd">    Also make sure indata is not empty.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        document (dict): Received input to update a document.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        bool: Whether the document passed the check.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">document</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">False</span>
-    <span class="n">forbidden</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;_id&#39;</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">forbidden</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">document</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">False</span>
-    <span class="k">return</span> <span class="kc">True</span></div>
-
-
-<div class="viewcode-block" id="get_project"><a class="viewcode-back" href="../code.utils.html#utils.get_project">[docs]</a><span class="k">def</span> <span class="nf">get_project</span><span class="p">(</span><span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Query for a project from the database.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        identifier (str): The uuid of the project.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        dict: The project.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">mongo_uuid</span> <span class="o">=</span> <span class="n">str_to_uuid</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;projects&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">mongo_uuid</span><span class="p">})</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span>
-    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">None</span>
-    <span class="k">return</span> <span class="n">result</span></div>
 
 
 <div class="viewcode-block" id="get_dbclient"><a class="viewcode-back" href="../code.utils.html#utils.get_dbclient">[docs]</a><span class="k">def</span> <span class="nf">get_dbclient</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">mongo_client</span><span class="o">.</span><span class="n">MongoClient</span><span class="p">:</span>
@@ -314,69 +314,6 @@
     <span class="k">return</span> <span class="n">new_chunk</span></div>
 
 
-<div class="viewcode-block" id="country_list"><a class="viewcode-back" href="../code.utils.html#utils.country_list">[docs]</a><span class="k">def</span> <span class="nf">country_list</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Provide a list of countries.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        list: A selection of countries.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;Afghanistan&quot;</span><span class="p">,</span> <span class="s2">&quot;Albania&quot;</span><span class="p">,</span> <span class="s2">&quot;Algeria&quot;</span><span class="p">,</span> <span class="s2">&quot;American Samoa&quot;</span><span class="p">,</span> <span class="s2">&quot;Andorra&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Angola&quot;</span><span class="p">,</span> <span class="s2">&quot;Anguilla&quot;</span><span class="p">,</span> <span class="s2">&quot;Antarctica&quot;</span><span class="p">,</span> <span class="s2">&quot;Antigua and Barbuda&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Argentina&quot;</span><span class="p">,</span> <span class="s2">&quot;Armenia&quot;</span><span class="p">,</span> <span class="s2">&quot;Aruba&quot;</span><span class="p">,</span> <span class="s2">&quot;Australia&quot;</span><span class="p">,</span> <span class="s2">&quot;Austria&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Azerbaijan&quot;</span><span class="p">,</span> <span class="s2">&quot;Bahamas&quot;</span><span class="p">,</span> <span class="s2">&quot;Bahrain&quot;</span><span class="p">,</span> <span class="s2">&quot;Bangladesh&quot;</span><span class="p">,</span> <span class="s2">&quot;Barbados&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Belarus&quot;</span><span class="p">,</span> <span class="s2">&quot;Belgium&quot;</span><span class="p">,</span> <span class="s2">&quot;Belize&quot;</span><span class="p">,</span> <span class="s2">&quot;Benin&quot;</span><span class="p">,</span> <span class="s2">&quot;Bermuda&quot;</span><span class="p">,</span> <span class="s2">&quot;Bhutan&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Bolivia&quot;</span><span class="p">,</span> <span class="s2">&quot;Bosnia and Herzegovina&quot;</span><span class="p">,</span> <span class="s2">&quot;Botswana&quot;</span><span class="p">,</span> <span class="s2">&quot;Brazil&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;British Indian Ocean Territory&quot;</span><span class="p">,</span> <span class="s2">&quot;British Virgin Islands&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Brunei&quot;</span><span class="p">,</span> <span class="s2">&quot;Bulgaria&quot;</span><span class="p">,</span> <span class="s2">&quot;Burkina Faso&quot;</span><span class="p">,</span> <span class="s2">&quot;Burundi&quot;</span><span class="p">,</span> <span class="s2">&quot;Cambodia&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Cameroon&quot;</span><span class="p">,</span> <span class="s2">&quot;Canada&quot;</span><span class="p">,</span> <span class="s2">&quot;Cape Verde&quot;</span><span class="p">,</span> <span class="s2">&quot;Cayman Islands&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Central African Republic&quot;</span><span class="p">,</span> <span class="s2">&quot;Chad&quot;</span><span class="p">,</span> <span class="s2">&quot;Chile&quot;</span><span class="p">,</span> <span class="s2">&quot;China&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Christmas Island&quot;</span><span class="p">,</span> <span class="s2">&quot;Cocos Islands&quot;</span><span class="p">,</span> <span class="s2">&quot;Colombia&quot;</span><span class="p">,</span> <span class="s2">&quot;Comoros&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Cook Islands&quot;</span><span class="p">,</span> <span class="s2">&quot;Costa Rica&quot;</span><span class="p">,</span> <span class="s2">&quot;Croatia&quot;</span><span class="p">,</span> <span class="s2">&quot;Cuba&quot;</span><span class="p">,</span> <span class="s2">&quot;Curacao&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Cyprus&quot;</span><span class="p">,</span> <span class="s2">&quot;Czech Republic&quot;</span><span class="p">,</span> <span class="s2">&quot;Democratic Republic of the Congo&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Denmark&quot;</span><span class="p">,</span> <span class="s2">&quot;Djibouti&quot;</span><span class="p">,</span> <span class="s2">&quot;Dominica&quot;</span><span class="p">,</span> <span class="s2">&quot;Dominican Republic&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;East Timor&quot;</span><span class="p">,</span> <span class="s2">&quot;Ecuador&quot;</span><span class="p">,</span> <span class="s2">&quot;Egypt&quot;</span><span class="p">,</span> <span class="s2">&quot;El Salvador&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Equatorial Guinea&quot;</span><span class="p">,</span> <span class="s2">&quot;Eritrea&quot;</span><span class="p">,</span> <span class="s2">&quot;Estonia&quot;</span><span class="p">,</span> <span class="s2">&quot;Ethiopia&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Falkland Islands&quot;</span><span class="p">,</span> <span class="s2">&quot;Faroe Islands&quot;</span><span class="p">,</span> <span class="s2">&quot;Fiji&quot;</span><span class="p">,</span> <span class="s2">&quot;Finland&quot;</span><span class="p">,</span> <span class="s2">&quot;France&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;French Polynesia&quot;</span><span class="p">,</span> <span class="s2">&quot;Gabon&quot;</span><span class="p">,</span> <span class="s2">&quot;Gambia&quot;</span><span class="p">,</span> <span class="s2">&quot;Georgia&quot;</span><span class="p">,</span> <span class="s2">&quot;Germany&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Ghana&quot;</span><span class="p">,</span> <span class="s2">&quot;Gibraltar&quot;</span><span class="p">,</span> <span class="s2">&quot;Greece&quot;</span><span class="p">,</span> <span class="s2">&quot;Greenland&quot;</span><span class="p">,</span> <span class="s2">&quot;Grenada&quot;</span><span class="p">,</span> <span class="s2">&quot;Guam&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Guatemala&quot;</span><span class="p">,</span> <span class="s2">&quot;Guernsey&quot;</span><span class="p">,</span> <span class="s2">&quot;Guinea&quot;</span><span class="p">,</span> <span class="s2">&quot;Guinea-Bissau&quot;</span><span class="p">,</span> <span class="s2">&quot;Guyana&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Haiti&quot;</span><span class="p">,</span> <span class="s2">&quot;Honduras&quot;</span><span class="p">,</span> <span class="s2">&quot;Hong Kong&quot;</span><span class="p">,</span> <span class="s2">&quot;Hungary&quot;</span><span class="p">,</span> <span class="s2">&quot;Iceland&quot;</span><span class="p">,</span> <span class="s2">&quot;India&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Indonesia&quot;</span><span class="p">,</span> <span class="s2">&quot;Iran&quot;</span><span class="p">,</span> <span class="s2">&quot;Iraq&quot;</span><span class="p">,</span> <span class="s2">&quot;Ireland&quot;</span><span class="p">,</span> <span class="s2">&quot;Isle of Man&quot;</span><span class="p">,</span> <span class="s2">&quot;Israel&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Italy&quot;</span><span class="p">,</span> <span class="s2">&quot;Ivory Coast&quot;</span><span class="p">,</span> <span class="s2">&quot;Jamaica&quot;</span><span class="p">,</span> <span class="s2">&quot;Japan&quot;</span><span class="p">,</span> <span class="s2">&quot;Jersey&quot;</span><span class="p">,</span> <span class="s2">&quot;Jordan&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Kazakhstan&quot;</span><span class="p">,</span> <span class="s2">&quot;Kenya&quot;</span><span class="p">,</span> <span class="s2">&quot;Kiribati&quot;</span><span class="p">,</span> <span class="s2">&quot;Kosovo&quot;</span><span class="p">,</span> <span class="s2">&quot;Kuwait&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Kyrgyzstan&quot;</span><span class="p">,</span> <span class="s2">&quot;Laos&quot;</span><span class="p">,</span> <span class="s2">&quot;Latvia&quot;</span><span class="p">,</span> <span class="s2">&quot;Lebanon&quot;</span><span class="p">,</span> <span class="s2">&quot;Lesotho&quot;</span><span class="p">,</span> <span class="s2">&quot;Liberia&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Libya&quot;</span><span class="p">,</span> <span class="s2">&quot;Liechtenstein&quot;</span><span class="p">,</span> <span class="s2">&quot;Lithuania&quot;</span><span class="p">,</span> <span class="s2">&quot;Luxembourg&quot;</span><span class="p">,</span> <span class="s2">&quot;Macau&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Macedonia&quot;</span><span class="p">,</span> <span class="s2">&quot;Madagascar&quot;</span><span class="p">,</span> <span class="s2">&quot;Malawi&quot;</span><span class="p">,</span> <span class="s2">&quot;Malaysia&quot;</span><span class="p">,</span> <span class="s2">&quot;Maldives&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Mali&quot;</span><span class="p">,</span> <span class="s2">&quot;Malta&quot;</span><span class="p">,</span> <span class="s2">&quot;Marshall Islands&quot;</span><span class="p">,</span> <span class="s2">&quot;Mauritania&quot;</span><span class="p">,</span> <span class="s2">&quot;Mauritius&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Mayotte&quot;</span><span class="p">,</span> <span class="s2">&quot;Mexico&quot;</span><span class="p">,</span> <span class="s2">&quot;Micronesia&quot;</span><span class="p">,</span> <span class="s2">&quot;Moldova&quot;</span><span class="p">,</span> <span class="s2">&quot;Monaco&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Mongolia&quot;</span><span class="p">,</span> <span class="s2">&quot;Montenegro&quot;</span><span class="p">,</span> <span class="s2">&quot;Montserrat&quot;</span><span class="p">,</span> <span class="s2">&quot;Morocco&quot;</span><span class="p">,</span> <span class="s2">&quot;Mozambique&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Myanmar&quot;</span><span class="p">,</span> <span class="s2">&quot;Namibia&quot;</span><span class="p">,</span> <span class="s2">&quot;Nauru&quot;</span><span class="p">,</span> <span class="s2">&quot;Nepal&quot;</span><span class="p">,</span> <span class="s2">&quot;Netherlands&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Netherlands Antilles&quot;</span><span class="p">,</span> <span class="s2">&quot;New Caledonia&quot;</span><span class="p">,</span> <span class="s2">&quot;New Zealand&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Nicaragua&quot;</span><span class="p">,</span> <span class="s2">&quot;Niger&quot;</span><span class="p">,</span> <span class="s2">&quot;Nigeria&quot;</span><span class="p">,</span> <span class="s2">&quot;Niue&quot;</span><span class="p">,</span> <span class="s2">&quot;North Korea&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Northern Mariana Islands&quot;</span><span class="p">,</span> <span class="s2">&quot;Norway&quot;</span><span class="p">,</span> <span class="s2">&quot;Oman&quot;</span><span class="p">,</span> <span class="s2">&quot;Pakistan&quot;</span><span class="p">,</span> <span class="s2">&quot;Palau&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Palestine&quot;</span><span class="p">,</span> <span class="s2">&quot;Panama&quot;</span><span class="p">,</span> <span class="s2">&quot;Papua New Guinea&quot;</span><span class="p">,</span> <span class="s2">&quot;Paraguay&quot;</span><span class="p">,</span> <span class="s2">&quot;Peru&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Philippines&quot;</span><span class="p">,</span> <span class="s2">&quot;Pitcairn&quot;</span><span class="p">,</span> <span class="s2">&quot;Poland&quot;</span><span class="p">,</span> <span class="s2">&quot;Portugal&quot;</span><span class="p">,</span> <span class="s2">&quot;Puerto Rico&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Qatar&quot;</span><span class="p">,</span> <span class="s2">&quot;Republic of the Congo&quot;</span><span class="p">,</span> <span class="s2">&quot;Reunion&quot;</span><span class="p">,</span> <span class="s2">&quot;Romania&quot;</span><span class="p">,</span> <span class="s2">&quot;Russia&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Rwanda&quot;</span><span class="p">,</span> <span class="s2">&quot;Saint Barthelemy&quot;</span><span class="p">,</span> <span class="s2">&quot;Saint Helena&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Saint Kitts and Nevis&quot;</span><span class="p">,</span> <span class="s2">&quot;Saint Lucia&quot;</span><span class="p">,</span> <span class="s2">&quot;Saint Martin&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Saint Pierre and Miquelon&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Saint Vincent and the Grenadines&quot;</span><span class="p">,</span> <span class="s2">&quot;Samoa&quot;</span><span class="p">,</span> <span class="s2">&quot;San Marino&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Sao Tome and Principe&quot;</span><span class="p">,</span> <span class="s2">&quot;Saudi Arabia&quot;</span><span class="p">,</span> <span class="s2">&quot;Senegal&quot;</span><span class="p">,</span> <span class="s2">&quot;Serbia&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Seychelles&quot;</span><span class="p">,</span> <span class="s2">&quot;Sierra Leone&quot;</span><span class="p">,</span> <span class="s2">&quot;Singapore&quot;</span><span class="p">,</span> <span class="s2">&quot;Sint Maarten&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Slovakia&quot;</span><span class="p">,</span> <span class="s2">&quot;Slovenia&quot;</span><span class="p">,</span> <span class="s2">&quot;Solomon Islands&quot;</span><span class="p">,</span> <span class="s2">&quot;Somalia&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;South Africa&quot;</span><span class="p">,</span> <span class="s2">&quot;South Korea&quot;</span><span class="p">,</span> <span class="s2">&quot;South Sudan&quot;</span><span class="p">,</span> <span class="s2">&quot;Spain&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Sri Lanka&quot;</span><span class="p">,</span> <span class="s2">&quot;Sudan&quot;</span><span class="p">,</span> <span class="s2">&quot;Suriname&quot;</span><span class="p">,</span> <span class="s2">&quot;Svalbard and Jan Mayen&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Swaziland&quot;</span><span class="p">,</span> <span class="s2">&quot;Sweden&quot;</span><span class="p">,</span> <span class="s2">&quot;Switzerland&quot;</span><span class="p">,</span> <span class="s2">&quot;Syria&quot;</span><span class="p">,</span> <span class="s2">&quot;Taiwan&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Tajikistan&quot;</span><span class="p">,</span> <span class="s2">&quot;Tanzania&quot;</span><span class="p">,</span> <span class="s2">&quot;Thailand&quot;</span><span class="p">,</span> <span class="s2">&quot;Togo&quot;</span><span class="p">,</span> <span class="s2">&quot;Tokelau&quot;</span><span class="p">,</span> <span class="s2">&quot;Tonga&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Trinidad and Tobago&quot;</span><span class="p">,</span> <span class="s2">&quot;Tunisia&quot;</span><span class="p">,</span> <span class="s2">&quot;Turkey&quot;</span><span class="p">,</span> <span class="s2">&quot;Turkmenistan&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Turks and Caicos Islands&quot;</span><span class="p">,</span> <span class="s2">&quot;Tuvalu&quot;</span><span class="p">,</span> <span class="s2">&quot;U.S. Virgin Islands&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Uganda&quot;</span><span class="p">,</span> <span class="s2">&quot;Ukraine&quot;</span><span class="p">,</span> <span class="s2">&quot;United Arab Emirates&quot;</span><span class="p">,</span> <span class="s2">&quot;United Kingdom&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;United States&quot;</span><span class="p">,</span> <span class="s2">&quot;Uruguay&quot;</span><span class="p">,</span> <span class="s2">&quot;Uzbekistan&quot;</span><span class="p">,</span> <span class="s2">&quot;Vanuatu&quot;</span><span class="p">,</span> <span class="s2">&quot;Vatican&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Venezuela&quot;</span><span class="p">,</span> <span class="s2">&quot;Vietnam&quot;</span><span class="p">,</span> <span class="s2">&quot;Wallis and Futuna&quot;</span><span class="p">,</span> <span class="s2">&quot;Western Sahara&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Yemen&quot;</span><span class="p">,</span> <span class="s2">&quot;Zambia&quot;</span><span class="p">,</span> <span class="s2">&quot;Zimbabwe&quot;</span><span class="p">]</span></div>
-
-
 <span class="n">REGEX</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;.*@.*\..*&#39;</span><span class="p">)}</span>
 
 
@@ -391,45 +328,6 @@
 <span class="sd">        bool: Is the indata an email address or not.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">REGEX</span><span class="p">[</span><span class="s1">&#39;email&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">indata</span><span class="p">))</span></div>
-
-
-<div class="viewcode-block" id="is_owner"><a class="viewcode-back" href="../code.utils.html#utils.is_owner">[docs]</a><span class="k">def</span> <span class="nf">is_owner</span><span class="p">(</span><span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">project</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Check if the current user owns the given dataset or project.</span>
-
-<span class="sd">    If both a dataset and a project is provided, an exception will be raised.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        dataset (str): the dataset to check</span>
-<span class="sd">        project (str): the project to check</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        bool: whether the current owns the dataset/project</span>
-
-<span class="sd">    Raises:</span>
-<span class="sd">        ValueError: one of dataset or project must be set, and not both</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">dataset</span> <span class="ow">and</span> <span class="n">project</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Only one of dataset and project should be set&#39;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">dataset</span><span class="p">:</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">muuid</span> <span class="o">=</span> <span class="n">str_to_uuid</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-            <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">401</span><span class="p">))</span>
-        <span class="n">projects</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;projects&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s1">&#39;datasets&#39;</span><span class="p">:</span> <span class="n">muuid</span><span class="p">},</span>
-                                                    <span class="p">{</span><span class="s1">&#39;owner&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;datasets&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}))</span>
-        <span class="n">owners</span> <span class="o">=</span> <span class="p">[</span><span class="n">project</span><span class="p">[</span><span class="s1">&#39;owner&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">project</span> <span class="ow">in</span> <span class="n">projects</span><span class="p">]</span>
-    <span class="k">elif</span> <span class="n">project</span><span class="p">:</span>
-        <span class="n">proj_data</span> <span class="o">=</span> <span class="n">get_project</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">proj_data</span><span class="p">:</span>
-            <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">404</span><span class="p">)</span>
-        <span class="n">owners</span> <span class="o">=</span> <span class="p">[</span><span class="n">project</span><span class="p">[</span><span class="s1">&#39;owner&#39;</span><span class="p">]]</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Either dataset or project must be set&#39;</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span><span class="p">[</span><span class="s1">&#39;email&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">owners</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">True</span>
-    <span class="k">return</span> <span class="kc">False</span></div>
 
 
 <div class="viewcode-block" id="response_json"><a class="viewcode-back" href="../code.utils.html#utils.response_json">[docs]</a><span class="k">def</span> <span class="nf">response_json</span><span class="p">(</span><span class="n">json_structure</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
