@@ -115,7 +115,7 @@ def delete_user(identifier: str):
     except ValueError:
         flask.abort(status=404)
 
-    if not (user_data := flask.g.db['users'].find_one({'_id': user_uuid})):  # pylint: disable=superfluous-parens
+    if not flask.g.db['users'].find_one({'_id': user_uuid}):
         flask.abort(status=404)
 
     result = flask.g.db['users'].delete_one({'_id': user_uuid})
