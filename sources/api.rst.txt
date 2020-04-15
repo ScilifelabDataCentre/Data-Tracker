@@ -176,18 +176,6 @@ DOI
     **GET** Get information about the entity with DOI ``identifier``.
 
 
-.. function:: /doi/request/
-
-    **GET** Get a list of all DOI requests.
-
-    **POST** Add a new DOI request.
-
-
-.. function:: /doi/request/open
-
-    **GET** Get a list of all open DOI requests.
-
-
 .. function:: /doi/request/<identifier>
 
     **GET** Get information about the DOI request with uuid ``identifier``.
