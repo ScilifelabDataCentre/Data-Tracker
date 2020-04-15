@@ -95,6 +95,39 @@ def get_current_user_info():
     return flask.jsonify({'user': outstructure})
 
 
+@blueprint.route('/<identifier>/', methods=['DELETE'])
+@login_required
+def delete_user(identifier: str):
+    """
+    Delete a user.
+
+    Args:
+        identifier (str): The uuid of the user to modify.
+
+    Returns:
+        flask.Response: Response code.
+    """
+    if not has_permission('USER_MANAGEMENT'):
+        flask.abort(403)
+
+    try:
+        user_uuid = utils.str_to_uuid(identifier)
+    except ValueError:
+        flask.abort(status=404)
+
+    if not (user_data := flask.g.db['users'].find_one({'_id': user_uuid})):  # pylint: disable=superfluous-parens
+        flask.abort(status=404)
+
+    result = flask.g.db['users'].delete_one({'_id': user_uuid})
+    if not result.acknowledged:
+        logging.error('User deletion failed: %s', user_uuid)
+        flask.Response(status=500)
+    else:
+        utils.make_log('user', 'delete', 'User delete', {'_id': user_uuid})
+
+    return flask.Response(status=200)
+
+
 @blueprint.route('/me/', methods=['PATCH'])
 @login_required
 def update_current_user_info():
