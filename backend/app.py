@@ -49,6 +49,12 @@ def finalize(response):
     return response
 
 
+@app.route('/hello')
+def api_hello():
+    """Request to check if system can receive requests."""
+    return flask.jsonify(status=200)
+
+
 @app.errorhandler(400)
 def error_bad_request(_):
     """Make sure a simple 400 is returned instead of an html page."""
