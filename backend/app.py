@@ -49,7 +49,7 @@ def finalize(response):
     return response
 
 
-@app.route('/hello')
+@app.route('/api/hello')
 def api_hello():
     """Request to check if system can receive requests."""
     return flask.jsonify(status=200)
