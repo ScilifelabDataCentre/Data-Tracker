@@ -49,10 +49,10 @@ def finalize(response):
     return response
 
 
-@app.route('/api/hello')
-def api_hello():
-    """Request to check if system can receive requests."""
-    return flask.jsonify(status=200)
+@app.route('/api/')
+def api_base():
+    """List entities."""
+    return flask.jsonify({'entities': ['dataset', 'order', 'project', 'user']})
 
 
 @app.errorhandler(400)
