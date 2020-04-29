@@ -196,9 +196,23 @@
 
 
 <span class="c1"># requests</span>
-<div class="viewcode-block" id="elixir_login"><a class="viewcode-back" href="../code.user.html#user.elixir_login">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/login/&#39;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">elixir_login</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Perform a Elixir AAI login.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="oidc_login"><a class="viewcode-back" href="../code.user.html#user.oidc_login">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/login/&#39;</span><span class="p">)</span>
+<span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/login/oidc&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">oidc_login</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Perform an Elixir AAI login.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">501</span><span class="p">)</span></div>
+
+
+<span class="c1"># requests</span>
+<div class="viewcode-block" id="key_login"><a class="viewcode-back" href="../code.user.html#user.key_login">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/login/&#39;</span><span class="p">)</span>
+<span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/login/apikey&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">key_login</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Log in using an apikey.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">indata</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">501</span><span class="p">)</span></div>
 
 
@@ -266,7 +280,7 @@
     <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
         <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">404</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">user_data</span> <span class="p">:</span><span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;users&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">user_uuid</span><span class="p">})):</span>  <span class="c1"># pylint: disable=superfluous-parens</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;users&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">user_uuid</span><span class="p">}):</span>
         <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">404</span><span class="p">)</span>
 
     <span class="n">result</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;users&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">delete_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">user_uuid</span><span class="p">})</span>
@@ -274,8 +288,8 @@
         <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;User deletion failed: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">user_uuid</span><span class="p">)</span>
         <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">utils</span><span class="o">.</span><span class="n">make_log</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="s1">&#39;delete&#39;</span><span class="p">,</span> <span class="s1">&#39;User delete&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        
+        <span class="n">utils</span><span class="o">.</span><span class="n">make_log</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="s1">&#39;delete&#39;</span><span class="p">,</span> <span class="s1">&#39;User delete&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">user_uuid</span><span class="p">})</span>
+
     <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span></div>
 
 

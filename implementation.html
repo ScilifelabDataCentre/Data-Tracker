@@ -93,6 +93,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#csrf">CSRF</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#testing">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#api-keys">API Keys</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
@@ -210,6 +211,11 @@
 <div class="section" id="testing">
 <h2>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
 <p>All tests are available at <code class="docutils literal notranslate"><span class="pre">backend/tests</span></code>.</p>
+</div>
+<div class="section" id="api-keys">
+<h2>API Keys<a class="headerlink" href="#api-keys" title="Permalink to this headline">¶</a></h2>
+<p>The keys are generated using <code class="docutils literal notranslate"><span class="pre">secrets.token_bytes(32)</span></code>. Use <code class="docutils literal notranslate"><span class="pre">.hex()</span></code> for the token as hex.</p>
+<p>Store the token using <code class="docutils literal notranslate"><span class="pre">hashlib.sha256(token).hexdigest()</span></code>.</p>
 </div>
 </div>
 
