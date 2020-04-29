@@ -52,3 +52,11 @@ Testing
 =======
 
 All tests are available at ``backend/tests``.
+
+
+API Keys
+========
+
+The keys are generated using ``secrets.token_bytes(32)``. Use ``.hex()`` for the token as hex.
+
+Store the token using ``hashlib.sha256(token).hexdigest()``.
