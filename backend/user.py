@@ -53,7 +53,7 @@ def oidc_login():
 
 
 # requests
-@blueprint.route('/login/apikey')
+@blueprint.route('/login/apikey', methods=['POST'])
 def key_login():
     """
     Log in using an apikey.
@@ -109,6 +109,23 @@ def get_current_user_info():
             if field in data:
                 outstructure[field] = data[field]
     return flask.jsonify({'user': outstructure})
+
+# requests
+@blueprint.route('/me/apikey')
+def get_new_api_key():
+    """
+    Generate a new API key for the user.
+
+    Returns:
+        flask.Response: The new API key
+    """
+    user_data = flask.g.current_user
+    apikey = utils.gen_api_key()
+    new_hash = utils.gen_api_key_hash(apikey.key, apikey.salt)
+    result = flask.g.db['users'].update_one({'_id': user_data['_id']},
+                                            {'$set': {'api_key': new_hash,
+                                                      'api_salt': apikey.salt}})
+    return flask.jsonify({'key': apikey.key})
 
 
 @blueprint.route('/<identifier>/', methods=['DELETE'])
