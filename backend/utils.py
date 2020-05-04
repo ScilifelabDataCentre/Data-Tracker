@@ -1,8 +1,9 @@
 """General helper functions."""
 
-from collections import abc
+from collections import abc, namedtuple
 from typing import Any, Union
 import datetime
+import hashlib
 import logging
 import re
 import secrets
@@ -72,9 +73,53 @@ def gen_csrf_token() -> str:
 
     Returns:
         str: The csrf token.
-
     """
     return secrets.token_hex()
+
+
+# API key
+def gen_api_key():
+    """
+    Generate an API key with salt.
+
+    Returns:
+        APIkey: The API key with salt.
+    """
+    APIkey = namedtuple('APIkey', ['key', 'salt'])
+    return APIkey(key=secrets.token_hex(48),
+                  salt=secrets.token_hex(8))
+
+
+def gen_api_key_hash(api_key: str, salt: str):
+    """
+    Generate a hash of the api_key for storing/comparing to db.
+
+    Args:
+        api_key (str): The cleartext API key (hex).
+        salt (str): The salt to use (hex).
+
+    Returns:
+        str: SHA512 hash as hex.
+    """
+    ct_bytes = bytes.fromhex(api_key + salt)
+    return hashlib.sha512(ct_bytes).hexdigest()
+
+
+def verify_api_key(username: str, api_key: str):
+    """
+    Verify an API key against the value in the database.
+
+    Args:
+        username (str): The username to check.
+        api_key (str): The received API key (hex).
+
+    Returns:
+        bool: Whether the verification succeeded.
+    """
+    user_info = flask.g.db['users'].find_one({'auth_id': username})
+    ct_bytes = bytes.fromhex(api_key + user_info['salt'])
+    new_hash = hashlib.sha512(ct_bytes).hexdigest()
+    return new_hash == user_info['api_key']
 
 
 def get_dbclient(conf) -> pymongo.mongo_client.MongoClient:
