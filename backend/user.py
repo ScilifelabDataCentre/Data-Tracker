@@ -46,8 +46,20 @@ def login_required(func):
 
 # requests
 @blueprint.route('/login/')
-def elixir_login():
-    """Perform a Elixir AAI login."""
+@blueprint.route('/login/oidc')
+def oidc_login():
+    """Perform an Elixir AAI login."""
+    return flask.Response(status=501)
+
+
+# requests
+@blueprint.route('/login/apikey')
+def key_login():
+    """
+    Log in using an apikey.
+    """
+    indata = flask.json.loads(flask.request.data)
+
     return flask.Response(status=501)
 
 
