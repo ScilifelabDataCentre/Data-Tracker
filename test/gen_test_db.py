@@ -3,6 +3,7 @@
 Generate a test dataset.
 """
 import random
+import re
 import string
 import uuid
 
@@ -77,9 +78,11 @@ def gen_facilities(db, nr_facilities: int = 30):
     uuids = []
     for i in range(1, nr_facilities+1):
         user = structure.user()
+        apikey = utils.gen_api_key()
         changes = {'affiliation': 'University ' + random.choice(string.ascii_uppercase),
-                   'api_key': uuid.uuid4().hex,
-                   'auth_id': '--facility--',
+                   'api_key': utils.gen_api_key_hash(apikey.key, apikey.salt),
+                   'api_salt': apikey.salt,
+                   'auth_id': f'--facility {i}--',
                    'email': f'facility{i}@domain{i}',
                    'name': f'Facility {i}',
                    'permissions': ['ORDERS_SELF']}
@@ -91,8 +94,9 @@ def gen_facilities(db, nr_facilities: int = 30):
 
 def gen_orders(db, nr_orders: int = 300):
     uuids = []
-    facilities = tuple(db['users'].find({'auth_id': '--facility--'}))
-    users = tuple(db['users'].find({'$and': [{'auth_id': {'$ne': '--facility--'}},
+    facility_re = re.compile('--facility [0-9]*--')
+    facilities = tuple(db['users'].find({'auth_id': facility_re}))
+    users = tuple(db['users'].find({'$and': [{'auth_id': {'$not': facility_re}},
                                              {'affiliation': {'$ne': 'Test University'}}]}))
     for i in range(1, nr_orders+1):
         receiver_type = random.choice(('email', '_id'))
