@@ -204,16 +204,18 @@
 
 
 <span class="c1"># requests</span>
-<div class="viewcode-block" id="key_login"><a class="viewcode-back" href="../code.user.html#user.key_login">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/login/&#39;</span><span class="p">)</span>
-<span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/login/apikey&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="key_login"><a class="viewcode-back" href="../code.user.html#user.key_login">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/login/apikey&#39;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">key_login</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Log in using an apikey.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
     <span class="n">indata</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">501</span><span class="p">)</span></div>
+    <span class="k">if</span> <span class="ow">not</span> <span class="s1">&#39;api-username&#39;</span> <span class="ow">in</span> <span class="n">indata</span> <span class="ow">or</span> <span class="ow">not</span> <span class="s1">&#39;api-key&#39;</span> <span class="ow">in</span> <span class="n">indata</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">utils</span><span class="o">.</span><span class="n">verify_api_key</span><span class="p">(</span><span class="n">indata</span><span class="p">[</span><span class="s1">&#39;api-username&#39;</span><span class="p">],</span> <span class="n">indata</span><span class="p">[</span><span class="s1">&#39;api-key&#39;</span><span class="p">]):</span>
+        <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">401</span><span class="p">)</span>
+    <span class="n">do_login</span><span class="p">(</span><span class="n">auth_id</span><span class="o">=</span><span class="n">indata</span><span class="p">[</span><span class="s1">&#39;api-username&#39;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="logout"><a class="viewcode-back" href="../code.user.html#user.logout">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/logout/&#39;</span><span class="p">)</span>

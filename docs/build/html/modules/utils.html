@@ -151,11 +151,13 @@
   <h1>Source code for utils</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;General helper functions.&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">abc</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">abc</span><span class="p">,</span> <span class="n">namedtuple</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">hashlib</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">secrets</span>
 <span class="kn">import</span> <span class="nn">uuid</span>
 
 <span class="kn">import</span> <span class="nn">bson</span>
@@ -184,7 +186,7 @@
 <span class="sd">            values in ``reference_data``. Defaults to ``None``.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        tuple: (``bool``: hether the check passed, ``code``: Suggested http code)</span>
+<span class="sd">        tuple: (``bool``: whether the check passed, ``code``: Suggested http code)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">prohibited</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">prohibited</span> <span class="o">=</span> <span class="p">[]</span>
@@ -218,13 +220,57 @@
 
 <div class="viewcode-block" id="gen_csrf_token"><a class="viewcode-back" href="../code.utils.html#utils.gen_csrf_token">[docs]</a><span class="k">def</span> <span class="nf">gen_csrf_token</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Genereate a csrf token.</span>
+<span class="sd">    Generate a csrf token.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        str: The csrf token.</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span><span class="o">.</span><span class="n">hex</span></div>
+    <span class="k">return</span> <span class="n">secrets</span><span class="o">.</span><span class="n">token_hex</span><span class="p">()</span></div>
+
+
+<span class="c1"># API key</span>
+<div class="viewcode-block" id="gen_api_key"><a class="viewcode-back" href="../code.utils.html#utils.gen_api_key">[docs]</a><span class="k">def</span> <span class="nf">gen_api_key</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate an API key with salt.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        APIkey: The API key with salt.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">APIkey</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;APIkey&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;key&#39;</span><span class="p">,</span> <span class="s1">&#39;salt&#39;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">APIkey</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">secrets</span><span class="o">.</span><span class="n">token_hex</span><span class="p">(</span><span class="mi">48</span><span class="p">),</span>
+                  <span class="n">salt</span><span class="o">=</span><span class="n">secrets</span><span class="o">.</span><span class="n">token_hex</span><span class="p">(</span><span class="mi">8</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="gen_api_key_hash"><a class="viewcode-back" href="../code.utils.html#utils.gen_api_key_hash">[docs]</a><span class="k">def</span> <span class="nf">gen_api_key_hash</span><span class="p">(</span><span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">salt</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate a hash of the api_key for storing/comparing to db.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        api_key (str): The cleartext API key (hex).</span>
+<span class="sd">        salt (str): The salt to use (hex).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: SHA512 hash as hex.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ct_bytes</span> <span class="o">=</span> <span class="nb">bytes</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="n">api_key</span> <span class="o">+</span> <span class="n">salt</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha512</span><span class="p">(</span><span class="n">ct_bytes</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="verify_api_key"><a class="viewcode-back" href="../code.utils.html#utils.verify_api_key">[docs]</a><span class="k">def</span> <span class="nf">verify_api_key</span><span class="p">(</span><span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Verify an API key against the value in the database.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        username (str): The username to check.</span>
+<span class="sd">        api_key (str): The received API key (hex).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: Whether the verification succeeded.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">user_info</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;users&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;auth_id&#39;</span><span class="p">:</span> <span class="n">username</span><span class="p">})</span>
+    <span class="n">ct_bytes</span> <span class="o">=</span> <span class="nb">bytes</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="n">api_key</span> <span class="o">+</span> <span class="n">user_info</span><span class="p">[</span><span class="s1">&#39;salt&#39;</span><span class="p">])</span>
+    <span class="n">new_hash</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha512</span><span class="p">(</span><span class="n">ct_bytes</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">new_hash</span> <span class="o">==</span> <span class="n">user_info</span><span class="p">[</span><span class="s1">&#39;api_key&#39;</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="get_dbclient"><a class="viewcode-back" href="../code.utils.html#utils.get_dbclient">[docs]</a><span class="k">def</span> <span class="nf">get_dbclient</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">mongo_client</span><span class="o">.</span><span class="n">MongoClient</span><span class="p">:</span>

@@ -209,6 +209,8 @@ Auth_id
     Identifer received from Elixir. Will be set to `--facility--` for facilities to prevent Elixir login.
 Api_key
     Key that can be used as an alternative to login for authentication.
+Api_salt
+    Salt for the API key.
 Name
     Name of the user (can be e.g. name of facility for facility accounts).
 Affiliation
