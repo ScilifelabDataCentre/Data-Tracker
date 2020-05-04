@@ -5,6 +5,7 @@ from typing import Any, Union
 import datetime
 import logging
 import re
+import secrets
 import uuid
 
 import bson
@@ -33,7 +34,7 @@ def basic_check_indata(indata: dict,
             values in ``reference_data``. Defaults to ``None``.
 
     Returns:
-        tuple: (``bool``: hether the check passed, ``code``: Suggested http code)
+        tuple: (``bool``: whether the check passed, ``code``: Suggested http code)
     """
     if prohibited is None:
         prohibited = []
@@ -67,13 +68,13 @@ def verify_csrf_token():
 
 def gen_csrf_token() -> str:
     """
-    Genereate a csrf token.
+    Generate a csrf token.
 
     Returns:
         str: The csrf token.
 
     """
-    return uuid.uuid4().hex
+    return secrets.token_hex()
 
 
 def get_dbclient(conf) -> pymongo.mongo_client.MongoClient:
