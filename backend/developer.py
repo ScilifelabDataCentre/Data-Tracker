@@ -16,7 +16,7 @@ def login(identifier: str):
     Args:
         identifer (str): User ``auth_id`` or ``api_key``.
     """
-    if len(identifier) == 32 and '@' not in identifier:
+    if len(identifier) == 128 and '@' not in identifier:
         # api key
         res = user.do_login(api_key=identifier)
     else:
