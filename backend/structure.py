@@ -65,6 +65,7 @@ def user():
     return {'_id': utils.new_uuid(),
             'affiliation': '',
             'api_key': '',
+            'api_salt': '',
             'auth_id': '',
             'email': '',
             'name': '',
