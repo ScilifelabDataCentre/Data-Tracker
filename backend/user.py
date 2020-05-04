@@ -59,8 +59,12 @@ def key_login():
     Log in using an apikey.
     """
     indata = flask.json.loads(flask.request.data)
-
-    return flask.Response(status=501)
+    if not 'api-username' in indata or not 'api-key' in indata:
+        return flask.Response(status=400)
+    if not utils.verify_api_key(indata['api-username'], indata['api-key']):
+        return flask.Response(status=401)
+    do_login(auth_id=indata['api-username'])
+    return flask.Response(status=200)
 
 
 @blueprint.route('/logout/')
