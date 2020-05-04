@@ -7,6 +7,8 @@ import NotFound from '../components/NotFound.vue'
 
 import StartPage from '../components/StartPage.vue'
 
+import LoginPageKey from '../components/LoginPageKey.vue'
+
 import UserAbout from '../components/user/UserAbout.vue'
 import UserContainer from '../components/user/UserContainer.vue'
 
@@ -39,6 +41,10 @@ const router = new VueRouter({
     {
       path: '/',
       component: StartPage,
+    },
+    {
+      path: '/login/key',
+      component: LoginPageKey,
     },
     {
       path: '/about',

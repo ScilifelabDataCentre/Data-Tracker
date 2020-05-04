@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+import {getCsrfHeader} from '../../helpers.js';
+
 const state = {
   user: {},
   user_datasets: [],
@@ -29,6 +31,26 @@ const actions = {
         .get('/api/user/me/')
         .then((response) => {
           commit('UPDATE_USER', response.data.user);
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    });
+  },
+
+  loginKey (context, payload) {
+    return new Promise((resolve, reject) => {
+      let loginData = {};
+      loginData['api-username'] = payload.apiUsername;
+      loginData['api-key'] = payload.apiKey;
+      axios
+        .post('/api/user/login/apikey',
+              loginData,
+              {
+                headers: getCsrfHeader(),
+              })
+        .then((response) => {
           resolve(response);
         })
         .catch((err) => {
