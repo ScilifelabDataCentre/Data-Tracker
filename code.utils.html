@@ -197,7 +197,7 @@ values in <code class="docutils literal notranslate"><span class="pre">reference
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>(<code class="docutils literal notranslate"><span class="pre">bool</span></code>: hether the check passed, <code class="docutils literal notranslate"><span class="pre">code</span></code>: Suggested http code)</p>
+<dd class="field-even"><p>(<code class="docutils literal notranslate"><span class="pre">bool</span></code>: whether the check passed, <code class="docutils literal notranslate"><span class="pre">code</span></code>: Suggested http code)</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>tuple</p>
@@ -246,9 +246,43 @@ If the identifier is an email, return the email.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="utils.gen_api_key">
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">gen_api_key</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#gen_api_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.gen_api_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate an API key with salt.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The API key with salt.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>APIkey</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils.gen_api_key_hash">
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">gen_api_key_hash</code><span class="sig-paren">(</span><em class="sig-param">api_key: str</em>, <em class="sig-param">salt: str</em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#gen_api_key_hash"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.gen_api_key_hash" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a hash of the api_key for storing/comparing to db.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>api_key</strong> (<em>str</em>) – The cleartext API key (hex).</p></li>
+<li><p><strong>salt</strong> (<em>str</em>) – The salt to use (hex).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>SHA512 hash as hex.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
 <dt id="utils.gen_csrf_token">
 <code class="sig-prename descclassname">utils.</code><code class="sig-name descname">gen_csrf_token</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="modules/utils.html#gen_csrf_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.gen_csrf_token" title="Permalink to this definition">¶</a></dt>
-<dd><p>Genereate a csrf token.</p>
+<dd><p>Generate a csrf token.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>The csrf token.</p>
@@ -410,6 +444,26 @@ e.g. <code class="docutils literal notranslate"><span class="pre">data</span></c
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>uuid.UUID</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils.verify_api_key">
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">verify_api_key</code><span class="sig-paren">(</span><em class="sig-param">username: str</em>, <em class="sig-param">api_key: str</em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#verify_api_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.verify_api_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verify an API key against the value in the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>username</strong> (<em>str</em>) – The username to check.</p></li>
+<li><p><strong>api_key</strong> (<em>str</em>) – The received API key (hex).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Whether the verification succeeded.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
 </dd></dl>

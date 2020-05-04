@@ -214,8 +214,9 @@
 </div>
 <div class="section" id="api-keys">
 <h2>API Keys<a class="headerlink" href="#api-keys" title="Permalink to this headline">¶</a></h2>
-<p>The keys are generated using <code class="docutils literal notranslate"><span class="pre">secrets.token_bytes(32)</span></code>. Use <code class="docutils literal notranslate"><span class="pre">.hex()</span></code> for the token as hex.</p>
-<p>Store the token using <code class="docutils literal notranslate"><span class="pre">hashlib.sha256(token).hexdigest()</span></code>.</p>
+<p>The keys are generated using <code class="docutils literal notranslate"><span class="pre">secrets.token_hex(48)</span></code>.</p>
+<p>Include a 8-byte randomized salt when calculating hash.</p>
+<p>Store the token using <code class="docutils literal notranslate"><span class="pre">hashlib.sha512(token).hexdigest()</span></code>.</p>
 </div>
 </div>
 
