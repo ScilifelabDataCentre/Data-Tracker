@@ -154,8 +154,10 @@ def gen_users(db, nr_users: int = 100):
 
     for i in range(1, nr_users+1):
         user = structure.user()
+        apikey = utils.gen_api_key()
         changes = {'affiliation': 'University ' + random.choice(string.ascii_uppercase),
-                   'api_key': uuid.uuid4().hex,
+                   'api_key': utils.gen_api_key_hash(apikey.key, apikey.salt),
+                   'api_salt': apikey.salt,
                    'auth_id': f'hash{i}@elixir',
                    'email': f'user{i}@place{i}',
                    'name': f'First Last {i}',
