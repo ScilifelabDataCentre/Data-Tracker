@@ -117,7 +117,7 @@ def verify_api_key(username: str, api_key: str):
         bool: Whether the verification succeeded.
     """
     user_info = flask.g.db['users'].find_one({'auth_id': username})
-    ct_bytes = bytes.fromhex(api_key + user_info['salt'])
+    ct_bytes = bytes.fromhex(api_key + user_info['api_salt'])
     new_hash = hashlib.sha512(ct_bytes).hexdigest()
     return new_hash == user_info['api_key']
 
