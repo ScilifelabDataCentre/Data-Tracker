@@ -122,9 +122,16 @@ def get_new_api_key():
     user_data = flask.g.current_user
     apikey = utils.gen_api_key()
     new_hash = utils.gen_api_key_hash(apikey.key, apikey.salt)
+    new_values = {'api_key': new_hash, 'api_salt': apikey.salt}
+    user_data.update(new_values)
     result = flask.g.db['users'].update_one({'_id': user_data['_id']},
-                                            {'$set': {'api_key': new_hash,
-                                                      'api_salt': apikey.salt}})
+                                            {'$set': new_values})
+    if not result.acknowledged:
+        logging.error('Updating API key for user %s failed', user_data['_id'])
+        flask.Response(status=500)
+    else:
+        utils.make_log('user', 'edit', 'New API key', user_data)
+
     return flask.jsonify({'key': apikey.key})
 
 
