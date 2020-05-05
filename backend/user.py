@@ -55,9 +55,7 @@ def oidc_login():
 # requests
 @blueprint.route('/login/apikey', methods=['POST'])
 def key_login():
-    """
-    Log in using an apikey.
-    """
+    """Log in using an apikey."""
     indata = flask.json.loads(flask.request.data)
     if not 'api-username' in indata or not 'api-key' in indata:
         return flask.Response(status=400)
@@ -112,6 +110,7 @@ def get_current_user_info():
 
 # requests
 @blueprint.route('/me/apikey')
+@login_required
 def get_new_api_key():
     """
     Generate a new API key for the user.
