@@ -1,12 +1,12 @@
 <template>
-<div class="project-container">
+<div class="order-container">
   <router-view></router-view>
 </div>
 </template>
 
 <script>
 export default {
-  name: 'DatasetContainer',
+  name: 'OrderContainer',
   components: {
   },
   data () {
@@ -17,13 +17,7 @@ export default {
 </script>
 
 <style scoped>
-.project-container {
+.order-container {
     text-align: left;
-}
-
-.warning {
-    font-weight: bold;
-    text-align: center;
-    font-size: large;
 }
 </style>
