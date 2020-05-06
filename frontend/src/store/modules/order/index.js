@@ -66,11 +66,26 @@ const actions = {
 
   saveOrder (context, payload) {
     return new Promise((resolve, reject) => {
-      let uuid = payload.uuid;
-      delete payload.uuid;
+      console.log(payload);
+      let uuid = payload.id;
+      delete payload.id;
       if (uuid === '') {
         axios
           .post('/api/order/',
+                payload,
+                {
+                  headers: getCsrfHeader(),
+                })
+          .then((response) => {
+            resolve(response);
+          })
+          .catch(function (err) {
+            reject(err);
+          });
+      }
+      else {
+        axios
+          .patch('/api/order/' + uuid + '/',
                 payload,
                 {
                   headers: getCsrfHeader(),

@@ -1,15 +1,15 @@
 <template>
 <div class="order-edit">
   <form @submit="submitOrderForm">
-    <div class="field" v-if="newOrder.uuid !== ''">
-      <label for="order-id" class="label">Order UUID</label>
+    <div class="field" v-if="newOrder.id !== ''">
+      <label for="order-id" class="label">Identifier</label>
       <div class="control">
         <input id="order-id"
                class="input"
                name="ORDER_ID"
                type="text"
                placeholder=""
-               v-model="newOrder.uuid"
+               v-model="newOrder._id"
                disabled="true"/>
       </div>
     </div>
@@ -49,7 +49,7 @@
              v-model="newOrder.receiver"
              name="ORDER_RECEIVER"
              type="text"
-             placeholder="User uuid or email" />
+             placeholder="User _id or email" />
     </div>
     <div class="columns">
       <div class="column">
@@ -97,7 +97,7 @@
         <button class="button is-light" @click="cancelChanges">Cancel</button>
       </div>
       <div class="control">
-        <button class="button is-danger" v-if="newOrder.uuid != '' && user.permissions.includes('DATA_MANAGEMENT')" @click="deleteOrder">Delete</button>
+        <button class="button is-danger" v-if="newOrder._id != '' && user.permissions.includes('DATA_MANAGEMENT')" @click="deleteOrder">Delete</button>
       </div>
     </div>
   </form>
@@ -122,7 +122,7 @@ export default {
   data () {
     return {
       newOrder: {
-        uuid: '',
+        id: '',
         title: '',
         description: '',
         creator: '',
@@ -135,10 +135,12 @@ export default {
   },
 
   created () {
-    if (this.uuid) {
-      this.$store.dispatch('getOrder', this.uuid)
+    if (this._id) {
+      this.$store.dispatch('getOrder', this._id)
         .then(() => {
           this.newOrder = this.order;
+          this.newOrder.id = this.newOrder._id;
+          delete this.newOrder._id;
         });
     }
   },
@@ -172,6 +174,7 @@ export default {
         this.$router.push("/order/" + this.newOrder.id + "/about");
       }
     },
+
     deleteOrder(event) {
       event.preventDefault();
       this.$store.dispatch('deleteOrder', this.newOrder.id)
@@ -179,18 +182,18 @@ export default {
           this.$router.push("/order/browser");
         });
     },
+
     submitOrderForm(event) {
       event.preventDefault();
-      this.newOrder.projects = this.newOrder.projects.split(' ');
       this.$store.dispatch('saveOrder', this.newOrder)
         .then((response) => {
           // add performed
           let id = -1;
           if (response.data) {
-            id = response.data.id;
+            id = response.data._id;
           }
           else {
-            id = this.newOrder.id
+            id = this.newOrder._id
           }
           this.$router.push("/order/" + id + "/about");
         });
