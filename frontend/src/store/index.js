@@ -3,6 +3,7 @@ import Vuex from 'vuex';
 
 import admin from './modules/admin';
 import dataset from './modules/dataset';
+import order from './modules/order';
 import project from './modules/project';
 import user from './modules/user';
 
@@ -44,6 +45,7 @@ export default new Vuex.Store({
   modules: {
     admin,
     dataset,
+    order,
     project,
     user,
   }

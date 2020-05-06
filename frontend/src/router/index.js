@@ -140,6 +140,10 @@ const router = new VueRouter({
           redirect: 'browser',
         },
         {
+          path: 'add',
+          component: OrderEdit,
+        },
+        {
           path: 'browser',
           component: OrderBrowser
         },
