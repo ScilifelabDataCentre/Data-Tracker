@@ -28,9 +28,11 @@
       </tr>
     </tbody>
   </table>
-  <button class="button is-link" @click="editOrder">
-    Edit
-  </button>
+  <router-link :to="'/order/' + uuid + '/edit'">
+    <button class="button is-link">
+      Edit
+    </button>
+  </router-link>
 </div>
 </template>
 
@@ -51,12 +53,6 @@ export default {
   },
   created () {
     this.$store.dispatch('getOrder', this.uuid);
-  },
-  methods: {
-    editOrder(event) {
-      event.preventDefault();
-      this.$router.push("/order/" + this.$props.uuid + "/edit");
-    },
   },
 }
 </script>
