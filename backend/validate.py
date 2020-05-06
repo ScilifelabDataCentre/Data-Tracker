@@ -94,7 +94,7 @@ def validate_extra(data) -> bool:
     """
     Validate input for the ``extra`` field.
 
-    It must be a string.
+    It must be a dict.
 
     Args:
         data: The data to be validated.
