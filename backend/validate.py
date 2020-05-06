@@ -43,6 +43,40 @@ def validate_field(field_key: str, field_value: Any) -> bool:
     return True
 
 
+def validate_creator(data: str) -> bool:
+    """
+    Validate input for the ``creator`` field.
+
+    It must be a non-empty string.
+    If uuid, confirms that uuid is present in db.
+
+    Args:
+        data (str): The data to be validated.
+
+    Returns:
+        bool: Validation passed.
+
+    Raises:
+        ValueError: Validation failed.
+    """
+    if not isinstance(data, str):
+        raise ValueError(f'Bad data type ({data})')
+
+    # Non-registered user (email instead of uuid)
+    if utils.is_email(data):
+        return True
+    # If it is a uuid, make sure it matches a user
+    try:
+        user_uuid = uuid.UUID(data)
+    except ValueError:
+        return True
+    else:
+        if not flask.g.db['users'].find_one({'_id': user_uuid}):
+            raise ValueError(f'Uuid not in db ({data})')
+
+    return True
+
+
 def validate_datasets(data: list) -> bool:
     """
     Validate input for the ``datasets`` field.
@@ -233,7 +267,7 @@ def validate_title(data: str) -> bool:
 
 def validate_user(data: Union[str, list]) -> bool:
     """
-    Validate input for the ``title`` field.
+    Validate input for the ``user`` field.
 
     It must be a non-empty string.
     If uuid, confirms that uuid is present in db.
@@ -273,7 +307,7 @@ VALIDATION_MAPPER = {'affiliation': validate_string,
                      'description': validate_string,
                      'dmp': validate_string,
                      'name': validate_string,
-                     'creator': validate_user,
+                     'creator': validate_creator,
                      'receiver': validate_user,
                      'datasets': validate_datasets,
                      'email': validate_email,

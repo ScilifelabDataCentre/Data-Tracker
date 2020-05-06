@@ -498,25 +498,6 @@ def test_add_order_bad():
             assert not response.data
 
     indata = {'description': 'Test description',
-              'creator': 'bad_email@asd',
-              'title': 'Test title'}
-    indata.update(TEST_LABEL)
-
-    responses = make_request_all_roles(f'/api/order/',
-                                       method='POST',
-                                       data=indata,
-                                       ret_json=True)
-    for response in responses:
-        if response.role in ('orders', 'data', 'root'):
-            assert response.code == 400
-        elif response.role == 'no-login':
-            assert response.code == 401
-            assert not response.data
-        else:
-            assert response.code == 403
-            assert not response.data
-
-    indata = {'description': 'Test description',
               'creator': str(uuid.uuid4()),
               'title': 'Test title'}
     indata.update(TEST_LABEL)

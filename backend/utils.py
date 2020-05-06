@@ -323,7 +323,11 @@ def check_email_uuid(user_identifier: str) -> Union[str, uuid.UUID]:
         if user_entry:
             return user_entry['_id']
         return user_identifier
-    user_entry = flask.g.db['users'].find_one({'_id': str_to_uuid(user_identifier)})
+    try:
+        user_uuid = str_to_uuid(user_identifier)
+    except ValueError:
+        return ''
+    user_entry = flask.g.db['users'].find_one({'_id': user_uuid})
     if user_entry:
         return user_entry['_id']
     return ''
