@@ -66,7 +66,6 @@ const actions = {
 
   saveOrder (context, payload) {
     return new Promise((resolve, reject) => {
-      console.log(payload);
       let uuid = payload.id;
       delete payload.id;
       if (uuid === '') {
@@ -97,6 +96,23 @@ const actions = {
             reject(err);
           });
       }
+    });
+  },
+
+  addDataset (context, payload) {
+    return new Promise((resolve, reject) => {
+      axios
+        .post('/api/order/' + payload.uuid + '/dataset/',
+              payload.data,
+              {
+                headers: getCsrfHeader(),
+              })
+        .then((response) => {
+          resolve(response);
+        })
+        .catch(function (err) {
+          reject(err);
+        });
     });
   },
 }

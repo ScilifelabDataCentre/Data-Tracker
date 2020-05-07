@@ -21,6 +21,11 @@
             </li>
           </ul>
         </td>
+        <td>
+          <div class="control">
+            <button class="button is-link" @click="addDataset">Add</button>
+          </div>
+        </td>
       </tr>
       <tr v-for="field in Object.keys(order.extra)" :key="field">
         <th scope="row">{{ field }}</th>
@@ -41,18 +46,34 @@ import {mapGetters} from 'vuex';
 
 export default {
   name: 'OrderAbout',
+
   props: ['uuid'],
+
   components: {
   },
+
   computed: {
     ...mapGetters(['order']),
   },
+
   data () {
     return {
     }
   },
+
   created () {
     this.$store.dispatch('getOrder', this.uuid);
+  },
+
+  methods: {
+    addDataset(event) {
+      event.preventDefault();
+      this.$store.dispatch('addDataset', {'data': {'title': this.order.title + ' dataset ' + (this.order.datasets.length + 1)},
+                                          'uuid': this.uuid})
+        .then(() => {
+          this.$store.dispatch('getOrder', this.uuid);
+        });
+    },
   },
 }
 </script>
