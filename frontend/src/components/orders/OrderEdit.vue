@@ -135,8 +135,8 @@ export default {
   },
 
   created () {
-    if (this._id) {
-      this.$store.dispatch('getOrder', this._id)
+    if (this.uuid) {
+      this.$store.dispatch('getOrder', this.uuid)
         .then(() => {
           this.newOrder = this.order;
           this.newOrder.id = this.newOrder._id;
@@ -193,7 +193,7 @@ export default {
             id = response.data._id;
           }
           else {
-            id = this.newOrder._id
+            id = this.$props.uuid;
           }
           this.$router.push("/order/" + id + "/about");
         });
