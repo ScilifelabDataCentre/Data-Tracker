@@ -83,7 +83,7 @@ def gen_facilities(db, nr_facilities: int = 30):
                    'api_key': utils.gen_api_key_hash(apikey.key, apikey.salt),
                    'api_salt': apikey.salt,
                    'auth_id': f'--facility {i}--',
-                   'email': f'facility{i}@domain{i}',
+                   'email': f'facility{i}@domain{i}.se',
                    'name': f'Facility {i}',
                    'permissions': ['ORDERS_SELF']}
         user.update(changes)
@@ -116,7 +116,7 @@ def gen_projects(db, nr_projects: int = 500):
     users = tuple(db['users'].find({'affiliation': {'$ne': 'Test University'}}))
     for i in range(1, nr_projects+1):
         project = structure.project()
-        changes = {'contact': f'email{i}@entity{i}',
+        changes = {'contact': f'email{i}@entity{i}.se',
                    'description': make_description(),
                    'datasets': [random.choice(datasets)['_id']
                                 for _ in range(random.randint(0, 5))],
@@ -159,7 +159,7 @@ def gen_users(db, nr_users: int = 100):
                    'api_key': utils.gen_api_key_hash(apikey.key, apikey.salt),
                    'api_salt': apikey.salt,
                    'auth_id': f'hash{i}@elixir',
-                   'email': f'user{i}@place{i}',
+                   'email': f'user{i}@place{i}.se',
                    'name': f'First Last {i}',
                    'permissions': list(set(random.choice(perm_keys)
                                            for _ in range(random.randint(0,2))))}
