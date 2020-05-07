@@ -148,18 +148,18 @@ const router = new VueRouter({
           component: OrderBrowser
         },
         {
-          path: ':id/about',
+          path: ':uuid/about',
           component: OrderAbout,
           props: true,
         },
         {
-          path: ':id/edit',
+          path: ':uuid/edit',
           component: OrderEdit,
           props: true,
         },
         {
-          path: ':id',
-          redirect: ':id/about',
+          path: ':uuid',
+          redirect: ':uuid/about',
         },
       ],
     },
