@@ -9,7 +9,7 @@
                name="ORDER_ID"
                type="text"
                placeholder=""
-               v-model="newOrder._id"
+               v-model="newOrder.id"
                disabled="true"/>
       </div>
     </div>
@@ -97,7 +97,7 @@
         <button class="button is-light" @click="cancelChanges">Cancel</button>
       </div>
       <div class="control">
-        <button class="button is-danger" v-if="newOrder._id != '' && user.permissions.includes('DATA_MANAGEMENT')" @click="deleteOrder">Delete</button>
+        <button class="button is-danger" v-if="newOrder.id != '' && user.permissions.includes('DATA_MANAGEMENT')" @click="deleteOrder">Delete</button>
       </div>
     </div>
   </form>
@@ -141,6 +141,7 @@ export default {
           this.newOrder = this.order;
           this.newOrder.id = this.newOrder._id;
           delete this.newOrder._id;
+          delete this.newOrder.datasets;
         });
     }
   },
