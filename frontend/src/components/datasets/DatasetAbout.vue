@@ -18,7 +18,7 @@
             Links
           </th>
           <td>
-            <ul v-for="location in dataset.links" :key="location">
+            <ul v-for="location in dataset.links" :key="location.url">
               <li class="test"><a :href="location.url">{{location.description}}</a></li>
             </ul>
           </td>
@@ -54,9 +54,11 @@
       </tbody>
     </table>
   </div>
-  <button class="button is-link" @click="editDataset">
-    Edit
-  </button>
+  <router-link :to="'/dataset/' + uuid + '/edit'" v-if="dataset.creator === user.name || user.permissions.includes('DATA_MANAGEMENT')">
+    <button class="button is-link">
+      Edit
+    </button>
+  </router-link>
 </div>
 </template>
 
@@ -69,7 +71,7 @@ export default {
   components: {
   },
   computed: {
-    ...mapGetters(['dataset']),
+    ...mapGetters(['dataset', 'user']),
   },
   data () {
     return {
@@ -77,12 +79,6 @@ export default {
   },
   created () {
     this.$store.dispatch('getDataset', this.uuid);
-  },
-  methods: {
-    editDataset(event) {
-      event.preventDefault();
-      this.$router.push("/dataset/" + this.$props.uuid + "/edit");
-    },
   },
 }
 </script>
