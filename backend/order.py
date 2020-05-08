@@ -316,8 +316,6 @@ def update_order(identifier: str):  # pylint: disable=too-many-branches
             flask.abort(status=403)
         if new_identifier := utils.check_email_uuid(indata['creator']):
             indata['creator'] = new_identifier
-        else:
-            flask.abort(400)
     else:
         order['creator'] = flask.g.current_user['_id']
     # receiver
