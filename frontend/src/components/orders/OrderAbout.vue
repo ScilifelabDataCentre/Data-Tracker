@@ -12,8 +12,8 @@
         <th scope="row">Receiver</th>
         <td>{{order.receiver}}</td>
       </tr>
-      <tr v-if="order.datasets.length > 0">
-        <th scope="row" :rowspan="order.datasets.length">Datasets</th>
+      <tr>
+        <th scope="row">Datasets</th>
         <td>
           <ul>
             <li v-for="dataset in order.datasets" :key="dataset._id">
@@ -22,9 +22,7 @@
           </ul>
         </td>
         <td>
-          <div class="control">
-            <button class="button is-link" @click="addDataset">Add</button>
-          </div>
+          <button class="button is-link" @click="addDataset">Add</button>
         </td>
       </tr>
       <tr v-for="field in Object.keys(order.extra)" :key="field">
