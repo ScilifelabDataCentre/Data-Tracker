@@ -286,7 +286,7 @@ def get_user(user_id=None):
     Get information about the user.
 
     Args:
-        user_aid (str): The identifier (auth_id) of the user.
+        user_id (str): The identifier (auth_id) of the user.
 
     Returns:
         dict: The current user.
