@@ -59,7 +59,7 @@ def gen_datasets(db, nr_datasets: int = 500):
                                       f'{random.choice(string.ascii_uppercase)}')}
                                  for j in range(1, random.randint(0, 6))]}
         # add extra field
-        if random.random() > 0.9:
+        if random.random() > 0.7:
             tag = random.choice(EXTRA_KEYS)
             changes['extra'] = [{tag: random.choice(EXTRA_FIELDS[tag])}]
         dataset.update(changes)
@@ -146,8 +146,10 @@ def gen_users(db, nr_users: int = 100):
     for i, suser in enumerate(special_users):
         user = structure.user()
         user.update(suser)
+        apikey = {'salt': 'abc', 'key': str(i)}
         user.update({'affiliation' : 'Test University',
-                     'api_key': uuid.uuid4().hex,
+                     'api_key': utils.gen_api_key_hash(apikey['key'], apikey['salt']),
+                     'api_salt': apikey['salt'],
                      'email': f'{"".join(user["name"].split())}@example.com'})
         db['users'].insert_one(user)
         make_log(db, action='add', data=user, data_type='user',comment='Generated', user='root')
