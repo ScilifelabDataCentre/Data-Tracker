@@ -60,11 +60,15 @@ def basic_check_indata(indata: dict,
 
 # csrf
 def verify_csrf_token():
-    """Compare the csrf token from the request (header) with the one in the cookie.session."""
+    """
+    Compare the csrf token from the request (header) with the one in the cookie.session.
+
+    Aborts with status 400 if the verification fails.
+    """
     token = flask.request.headers.get('X-CSRFToken')
     if not token or (token != flask.request.cookies.get('_csrf_token')):
         logging.warning('Bad csrf token received')
-        flask.abort(flask.Response(status=400))
+        flask.abort(status=400)
 
 
 def gen_csrf_token() -> str:
@@ -109,17 +113,21 @@ def verify_api_key(username: str, api_key: str):
     """
     Verify an API key against the value in the database.
 
+    Aborts with status 401 if the verification fails.
+
     Args:
         username (str): The username to check.
         api_key (str): The received API key (hex).
-
-    Returns:
-        bool: Whether the verification succeeded.
     """
     user_info = flask.g.db['users'].find_one({'auth_id': username})
+    if not user_info:
+        logging.warning('API key verification failed (bad username)')
+        flask.abort(status=401)
     ct_bytes = bytes.fromhex(api_key + user_info['api_salt'])
     new_hash = hashlib.sha512(ct_bytes).hexdigest()
-    return new_hash == user_info['api_key']
+    if not new_hash == user_info['api_key']:
+        logging.warning('API key verification failed (bad hash)')
+        flask.abort(status=401)
 
 
 def get_dbclient(conf) -> pymongo.mongo_client.MongoClient:
