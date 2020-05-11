@@ -26,12 +26,19 @@ app.register_blueprint(user.blueprint, url_prefix='/api/user')
 @app.before_request
 def prepare():
     """Open the database connection and get the current user."""
-    if flask.request.method != 'GET':
-        utils.verify_csrf_token()
     flask.g.dbserver = utils.get_dbclient(flask.current_app.config)
     flask.g.db = utils.get_db(flask.g.dbserver, flask.current_app.config)
-    flask.g.current_user = user.get_current_user()
-    flask.g.permissions = flask.g.current_user['permissions'] if flask.g.current_user else None
+    if apikey := flask.request.headers.get('X-API-Key'):
+        if not (apiuser := flask.request.headers.get('X-API-User')):
+            flask.abort(status=400)
+            utils.verify_api_key(apiuser, apikey)
+        flask.g.current_user = flask.g.db['users'].find_one({'auth_id': apiuser})
+        flask.g.permissions = flask.g.current_user['permissions']
+    else:
+        if flask.request.method != 'GET':
+            utils.verify_csrf_token()
+        flask.g.current_user = user.get_current_user()
+        flask.g.permissions = flask.g.current_user['permissions'] if flask.g.current_user else None
 
 
 @app.after_request
