@@ -123,7 +123,11 @@ def verify_api_key(username: str, api_key: str):
     if not user_info:
         logging.warning('API key verification failed (bad username)')
         flask.abort(status=401)
-    ct_bytes = bytes.fromhex(api_key + user_info['api_salt'])
+    try:
+        ct_bytes = bytes.fromhex(api_key + user_info['api_salt'])
+    except ValueError as err:
+        logging.warning('Non-hex API key provided')
+        flask.abort(status=401)
     new_hash = hashlib.sha512(ct_bytes).hexdigest()
     if not new_hash == user_info['api_key']:
         logging.warning('API key verification failed (bad hash)')
