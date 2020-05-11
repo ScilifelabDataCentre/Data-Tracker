@@ -31,7 +31,7 @@ def prepare():
     if apikey := flask.request.headers.get('X-API-Key'):
         if not (apiuser := flask.request.headers.get('X-API-User')):
             flask.abort(status=400)
-            utils.verify_api_key(apiuser, apikey)
+        utils.verify_api_key(apiuser, apikey)
         flask.g.current_user = flask.g.db['users'].find_one({'auth_id': apiuser})
         flask.g.permissions = flask.g.current_user['permissions']
     else:
