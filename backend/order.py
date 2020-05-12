@@ -103,6 +103,11 @@ def get_order(identifier):
             order['creator'] == flask.session['user_id']):
         flask.abort(status=403)
 
+    order_creator = flask.g.db['users'].find_one({'_id': order['creator']})
+    order['creator'] = {'name': order['creator'], 'id': order['creator']}
+    if order_creator:
+        order['creator']['name'] = order_creator['name']
+
     # convert dataset list into {title, _id}
     order['datasets'] = list(flask.g.db['datasets']
                              .find({'_id': {'$in': order['datasets']}},
