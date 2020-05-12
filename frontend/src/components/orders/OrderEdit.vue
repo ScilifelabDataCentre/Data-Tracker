@@ -37,7 +37,7 @@
       <label class="label" for="order-creator">Creator</label>
       <input id="order-creator"
              class="input"
-             v-model="newOrder.creator"
+             v-model="newOrder.creator.id"
              name="ORDER_CREATOR"
              type="text"
              placeholder="Data creator (e.g. facility name)" />

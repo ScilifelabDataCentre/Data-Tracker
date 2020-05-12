@@ -51,7 +51,6 @@ const actions = {
     return new Promise((resolve, reject) => {
       axios
         .delete('/api/order/' + order_id + '/',
-                {},
                 {
                   headers: getCsrfHeader(),
                 })
@@ -68,6 +67,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       let uuid = payload.id;
       delete payload.id;
+      payload.creator = payload.creator.id;
       if (uuid === '') {
         axios
           .post('/api/order/',
