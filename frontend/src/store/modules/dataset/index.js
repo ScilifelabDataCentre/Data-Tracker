@@ -68,14 +68,8 @@ const actions = {
     return new Promise((resolve, reject) => {
       const newDataset = payload;
       let url = '';
-      if (newDataset.uuid === '') {
-        url = '/api/dataset/add';
-      }
-      else {
         url = '/api/dataset/' + newDataset.uuid + '/edit/';
-      }
       delete newDataset.uuid;
-      delete newDataset.timestamp;
       delete newDataset.identifier;
       delete newDataset.dataUrls;
       axios
