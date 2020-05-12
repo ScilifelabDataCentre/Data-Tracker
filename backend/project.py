@@ -1,4 +1,5 @@
 """Project requests."""
+import json
 import logging
 
 import flask
@@ -68,7 +69,11 @@ def add_project():  # pylint: disable=too-many-branches
     """
     # create new project
     project = structure.project()
-    indata = flask.json.loads(flask.request.data)
+
+    try:
+        indata = flask.json.loads(flask.request.data)
+    except json.decoder.JSONDecodeError:
+        flask.abort(status=400)
 
     # indata validation
     validation = utils.basic_check_indata(indata, project, prohibited=('_id'))
@@ -157,7 +162,11 @@ def update_project(identifier):  # pylint: disable=too-many-branches
     project = flask.g.db['projects'].find_one({'_id': ds_uuid})
     if not project:
         flask.abort(status=404)
-    indata = flask.json.loads(flask.request.data)
+
+    try:
+        indata = flask.json.loads(flask.request.data)
+    except json.decoder.JSONDecodeError:
+        flask.abort(status=400)
 
     # permission check
     if not user.has_permission('DATA_MANAGEMENT'):

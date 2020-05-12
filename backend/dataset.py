@@ -148,7 +148,10 @@ def update_dataset(identifier):
            order['receiver'] != flask.g.current_user['_id']:
             flask.abort(status=403)
 
-    indata = json.loads(flask.request.data)
+    try:
+        indata = flask.json.loads(flask.request.data)
+    except json.decoder.JSONDecodeError:
+        flask.abort(status=400)
     validation = utils.basic_check_indata(indata, dataset, prohibited=('_id'))
     if not validation[0]:
         flask.abort(status=validation[1])

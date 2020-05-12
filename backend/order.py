@@ -6,6 +6,7 @@ Special permissions are required to access orders:
 * If you have permission ``ORDERS_SELF`` you have CRUD access to your own orders.
 * If you have permission ``DATA_MANAGER`` you have CRUD access to any orders.
 """
+import json
 import logging
 
 import flask
@@ -161,7 +162,10 @@ def add_order():  # pylint: disable=too-many-branches
     """
     # create new order
     order = structure.order()
-    indata = flask.json.loads(flask.request.data)
+    try:
+        indata = flask.json.loads(flask.request.data)
+    except json.decoder.JSONDecodeError:
+        flask.abort(status=400)
 
     validation = utils.basic_check_indata(indata, order, ['_id'])
     if not validation[0]:
@@ -215,7 +219,10 @@ def add_dataset_post(identifier):  # pylint: disable=too-many-branches
 
     # create new dataset
     dataset = structure.dataset()
-    indata = flask.json.loads(flask.request.data)
+    try:
+        indata = flask.json.loads(flask.request.data)
+    except json.decoder.JSONDecodeError:
+        flask.abort(status=400)
 
     validation = utils.basic_check_indata(indata, dataset, ['_id'])
     if not validation[0]:
@@ -305,7 +312,10 @@ def update_order(identifier: str):  # pylint: disable=too-many-branches
             order['creator'] == flask.session['user_id']):
         return flask.abort(status=403)
 
-    indata = flask.json.loads(flask.request.data)
+    try:
+        indata = flask.json.loads(flask.request.data)
+    except json.decoder.JSONDecodeError:
+        flask.abort(status=400)
     validation = utils.basic_check_indata(indata, order, ['_id', 'datasets'])
     if not validation[0]:
         flask.abort(status=validation[1])

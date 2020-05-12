@@ -13,6 +13,7 @@ Requests
 """
 from itertools import chain
 import functools
+import json
 import logging
 
 import flask
@@ -56,7 +57,11 @@ def oidc_login():
 @blueprint.route('/login/apikey', methods=['POST'])
 def key_login():
     """Log in using an apikey."""
-    indata = flask.json.loads(flask.request.data)
+    try:
+        indata = flask.json.loads(flask.request.data)
+    except json.decoder.JSONDecodeError:
+        flask.abort(status=400)
+
     if not 'api-username' in indata or not 'api-key' in indata:
         return flask.Response(status=400)
     if not utils.verify_api_key(indata['api-username'], indata['api-key']):
@@ -178,7 +183,10 @@ def update_current_user_info():
     """
     user_data = flask.g.current_user
 
-    indata = flask.json.loads(flask.request.data)
+    try:
+        indata = flask.json.loads(flask.request.data)
+    except json.decoder.JSONDecodeError:
+        flask.abort(status=400)
     validation = utils.basic_check_indata(indata, user_data, ('_id',
                                                               'api_key',
                                                               'auth_id',
@@ -223,7 +231,10 @@ def update_user_info(identifier: str):
     if not (user_data := flask.g.db['users'].find_one({'_id': user_uuid})):  # pylint: disable=superfluous-parens
         flask.abort(status=404)
 
-    indata = flask.json.loads(flask.request.data)
+    try:
+        indata = flask.json.loads(flask.request.data)
+    except json.decoder.JSONDecodeError:
+        flask.abort(status=400)
     validation = utils.basic_check_indata(indata, user_data, ('_id',
                                                               'api_key'))
     if not validation[0]:
