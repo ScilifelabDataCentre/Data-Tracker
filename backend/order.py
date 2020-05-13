@@ -274,9 +274,9 @@ def delete_order(identifier: str):
     order = flask.g.db['orders'].find_one({'_id': order_uuid})
     if not order:
         flask.abort(status=404)
-    if not user.has_permission('DATA_MANAGEMENT'):
-        if order['creator'] != flask.g.current_user['_id']:
-            flask.abort(status=403)
+    if not user.has_permission('DATA_MANAGEMENT') and \
+       order['creator'] != flask.g.current_user['_id']:
+        flask.abort(status=403)
 
     for dataset_uuid in order['datasets']:
         result = flask.g.db['datasets'].delete_one({'_id': dataset_uuid})
@@ -310,6 +310,7 @@ def update_order(identifier: str):  # pylint: disable=too-many-branches
         order_uuid = utils.str_to_uuid(identifier)
     except ValueError:
         return flask.abort(status=404)
+
     order = flask.g.db['orders'].find_one({'_id': order_uuid})
     if not order:
         return flask.abort(status=404)
@@ -326,7 +327,7 @@ def update_order(identifier: str):  # pylint: disable=too-many-branches
         flask.abort(status=validation[1])
 
     # creator
-    if 'creator' in indata:
+    if indata.get('creator'):
         if not user.has_permission('DATA_MANAGEMENT'):
             flask.abort(status=403)
         if new_identifier := utils.check_email_uuid(indata['creator']):
@@ -334,7 +335,7 @@ def update_order(identifier: str):  # pylint: disable=too-many-branches
     else:
         order['creator'] = flask.g.current_user['_id']
     # receiver
-    if 'receiver' in indata:
+    if indata.get('receiver'):
         if new_identifier := utils.check_email_uuid(indata['receiver']):
             indata['receiver'] = new_identifier
         else:
