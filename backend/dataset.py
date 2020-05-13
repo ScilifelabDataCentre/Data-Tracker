@@ -143,10 +143,10 @@ def update_dataset(identifier):
         flask.abort(status=404)
     # permissions
     order = flask.g.db['orders'].find_one({'datasets': ds_uuid})
-    if not user.has_permission('DATA_MANAGEMENT'):
-        if order['creator'] != flask.g.current_user['_id'] and\
+    if not user.has_permission('DATA_MANAGEMENT') and \
+       order['creator'] != flask.g.current_user['_id'] and \
            order['receiver'] != flask.g.current_user['_id']:
-            flask.abort(status=403)
+        flask.abort(status=403)
 
     try:
         indata = flask.json.loads(flask.request.data)
