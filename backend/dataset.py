@@ -191,6 +191,7 @@ def build_dataset_info(identifier: str):
     dataset['related'].remove({'_id': dataset['_id'], 'title': dataset['title']})
     dataset['projects'] = list(flask.g.db['projects'].find({'datasets': dataset_uuid},
                                                            {'title': 1}))
-    if creator := flask.g.db['users'].find_one({'_id': order['creator']})['name']:
+    creator = flask.g.db['users'].find_one({'_id': order['creator']})
+    if creator.get('name'):
         dataset['creator'] = creator
     return dataset
