@@ -67,7 +67,6 @@ const actions = {
     return new Promise((resolve, reject) => {
       let uuid = payload.id;
       delete payload.id;
-      payload.creator = payload.creator.id;
       if (uuid === '') {
         axios
           .post('/api/order/',

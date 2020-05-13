@@ -37,7 +37,7 @@
       <label class="label" for="order-creator">Creator</label>
       <input id="order-creator"
              class="input"
-             v-model="newOrder.creator.id"
+             v-model="newOrder.creator"
              name="ORDER_CREATOR"
              type="text"
              placeholder="Data creator (e.g. facility name)" />
@@ -140,6 +140,7 @@ export default {
         .then(() => {
           this.newOrder = this.order;
           this.newOrder.id = this.newOrder._id;
+          this.newOrder.creator = this.creator.id;
           delete this.newOrder._id;
           delete this.newOrder.datasets;
         });

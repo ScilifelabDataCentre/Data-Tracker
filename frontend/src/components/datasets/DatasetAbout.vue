@@ -5,9 +5,9 @@
     <div class="dataset-description field" v-html="dataset.description"></div>
     <table class="table is-hoverable is-striped">
       <tbody>
-        <tr>
+        <tr v-if="dataset.creator.length > 0">
           <th scope="row">
-            Dataset creator
+            Creator
           </th>
           <td>
             {{ dataset.creator }}
@@ -22,6 +22,10 @@
               <li class="test"><a :href="location.url">{{location.description}}</a></li>
             </ul>
           </td>
+        </tr>
+        <tr v-for="field in Object.keys(dataset.extra)" :key="field">
+          <th scope="row">{{ field }}</th>
+          <td>{{ dataset.extra[field] }}</td>
         </tr>
         <tr v-if="dataset.projects.length > 0">
           <th scope="row">
@@ -41,14 +45,6 @@
             <ul v-for="dataset in dataset.related" :key="dataset._id">
               <li class="test"><a :href="'/dataset/' + dataset._id">{{dataset.title}}</a></li>
             </ul>
-          </td>
-        </tr>
-        <tr v-for="extraField in dataset.extras" :key="extraField.key">
-          <th scope="row" :rowspan="user.permissions.length">
-            {{ extraField.key }}
-          </th>
-          <td>
-            {{ extraField.value }}
           </td>
         </tr>
       </tbody>
