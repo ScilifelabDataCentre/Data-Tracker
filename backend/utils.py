@@ -40,8 +40,8 @@ def basic_check_indata(indata: dict,
     if prohibited is None:
         prohibited = []
 
-    if title := reference_data.get('title') and \
-       title is not None and \
+    if 'title' in reference_data and \
+       not reference_data['title'] and \
        not indata.get('title'):
         logging.debug('Title empty')
         return (False, 400)
