@@ -40,10 +40,11 @@ def basic_check_indata(indata: dict,
     if prohibited is None:
         prohibited = []
 
-    if 'title' in reference_data:
-        if not reference_data['title'] and 'title' not in indata:
-            logging.debug('Title empty')
-            return (False, 400)
+    if title := reference_data.get('title') and \
+       title is not None and \
+       not indata.get('title'):
+        logging.debug('Title empty')
+        return (False, 400)
 
     for key in indata:
         if key in prohibited:
@@ -89,8 +90,8 @@ def gen_api_key():
     Returns:
         APIkey: The API key with salt.
     """
-    APIkey = namedtuple('APIkey', ['key', 'salt'])
-    return APIkey(key=secrets.token_hex(48),
+    ApiKey = namedtuple('ApiKey', ['key', 'salt'])
+    return ApiKey(key=secrets.token_hex(48),
                   salt=secrets.token_hex(8))
 
 
@@ -125,7 +126,7 @@ def verify_api_key(username: str, api_key: str):
         flask.abort(status=401)
     try:
         ct_bytes = bytes.fromhex(api_key + user_info['api_salt'])
-    except ValueError as err:
+    except ValueError:
         logging.warning('Non-hex API key provided')
         flask.abort(status=401)
     new_hash = hashlib.sha512(ct_bytes).hexdigest()
