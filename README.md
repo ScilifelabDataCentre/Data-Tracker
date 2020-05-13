@@ -19,8 +19,8 @@ The frontend assumes that the backend is available at `/api`.
 
 
 
-[travis-badge]: https://api.travis-ci.org/ScilifelabDataCentre/Data-Tracker.svg?branch=develop
-[travis-link]: https://travis-ci.org/ScilifelabDataCentre/Data-Tracker
+[travis-badge]: https://api.travis-ci.com/ScilifelabDataCentre/Data-Tracker.svg?branch=develop
+[travis-link]: https://travis-ci.com/ScilifelabDataCentre/Data-Tracker
 
 [codecov-badge]: https://codecov.io/gh/ScilifelabDataCentre/Data-Tracker/branch/develop/graph/badge.svg
 [codecov-link]: https://codecov.io/gh/ScilifelabDataCentre/Data-Tracker
