@@ -49,6 +49,9 @@ def test_get_order_permissions(use_db):
                             assert ds in data[field]
                     elif field == '_id':
                         continue
+                    elif field == 'creator':
+                        assert data[field]['id'] == order[field]
+                        assert data[field]['name'] == owner['name']
                     else:
                         assert order[field] == data[field]
             elif response.role == 'no-login':
@@ -69,6 +72,9 @@ def test_get_order_permissions(use_db):
                     assert ds in data[field]
             elif field == '_id':
                 continue
+            elif field == 'creator':
+                assert data[field]['id'] == order[field]
+                assert data[field]['name'] == owner['name']
             else:
                 assert order[field] == data[field]
 
@@ -86,6 +92,7 @@ def test_get_order(use_db):
     for order in orders:
         # to simplify comparison
         order['_id'] = str(order['_id'])
+        owner = db['users'].find_one({'_id': order['creator']})
         if isinstance(order['receiver'], uuid.UUID):
             order['receiver'] = str(order['receiver'])
         order['creator'] = str(order['creator'])
@@ -107,6 +114,9 @@ def test_get_order(use_db):
                     assert ds in data[field]
             elif field == '_id':
                 continue
+            elif field == 'creator':
+                assert data[field]['id'] == order[field]
+                assert data[field]['name'] == owner['name']
             else:
                 assert order[field] == data[field]
 
