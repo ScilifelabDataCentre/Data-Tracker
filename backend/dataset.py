@@ -192,6 +192,8 @@ def build_dataset_info(identifier: str):
     dataset['projects'] = list(flask.g.db['projects'].find({'datasets': dataset_uuid},
                                                            {'title': 1}))
     creator = flask.g.db['users'].find_one({'_id': order['creator']})
-    if creator.get('name'):
-        dataset['creator'] = creator
+    if creator:
+        dataset['creator'] = creator['name']
+    else:
+        dataset['creator'] = order['creator']
     return dataset
