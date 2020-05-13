@@ -23,6 +23,10 @@
             </ul>
           </td>
         </tr>
+        <tr v-for="field in Object.keys(dataset.extra)" :key="field">
+          <th scope="row">{{ field }}</th>
+          <td>{{ dataset.extra[field] }}</td>
+        </tr>
         <tr v-if="dataset.projects.length > 0">
           <th scope="row">
             Projects
@@ -42,10 +46,6 @@
               <li class="test"><a :href="'/dataset/' + dataset._id">{{dataset.title}}</a></li>
             </ul>
           </td>
-        </tr>
-	<tr v-for="field in Object.keys(dataset.extra)" :key="field">
-          <th scope="row">{{ field }}</th>
-          <td>{{ order.extra[field] }}</td>
         </tr>
       </tbody>
     </table>
