@@ -129,3 +129,5 @@ def test_api_key_auth():
     response = requests.get(helpers.BASE_URL + '/api/developer/loginhello',
                             headers={'X-API-Key': '0',
                                      'X-API-User': 'asd'})
+    assert response.status_code == 401
+    assert not response.text
