@@ -29,7 +29,7 @@ def prepare():
     flask.g.dbserver = utils.get_dbclient(flask.current_app.config)
     flask.g.db = utils.get_db(flask.g.dbserver, flask.current_app.config)
     if apikey := flask.request.headers.get('X-API-Key'):
-        if not (apiuser := flask.request.headers.get('X-API-User')):
+        if not (apiuser := flask.request.headers.get('X-API-User')):  # pylint: disable=superfluous-parens
             flask.abort(status=400)
         utils.verify_api_key(apiuser, apikey)
         flask.g.current_user = flask.g.db['users'].find_one({'auth_id': apiuser})
