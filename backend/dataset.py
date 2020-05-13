@@ -90,9 +90,9 @@ def delete_dataset(identifier: str):
         flask.abort(status=404)
     # permission check
     order = flask.g.db['orders'].find_one({'datasets': ds_uuid})
-    if not user.has_permission('DATA_MANAGEMENT'):
-        if order['creator'] != flask.g.current_user['_id']:
-            flask.abort(status=403)
+    if not user.has_permission('DATA_MANAGEMENT') and \
+       order['creator'] != flask.g.current_user['_id']:
+        flask.abort(status=403)
 
     result = flask.g.db['datasets'].delete_one({'_id': ds_uuid})
     if not result.acknowledged:
