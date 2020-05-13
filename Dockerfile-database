@@ -1,5 +1,4 @@
-FROM postgres:10
+FROM mongo:latest
 
-ENV POSTGRES_DB portal
-COPY sql/data_schema.sql /docker-entrypoint-initdb.d/01_data_schema.sql
-COPY sql/user_schema.sql /docker-entrypoint-initdb.d/02_user_schema.sql
+ENV MONGO_INITDB_ROOT_USERNAME mongoadmin
+ENV MONGO_INITDB_ROOT_PASSWORD mongopassword

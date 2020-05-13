@@ -1,0 +1,273 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>app.py &mdash; Data Tracker  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="static/documentation_options.js"></script>
+        <script src="static/jquery.js"></script>
+        <script src="static/underscore.js"></script>
+        <script src="static/doctools.js"></script>
+        <script src="static/language_data.js"></script>
+    
+    <script type="text/javascript" src="static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="config.py" href="code.config.html" />
+    <link rel="prev" title="Code reference" href="modules.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Data Tracker
+          
+
+          
+            
+            <img src="static/data-centre-logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_structure.html">Data Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="implementation.html">Implementation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="development.html">Development</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="development.quick_environment.html">System for development</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="modules.html">Code reference</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">app.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code.config.html">config.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code.dataset.html">dataset.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code.developer.html">developer.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code.order.html">order.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code.project.html">project.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code.structure.html">structure.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code.user.html">user.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code.utils.html">utils.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code.validate.html">validate.py</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Data Tracker</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="development.html">Development</a> &raquo;</li>
+        
+          <li><a href="modules.html">Code reference</a> &raquo;</li>
+        
+      <li>app.py</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/ScilifelabDataCentre/SciLifeLab-Data-Tracker/blob/develop/docs/source/code.app.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-app">
+<span id="app-py"></span><h1>app.py<a class="headerlink" href="#module-app" title="Permalink to this headline">¶</a></h1>
+<p>Main app for the Data Tracker.</p>
+<dl class="function">
+<dt id="app.api_base">
+<code class="sig-prename descclassname">app.</code><code class="sig-name descname">api_base</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#api_base"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.api_base" title="Permalink to this definition">¶</a></dt>
+<dd><p>List entities.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="app.error_bad_request">
+<code class="sig-prename descclassname">app.</code><code class="sig-name descname">error_bad_request</code><span class="sig-paren">(</span><em class="sig-param">_</em><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#error_bad_request"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.error_bad_request" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make sure a simple 400 is returned instead of an html page.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="app.error_forbidden">
+<code class="sig-prename descclassname">app.</code><code class="sig-name descname">error_forbidden</code><span class="sig-paren">(</span><em class="sig-param">_</em><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#error_forbidden"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.error_forbidden" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make sure a simple 403 is returned instead of an html page.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="app.error_not_found">
+<code class="sig-prename descclassname">app.</code><code class="sig-name descname">error_not_found</code><span class="sig-paren">(</span><em class="sig-param">_</em><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#error_not_found"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.error_not_found" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make sure a simple 404 is returned instead of an html page.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="app.error_unauthorized">
+<code class="sig-prename descclassname">app.</code><code class="sig-name descname">error_unauthorized</code><span class="sig-paren">(</span><em class="sig-param">_</em><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#error_unauthorized"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.error_unauthorized" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make sure a simple 401 is returned instead of an html page.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="app.finalize">
+<code class="sig-prename descclassname">app.</code><code class="sig-name descname">finalize</code><span class="sig-paren">(</span><em class="sig-param">response</em><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#finalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.finalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finalize the response and clean up.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="app.prepare">
+<code class="sig-prename descclassname">app.</code><code class="sig-name descname">prepare</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#prepare"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.prepare" title="Permalink to this definition">¶</a></dt>
+<dd><p>Open the database connection and get the current user.</p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="code.config.html" class="btn btn-neutral float-right" title="config.py" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="modules.html" class="btn btn-neutral float-left" title="Code reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019-2020, SciLifeLab Data Centre
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

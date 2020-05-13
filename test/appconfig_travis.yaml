@@ -1,0 +1,14 @@
+mongo:
+  host: "127.0.0.1"
+  port: 27017
+  user: "tracker"
+  password: "tracker"
+  db: "tracker"
+
+flask:
+  port: 5000
+  secret: "secret"
+
+dev_mode:
+  api: true
+  testing: false

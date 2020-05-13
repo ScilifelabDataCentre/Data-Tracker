@@ -1,0 +1,296 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>developer &mdash; Data Tracker  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Data Tracker
+          
+
+          
+            
+            <img src="../_static/data-centre-logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_structure.html">Data Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../implementation.html">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">Development</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Data Tracker</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Module code</a> &raquo;</li>
+        
+      <li>developer</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for developer</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Routes and functions intended to aid development and testing.&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+
+<span class="kn">import</span> <span class="nn">flask</span>
+
+<span class="kn">import</span> <span class="nn">user</span>
+
+<span class="n">blueprint</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">Blueprint</span><span class="p">(</span><span class="s1">&#39;developer&#39;</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">)</span>  <span class="c1"># pylint: disable=invalid-name</span>
+
+
+<div class="viewcode-block" id="login"><a class="viewcode-back" href="../code.developer.html#developer.login">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/login/&lt;identifier&gt;&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">login</span><span class="p">(</span><span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Log in without password.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        identifer (str): User ``auth_id`` or ``api_key``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span> <span class="o">==</span> <span class="mi">128</span> <span class="ow">and</span> <span class="s1">&#39;@&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">identifier</span><span class="p">:</span>
+        <span class="c1"># api key</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">do_login</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">identifier</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># auth id</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">do_login</span><span class="p">(</span><span class="n">auth_id</span><span class="o">=</span><span class="n">identifier</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">res</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="api_hello"><a class="viewcode-back" href="../code.developer.html#developer.api_hello">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/hello&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">api_hello</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Test request.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">({</span><span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="s1">&#39;success&#39;</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="login_hello"><a class="viewcode-back" href="../code.developer.html#developer.login_hello">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/loginhello&#39;</span><span class="p">)</span>
+<span class="nd">@user</span><span class="o">.</span><span class="n">login_required</span>
+<span class="k">def</span> <span class="nf">login_hello</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Test request requiring login.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">({</span><span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="s1">&#39;success&#39;</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="permission_hello"><a class="viewcode-back" href="../code.developer.html#developer.permission_hello">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/hello/&lt;permission&gt;&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">permission_hello</span><span class="p">(</span><span class="n">permission</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Test request requiring the given permission.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        permission (str): The permission to test for.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">has_permission</span><span class="p">(</span><span class="n">permission</span><span class="p">):</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">403</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">({</span><span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="s1">&#39;success&#39;</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="csrf_test"><a class="viewcode-back" href="../code.developer.html#developer.csrf_test">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/csrftest&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">,</span> <span class="s1">&#39;PATCH&#39;</span><span class="p">,</span> <span class="s1">&#39;PUT&#39;</span><span class="p">,</span> <span class="s1">&#39;DELETE&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">csrf_test</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Test csrf tokens.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">({</span><span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="s1">&#39;success&#39;</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="get_added_ds"><a class="viewcode-back" href="../code.developer.html#developer.get_added_ds">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/test_datasets&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">get_added_ds</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Get datasets added during testing.&quot;&quot;&quot;</span>
+    <span class="n">added</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;datasets&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;Test dataset&#39;</span><span class="p">},</span>
+                                             <span class="p">{</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}))</span>
+    <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">({</span><span class="s1">&#39;datasets&#39;</span><span class="p">:</span> <span class="n">added</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="list_session"><a class="viewcode-back" href="../code.developer.html#developer.list_session">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/session&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">list_session</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;List all session variables.&quot;&quot;&quot;</span>
+    <span class="n">session</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+        <span class="n">session</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">repr</span><span class="p">(</span><span class="n">session</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">(</span><span class="n">session</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="list_current_user"><a class="viewcode-back" href="../code.developer.html#developer.list_current_user">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/user/me&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">list_current_user</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;List all session variables.&quot;&quot;&quot;</span>
+    <span class="n">current_user</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">current_user</span><span class="p">:</span>
+        <span class="n">current_user</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">repr</span><span class="p">(</span><span class="n">current_user</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">(</span><span class="n">current_user</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="list_config"><a class="viewcode-back" href="../code.developer.html#developer.list_config">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/config&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">list_config</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;List all session variables.&quot;&quot;&quot;</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
+        <span class="n">config</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">repr</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">(</span><span class="n">config</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="stop_server"><a class="viewcode-back" href="../code.developer.html#developer.stop_server">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/quit&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">stop_server</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Shutdown the flask server.&quot;&quot;&quot;</span>
+    <span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;werkzeug.server.shutdown&#39;</span><span class="p">)()</span>
+    <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019-2020, SciLifeLab Data Centre
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,18 +1,46 @@
 <template>
 <div class="project-info">
-  <div class="warning" v-if="Object.keys(project).length === 0">
-    <span>Unable to retrieve project</span>
-  </div>
-  <div v-id="project">
+  <div v-if="Object.keys(project).length > 0">
     <div class="project-title">{{ project.title }}</div>
     <div class="project-description field" v-html="project.description"></div>
-    <div class="project-contact field"><span class="field-header">Contact:</span> {{ project.contact }}</div>
-    <div class="project-datasets field">
-      <span class="field-header">Datasets:</span>
-      <div class="project-dataset" v-for="dataset in project.datasets" :key="dataset">
-	<router-link :to="'/dataset/' + dataset + '/about'">{{ dataset }}</router-link>
-      </div>
-    </div>
+    <table class="table is-hoverable is-striped">
+      <tbody>
+        <tr>
+          <th scope="row">
+            Contact 
+          </th>
+          <td>
+            {{ project.contact }}
+          </td>
+        </tr>
+        <tr v-if="project.dmp.length > 0">
+          <th scope="row">
+            Data management plan
+          </th>
+          <td>
+            {{ project.dmp }}
+          </td>
+        </tr>
+        <tr v-if="project.datasets.length > 0">
+          <th scope="row">
+            Datasets
+          </th>
+          <td>
+            <ul v-for="dataset in project.datasets" :key="dataset">
+              <li class="test"><a :href="'/dataset/' + dataset">{{ dataset }}</a></li>
+            </ul>
+          </td>
+        </tr>
+        <tr v-for="extraField in project.extras" :key="extraField.key">
+          <th scope="row" :rowspan="user.permissions.length">
+            {{ extraField.key }}
+          </th>
+          <td>
+            {{ extraField.value }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
   <router-link to="edit">Edit</router-link>
 </div>

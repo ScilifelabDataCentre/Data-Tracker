@@ -1,0 +1,15 @@
+---
+mongo:
+  host: "db"
+  port: 27017
+  user: "mongoadmin"
+  password: "mongopassword"
+  db: "tracker"
+
+flask:
+  port: 5000
+  secret: "secret"
+
+dev_mode:
+  api: false
+  testing: false

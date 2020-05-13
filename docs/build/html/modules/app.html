@@ -1,0 +1,276 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>app &mdash; Data Tracker  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Data Tracker
+          
+
+          
+            
+            <img src="../_static/data-centre-logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_structure.html">Data Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../implementation.html">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">Development</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Data Tracker</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Module code</a> &raquo;</li>
+        
+      <li>app</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for app</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Main app for the Data Tracker.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">flask</span>
+
+<span class="kn">import</span> <span class="nn">config</span>
+<span class="kn">import</span> <span class="nn">dataset</span>
+<span class="kn">import</span> <span class="nn">developer</span>
+<span class="kn">import</span> <span class="nn">order</span>
+<span class="kn">import</span> <span class="nn">project</span>
+<span class="kn">import</span> <span class="nn">user</span>
+<span class="kn">import</span> <span class="nn">utils</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>  <span class="c1"># pylint: disable=invalid-name</span>
+<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">init</span><span class="p">())</span>
+
+<span class="k">if</span> <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;dev_mode&#39;</span><span class="p">][</span><span class="s1">&#39;api&#39;</span><span class="p">]:</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">register_blueprint</span><span class="p">(</span><span class="n">developer</span><span class="o">.</span><span class="n">blueprint</span><span class="p">,</span> <span class="n">url_prefix</span><span class="o">=</span><span class="s1">&#39;/api/developer&#39;</span><span class="p">)</span>
+
+<span class="n">app</span><span class="o">.</span><span class="n">register_blueprint</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">blueprint</span><span class="p">,</span> <span class="n">url_prefix</span><span class="o">=</span><span class="s1">&#39;/api/dataset&#39;</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">register_blueprint</span><span class="p">(</span><span class="n">order</span><span class="o">.</span><span class="n">blueprint</span><span class="p">,</span> <span class="n">url_prefix</span><span class="o">=</span><span class="s1">&#39;/api/order&#39;</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">register_blueprint</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">blueprint</span><span class="p">,</span> <span class="n">url_prefix</span><span class="o">=</span><span class="s1">&#39;/api/project&#39;</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">register_blueprint</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">blueprint</span><span class="p">,</span> <span class="n">url_prefix</span><span class="o">=</span><span class="s1">&#39;/api/user&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="prepare"><a class="viewcode-back" href="../code.app.html#app.prepare">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">before_request</span>
+<span class="k">def</span> <span class="nf">prepare</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Open the database connection and get the current user.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">!=</span> <span class="s1">&#39;GET&#39;</span><span class="p">:</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">verify_csrf_token</span><span class="p">()</span>
+    <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">dbserver</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_dbclient</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+    <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_db</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">dbserver</span><span class="p">,</span> <span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+    <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">get_current_user</span><span class="p">()</span>
+    <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">permissions</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span><span class="p">[</span><span class="s1">&#39;permissions&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span> <span class="k">else</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="finalize"><a class="viewcode-back" href="../code.app.html#app.finalize">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">after_request</span>
+<span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Finalize the response and clean up.&quot;&quot;&quot;</span>
+    <span class="c1"># close db connection</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="p">,</span> <span class="s1">&#39;dbserver&#39;</span><span class="p">):</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">dbserver</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="c1"># set csrf cookie if not set</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">cookies</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;_csrf_token&#39;</span><span class="p">):</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">set_cookie</span><span class="p">(</span><span class="s1">&#39;_csrf_token&#39;</span><span class="p">,</span> <span class="n">utils</span><span class="o">.</span><span class="n">gen_csrf_token</span><span class="p">(),</span> <span class="n">samesite</span><span class="o">=</span><span class="s1">&#39;Lax&#39;</span><span class="p">)</span>
+    <span class="c1"># add some headers for protection</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;X-Frame-Options&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;SAMEORIGIN&#39;</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;X-XSS-Protection&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;1; mode=block&#39;</span>
+    <span class="k">return</span> <span class="n">response</span></div>
+
+
+<div class="viewcode-block" id="api_base"><a class="viewcode-back" href="../code.app.html#app.api_base">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/api/&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">api_base</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;List entities.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">({</span><span class="s1">&#39;entities&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;dataset&#39;</span><span class="p">,</span> <span class="s1">&#39;order&#39;</span><span class="p">,</span> <span class="s1">&#39;project&#39;</span><span class="p">,</span> <span class="s1">&#39;user&#39;</span><span class="p">]})</span></div>
+
+
+<div class="viewcode-block" id="error_bad_request"><a class="viewcode-back" href="../code.app.html#app.error_bad_request">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">errorhandler</span><span class="p">(</span><span class="mi">400</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">error_bad_request</span><span class="p">(</span><span class="n">_</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Make sure a simple 400 is returned instead of an html page.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="error_unauthorized"><a class="viewcode-back" href="../code.app.html#app.error_unauthorized">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">errorhandler</span><span class="p">(</span><span class="mi">401</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">error_unauthorized</span><span class="p">(</span><span class="n">_</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Make sure a simple 401 is returned instead of an html page.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">401</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="error_forbidden"><a class="viewcode-back" href="../code.app.html#app.error_forbidden">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">errorhandler</span><span class="p">(</span><span class="mi">403</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">error_forbidden</span><span class="p">(</span><span class="n">_</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Make sure a simple 403 is returned instead of an html page.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">403</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="error_not_found"><a class="viewcode-back" href="../code.app.html#app.error_not_found">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">errorhandler</span><span class="p">(</span><span class="mi">404</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">error_not_found</span><span class="p">(</span><span class="n">_</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Make sure a simple 404 is returned instead of an html page.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">404</span><span class="p">)</span></div>
+
+
+<span class="c1"># to allow coverage check for testing</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">5000</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019-2020, SciLifeLab Data Centre
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

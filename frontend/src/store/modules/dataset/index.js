@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import {getXsrf} from '../../helpers.js';
+import {getCsrfHeader} from '../../helpers.js';
 
 const state = {
   dataset: {},
@@ -17,44 +17,44 @@ const mutations = {
 }
 
 const actions = {
-  getDataset ({ commit }, id) {
+  getDataset ({ commit, dispatch }, id) {
     return new Promise((resolve, reject) => {
       axios
-        .get('/api/dataset/' + id)
+        .get('/api/dataset/' + id + '/')
         .then((response) => {
-          commit('UPDATE_DATASET', response.data);
+          commit('UPDATE_DATASET', response.data.dataset);
           resolve(response);
         })
         .catch((err) => {
+          dispatch('updateNotification', ['Unable to retrieve dataset', 'warning'])
           reject(err);
         });
     });
   },
 
-  getDatasets ({ commit }) {
+  getDatasets ({ commit, dispatch }) {
     return new Promise((resolve, reject) => {
       axios
-        .get('/api/datasets')
+        .get('/api/dataset/')
         .then((response) => {
           commit('UPDATE_DATASETS', response.data.datasets);
           resolve(response);
         })
-      .catch((err) => {
-        reject(err);
+        .catch((err) => {
+          dispatch('updateNotification', ['Unable to retrieve dataset list', 'warning'])
+          reject(err);
       });
     });
-  },                  
+  },
 
   deleteDataset (context, dataset_id) {
     return new Promise((resolve, reject) => {
       axios
-        .post('/api/dataset/delete',
-              {
-                'id': dataset_id,
-              },
-              {
-                headers: {'X-Xsrftoken': getXsrf()},
-              })
+        .delete('/api/dataset/' + dataset_id + '/',
+                {},
+                {
+                  headers: getCsrfHeader(),
+                })
         .then((response) => {
           resolve(response);
         })
@@ -63,21 +63,20 @@ const actions = {
         });
     });
   },
+
   saveDataset (context, payload) {
     return new Promise((resolve, reject) => {
-      const newDataset = {'dataset': payload};
+      const newDataset = payload;
       let url = '';
-      if (newDataset.dataset.id === -1) {
-        url = '/api/dataset/add';
-      }
-      else {
-        url = '/api/dataset/' + newDataset.dataset.id + '/update';
-      }
+        url = '/api/dataset/' + newDataset.uuid + '/edit/';
+      delete newDataset.uuid;
+      delete newDataset.identifier;
+      delete newDataset.dataUrls;
       axios
         .post(url,
               newDataset,
               {
-                headers: {'X-Xsrftoken': getXsrf()},
+                headers: getCsrfHeader(),
               })
         .then((response) => {
           resolve(response);

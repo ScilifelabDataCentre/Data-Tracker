@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import {getXsrf} from '../../helpers.js';
+import {getCsrfHeader} from '../../helpers.js';
 
 const state = {
   project: {},
@@ -17,30 +17,32 @@ const mutations = {
 }
 
 const actions = {
-  getProject ({ commit }, id) {
+  getProject ({ commit, dispatch }, id) {
     return new Promise((resolve, reject) => {
       axios
-        .get('/api/project/' + id)
+        .get('/api/project/' + id + '/')
         .then((response) => {
-          commit('UPDATE_PROJECT', response.data);
+          commit('UPDATE_PROJECT', response.data.project);
           resolve(response);
         })
         .catch((err) => {
+          dispatch('updateNotification', ['Unable to retrieve project', 'warning'])
           reject(err);
         });
     });
   },
 
-  getProjects ({ commit }) {
+  getProjects ({ commit, dispatch }) {
     return new Promise((resolve, reject) => {
       axios
-        .get('/api/projects')
+        .get('/api/project/')
         .then((response) => {
           commit('UPDATE_PROJECTS', response.data.projects);
           resolve(response);
         })
-      .catch((err) => {
-        reject(err);
+        .catch((err) => {
+          dispatch('updateNotification', ['Unable to retrieve project list', 'warning'])
+          reject(err);
       });
     });
   },
@@ -53,7 +55,7 @@ const actions = {
                 'id': project_id,
               },
               {
-                headers: {'X-Xsrftoken': getXsrf()},
+                headers: getCsrfHeader(),
               })
         .then((response) => {
           resolve(response);
@@ -68,7 +70,7 @@ const actions = {
       const newProject = {'project': payload};
       let url = '';
       if (newProject.project.id === -1) {
-        url = '/api/project/add';
+        url = '/api/project/add/';
       }
       else {
         url = '/api/project/' + newProject.project.id + '/update';
@@ -77,7 +79,7 @@ const actions = {
         .post(url,
               newProject,
               {
-                headers: {'X-Xsrftoken': getXsrf()},
+                  headers: getCsrfHeader(),
               })
         .then((response) => {
           resolve(response);

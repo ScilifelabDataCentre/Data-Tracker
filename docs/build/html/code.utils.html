@@ -1,0 +1,528 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>utils.py &mdash; Data Tracker  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="static/documentation_options.js"></script>
+        <script src="static/jquery.js"></script>
+        <script src="static/underscore.js"></script>
+        <script src="static/doctools.js"></script>
+        <script src="static/language_data.js"></script>
+    
+    <script type="text/javascript" src="static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="validate.py" href="code.validate.html" />
+    <link rel="prev" title="user.py" href="code.user.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Data Tracker
+          
+
+          
+            
+            <img src="static/data-centre-logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_structure.html">Data Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="implementation.html">Implementation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="development.html">Development</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="development.quick_environment.html">System for development</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="modules.html">Code reference</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="code.app.html">app.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code.config.html">config.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code.dataset.html">dataset.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code.developer.html">developer.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code.order.html">order.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code.project.html">project.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code.structure.html">structure.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code.user.html">user.py</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">utils.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code.validate.html">validate.py</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Data Tracker</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="development.html">Development</a> &raquo;</li>
+        
+          <li><a href="modules.html">Code reference</a> &raquo;</li>
+        
+      <li>utils.py</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/ScilifelabDataCentre/SciLifeLab-Data-Tracker/blob/develop/docs/source/code.utils.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-utils">
+<span id="utils-py"></span><h1>utils.py<a class="headerlink" href="#module-utils" title="Permalink to this headline">¶</a></h1>
+<p>General helper functions.</p>
+<dl class="function">
+<dt id="utils.basic_check_indata">
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">basic_check_indata</code><span class="sig-paren">(</span><em class="sig-param">indata: dict, reference_data: dict, prohibited: Union[tuple, list]</em><span class="sig-paren">)</span> &#x2192; tuple<a class="reference internal" href="modules/utils.html#basic_check_indata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.basic_check_indata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform basic checks of indata.</p>
+<ul class="simple">
+<li><p>All fields are allowed in the entity type</p></li>
+<li><p>All fields are of the correct type</p></li>
+<li><p>All prohibited fields are unchanged (if update)</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>indata</strong> (<em>dict</em>) – The incoming data.</p></li>
+<li><p><strong>reference_data</strong> (<em>dict</em>) – Either the old data or a reference dict.</p></li>
+<li><p><strong>prohibited</strong> (<em>Union</em><em>[</em><em>tuple</em><em>, </em><em>list</em><em>]</em>) – Fields that may not be modified.
+If they are included in <code class="docutils literal notranslate"><span class="pre">indata</span></code>, their values must be equal to the
+values in <code class="docutils literal notranslate"><span class="pre">reference_data</span></code>. Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(<code class="docutils literal notranslate"><span class="pre">bool</span></code>: whether the check passed, <code class="docutils literal notranslate"><span class="pre">code</span></code>: Suggested http code)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils.check_email_uuid">
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">check_email_uuid</code><span class="sig-paren">(</span><em class="sig-param">user_identifier: str</em><span class="sig-paren">)</span> &#x2192; Union[str, uuid.UUID]<a class="reference internal" href="modules/utils.html#check_email_uuid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.check_email_uuid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the provided user is found in the db as email or _id.</p>
+<p>If the user is found, return the user.UUID of the user.
+If the identifier is a uuid, return a user.UUID.
+If the identifier is an email, return the email.</p>
+<p class="rubric">Notes</p>
+<p><code class="docutils literal notranslate"><span class="pre">user_identifier</span></code> is assumed to be either a valid email or a valid uuid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>user_identifier</strong> (<em>str</em>) – The identifier to look up.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The new value for the field.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Union[str, uuid.UUID]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils.convert_keys_to_camel">
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">convert_keys_to_camel</code><span class="sig-paren">(</span><em class="sig-param">chunk: Any</em><span class="sig-paren">)</span> &#x2192; Any<a class="reference internal" href="modules/utils.html#convert_keys_to_camel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.convert_keys_to_camel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert keys given in snake_case to camelCase.</p>
+<p>The capitalization of the first letter is preserved.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>chunk</strong> (<em>Any</em>) – Object to convert.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Chunk converted to camelCase <cite>dict</cite>, otherwise chunk.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils.gen_api_key">
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">gen_api_key</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#gen_api_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.gen_api_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate an API key with salt.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The API key with salt.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>APIkey</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils.gen_api_key_hash">
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">gen_api_key_hash</code><span class="sig-paren">(</span><em class="sig-param">api_key: str</em>, <em class="sig-param">salt: str</em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#gen_api_key_hash"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.gen_api_key_hash" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a hash of the api_key for storing/comparing to db.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>api_key</strong> (<em>str</em>) – The cleartext API key (hex).</p></li>
+<li><p><strong>salt</strong> (<em>str</em>) – The salt to use (hex).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>SHA512 hash as hex.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils.gen_csrf_token">
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">gen_csrf_token</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="modules/utils.html#gen_csrf_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.gen_csrf_token" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a csrf token.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The csrf token.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils.get_db">
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">get_db</code><span class="sig-paren">(</span><em class="sig-param">dbserver: pymongo.mongo_client.MongoClient</em>, <em class="sig-param">conf</em><span class="sig-paren">)</span> &#x2192; pymongo.database.Database<a class="reference internal" href="modules/utils.html#get_db"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.get_db" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the connection to the MongoDB database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dbserver</strong> (<em>pymongo.mongo_client.MongoClient</em>) – Connection to the database.</p></li>
+<li><p><strong>conf</strong> – A mapping with the relevant mongo keys available.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The database connection.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pymongo.database.Database</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils.get_dbclient">
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">get_dbclient</code><span class="sig-paren">(</span><em class="sig-param">conf</em><span class="sig-paren">)</span> &#x2192; pymongo.mongo_client.MongoClient<a class="reference internal" href="modules/utils.html#get_dbclient"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.get_dbclient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the connection to the MongoDB database server.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>conf</strong> – A mapping with the relevant mongo keys available.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The client connection.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pymongo.mongo_client.MongoClient</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils.incremental_logs">
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">incremental_logs</code><span class="sig-paren">(</span><em class="sig-param">logs: list</em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#incremental_logs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.incremental_logs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make an incremental log.</p>
+<p>The log starts from the first log and keeps only
+the changed fields in <code class="docutils literal notranslate"><span class="pre">data</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">logs</span></code> is changed in-place.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils.is_email">
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">is_email</code><span class="sig-paren">(</span><em class="sig-param">indata: str</em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#is_email"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.is_email" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check whether a string seems to be an email address or not.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>indata</strong> (<em>str</em>) – Data to check.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Is the indata an email address or not.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils.make_log">
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">make_log</code><span class="sig-paren">(</span><em class="sig-param">data_type: str</em>, <em class="sig-param">action: str</em>, <em class="sig-param">comment: str</em>, <em class="sig-param">data: dict = None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#make_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.make_log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log a change in the system.</p>
+<p>Saves a complete copy of the new object.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>It is assumed that all values are exactly like in the db,
+e.g. <code class="docutils literal notranslate"><span class="pre">data</span></code> should only contain permitted fields.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>action</strong> (<em>str</em>) – Type of action (add, edit, delete).</p></li>
+<li><p><strong>comment</strong> (<em>str</em>) – Note about why the change was done
+(e.g. “Dataset added via addDataset”).</p></li>
+<li><p><strong>data_type</strong> (<em>str</em>) – The collection name.</p></li>
+<li><p><strong>data</strong> (<em>dict</em>) – The new data for the entry.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Whether the log insertion successed.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils.make_timestamp">
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">make_timestamp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#make_timestamp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.make_timestamp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a timestamp of the current time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The current time.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>datetime.datetime</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils.new_uuid">
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">new_uuid</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; uuid.UUID<a class="reference internal" href="modules/utils.html#new_uuid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.new_uuid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a uuid for a field in a MongoDB document.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The new uuid in binary format.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>uuid.UUID</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils.response_json">
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">response_json</code><span class="sig-paren">(</span><em class="sig-param">json_structure: dict</em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#response_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.response_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert keys to camelCase and run <code class="docutils literal notranslate"><span class="pre">flask.jsonify()</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>json_structure</strong> (<em>dict</em>) – Structure to prepare.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Prepared response containing json structure with camelBack keys.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>flask.Response</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils.str_to_uuid">
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">str_to_uuid</code><span class="sig-paren">(</span><em class="sig-param">uuid_str: str</em><span class="sig-paren">)</span> &#x2192; uuid.UUID<a class="reference internal" href="modules/utils.html#str_to_uuid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.str_to_uuid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert str uuid to uuid.UUID.</p>
+<p>Provided as a convenience function if the identifier must be changed in the future.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>uuid_str</strong> (<em>str</em>) – The uuid to be converted.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The uuid.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>uuid.UUID</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils.verify_api_key">
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">verify_api_key</code><span class="sig-paren">(</span><em class="sig-param">username: str</em>, <em class="sig-param">api_key: str</em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#verify_api_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.verify_api_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verify an API key against the value in the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>username</strong> (<em>str</em>) – The username to check.</p></li>
+<li><p><strong>api_key</strong> (<em>str</em>) – The received API key (hex).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Whether the verification succeeded.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils.verify_csrf_token">
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">verify_csrf_token</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#verify_csrf_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.verify_csrf_token" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compare the csrf token from the request (header) with the one in the cookie.session.</p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="code.validate.html" class="btn btn-neutral float-right" title="validate.py" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="code.user.html" class="btn btn-neutral float-left" title="user.py" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019-2020, SciLifeLab Data Centre
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

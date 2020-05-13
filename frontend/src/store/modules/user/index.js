@@ -1,12 +1,26 @@
 import axios from 'axios';
 
+import {getCsrfHeader} from '../../helpers.js';
+
 const state = {
   user: {},
+  user_datasets: [],
+  user_orders: [],
+  user_projects: [],
 }
 
 const mutations = {
   UPDATE_USER (state, payload) {
     state.user = payload;
+  },
+  UPDATE_USER_DATASETS (state, payload) {
+    state.user_datasets = payload;
+  },
+  UPDATE_USER_ORDERS (state, payload) {
+    state.user_orders = payload;
+  },
+  UPDATE_USER_PROJECTS (state, payload) {
+    state.user_projects = payload;
   },
 }
 
@@ -14,9 +28,71 @@ const actions = {
   getUser ({ commit }) {
     return new Promise((resolve, reject) => {
       axios
-        .get('/api/users/me')
+        .get('/api/user/me/')
         .then((response) => {
-          commit('UPDATE_USER', response.data);
+          commit('UPDATE_USER', response.data.user);
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    });
+  },
+
+  loginKey (context, payload) {
+    return new Promise((resolve, reject) => {
+      let loginData = {};
+      loginData['api-username'] = payload.apiUsername;
+      loginData['api-key'] = payload.apiKey;
+      axios
+        .post('/api/user/login/apikey',
+              loginData,
+              {
+                headers: getCsrfHeader(),
+              })
+        .then((response) => {
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    });
+  },
+
+  getUserOrders ({ commit }) {
+    return new Promise((resolve, reject) => {
+      axios
+        .get('/api/order/user/')
+        .then((response) => {
+          commit('UPDATE_USER_ORDERS', response.data.orders);
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    });
+  },
+
+  getUserDatasets ({ commit }) {
+    return new Promise((resolve, reject) => {
+      axios
+        .get('/api/dataset/user/')
+        .then((response) => {
+          commit('UPDATE_USER_DATASETS', response.data.datasets);
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    });
+  },
+
+  getUserProjects ({ commit }) {
+    return new Promise((resolve, reject) => {
+      axios
+        .get('/api/project/user/')
+        .then((response) => {
+          commit('UPDATE_USER_PROJECTS', response.data.projects);
           resolve(response);
         })
         .catch((err) => {
@@ -28,6 +104,9 @@ const actions = {
 
 const getters = {
   user: state => state.user,
+  user_orders: state => state.user_orders,
+  user_datasets: state => state.user_datasets,
+  user_projects: state => state.user_projects,
 }
 
 const userModule = {

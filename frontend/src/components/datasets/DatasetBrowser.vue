@@ -1,17 +1,17 @@
 <template>
 <div class="dataset-browser">
-  <h3 class="subtitle is-3">Datasets</h3>
-  <button class="button is-link" v-if="user.permission === 'Steward' || user.permission === 'Admin'" @click="addDataset">
-    Add
-  </button>
-  <dataset-entry v-for="dataset in datasets" :key="dataset.id" :dataset="dataset">
-  </dataset-entry>
+  <h1 class="title is-2">Datasets</h1>
+  <router-link v-if="user.role === 'Steward' || user.role === 'Admin'" to="/dataset/add">
+    <img class="icon-add" :src="require('../../assets/open-iconic/svg/plus.svg')" alt="Add" />
+  </router-link>
+  <browser-entry v-for="dataset in datasets" :key="dataset.id" :entry="dataset" entry_type="dataset">
+  </browser-entry>
 </div>
 </template>
 
 <script>
 import {mapGetters} from 'vuex';
-import DatasetEntry from './DatasetEntry.vue';
+import BrowserEntry from '../BrowserEntry.vue';
 
 export default {
   name: 'DatasetBrowser',
@@ -23,21 +23,17 @@ export default {
     ...mapGetters(['datasets', 'user']),
   },
   components: {
-    'dataset-entry': DatasetEntry
+    'browser-entry': BrowserEntry
   },
   created () {
     this.$store.dispatch('getDatasets');
   },
-  methods: {
-    addDataset(event) {
-      event.preventDefault();
-      this.$router.push("/dataset/add");
-    },
-  },
-
 }
 </script>
 
 <style scoped>
-
+.icon-add {
+  width: 1.2em;
+  height: 1.2em;
+}
 </style>

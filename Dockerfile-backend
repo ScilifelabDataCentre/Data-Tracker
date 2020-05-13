@@ -1,14 +1,14 @@
-FROM ubuntu:18.04
-
-RUN apt-get update && apt-get install -y \
-        python3 \
-        python3-pip
+FROM python:alpine
 
 ADD . /code
-COPY settings_sample.json /settings.json
-RUN sed -i 's/"postgresHost"\s*:.*,/"postgresHost" : "db",/' /settings.json
-WORKDIR /code
+COPY config.yaml.sample /config.yaml
+RUN sed -i 's/host:.*/host: "db"/' /config.yaml
+RUN sed -i 's/api: false/api: true/' /config.yaml
+RUN sed -i 's/testing: false/testing: true/' /config.yaml
+WORKDIR /code/backend
 
-RUN pip3 install -r backend/requirements.txt
+ENV PYTHONPATH /code/backend
 
-CMD ["python3", "backend/route.py", "--develop", "--settings_file", "/settings.json"]
+RUN pip3 install -r requirements.txt
+
+CMD ["python3", "app.py", "--config_file", "/config.yaml"]

@@ -1,0 +1,444 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>validate.py &mdash; Data Tracker  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="static/documentation_options.js"></script>
+        <script src="static/jquery.js"></script>
+        <script src="static/underscore.js"></script>
+        <script src="static/doctools.js"></script>
+        <script src="static/language_data.js"></script>
+    
+    <script type="text/javascript" src="static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="utils.py" href="code.utils.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Data Tracker
+          
+
+          
+            
+            <img src="static/data-centre-logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_structure.html">Data Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="implementation.html">Implementation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="development.html">Development</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="development.quick_environment.html">System for development</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="modules.html">Code reference</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="code.app.html">app.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code.config.html">config.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code.dataset.html">dataset.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code.developer.html">developer.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code.order.html">order.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code.project.html">project.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code.structure.html">structure.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code.user.html">user.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="code.utils.html">utils.py</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">validate.py</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Data Tracker</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="development.html">Development</a> &raquo;</li>
+        
+          <li><a href="modules.html">Code reference</a> &raquo;</li>
+        
+      <li>validate.py</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/ScilifelabDataCentre/SciLifeLab-Data-Tracker/blob/develop/docs/source/code.validate.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-validate">
+<span id="validate-py"></span><h1>validate.py<a class="headerlink" href="#module-validate" title="Permalink to this headline">¶</a></h1>
+<p>Validators for indata.</p>
+<p>Indata can be sent to <code class="docutils literal notranslate"><span class="pre">validate_indata</span></code>, which will use the corresponding
+functions to check each field.</p>
+<dl class="function">
+<dt id="validate.validate_datasets">
+<code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_datasets</code><span class="sig-paren">(</span><em class="sig-param">data: list</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_datasets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_datasets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate input for the <code class="docutils literal notranslate"><span class="pre">datasets</span></code> field.</p>
+<p>It must be a list of uuids. Validate that the datasets exist in the db.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>str</em>) – The data to be validated.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Validation passed.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – Validation failed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="validate.validate_email">
+<code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_email</code><span class="sig-paren">(</span><em class="sig-param">data</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_email"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_email" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate input for the <code class="docutils literal notranslate"><span class="pre">email</span></code> field.</p>
+<p>It must be a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> – The data to be validated.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Validation passed.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – Validation failed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="validate.validate_extra">
+<code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_extra</code><span class="sig-paren">(</span><em class="sig-param">data</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_extra"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_extra" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate input for the <code class="docutils literal notranslate"><span class="pre">extra</span></code> field.</p>
+<p>It must be a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> – The data to be validated.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Validation passed.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – Validation failed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="validate.validate_field">
+<code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_field</code><span class="sig-paren">(</span><em class="sig-param">field_key: str</em>, <em class="sig-param">field_value: Any</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_field"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_field" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate that the input data matches expectations.</p>
+<p>Will check the data based on the key.</p>
+<p>The validation is only done at the technical level,
+e.g. a check that input is of the correct type.</p>
+<p>Checks for e.g. permissions and that the correct fields are provided
+for the entry must be performed separately.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>field_key</strong> (<em>str</em>) – The field to validate.</p></li>
+<li><p><strong>field_value</strong> (<em>Any</em>) – The value to validate.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Whether validation passed.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="validate.validate_links">
+<code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_links</code><span class="sig-paren">(</span><em class="sig-param">data: list</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_links"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_links" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate input for the <code class="docutils literal notranslate"><span class="pre">links</span></code> field.</p>
+<p>It must have the form <code class="docutils literal notranslate"><span class="pre">[{'url':</span> <span class="pre">value,</span> <span class="pre">'description':</span> <span class="pre">value},</span> <span class="pre">...]</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> – The data to be validated.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Validation passed.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – Validation failed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="validate.validate_permissions">
+<code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_permissions</code><span class="sig-paren">(</span><em class="sig-param">data: list</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_permissions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_permissions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate input for the <code class="docutils literal notranslate"><span class="pre">permissions</span></code> field.</p>
+<p>It must be a list containing permissions found in <code class="docutils literal notranslate"><span class="pre">PERMISSIONS</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>list</em>) – The data to be validated.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Validation passed.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – Validation failed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="validate.validate_publications">
+<code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_publications</code><span class="sig-paren">(</span><em class="sig-param">data: list</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_publications"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_publications" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate input for the <code class="docutils literal notranslate"><span class="pre">publications</span></code> field.</p>
+<p>It must have the form <code class="docutils literal notranslate"><span class="pre">[{'title':</span> <span class="pre">value,</span> <span class="pre">'doi':</span> <span class="pre">value},</span> <span class="pre">...]</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>list</em>) – The data to be validated.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Validation passed.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – Validation failed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="validate.validate_string">
+<code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_string</code><span class="sig-paren">(</span><em class="sig-param">data: str</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate input for field that must have a <code class="docutils literal notranslate"><span class="pre">str</span></code> value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> – The data to be validated.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Validation passed.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – Validation failed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="validate.validate_title">
+<code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_title</code><span class="sig-paren">(</span><em class="sig-param">data: str</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_title"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_title" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate input for the <code class="docutils literal notranslate"><span class="pre">title</span></code> field.</p>
+<p>It must be a non-empty string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> – The data to be validated.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Validation passed.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – Validation failed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="validate.validate_user">
+<code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_user</code><span class="sig-paren">(</span><em class="sig-param">data: Union[str, list]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate input for the <code class="docutils literal notranslate"><span class="pre">title</span></code> field.</p>
+<p>It must be a non-empty string.
+If uuid, confirms that uuid is present in db.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>list</em><em>]</em>) – The data to be validated.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Validation passed.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – Validation failed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="code.utils.html" class="btn btn-neutral float-left" title="utils.py" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019-2020, SciLifeLab Data Centre
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

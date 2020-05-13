@@ -1,56 +1,64 @@
 <template>
 <div class="dataset-info">
-  <div class="warning" v-if="Object.keys(dataset).length === 0">
-    <span>Unable to retrieve dataset</span>
-  </div>
-  <div v-else>
+  <div v-if="Object.keys(dataset).length > 0">
     <h1 class="title is-2">{{ dataset.title }}</h1>
     <div class="dataset-description field" v-html="dataset.description"></div>
-    <table class="table">
-      <tr v-if="dataset.creator"><td class="data-header">Creator</td><td>{{ dataset.creator }}</td></tr>
-      <tr v-if="dataset.doi"><td class="data-header">DOI</td><td>{{ dataset.doi }}</td></tr>
-      <tr v-if="dataset.dmp"><td class="data-header"><abbr title="Data management plan">DMP</abbr></td><td>{{ dataset.dmp }}</td></tr>
+    <table class="table is-hoverable is-striped">
+      <tbody>
+        <tr>
+          <th scope="row">
+            Dataset creator
+          </th>
+          <td>
+            {{ dataset.creator }}
+          </td>
+        </tr>
+        <tr v-if="dataset.links.length > 0">
+          <th scope="row">
+            Links
+          </th>
+          <td>
+            <ul v-for="location in dataset.links" :key="location.url">
+              <li class="test"><a :href="location.url">{{location.description}}</a></li>
+            </ul>
+          </td>
+        </tr>
+        <tr v-if="dataset.projects.length > 0">
+          <th scope="row">
+            Projects
+          </th>
+          <td>
+            <ul v-for="project in dataset.projects" :key="project._id">
+              <li class="test"><a :href="'/project/' + project._id">{{project.title}}</a></li>
+            </ul>
+          </td>
+        </tr>
+        <tr v-if="dataset.related.length > 0">
+          <th scope="row">
+            Related datasets
+          </th>
+          <td>
+            <ul v-for="dataset in dataset.related" :key="dataset._id">
+              <li class="test"><a :href="'/dataset/' + dataset._id">{{dataset.title}}</a></li>
+            </ul>
+          </td>
+        </tr>
+        <tr v-for="extraField in dataset.extras" :key="extraField.key">
+          <th scope="row" :rowspan="user.permissions.length">
+            {{ extraField.key }}
+          </th>
+          <td>
+            {{ extraField.value }}
+          </td>
+        </tr>
+      </tbody>
     </table>
-    
-    <div v-if="dataset.dataUrls">
-      <h2 class="title is-5">Data locations</h2>
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Description</th><th>URL</th>
-          </tr>
-        </thead>
-        <tr v-for="location in dataset.dataUrls" :key="location.id">
-          <td>{{location.description}}</td><td>{{location.url}}</td>
-        </tr>
-      </table>
-    </div>
-    <div v-if="dataset.publications">
-      <h2 class="title is-5">Publications</h2>
-      <table class="table">
-        <tr v-for="publication in dataset.publications" :key="publication.id">
-          <td>{{publication.identifier}}</td>
-        </tr>
-      </table>
-    </div>
-    <div v-if="dataset.tags">
-      <h2 class="title is-5">Tags</h2>
-      <table class="table">
-        <tr v-for="tag in dataset.tags" :key="tag.id">
-          <td>{{tag.title}}</td>
-        </tr>
-      </table>
-    </div>
-    <div v-if="dataset.projects">
-      <h2 class="title is-5">Projects</h2>
-      <div class="dataset-project" v-for="project in dataset.projects" :key="project">
-	<router-link :to="'/project/' + project + '/about'">{{ project }}</router-link>
-      </div>
-    </div>
   </div>
-  <button class="button is-link" @click="editDataset">
-    Edit
-  </button>
+  <router-link :to="'/dataset/' + uuid + '/edit'" v-if="dataset.creator === user.name || user.permissions.includes('DATA_MANAGEMENT')">
+    <button class="button is-link">
+      Edit
+    </button>
+  </router-link>
 </div>
 </template>
 
@@ -59,24 +67,18 @@ import {mapGetters} from 'vuex';
 
 export default {
   name: 'DatasetAbout',
-  props: ['id'],
+  props: ['uuid'],
   components: {
   },
   computed: {
-    ...mapGetters(['dataset']),
+    ...mapGetters(['dataset', 'user']),
   },
   data () {
     return {
     }
   },
   created () {
-    this.$store.dispatch('getDataset', this.id);
-  },
-  methods: {
-    editDataset(event) {
-      event.preventDefault();
-      this.$router.push("/dataset/" + this.$props.id + "/edit");
-    },
+    this.$store.dispatch('getDataset', this.uuid);
   },
 }
 </script>
@@ -94,7 +96,7 @@ export default {
     font-weight: bold;
 }
 
-.field-header {
+.field-header.td {
     font-weight: bold;
 }
 
@@ -102,9 +104,16 @@ export default {
     margin: 0.4em 0em;
 }
 
+.table td {
+    border: 0px;
+}
 .warning {
     font-weight: bold;
     text-align: center;
     font-size: large;
+}
+.timestamp {
+    font-style: italic;
+    font-size: 1em;
 }
 </style>
