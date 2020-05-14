@@ -54,7 +54,7 @@ def oidc_login():
 
 
 # requests
-@blueprint.route('/login/apikey', methods=['POST'])
+@blueprint.route('/login/apikey/', methods=['POST'])
 def key_login():
     """Log in using an apikey."""
     try:
@@ -62,11 +62,11 @@ def key_login():
     except json.decoder.JSONDecodeError:
         flask.abort(status=400)
 
-    if not 'api-username' in indata or not 'api-key' in indata:
+    if not 'api-user' in indata or not 'api-key' in indata:
+        logging.debug('API key login - bad keys: %s', indata)
         return flask.Response(status=400)
-    if not utils.verify_api_key(indata['api-username'], indata['api-key']):
-        return flask.Response(status=401)
-    do_login(auth_id=indata['api-username'])
+    utils.verify_api_key(indata['api-user'], indata['api-key'])
+    do_login(auth_id=indata['api-user'])
     return flask.Response(status=200)
 
 
@@ -114,7 +114,7 @@ def get_current_user_info():
     return flask.jsonify({'user': outstructure})
 
 # requests
-@blueprint.route('/me/apikey')
+@blueprint.route('/me/apikey/')
 @login_required
 def get_new_api_key():
     """
