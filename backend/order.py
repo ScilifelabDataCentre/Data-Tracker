@@ -170,6 +170,7 @@ def add_order():  # pylint: disable=too-many-branches
     try:
         indata = flask.json.loads(flask.request.data)
     except json.decoder.JSONDecodeError:
+        logging.debug('Bad json')
         flask.abort(status=400)
 
     validation = utils.basic_check_indata(indata, order, ['_id'])
