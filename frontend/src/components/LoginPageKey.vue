@@ -8,7 +8,7 @@
              name="USERNAME"
              type="text"
              placeholder="username"
-             v-model="loginInfo.apiUsername"/>
+             v-model="loginInfo.apiUser"/>
     </div>
     <div class="field">
       <input id="apikey"
@@ -31,7 +31,7 @@ export default {
   data () {
     return {
       loginInfo: {
-        'apiUsername': '',
+        'apiUser': '',
         'apiKey': '',
       },
     }
@@ -39,7 +39,9 @@ export default {
   methods: {
     submitLogin(event) {
       event.preventDefault();
-      this.$store.dispatch('loginKey', this.loginInfo)
+      let loginData = {'api-key': this.loginInfo.apiKey,
+                       'api-user': this.loginInfo.apiUser}
+      this.$store.dispatch('loginKey', loginData)
         .then((response) => {
           // add performed
           let uuid = '';

@@ -41,12 +41,9 @@ const actions = {
 
   loginKey (context, payload) {
     return new Promise((resolve, reject) => {
-      let loginData = {};
-      loginData['api-username'] = payload.apiUsername;
-      loginData['api-key'] = payload.apiKey;
       axios
-        .post('/api/user/login/apikey',
-              loginData,
+        .post('/api/user/login/apikey/',
+              payload,
               {
                 headers: getCsrfHeader(),
               })
