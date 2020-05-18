@@ -40,7 +40,13 @@
           <a href="/api/user/logout" class="navbar-item">Logout</a>
         </div>
       </div>
-      <a v-else href="/elixir/login" class="navbar-item">Log in</a>
+      <div v-else class="navbar-item has-dropdown is-hoverable">
+        <a class="navbar-link">Log In</a>
+        <div class="navbar-dropdown">
+          <a class="navbar-item" href="/api/user/login/">Elixir AAI</a>
+          <router-link to="/login/key" class="navbar-item">API key</router-link>
+        </div>
+      </div>
     </div>
   </div>
 </nav>
