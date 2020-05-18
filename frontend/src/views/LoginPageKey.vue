@@ -42,16 +42,8 @@ export default {
       let loginData = {'api-key': this.loginInfo.apiKey,
                        'api-user': this.loginInfo.apiUser}
       this.$store.dispatch('loginKey', loginData)
-        .then((response) => {
-          // add performed
-          let uuid = '';
-          if (response.data) {
-            uuid = response.data.uuid;
-          }
-          else {
-            uuid = this.newDataset.uuid
-          }
-          this.$router.push("/dataset/" + uuid + "/about");
+        .then(() => {
+          this.$router.push("/");
         });
     },
   },

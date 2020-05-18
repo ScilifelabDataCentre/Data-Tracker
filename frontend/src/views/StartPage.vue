@@ -5,15 +5,11 @@
   </section>
   <div class="columns">
     <div class = "column" v-if="random_proj">
-      <h4 class="title is-4">
-        Random Project
-      </h4>
+      <h4 class="title is-4">Random Project</h4>
       <browser-entry v-if="random_proj" :entry="random_proj.projects[0]" entry_type="project"></browser-entry>
     </div>
     <div class = "column" v-if="random_ds">
-      <h4 class="title is-4">
-        Random Dataset
-      </h4>
+      <h4 class="title is-4">Random Dataset</h4>
       <browser-entry v-if="random_ds" :entry="random_ds.datasets[0]" entry_type="dataset"></browser-entry>
     </div>
   </div>
@@ -21,7 +17,7 @@
 </template>
 
 <script>
-import BrowserEntry from './BrowserEntry.vue';
+import BrowserEntry from '../components/BrowserEntry.vue';
 import axios from 'axios';
 
 export default {

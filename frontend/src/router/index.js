@@ -5,9 +5,9 @@ import AboutPage from '../components/AboutPage.vue'
 
 import NotFound from '../components/NotFound.vue'
 
-import StartPage from '../components/StartPage.vue'
+import StartPage from '../views/StartPage.vue'
 
-import LoginPageKey from '../components/LoginPageKey.vue'
+import LoginPageKey from '../views/LoginPageKey.vue'
 
 import UserAbout from '../components/user/UserAbout.vue'
 import UserContainer from '../components/user/UserContainer.vue'
