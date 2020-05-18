@@ -2,24 +2,41 @@
 <div class="login-key">
   <h1 class="subtitle is-1"></h1>
   <form @submit="submitLogin">
-    <div class="field">
-      <input id="username"
-             class="input"
-             name="USERNAME"
-             type="text"
-             placeholder="username"
-             v-model="loginInfo.apiUser"/>
+    <div class="field is-horizontal">
+      <div class="field-label is-normal">
+        <label class="label" for="apikey">User</label>
+      </div>
+      <div class="field-body">
+        <input id="username"
+               :class="{input: true, 'is-danger': badLogin}"
+               name="USERNAME"
+               type="text"
+               placeholder="username"
+               v-model="loginInfo.apiUser"/>
+      </div>
     </div>
-    <div class="field">
-      <input id="apikey"
-             class="input"
-             name="APIKEY"
-             type="password"
-             placeholder="API key"
-             v-model="loginInfo.apiKey"/>
+    <div class="field is-horizontal">
+      <div class="field-label is-normal">
+        <label class="label" for="apikey">API Key</label>
+      </div>
+      <div class="field-body">
+        <input id="apikey"
+               :class="{input: true, 'is-danger': badLogin}"
+               name="APIKEY"
+               type="password"
+               placeholder="API key"
+               v-model="loginInfo.apiKey"/>
+      </div>
     </div>
-    <div class="control">
-      <button class="button is-link">Submit</button>
+    <div class="field is-horizontal">
+      <div class="field-label is-normal">
+      </div>
+      <div class="field-body">
+        <div class="control">
+          <button class="button is-link">Submit</button>
+          <p v-if="badLogin" class="help is-danger">Bad credentials</p>
+        </div>
+      </div>
     </div>
   </form>
 </div>
@@ -34,6 +51,7 @@ export default {
         'apiUser': '',
         'apiKey': '',
       },
+      badLogin: false,
     }
   },
   methods: {
@@ -44,6 +62,12 @@ export default {
       this.$store.dispatch('loginKey', loginData)
         .then(() => {
           this.$router.push("/");
+          this.$store.dispatch('getUser');
+        })
+        .catch(() => {
+          console.log('doh');
+          this.$store.dispatch('updateNotification', ['Bad login credentials', 'warning']);
+          this.badLogin = true;
         });
     },
   },
