@@ -20,11 +20,11 @@
       <img class="icon-home" :src="require('../assets/open-iconic/svg/home.svg')" alt="Start page" />
     </router-link>
     <router-link to="/search" class="navbar-item">Search</router-link>
-    <router-link to="/project" class="navbar-item">Projects</router-link>
-    <router-link  v-if="user.role === 'Admin'" to="/order" class="navbar-item">Orders</router-link>
+    <router-link  v-if="user.permissions.includes('DATA_MANAGEMENT') || user.permissions.includes('ORDERS_SELF')" to="/order" class="navbar-item">Orders</router-link>
     <router-link to="/dataset" class="navbar-item">Datasets</router-link>
+    <router-link to="/project" class="navbar-item">Projects</router-link>
     <router-link to="/about" class="navbar-item">About</router-link>
-    <div v-if="user.role === 'Admin'" class="navbar-item has-dropdown is-hoverable">
+    <div v-if="user.permissions.includes('USER_MANAGEMENT')" class="navbar-item has-dropdown is-hoverable">
       <a class="navbar-link">Admin</a>
       <div class="navbar-dropdown">
         <router-link to="/admin/stats" class="navbar-item">Statistics</router-link>
