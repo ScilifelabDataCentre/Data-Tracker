@@ -205,24 +205,7 @@ export default {
 </script>
 
 <style scoped>
-.order-title {
-    font-weight: bold;
-    font-size: 2em;
-    text-align: center;
-    margin: 0em 0em 0.4em 0em;
-}
-
-.field-label {
-    font-weight: bold;
-}
-
 .field {
     margin: 0.4em 0em;
-}
-
-.warning {
-    font-weight: bold;
-    text-align: center;
-    font-size: large;
 }
 </style>
