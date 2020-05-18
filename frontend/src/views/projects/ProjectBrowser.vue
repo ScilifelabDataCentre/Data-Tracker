@@ -11,7 +11,7 @@
 
 <script>
 import {mapGetters} from 'vuex';
-import BrowserEntry from '../BrowserEntry.vue';
+import BrowserEntry from '../../components/BrowserEntry.vue';
 
 export default {
   name: 'ProjectBrowser',
