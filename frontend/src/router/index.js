@@ -9,8 +9,8 @@ import StartPage from '../views/StartPage.vue'
 
 import LoginPageKey from '../views/LoginPageKey.vue'
 
-import UserAbout from '../components/user/UserAbout.vue'
-import UserContainer from '../components/user/UserContainer.vue'
+const UserAbout = () => import(/* webpackChunkName: "user" */ '../views/user/UserAbout.vue')
+const UserContainer = () => import(/* webpackChunkName: "user" */ '../views/user/UserContainer.vue')
 
 const DatasetAbout = () => import(/* webpackChunkName: "dataset" */ '../views/datasets/DatasetAbout.vue')
 const DatasetBrowser = () => import(/* webpackChunkName: "dataset" */ '../views/datasets/DatasetBrowser.vue')
