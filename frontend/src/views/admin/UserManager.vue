@@ -15,14 +15,12 @@
         </tr>
       </thead>
       <tbody>
-	<a href=".">
-          <tr v-for="user in users" :key="user.id">
-            <td>{{user.name}}</td>
-            <td>{{user.authId}}</td>
-            <td>{{user.email}}</td>
-            <td>{{user.affiliation}}</td>
-          </tr>
-	</a>
+        <tr v @click="editUser($event, user._id)" v-for="user in users" :key="user._id">
+          <td>{{user.name}}</td>
+          <td>{{user.authId}}</td>
+          <td>{{user.email}}</td>
+          <td>{{user.affiliation}}</td>
+        </tr>
       </tbody>
     </table>
   </div>
@@ -34,15 +32,25 @@ import {mapGetters} from 'vuex';
 
 export default {
   name: 'UserManager',
+
   data () {
     return {
     }
   },
+
   computed: {
     ...mapGetters(['user', 'users']),
   },
+
   created () {
     this.$store.dispatch('getUsers', this.id);
+  },
+
+  methods: {
+    editUser(event, uuid) {
+      event.preventDefault();
+      this.$router.push('/admin/user/' + uuid);
+    }
   }
 }
 </script>
