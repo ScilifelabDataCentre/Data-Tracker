@@ -9,9 +9,11 @@
   </transition>
 
   <router-view class="container"></router-view>
+
   <footer class="footer">
     <img class="logo" :src="require('./assets/img/data-centre-logo.svg')" alt="SciLife Data Centre logo"/>
   </footer>
+
 </div>
 </template>
 
