@@ -139,6 +139,32 @@ def get_new_api_key():
     return flask.jsonify({'key': apikey.key})
 
 
+@blueprint.route('/<identifier>/', methods=['GET'])
+@login_required
+def get_user(identifier: str):
+    """
+    Get information about a user.
+
+    Args:
+        identifier (str): The uuid of the user.
+
+    Returns:
+        flask.Response: Information about the user as json.
+    """
+    if not has_permission('USER_MANAGEMENT'):
+        flask.abort(403)
+
+    try:
+        user_uuid = utils.str_to_uuid(identifier)
+    except ValueError:
+        flask.abort(status=404)
+
+    if not (user_info := flask.g.db['users'].find_one({'_id': user_uuid})):
+        flask.abort(status=404)
+
+    return flask.jsonify({'user':user_info})
+
+
 @blueprint.route('/<identifier>/', methods=['DELETE'])
 @login_required
 def delete_user(identifier: str):
