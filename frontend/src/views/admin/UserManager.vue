@@ -1,24 +1,28 @@
 <template>
 <div class="user-manager">
-  <div v-if="user.role !== 'Admin'">
+  <div v-if="!user.permissions.includes('USER_MANAGEMENT')">
     You do not have the permissions to view this page.
   </div>
   <div v-else>
     <h1 id="user-table-header" class="title is-1">List of users</h1>
     <table class="table is-hoverable is-striped" v-if="users.length > 0" aria-describedby="user-table-header">
       <thead>
-	<tr>
-          <th scope="col" v-for="header in Object.keys(users[0])" :key="header">
-            {{ header }}
-          </th>
-	</tr>
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col">Authentication ID</th>
+          <th scope="col">Email</th>
+          <th scope="col">Affiliation</th>
+        </tr>
       </thead>
       <tbody>
-	<tr v-for="user in users" :key="user.id">
-          <td v-for="value in user" :key="value">
-            {{value}}
-          </td>
-	</tr>
+	<a href=".">
+          <tr v-for="user in users" :key="user.id">
+            <td>{{user.name}}</td>
+            <td>{{user.authId}}</td>
+            <td>{{user.email}}</td>
+            <td>{{user.affiliation}}</td>
+          </tr>
+	</a>
       </tbody>
     </table>
   </div>
@@ -42,7 +46,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-
-</style>

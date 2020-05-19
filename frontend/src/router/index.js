@@ -26,6 +26,7 @@ const AdminContainer = () => import(/* webpackChunkName: "admin" */ '../views/ad
 const DoiManager = () => import(/* webpackChunkName: "admin" */ '../views/admin/DoiManager.vue')
 const Stats = () => import(/* webpackChunkName: "admin" */ '../views/admin/Stats.vue')
 const UserManager = () => import(/* webpackChunkName: "admin" */ '../views/admin/UserManager.vue')
+const UserEdit = () => import(/* webpackChunkName: "admin" */ '../views/admin/UserEdit.vue')
 
 const OrderAbout = () => import(/* webpackChunkName: "order" */ '../views/orders/OrderAbout.vue')
 const OrderBrowser = () => import(/* webpackChunkName: "order" */ '../views/orders/OrderBrowser.vue')
@@ -197,16 +198,24 @@ const router = new VueRouter({
       },
       children: [
         {
-          path: 'stats',
+          path: 'stat',
           component: Stats,
         },
         {
-          path: 'dois',
+          path: 'doi',
           component: DoiManager,
         },
         {
-          path: 'users',
+          path: 'user',
           component: UserManager,
+          meta: {
+            adminRequired: true,
+          },
+        },
+        {
+          path: 'user/:uuid',
+          component: UserEdit,
+          props: true,
           meta: {
             adminRequired: true,
           },
