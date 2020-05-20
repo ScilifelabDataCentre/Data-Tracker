@@ -111,7 +111,7 @@ def get_current_user_info():
         for field in outstructure:
             if field in data:
                 outstructure[field] = data[field]
-    return flask.jsonify({'user': outstructure})
+    return utils.response_json({'user': outstructure})
 
 # requests
 @blueprint.route('/me/apikey/')
@@ -136,7 +136,7 @@ def get_new_api_key():
     else:
         utils.make_log('user', 'edit', 'New API key', user_data)
 
-    return flask.jsonify({'key': apikey.key})
+    return utils.response_json({'key': apikey.key})
 
 
 @blueprint.route('/<identifier>/', methods=['GET'])
@@ -162,7 +162,7 @@ def get_user(identifier: str):
     if not (user_info := flask.g.db['users'].find_one({'_id': user_uuid})):
         flask.abort(status=404)
 
-    return flask.jsonify({'user':user_info})
+    return utils.response_json({'user':user_info})
 
 
 @blueprint.route('/<identifier>/', methods=['DELETE'])
