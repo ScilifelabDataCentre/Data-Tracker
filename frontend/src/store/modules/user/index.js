@@ -10,7 +10,7 @@ const state = {
 }
 
 const mutations = {
-  UPDATE_USER (state, payload) {
+  UPDATE_CURRENT_USER (state, payload) {
     state.user = payload;
   },
   UPDATE_USER_DATASETS (state, payload) {
@@ -30,7 +30,7 @@ const actions = {
       axios
         .get('/api/user/me/')
         .then((response) => {
-          commit('UPDATE_USER', response.data.user);
+          commit('UPDATE_CURRENT_USER', response.data.user);
           resolve(response);
         })
         .catch((err) => {
