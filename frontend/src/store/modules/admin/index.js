@@ -2,7 +2,6 @@ import axios from 'axios';
 
 const state = {
   users: [],
-  
 }
 
 const mutations = {
@@ -15,7 +14,7 @@ const actions = {
   getUsers ({ commit }) {
     return new Promise((resolve, reject) => {
       axios
-        .get('/api/user/all')
+        .get('/api/user/')
         .then((response) => {
           commit('UPDATE_USERS', response.data.users);
           resolve(response);
