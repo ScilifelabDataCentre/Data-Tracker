@@ -48,7 +48,7 @@
         <button class="button is-light" @click="cancelChanges">Cancel</button>
       </div>
       <div class="control">
-        <button class="button is-danger" v-if="newUser.id != '' && user.permissions.includes('DATA_MANAGEMENT')" @click="deleteUser">Delete</button>
+        <button class="button is-danger" v-if="newUser.id != ''" @click="deleteUser">Delete</button>
       </div>
       <p v-if="badSubmit" class="help is-danger">Failed to perform action</p>
     </div>
@@ -58,8 +58,6 @@
 </template>
 
 <script>
-import axios from 'axios';
-
 export default {
   name: 'UserEdit',
 
@@ -70,6 +68,7 @@ export default {
       newUser: {
         id: '',
         name: '',
+        authId: '',
         email: '',
         affiliation: '',
       },
@@ -79,19 +78,18 @@ export default {
 
   created () {
     if (this.uuid) {
-      axios
-        .get('/api/user/' + this.uuid + '/')
+      console.log('uuid: ' + this.uuid);
+      this.$store.dispatch('getUser', this.uuid)
         .then((response) => {
-          this.newUser = response.data;
-        })
-        .catch(() => {
-          this.$store.dispatch('updateNotification', ['Failed to get user information', 'warning']);
+          this.newUser = response.data.user;
+          this.newUser.id = this.newUser._id;
+          delete this.newUser._id;
         });
     }
   },
 
   methods: {
-    saveExtra(event) {
+    newApiKey(event) {
       event.preventDefault();
       if (this.extraKey !== '') {
         if (this.newUser.extra[this.extraKey] !== undefined) {
@@ -112,35 +110,22 @@ export default {
 
     cancelChanges(event) {
       event.preventDefault();
-      if (this.newUser.id === -1) {
-        this.$router.push("/user/browser");
-      }
-      else {
-        this.$router.push("/user/" + this.newUser.id + "/about");
-      }
+      this.$router.push("/admin/user");
     },
 
     deleteUser(event) {
       event.preventDefault();
       this.$store.dispatch('deleteUser', this.newUser.id)
         .then(() => {
-          this.$router.push("/user/browser");
+          this.$router.push("/admin/user");
         });
     },
 
     submitUserForm(event) {
       event.preventDefault();
       this.$store.dispatch('saveUser', this.newUser)
-        .then((response) => {
-          // add performed
-          let id = -1;
-          if (response.data) {
-            id = response.data._id;
-          }
-          else {
-            id = this.$props.uuid;
-          }
-          this.$router.push("/user/" + id + "/about");
+        .then(() => {
+          this.$router.push("/admin/user");
         });
     },
   },
