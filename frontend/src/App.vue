@@ -35,7 +35,7 @@ export default {
   },
   
   created () {
-    this.$store.dispatch('getUser');
+    this.$store.dispatch('getCurrentUser');
   },
 }
 </script>

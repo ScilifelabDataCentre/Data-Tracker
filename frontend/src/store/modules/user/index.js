@@ -25,7 +25,7 @@ const mutations = {
 }
 
 const actions = {
-  getUser ({ commit }) {
+  getCurrentUser ({ commit }) {
     return new Promise((resolve, reject) => {
       axios
         .get('/api/user/me/')

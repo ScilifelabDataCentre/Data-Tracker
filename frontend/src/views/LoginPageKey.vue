@@ -62,10 +62,9 @@ export default {
       this.$store.dispatch('loginKey', loginData)
         .then(() => {
           this.$router.push("/");
-          this.$store.dispatch('getUser');
+          this.$store.dispatch('getCurrentUser');
         })
         .catch(() => {
-          console.log('doh');
           this.$store.dispatch('updateNotification', ['Bad login credentials', 'warning']);
           this.badLogin = true;
         });
