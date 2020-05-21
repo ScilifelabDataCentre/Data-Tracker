@@ -1,5 +1,6 @@
 """Tests for dataset requests."""
 import json
+import re
 import requests
 import uuid
 
@@ -326,3 +327,36 @@ def test_add_user(use_db):
     new_user_info = db['users'].find_one({'_id': uuid.UUID(response.data['_id'])})
     for key in indata:
         assert new_user_info[key] == indata[key]
+
+
+def test_delete_user(use_db):
+    """Test deleting users (added when testing to add users)"""
+    db = use_db
+
+    re_users = re.compile('@added')
+    users = list(db['users'].find({'auth_id': re_users}, {'_id': 1}))
+
+    session = requests.Session()
+    i = 0
+    while i < len(users):
+        for role in USERS:
+            as_user(session, USERS[role])
+            response = make_request(session,
+                                    f'/api/user/{users[i]["_id"]}/',
+                                    method='DELETE')
+            if role in ('users', 'root'):
+                assert response.code == 200
+                assert not response.data
+                assert not db['users'].find_one({'_id': users[i]['_id']})
+                assert db['logs'].find_one({'data._id': users[i]['_id'],
+                                            'action': 'delete',
+                                            'data_type': 'user'})
+                i += 1
+                if i >= len(users):
+                    break
+            elif role == 'no-login':
+                assert response.code == 401
+                assert not response.data
+            else:
+                assert response.code == 403
+                assert not response.data
