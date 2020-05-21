@@ -204,6 +204,9 @@ def add_user():
     if not validation[0]:
         flask.abort(status=validation[1])
 
+    if not 'auth_id' in indata:
+        flask.abort(status=400)
+
     new_user.update(indata)
 
     result = flask.g.db['users'].insert_one({'_id': new_user})
