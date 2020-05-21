@@ -284,3 +284,45 @@ def test_update_user_bad(use_db):
         else:
             assert response.code == 403
         assert not response.data
+
+
+
+def test_add_user(use_db):
+    """Add a user."""
+    db = use_db
+
+    indata = {'auth_id': 'user@added'}
+    responses = make_request_all_roles(f'/api/user/',
+                                       ret_json=True,
+                                       method='POST',
+                                       data=indata)
+    for response in responses:
+        if response.role in ('users', 'root'):
+            assert response.code == 200
+            assert '_id' in response.data
+            new_user_info = db['users'].find_one({'_id': uuid.UUID(response.data['_id'])})
+            assert indata['auth_id'] == new_user_info['auth_id']
+        elif response.role == 'no-login':
+            assert response.code == 401
+            assert not response.data
+        else:
+            assert response.code == 403
+            assert not response.data
+
+    indata = {'affiliation': 'Added University',
+              'auth_id': 'user2@added',
+              'name': 'Added name',
+              'email': 'user2@added.se',
+              'permissions': ['ORDERS_SELF']}
+    session = requests.session()
+    as_user(session, USERS['root'])
+    response = make_request(session,
+                            f'/api/user/',
+                            ret_json=True,
+                            method='POST',
+                            data=indata)
+    assert response.code == 200
+    assert '_id' in response.data
+    new_user_info = db['users'].find_one({'_id': uuid.UUID(response.data['_id'])})
+    for key in indata:
+        assert new_user_info[key] == indata[key]
