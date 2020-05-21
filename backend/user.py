@@ -137,7 +137,7 @@ def get_new_api_key(identifier: str = None):
         except ValueError:
             flask.abort(status=404)
 
-        if not (user_data := flask.g.db['users'].find_one({'_id': user_uuid})):
+        if not (user_data := flask.g.db['users'].find_one({'_id': user_uuid})):  # pylint: disable=superfluous-parens
             flask.abort(status=404)
 
     apikey = utils.gen_api_key()
@@ -157,7 +157,7 @@ def get_new_api_key(identifier: str = None):
 
 @blueprint.route('/<identifier>/', methods=['GET'])
 @login_required
-def get_user(identifier: str):
+def get_user_data(identifier: str):
     """
     Get information about a user.
 
@@ -175,7 +175,7 @@ def get_user(identifier: str):
     except ValueError:
         flask.abort(status=404)
 
-    if not (user_info := flask.g.db['users'].find_one({'_id': user_uuid})):
+    if not (user_info := flask.g.db['users'].find_one({'_id': user_uuid})):  # pylint: disable=superfluous-parens
         flask.abort(status=404)
 
     return utils.response_json({'user':user_info})
@@ -198,9 +198,9 @@ def add_user():
         indata = flask.json.loads(flask.request.data)
     except json.decoder.JSONDecodeError:
         flask.abort(status=400)
-    validation = utils.basic_check_indata(indata, user_data, ('_id',
-                                                              'api_key',
-                                                              'api_salt'))
+    validation = utils.basic_check_indata(indata, new_user, ('_id',
+                                                             'api_key',
+                                                             'api_salt'))
     if not validation[0]:
         flask.abort(status=validation[1])
 
@@ -208,7 +208,7 @@ def add_user():
 
     result = flask.g.db['users'].insert_one({'_id': new_user})
     if not result.acknowledged:
-        logging.error('User Addition failed: %s', user_uuid)
+        logging.error('User Addition failed: %s', new_user['auth_id'])
         flask.Response(status=500)
     else:
         utils.make_log('user', 'add', 'User added by admin', new_user)
