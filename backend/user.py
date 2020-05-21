@@ -209,14 +209,14 @@ def add_user():
 
     new_user.update(indata)
 
-    result = flask.g.db['users'].insert_one({'_id': new_user})
+    result = flask.g.db['users'].insert_one(new_user)
     if not result.acknowledged:
         logging.error('User Addition failed: %s', new_user['auth_id'])
         flask.Response(status=500)
     else:
         utils.make_log('user', 'add', 'User added by admin', new_user)
 
-    return utils.response_json({'_id': result.insered_id})
+    return utils.response_json({'_id': result.inserted_id})
 
 
 @blueprint.route('/<identifier>/', methods=['DELETE'])
