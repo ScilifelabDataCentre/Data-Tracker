@@ -165,6 +165,41 @@ def get_user(identifier: str):
     return utils.response_json({'user':user_info})
 
 
+@blueprint.route('/', methods=['POST'])
+@login_required
+def add_user():
+    """
+    Add a user.
+
+    Returns:
+        flask.Response: Information about the user as json.
+    """
+    if not has_permission('USER_MANAGEMENT'):
+        flask.abort(403)
+
+    new_user = structure.user()
+    try:
+        indata = flask.json.loads(flask.request.data)
+    except json.decoder.JSONDecodeError:
+        flask.abort(status=400)
+    validation = utils.basic_check_indata(indata, user_data, ('_id',
+                                                              'api_key',
+                                                              'api_salt'))
+    if not validation[0]:
+        flask.abort(status=validation[1])
+
+    new_user.update(indata)
+
+    result = flask.g.db['users'].insert_one({'_id': new_user})
+    if not result.acknowledged:
+        logging.error('User Addition failed: %s', user_uuid)
+        flask.Response(status=500)
+    else:
+        utils.make_log('user', 'add', 'User added by admin', new_user)
+
+    return utils.response_json({'_id': result.insered_id})
+
+
 @blueprint.route('/<identifier>/', methods=['DELETE'])
 @login_required
 def delete_user(identifier: str):
@@ -215,6 +250,7 @@ def update_current_user_info():
         flask.abort(status=400)
     validation = utils.basic_check_indata(indata, user_data, ('_id',
                                                               'api_key',
+                                                              'api_salt',
                                                               'auth_id',
                                                               'email',
                                                               'permissions'))
@@ -262,7 +298,8 @@ def update_user_info(identifier: str):
     except json.decoder.JSONDecodeError:
         flask.abort(status=400)
     validation = utils.basic_check_indata(indata, user_data, ('_id',
-                                                              'api_key'))
+                                                              'api_key',
+                                                              'api_salt'))
     if not validation[0]:
         flask.abort(status=validation[1])
 
