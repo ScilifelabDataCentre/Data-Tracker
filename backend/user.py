@@ -115,15 +115,31 @@ def get_current_user_info():
 
 # requests
 @blueprint.route('/me/apikey/')
+@blueprint.route('/<identifier>/apikey/')
 @login_required
-def get_new_api_key():
+def get_new_api_key(identifier: str = None):
     """
     Generate a new API key for the user.
+
+    Args:
+        identifier (str): The uuid of the user.
 
     Returns:
         flask.Response: The new API key
     """
-    user_data = flask.g.current_user
+    if not identifier:
+        user_data = flask.g.current_user
+    else:
+        if not has_permission('USER_MANAGEMENT'):
+            flask.abort(403)
+        try:
+            user_uuid = utils.str_to_uuid(identifier)
+        except ValueError:
+            flask.abort(status=404)
+
+        if not (user_data := flask.g.db['users'].find_one({'_id': user_uuid})):
+            flask.abort(status=404)
+
     apikey = utils.gen_api_key()
     new_hash = utils.gen_api_key_hash(apikey.key, apikey.salt)
     new_values = {'api_key': new_hash, 'api_salt': apikey.salt}
