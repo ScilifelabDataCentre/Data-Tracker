@@ -67,6 +67,7 @@ def error_bad_request(_):
     """Make sure a simple 400 is returned instead of an html page."""
     return flask.Response(status=400)
 
+
 @app.errorhandler(401)
 def error_unauthorized(_):
     """Make sure a simple 401 is returned instead of an html page."""

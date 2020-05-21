@@ -95,7 +95,6 @@ def list_config():
     return flask.jsonify(config)
 
 
-
 @blueprint.route('/quit')
 def stop_server():
     """Shutdown the flask server."""

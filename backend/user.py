@@ -62,7 +62,7 @@ def key_login():
     except json.decoder.JSONDecodeError:
         flask.abort(status=400)
 
-    if not 'api-user' in indata or not 'api-key' in indata:
+    if 'api-user' not in indata or 'api-key' not in indata:
         logging.debug('API key login - bad keys: %s', indata)
         return flask.Response(status=400)
     utils.verify_api_key(indata['api-user'], indata['api-key'])
@@ -112,6 +112,7 @@ def get_current_user_info():
             if field in data:
                 outstructure[field] = data[field]
     return utils.response_json({'user': outstructure})
+
 
 # requests
 @blueprint.route('/me/apikey/')
@@ -178,7 +179,7 @@ def get_user_data(identifier: str):
     if not (user_info := flask.g.db['users'].find_one({'_id': user_uuid})):  # pylint: disable=superfluous-parens
         flask.abort(status=404)
 
-    return utils.response_json({'user':user_info})
+    return utils.response_json({'user': user_info})
 
 
 @blueprint.route('/', methods=['POST'])
@@ -204,7 +205,7 @@ def add_user():
     if not validation[0]:
         flask.abort(status=validation[1])
 
-    if not 'auth_id' in indata:
+    if 'auth_id' not in indata:
         flask.abort(status=400)
 
     new_user.update(indata)

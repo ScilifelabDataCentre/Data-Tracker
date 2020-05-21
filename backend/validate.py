@@ -13,6 +13,7 @@ import flask
 from user import PERMISSIONS
 import utils
 
+
 def validate_field(field_key: str, field_value: Any) -> bool:
     """
     Validate that the input data matches expectations.
@@ -34,7 +35,7 @@ def validate_field(field_key: str, field_value: Any) -> bool:
     """
     try:
         VALIDATION_MAPPER[field_key](field_value)
-    except KeyError as err:
+    except KeyError:
         logging.debug('Unknown key: %s', field_key)
         return False
     except ValueError as err:
