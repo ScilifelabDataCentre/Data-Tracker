@@ -1,8 +1,5 @@
 <template>
 <div class="user-manager">
-  <div v-if="!user.permissions.includes('USER_MANAGEMENT')">
-    You do not have the permissions to view this page.
-  </div>
   <div v-else>
     <h1 id="user-table-header" class="title is-1">List of users</h1>
     <table class="table is-hoverable is-striped" v-if="users.length > 0" aria-describedby="user-table-header">
