@@ -92,7 +92,7 @@ def gen_api_key():
     """
     ApiKey = namedtuple('ApiKey', ['key', 'salt'])
     return ApiKey(key=secrets.token_hex(48),
-                  salt=secrets.token_hex(8))
+                  salt=secrets.token_hex(32))
 
 
 def gen_api_key_hash(api_key: str, salt: str):
