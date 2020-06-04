@@ -13,6 +13,7 @@
                disabled="true"/>
       </div>
     </div>
+
     <div class="field">
       <label class="label" for="user-name">Name</label>
       <input class="input"
@@ -22,6 +23,7 @@
              type="text"
              placeholder="Name" />
     </div>
+
     <div class="field">
       <label class="label" for="user-auth">Authentication ID</label>
       <input class="input"
@@ -31,6 +33,7 @@
              type="text"
              placeholder="username@entity" />
     </div>
+
     <div class="field">
       <label class="label" for="user-email">Email</label>
       <input id="user-email"
@@ -40,6 +43,24 @@
              type="text"
              placeholder="email@example.com" />
     </div>
+
+    <div class="field">
+      <label class="label" for="user-affiliation">Affiliation</label>
+      <input id="user-affiliation"
+             class="input"
+             v-model="newUser.affiliation"
+             name="USER_AFFILIATION"
+             type="text"
+             placeholder="A University" />
+    </div>
+
+    <div v-if="newUser.id !== ''" class="field">
+      <button class="button is-primary" @click="newApiKey">Generate new API key</button>
+      <div v-if="apiKey !== ''">
+        {{ apiKey }}
+      </div>
+    </div>
+    
     <div class="field is-grouped">
       <div class="control">
         <button class="button is-link">Submit</button>
@@ -48,7 +69,7 @@
         <button class="button is-light" @click="cancelChanges">Cancel</button>
       </div>
       <div class="control">
-        <button class="button is-danger" v-if="newUser.id != ''" @click="deleteUser">Delete</button>
+        <button class="button is-danger" v-if="newUser.id !== ''" @click="deleteUser">Delete</button>
       </div>
       <p v-if="badSubmit" class="help is-danger">Failed to perform action</p>
     </div>
@@ -72,6 +93,7 @@ export default {
         email: '',
         affiliation: '',
       },
+      apiKey: '',
       badSubmit: false
     }
   },
@@ -82,6 +104,8 @@ export default {
       this.$store.dispatch('getUser', this.uuid)
         .then((response) => {
           this.newUser = response.data.user;
+          delete this.newUser.apiKey;
+          delete this.newUser.apiSalt;
           this.newUser.id = this.newUser._id;
           delete this.newUser._id;
         });
@@ -91,22 +115,13 @@ export default {
   methods: {
     newApiKey(event) {
       event.preventDefault();
-      if (this.extraKey !== '') {
-        if (this.newUser.extra[this.extraKey] !== undefined) {
-          if (this.extraValue === '') {
-            this.$delete(this.newUser.extra, this.extraKey);
-          }
-          else {
-            this.newUser.extra[this.extraKey] = this.extraValue;
-          }
-        }
-        else {
-          if (this.extraValue !== '') {
-            this.$set(this.newUser.extra, this.extraKey, this.extraValue);
-          }
-        }
-      }
-    },    
+      this.$store.dispatch('genApiKey', this.newUser.id)
+        .then((response) => {
+          this.apiKey = response.data.key;
+        })
+        .catch(() => {
+        });
+    },
 
     cancelChanges(event) {
       event.preventDefault();
@@ -123,7 +138,10 @@ export default {
 
     submitUserForm(event) {
       event.preventDefault();
-      this.$store.dispatch('saveUser', this.newUser)
+      let newData = this.newUser;
+      newData.auth_id = newData.authId;
+      delete newData.authId;
+      this.$store.dispatch('saveUser', newData)
         .then(() => {
           this.$router.push("/admin/user");
         });

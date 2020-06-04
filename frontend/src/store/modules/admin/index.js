@@ -41,6 +41,24 @@ const actions = {
     });
   },
 
+  genApiKey(context, payload) {
+    return new Promise((resolve, reject) => {
+      axios
+        .post('/api/user/' + payload + '/apikey/',
+              {},
+              {
+                headers: getCsrfHeader(),
+              })
+        .then((response) => {
+          resolve(response);
+        })
+        .catch(function (err) {
+          reject(err);
+        });
+    });
+  },
+
+
   saveUser (context, payload) {
     return new Promise((resolve, reject) => {
       let uuid = payload.id;
