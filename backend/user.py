@@ -115,12 +115,12 @@ def get_current_user_info():
 
 
 # requests
-@blueprint.route('/me/apikey/')
-@blueprint.route('/<identifier>/apikey/')
+@blueprint.route('/me/apikey/', methods=['POST'])
+@blueprint.route('/<identifier>/apikey/', methods=['POST'])
 @login_required
-def get_new_api_key(identifier: str = None):
+def gen_new_api_key(identifier: str = None):
     """
-    Generate a new API key for the user.
+    Generate a new API key for the provided or current user.
 
     Args:
         identifier (str): The uuid of the user.
