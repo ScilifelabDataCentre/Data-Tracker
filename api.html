@@ -89,7 +89,6 @@
 <li class="toctree-l2"><a class="reference internal" href="#dataset">Dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#project">Project</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#user">User</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#doi">DOI</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="data_structure.html">Data Structure</a></li>
@@ -166,14 +165,14 @@
 <p>Base URL for the API is <code class="docutils literal notranslate"><span class="pre">&lt;url&gt;/api</span></code>. All API description have the base implied before the first <code class="docutils literal notranslate"><span class="pre">/</span></code>.</p>
 <div class="section" id="order">
 <h2>Order<a class="headerlink" href="#order" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt>
 <code class="sig-name descname">/order/</code></dt>
 <dd><p><strong>GET</strong> Get a list of all orders. Can be limited by parameters. Only for users with permission <code class="docutils literal notranslate"><span class="pre">DATA_MANAGEMENT</span></code>.</p>
 <p><strong>POST</strong> Add a new order.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt>
 <code class="sig-name descname">/order/&lt;identifier&gt;</code></dt>
 <dd><p><strong>GET</strong> Get information about the order with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
@@ -181,19 +180,19 @@
 <p><strong>PATCH</strong> Update the order with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt>
 <code class="sig-name descname">/order/&lt;identifier&gt;/dataset</code></dt>
 <dd><p><strong>POST</strong> Add a new dataset belonging to order with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt>
 <code class="sig-name descname">/order/user[/&lt;username&gt;]</code></dt>
 <dd><p><strong>GET</strong> Get a list of orders created or received by current user or <code class="docutils literal notranslate"><span class="pre">&lt;username&gt;</span></code> (if provided).</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt>
 <code class="sig-name descname">/order/&lt;identifier&gt;/log</code></dt>
 <dd><p><strong>GET</strong> Get a list of changes done to the order with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
@@ -202,160 +201,139 @@
 </div>
 <div class="section" id="dataset">
 <h2>Dataset<a class="headerlink" href="#dataset" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt>
 <code class="sig-name descname">/dataset/</code></dt>
 <dd><p><strong>GET</strong> Get a list of all datasets. Can be limited by parameters.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt>
-<code class="sig-name descname">/dataset/claim</code></dt>
-<dd><p><strong>POST</strong> Claim datasets (<code class="docutils literal notranslate"><span class="pre">email</span></code>-&gt;``UUID``) belonging to the current user.</p>
-</dd></dl>
-
-<dl class="function">
-<dt>
-<code class="sig-name descname">/dataset/user</code></dt>
+<code class="sig-name descname">/dataset/user/</code></dt>
 <dd><p><strong>GET</strong> Get a list of datasets created or received by current user or <code class="docutils literal notranslate"><span class="pre">username</span></code> (if provided as parameter).</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt>
-<code class="sig-name descname">/dataset/&lt;identifier&gt;</code></dt>
+<code class="sig-name descname">/dataset/&lt;identifier&gt;/</code></dt>
 <dd><p><strong>GET</strong> Get information about the dataset with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
 <p><strong>DELETE</strong> Delete the dataset with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
 <p><strong>PATCH</strong> Update the dataset with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt>
-<code class="sig-name descname">/dataset/&lt;identifier&gt;/log</code></dt>
+<code class="sig-name descname">/dataset/&lt;identifier&gt;/log/</code></dt>
 <dd><p><strong>GET</strong> Get a list of changes done to the dataset with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
 </dd></dl>
 
 </div>
 <div class="section" id="project">
 <h2>Project<a class="headerlink" href="#project" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt>
 <code class="sig-name descname">/project/</code></dt>
 <dd><p><strong>GET</strong> Get a list of all projects. Can be limited by parameters.</p>
 <p><strong>POST</strong> Add a new project.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt>
-<code class="sig-name descname">/project/claim</code></dt>
-<dd><p><strong>POST</strong> Claim projects (<code class="docutils literal notranslate"><span class="pre">email</span></code>-&gt;``UUID``) belonging to the current user.</p>
-</dd></dl>
-
-<dl class="function">
-<dt>
-<code class="sig-name descname">/project/user</code></dt>
+<code class="sig-name descname">/project/user/</code></dt>
 <dd><p><strong>GET</strong> Get a list of projects created or received by current user or <code class="docutils literal notranslate"><span class="pre">username</span></code> (if provided as parameter).</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt>
-<code class="sig-name descname">/project/&lt;identifier&gt;</code></dt>
+<code class="sig-name descname">/project/&lt;identifier&gt;/</code></dt>
 <dd><p><strong>GET</strong> Get information about the project with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
 <p><strong>DELETE</strong> Delete the project with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
 <p><strong>PATCH</strong> Update the project with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt>
-<code class="sig-name descname">/project/&lt;identifier&gt;/log</code></dt>
+<code class="sig-name descname">/project/&lt;identifier&gt;/log/</code></dt>
 <dd><p><strong>GET</strong> Get a list of changes done to the project with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
 </dd></dl>
 
 </div>
 <div class="section" id="user">
 <h2>User<a class="headerlink" href="#user" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt>
 <code class="sig-name descname">/user/</code></dt>
 <dd><p><strong>GET</strong> Get a list of all users.</p>
+<p><strong>POST</strong> Add a new user.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt>
-<code class="sig-name descname">/user/me</code></dt>
+<code class="sig-name descname">/user/me/</code></dt>
 <dd><p><strong>GET</strong> Get information about the current user.</p>
 <p><strong>PUT</strong> Update information about the current user.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt>
-<code class="sig-name descname">/user/me/log</code></dt>
+<code class="sig-name descname">/user/me/apikey/</code></dt>
+<dd><p><strong>POST</strong> Generate a new API key for the current user.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt>
+<code class="sig-name descname">/user/me/log/</code></dt>
 <dd><p><strong>GET</strong> Get a list of changes done to the current user.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt>
-<code class="sig-name descname">/user/me/actionLog</code></dt>
+<code class="sig-name descname">/user/me/actionLog/</code></dt>
 <dd><p><strong>GET</strong> Get a list of changes done by the current user.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt>
-<code class="sig-name descname">/user/&lt;uuid&gt;</code></dt>
+<code class="sig-name descname">/user/&lt;uuid&gt;/</code></dt>
 <dd><p><strong>GET</strong> Get information about user with <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p>
 <p><strong>PUT</strong> Update information about user with <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p>
+<p><strong>PUT</strong> Delete the user with <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt>
-<code class="sig-name descname">/user/&lt;uuid&gt;/log</code></dt>
+<code class="sig-name descname">/user/&lt;uuid&gt;/apikey/</code></dt>
+<dd><p><strong>POST</strong> Generate a new API key for the user with <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt>
+<code class="sig-name descname">/user/&lt;uuid&gt;/log/</code></dt>
 <dd><p><strong>GET</strong> Get a list of changes done to the user with <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt>
-<code class="sig-name descname">/user/&lt;uuid&gt;/actionLog</code></dt>
+<code class="sig-name descname">/user/&lt;uuid&gt;/actionLog/</code></dt>
 <dd><p><strong>GET</strong> Get a list of changes done by the user with <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt>
-<code class="sig-name descname">/user/logout</code></dt>
+<code class="sig-name descname">/user/logout/</code></dt>
 <dd><p><strong>GET</strong> Log out current user.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt>
-<code class="sig-name descname">/user/login</code></dt>
-<dd><p><strong>GET</strong> Log in via elixir.</p>
+<code class="sig-name descname">/user/login/oidc/</code></dt>
+<dd><p><strong>GET</strong> Log in using OpenID Connect (e.g. Elixir AAI)</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt>
-<code class="sig-name descname">/user/countries</code></dt>
-<dd><p><strong>GET</strong> Get a list of countries.</p>
-</dd></dl>
-
-</div>
-<div class="section" id="doi">
-<h2>DOI<a class="headerlink" href="#doi" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt>
-<code class="sig-name descname">/doi/</code></dt>
-<dd><p><strong>GET</strong> Get a list of all DOIs.</p>
-<p><strong>POST</strong> Add a new DOI.</p>
-</dd></dl>
-
-<dl class="function">
-<dt>
-<code class="sig-name descname">/doi/&lt;identifier&gt;</code></dt>
-<dd><p><strong>GET</strong> Get information about the entity with DOI <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
-</dd></dl>
-
-<dl class="function">
-<dt>
-<code class="sig-name descname">/doi/request/&lt;identifier&gt;</code></dt>
-<dd><p><strong>GET</strong> Get information about the DOI request with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
-<p><strong>PATCH</strong> Update information about the DOI request with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
+<code class="sig-name descname">/user/login/apikey/</code></dt>
+<dd><p><strong>GET</strong> Log in using auth_id/api_key</p>
 </dd></dl>
 
 </div>
