@@ -94,6 +94,22 @@ const actions = {
     });
   },
 
+  deleteUser (context, payload) {
+    return new Promise((resolve, reject) => {
+      axios
+        .delete('/api/user/' + payload +'/',
+                {
+                  headers: getCsrfHeader(),
+                })
+        .then((response) => {
+          resolve(response);
+        })
+        .catch(function (err) {
+          reject(err);
+        });
+    });
+  },
+
 }
 
 const getters = {
