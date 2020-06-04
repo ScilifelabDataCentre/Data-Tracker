@@ -177,9 +177,9 @@
   <div class="section" id="module-utils">
 <span id="utils-py"></span><h1>utils.py<a class="headerlink" href="#module-utils" title="Permalink to this headline">¶</a></h1>
 <p>General helper functions.</p>
-<dl class="function">
+<dl class="py function">
 <dt id="utils.basic_check_indata">
-<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">basic_check_indata</code><span class="sig-paren">(</span><em class="sig-param">indata: dict, reference_data: dict, prohibited: Union[tuple, list]</em><span class="sig-paren">)</span> &#x2192; tuple<a class="reference internal" href="modules/utils.html#basic_check_indata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.basic_check_indata" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">basic_check_indata</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">indata</span><span class="p">:</span> <span class="n">dict</span></em>, <em class="sig-param"><span class="n">reference_data</span><span class="p">:</span> <span class="n">dict</span></em>, <em class="sig-param"><span class="n">prohibited</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>tuple<span class="p">, </span>list<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; tuple<a class="reference internal" href="modules/utils.html#basic_check_indata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.basic_check_indata" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform basic checks of indata.</p>
 <ul class="simple">
 <li><p>All fields are allowed in the entity type</p></li>
@@ -205,9 +205,9 @@ values in <code class="docutils literal notranslate"><span class="pre">reference
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="utils.check_email_uuid">
-<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">check_email_uuid</code><span class="sig-paren">(</span><em class="sig-param">user_identifier: str</em><span class="sig-paren">)</span> &#x2192; Union[str, uuid.UUID]<a class="reference internal" href="modules/utils.html#check_email_uuid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.check_email_uuid" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">check_email_uuid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user_identifier</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; Union<span class="p">[</span>str<span class="p">, </span>uuid.UUID<span class="p">]</span><a class="reference internal" href="modules/utils.html#check_email_uuid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.check_email_uuid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if the provided user is found in the db as email or _id.</p>
 <p>If the user is found, return the user.UUID of the user.
 If the identifier is a uuid, return a user.UUID.
@@ -227,9 +227,9 @@ If the identifier is an email, return the email.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="utils.convert_keys_to_camel">
-<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">convert_keys_to_camel</code><span class="sig-paren">(</span><em class="sig-param">chunk: Any</em><span class="sig-paren">)</span> &#x2192; Any<a class="reference internal" href="modules/utils.html#convert_keys_to_camel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.convert_keys_to_camel" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">convert_keys_to_camel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">chunk</span><span class="p">:</span> <span class="n">Any</span></em><span class="sig-paren">)</span> &#x2192; Any<a class="reference internal" href="modules/utils.html#convert_keys_to_camel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.convert_keys_to_camel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert keys given in snake_case to camelCase.</p>
 <p>The capitalization of the first letter is preserved.</p>
 <dl class="field-list simple">
@@ -245,7 +245,7 @@ If the identifier is an email, return the email.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="utils.gen_api_key">
 <code class="sig-prename descclassname">utils.</code><code class="sig-name descname">gen_api_key</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#gen_api_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.gen_api_key" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate an API key with salt.</p>
@@ -259,9 +259,9 @@ If the identifier is an email, return the email.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="utils.gen_api_key_hash">
-<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">gen_api_key_hash</code><span class="sig-paren">(</span><em class="sig-param">api_key: str</em>, <em class="sig-param">salt: str</em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#gen_api_key_hash"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.gen_api_key_hash" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">gen_api_key_hash</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">api_key</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">salt</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#gen_api_key_hash"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.gen_api_key_hash" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a hash of the api_key for storing/comparing to db.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -279,7 +279,7 @@ If the identifier is an email, return the email.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="utils.gen_csrf_token">
 <code class="sig-prename descclassname">utils.</code><code class="sig-name descname">gen_csrf_token</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="modules/utils.html#gen_csrf_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.gen_csrf_token" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a csrf token.</p>
@@ -293,9 +293,9 @@ If the identifier is an email, return the email.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="utils.get_db">
-<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">get_db</code><span class="sig-paren">(</span><em class="sig-param">dbserver: pymongo.mongo_client.MongoClient</em>, <em class="sig-param">conf</em><span class="sig-paren">)</span> &#x2192; pymongo.database.Database<a class="reference internal" href="modules/utils.html#get_db"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.get_db" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">get_db</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dbserver</span><span class="p">:</span> <span class="n">pymongo.mongo_client.MongoClient</span></em>, <em class="sig-param"><span class="n">conf</span></em><span class="sig-paren">)</span> &#x2192; pymongo.database.Database<a class="reference internal" href="modules/utils.html#get_db"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.get_db" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the connection to the MongoDB database.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -313,9 +313,9 @@ If the identifier is an email, return the email.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="utils.get_dbclient">
-<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">get_dbclient</code><span class="sig-paren">(</span><em class="sig-param">conf</em><span class="sig-paren">)</span> &#x2192; pymongo.mongo_client.MongoClient<a class="reference internal" href="modules/utils.html#get_dbclient"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.get_dbclient" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">get_dbclient</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">conf</span></em><span class="sig-paren">)</span> &#x2192; pymongo.mongo_client.MongoClient<a class="reference internal" href="modules/utils.html#get_dbclient"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.get_dbclient" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the connection to the MongoDB database server.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -330,18 +330,18 @@ If the identifier is an email, return the email.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="utils.incremental_logs">
-<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">incremental_logs</code><span class="sig-paren">(</span><em class="sig-param">logs: list</em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#incremental_logs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.incremental_logs" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">incremental_logs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">logs</span><span class="p">:</span> <span class="n">list</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#incremental_logs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.incremental_logs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Make an incremental log.</p>
 <p>The log starts from the first log and keeps only
 the changed fields in <code class="docutils literal notranslate"><span class="pre">data</span></code>.</p>
 <p><code class="docutils literal notranslate"><span class="pre">logs</span></code> is changed in-place.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="utils.is_email">
-<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">is_email</code><span class="sig-paren">(</span><em class="sig-param">indata: str</em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#is_email"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.is_email" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">is_email</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">indata</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#is_email"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.is_email" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check whether a string seems to be an email address or not.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -356,9 +356,9 @@ the changed fields in <code class="docutils literal notranslate"><span class="pr
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="utils.make_log">
-<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">make_log</code><span class="sig-paren">(</span><em class="sig-param">data_type: str</em>, <em class="sig-param">action: str</em>, <em class="sig-param">comment: str</em>, <em class="sig-param">data: dict = None</em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#make_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.make_log" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">make_log</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data_type</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">action</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">comment</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">data</span><span class="p">:</span> <span class="n">dict</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#make_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.make_log" title="Permalink to this definition">¶</a></dt>
 <dd><p>Log a change in the system.</p>
 <p>Saves a complete copy of the new object.</p>
 <div class="admonition warning">
@@ -385,7 +385,7 @@ e.g. <code class="docutils literal notranslate"><span class="pre">data</span></c
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="utils.make_timestamp">
 <code class="sig-prename descclassname">utils.</code><code class="sig-name descname">make_timestamp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#make_timestamp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.make_timestamp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a timestamp of the current time.</p>
@@ -399,7 +399,7 @@ e.g. <code class="docutils literal notranslate"><span class="pre">data</span></c
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="utils.new_uuid">
 <code class="sig-prename descclassname">utils.</code><code class="sig-name descname">new_uuid</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; uuid.UUID<a class="reference internal" href="modules/utils.html#new_uuid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.new_uuid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a uuid for a field in a MongoDB document.</p>
@@ -413,9 +413,9 @@ e.g. <code class="docutils literal notranslate"><span class="pre">data</span></c
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="utils.response_json">
-<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">response_json</code><span class="sig-paren">(</span><em class="sig-param">json_structure: dict</em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#response_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.response_json" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">response_json</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">json_structure</span><span class="p">:</span> <span class="n">dict</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#response_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.response_json" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert keys to camelCase and run <code class="docutils literal notranslate"><span class="pre">flask.jsonify()</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -430,9 +430,9 @@ e.g. <code class="docutils literal notranslate"><span class="pre">data</span></c
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="utils.str_to_uuid">
-<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">str_to_uuid</code><span class="sig-paren">(</span><em class="sig-param">uuid_str: str</em><span class="sig-paren">)</span> &#x2192; uuid.UUID<a class="reference internal" href="modules/utils.html#str_to_uuid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.str_to_uuid" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">str_to_uuid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">uuid_str</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; uuid.UUID<a class="reference internal" href="modules/utils.html#str_to_uuid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.str_to_uuid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert str uuid to uuid.UUID.</p>
 <p>Provided as a convenience function if the identifier must be changed in the future.</p>
 <dl class="field-list simple">
@@ -448,10 +448,11 @@ e.g. <code class="docutils literal notranslate"><span class="pre">data</span></c
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="utils.verify_api_key">
-<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">verify_api_key</code><span class="sig-paren">(</span><em class="sig-param">username: str</em>, <em class="sig-param">api_key: str</em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#verify_api_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.verify_api_key" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">verify_api_key</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">username</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">api_key</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#verify_api_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.verify_api_key" title="Permalink to this definition">¶</a></dt>
 <dd><p>Verify an API key against the value in the database.</p>
+<p>Aborts with status 401 if the verification fails.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -459,19 +460,14 @@ e.g. <code class="docutils literal notranslate"><span class="pre">data</span></c
 <li><p><strong>api_key</strong> (<em>str</em>) – The received API key (hex).</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Whether the verification succeeded.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>bool</p>
-</dd>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="utils.verify_csrf_token">
 <code class="sig-prename descclassname">utils.</code><code class="sig-name descname">verify_csrf_token</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#verify_csrf_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.verify_csrf_token" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compare the csrf token from the request (header) with the one in the cookie.session.</p>
+<p>Aborts with status 400 if the verification fails.</p>
 </dd></dl>
 
 </div>
