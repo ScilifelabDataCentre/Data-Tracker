@@ -219,6 +219,13 @@ const router = new VueRouter({
           meta: {
             adminRequired: true,
           },
+        },
+        {
+          path: 'user/add',
+          component: UserEdit,
+          meta: {
+            adminRequired: true,
+          },
         }
       ],
     },
