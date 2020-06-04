@@ -1,0 +1,29 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  build:
+    if: github.repository == 'ScilifelabDataCentre/covid-portal'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Publish backend to Docker Hub
+        uses: elgohr/Publish-Docker-Github-Action@master
+        with:
+          name: scilifelabdatacentre/data-tracker-backend
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          dockerfile: k8s/Dockerfile-backend
+          tags: "dev"
+      - name: Publish frontend to Docker Hub
+        uses: elgohr/Publish-Docker-Github-Action@master
+        with:
+          name: scilifelabdatacentre/data-tracker-frontend
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          dockerfile: k8s/Dockerfile-frontend
+          tags: "dev"
