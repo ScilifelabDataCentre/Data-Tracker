@@ -360,3 +360,27 @@ def test_delete_user(use_db):
             else:
                 assert response.code == 403
                 assert not response.data
+
+
+def test_key_login():
+    """Test API key login for all users"""
+    indata = {'auth_id': 'user@added'}
+    session = requests.Session()
+    as_user(session, None)
+    for i, userid in enumerate(USERS):
+        response = make_request(session,
+                                '/api/user/login/apikey/',
+                                data = {'api-user': USERS[userid],
+                                        'api-key': str(i-1)},
+                                method='POST')
+        if userid == 'no-login':
+            assert response.code == 401
+            assert not response.data
+        else:
+            assert response.code == 200
+            assert not response.data
+
+            response = make_request(session,
+                                    '/api/developer/loginhello')
+            assert response.code == 200
+            assert response.data == {'test': 'success'}
