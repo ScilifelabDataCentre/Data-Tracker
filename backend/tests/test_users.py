@@ -364,7 +364,6 @@ def test_delete_user(use_db):
 
 def test_key_login():
     """Test API key login for all users"""
-    indata = {'auth_id': 'user@added'}
     session = requests.Session()
     as_user(session, None)
     for i, userid in enumerate(USERS):
@@ -384,3 +383,51 @@ def test_key_login():
                                     '/api/developer/loginhello')
             assert response.code == 200
             assert response.data == {'test': 'success'}
+
+
+def test_key_reset(use_db):
+    """Test generation of new API keys"""
+    db = use_db
+
+    mod_user = {'auth_id': '--facility 18--'}
+    mod_user_info = db.users.find_one(mod_user)
+
+    session = requests.Session()
+    for i, userid in enumerate(USERS):
+        as_user(session, USERS[userid])
+        response = make_request(session,
+                                '/api/user/me/apikey/',
+                                method='POST')
+        if userid == 'no-login':
+            assert response.code == 401
+            assert not response.data
+            continue
+
+        assert response.code == 200
+        new_key = response.data['key']
+        response = make_request(session,
+                                '/api/user/login/apikey/',
+                                data = {'api-user': USERS[userid],
+                                        'api-key': new_key},
+                                method='POST')
+        assert response.code == 200
+        assert not response.data
+        db.users.update_one({'auth_id': userid}, {'$set': {'api_salt': 'abc',
+                                                           'api_key': str(i-1)}})
+
+        response = make_request(session,
+                                f'/api/user/{mod_user_info["_id"]}/apikey/',
+                                method='POST')
+        if userid not in ('users', 'root'):
+            assert response.code == 403
+            assert not response.data
+        else:
+            assert response.code == 200
+            new_key = response.data['key']
+            response = make_request(session,
+                                    '/api/user/login/apikey/',
+                                    data = {'api-user': mod_user['auth_id'],
+                                            'api-key': new_key},
+                                    method='POST')
+            assert response.code == 200
+            assert not response.data
