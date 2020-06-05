@@ -1,6 +1,6 @@
 <template>
-<div class="content">
-  <h1 class="header is-1">Edit User</h1>
+<div class="section">
+  <h1 class="title is-1">Edit User</h1>
   <form @submit="submitUserForm">
     <div class="field is-horizontal" v-if="newUser.id !== ''">
       <div class="field-label is-normal">
