@@ -48,7 +48,7 @@ def login_required(func):
 # requests
 @blueprint.route('/permissions/')
 def get_permission_info():
-    """Get a list of all permission types"""
+    """Get a list of all permission types."""
     return flask.jsonify({'permissions': list(PERMISSIONS.keys())})
 
 
