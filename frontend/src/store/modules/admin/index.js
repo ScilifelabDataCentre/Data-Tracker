@@ -41,6 +41,19 @@ const actions = {
     });
   },
 
+  getPermissionTypes() {
+    return new Promise((resolve, reject) => {
+      axios
+        .get('/api/user/permissions/')
+        .then((response) => {
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    });
+  },
+
   genApiKey(context, payload) {
     return new Promise((resolve, reject) => {
       axios
@@ -57,7 +70,6 @@ const actions = {
         });
     });
   },
-
 
   saveUser (context, payload) {
     return new Promise((resolve, reject) => {
