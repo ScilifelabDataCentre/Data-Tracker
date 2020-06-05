@@ -14,7 +14,7 @@ jobs:
       - name: Publish backend to Docker Hub
         uses: elgohr/Publish-Docker-Github-Action@master
         with:
-          name: scilifelabdatacentre/covid-portal-backend
+          name: scilifelabdatacentre/data-tracker-backend
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           dockerfile: k8s/Dockerfile-backend
@@ -22,7 +22,7 @@ jobs:
       - name: Publish frontend to Docker Hub
         uses: elgohr/Publish-Docker-Github-Action@master
         with:
-          name: scilifelabdatacentre/covid-portal-frontend
+          name: scilifelabdatacentre/data-tracker-frontend
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           dockerfile: k8s/Dockerfile-frontend
