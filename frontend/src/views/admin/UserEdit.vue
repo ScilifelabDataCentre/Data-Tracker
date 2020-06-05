@@ -197,6 +197,12 @@ export default {
       let newData = this.newUser;
       newData.auth_id = newData.authId;
       delete newData.authId;
+      newData.permissions = [];
+      Object.keys(this.currentPermissions).forEach((permission) => {
+        if (this.currentPermissions[permission]) {
+          newData.permissions.push(permission);
+        }
+      });
       this.$store.dispatch('saveUser', newData)
         .then(() => {
           this.$router.push("/admin/user");
