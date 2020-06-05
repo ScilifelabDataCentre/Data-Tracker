@@ -1,32 +1,32 @@
 <template>
-<div class="project-browser">
-  <h1 class="title is-2">Projects</h1>
-  <router-link v-if="user.role === 'Steward' || user.role === 'Admin'" to="/project/add">
+<div class="dataset-browser">
+  <h1 class="title is-2">Datasets</h1>
+  <router-link v-if="user.role === 'Steward' || user.role === 'Admin'" to="/dataset/add">
     <img class="icon-add" :src="require('../../assets/open-iconic/svg/plus.svg')" alt="Add" />
   </router-link>
-  <browser-entry v-for="project in projects" :key="project.id" :entry="project" entry_type="project">
+  <browser-entry v-for="dataset in datasets" :key="dataset.id" :entry="dataset" entry_type="dataset">
   </browser-entry>
 </div>
 </template>
 
 <script>
 import {mapGetters} from 'vuex';
-import BrowserEntry from '../BrowserEntry.vue';
+import BrowserEntry from '../../components/BrowserEntry.vue';
 
 export default {
-  name: 'ProjectBrowser',
+  name: 'DatasetBrowser',
   data () {
     return {
     }
   },
   computed: {
-    ...mapGetters(['projects', 'user']),
+    ...mapGetters(['datasets', 'user']),
   },
   components: {
     'browser-entry': BrowserEntry
   },
   created () {
-    this.$store.dispatch('getProjects');
+    this.$store.dispatch('getDatasets');
   },
 }
 </script>

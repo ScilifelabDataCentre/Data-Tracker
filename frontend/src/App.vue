@@ -8,10 +8,13 @@
     </div>
   </transition>
 
-  <router-view class="container"></router-view>
+  <div class="container">
+    <router-view class="section"></router-view>
+  </div>
   <footer class="footer">
     <img class="logo" :src="require('./assets/img/data-centre-logo.svg')" alt="SciLife Data Centre logo"/>
   </footer>
+
 </div>
 </template>
 
@@ -33,7 +36,7 @@ export default {
   },
   
   created () {
-    this.$store.dispatch('getUser');
+    this.$store.dispatch('getCurrentUser');
   },
 }
 </script>

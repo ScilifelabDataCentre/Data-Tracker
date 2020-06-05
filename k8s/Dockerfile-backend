@@ -8,6 +8,8 @@ ENV PYTHONPATH /code
 RUN pip3 install -r /code/requirements.txt
 RUN pip3 install gunicorn
 
+ENV GUNICORN_CMD_ARGS "--bind=0.0.0.0:8000 --workers=2 --thread=4 --worker-class=gthread --forwarded-allow-ips='*' --access-logfile -"
+
 # Must mount the file /config.yaml before starting
 
-CMD ["gunicorn", "-w", "3", "-k", "gthread", "--bind", "0.0.0.0:8000", "app:app", "--access-logfile", "-"]
+CMD ["gunicorn", "app:app"]

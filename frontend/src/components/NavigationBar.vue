@@ -20,16 +20,16 @@
       <img class="icon-home" :src="require('../assets/open-iconic/svg/home.svg')" alt="Start page" />
     </router-link>
     <router-link to="/search" class="navbar-item">Search</router-link>
-    <router-link to="/project" class="navbar-item">Projects</router-link>
-    <router-link  v-if="user.role === 'Admin'" to="/order" class="navbar-item">Orders</router-link>
+    <router-link  v-if="user.permissions.includes('DATA_MANAGEMENT') || user.permissions.includes('ORDERS_SELF')" to="/order" class="navbar-item">Orders</router-link>
     <router-link to="/dataset" class="navbar-item">Datasets</router-link>
+    <router-link to="/project" class="navbar-item">Projects</router-link>
     <router-link to="/about" class="navbar-item">About</router-link>
-    <div v-if="user.role === 'Admin'" class="navbar-item has-dropdown is-hoverable">
+    <div v-if="user.permissions.includes('USER_MANAGEMENT')" class="navbar-item has-dropdown is-hoverable">
       <a class="navbar-link">Admin</a>
       <div class="navbar-dropdown">
         <router-link to="/admin/stats" class="navbar-item">Statistics</router-link>
         <router-link to="/admin/dois" class="navbar-item">DOI management</router-link>
-        <router-link to="/admin/users" class="navbar-item">User management</router-link>
+        <router-link to="/admin/user" class="navbar-item">User management</router-link>
       </div>
     </div>
     <div class="navbar-end">
@@ -40,7 +40,13 @@
           <a href="/api/user/logout" class="navbar-item">Logout</a>
         </div>
       </div>
-      <a v-else href="/elixir/login" class="navbar-item">Log in</a>
+      <div v-else class="navbar-item has-dropdown is-hoverable">
+        <a class="navbar-link">Log In</a>
+        <div class="navbar-dropdown">
+          <a class="navbar-item" href="/api/user/login/">Elixir AAI</a>
+          <router-link to="/login/key" class="navbar-item">API key</router-link>
+        </div>
+      </div>
     </div>
   </div>
 </nav>

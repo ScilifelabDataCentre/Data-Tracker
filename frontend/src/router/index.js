@@ -5,32 +5,33 @@ import AboutPage from '../components/AboutPage.vue'
 
 import NotFound from '../components/NotFound.vue'
 
-import StartPage from '../components/StartPage.vue'
+import StartPage from '../views/StartPage.vue'
 
-import LoginPageKey from '../components/LoginPageKey.vue'
+import LoginPageKey from '../views/LoginPageKey.vue'
 
-import UserAbout from '../components/user/UserAbout.vue'
-import UserContainer from '../components/user/UserContainer.vue'
+const UserAbout = () => import(/* webpackChunkName: "user" */ '../views/user/UserAbout.vue')
+const UserContainer = () => import(/* webpackChunkName: "user" */ '../views/user/UserContainer.vue')
 
-const DatasetAbout = () => import(/* webpackChunkName: "dataset" */ '../components/datasets/DatasetAbout.vue')
-const DatasetBrowser = () => import(/* webpackChunkName: "dataset" */ '../components/datasets/DatasetBrowser.vue')
-const DatasetContainer = () => import(/* webpackChunkName: "dataset" */ '../components/datasets/DatasetContainer.vue')
-const DatasetEdit = () => import(/* webpackChunkName: "dataset" */ '../components/datasets/DatasetEdit.vue')
+const DatasetAbout = () => import(/* webpackChunkName: "dataset" */ '../views/datasets/DatasetAbout.vue')
+const DatasetBrowser = () => import(/* webpackChunkName: "dataset" */ '../views/datasets/DatasetBrowser.vue')
+const DatasetContainer = () => import(/* webpackChunkName: "dataset" */ '../views/datasets/DatasetContainer.vue')
+const DatasetEdit = () => import(/* webpackChunkName: "dataset" */ '../views/datasets/DatasetEdit.vue')
 
-const ProjectAbout = () => import(/* webpackChunkName: "project" */ '../components/projects/ProjectAbout.vue')
-const ProjectBrowser = () => import(/* webpackChunkName: "project" */ '../components/projects/ProjectBrowser.vue')
-const ProjectContainer = () => import(/* webpackChunkName: "project" */ '../components/projects/ProjectContainer.vue')
-const ProjectEdit = () => import(/* webpackChunkName: "project" */ '../components/projects/ProjectEdit.vue')
+const ProjectAbout = () => import(/* webpackChunkName: "project" */ '../views/projects/ProjectAbout.vue')
+const ProjectBrowser = () => import(/* webpackChunkName: "project" */ '../views/projects/ProjectBrowser.vue')
+const ProjectContainer = () => import(/* webpackChunkName: "project" */ '../views/projects/ProjectContainer.vue')
+const ProjectEdit = () => import(/* webpackChunkName: "project" */ '../views/projects/ProjectEdit.vue')
 
-const AdminContainer = () => import(/* webpackChunkName: "admin" */ '../components/admin/AdminContainer.vue')
-const DoiManager = () => import(/* webpackChunkName: "admin" */ '../components/admin/DoiManager.vue')
-const Stats = () => import(/* webpackChunkName: "admin" */ '../components/admin/Stats.vue')
-const UserManager = () => import(/* webpackChunkName: "admin" */ '../components/admin/UserManager.vue')
+const AdminContainer = () => import(/* webpackChunkName: "admin" */ '../views/admin/AdminContainer.vue')
+const DoiManager = () => import(/* webpackChunkName: "admin" */ '../views/admin/DoiManager.vue')
+const Stats = () => import(/* webpackChunkName: "admin" */ '../views/admin/Stats.vue')
+const UserManager = () => import(/* webpackChunkName: "admin" */ '../views/admin/UserManager.vue')
+const UserEdit = () => import(/* webpackChunkName: "admin" */ '../views/admin/UserEdit.vue')
 
-const OrderAbout = () => import(/* webpackChunkName: "order" */ '../components/orders/OrderAbout.vue')
-const OrderBrowser = () => import(/* webpackChunkName: "order" */ '../components/orders/OrderBrowser.vue')
-const OrderContainer = () => import(/* webpackChunkName: "order" */ '../components/orders/OrderContainer.vue')
-const OrderEdit = () => import(/* webpackChunkName: "order" */ '../components/orders/OrderEdit.vue')
+const OrderAbout = () => import(/* webpackChunkName: "order" */ '../views/orders/OrderAbout.vue')
+const OrderBrowser = () => import(/* webpackChunkName: "order" */ '../views/orders/OrderBrowser.vue')
+const OrderContainer = () => import(/* webpackChunkName: "order" */ '../views/orders/OrderContainer.vue')
+const OrderEdit = () => import(/* webpackChunkName: "order" */ '../views/orders/OrderEdit.vue')
 
 Vue.use(VueRouter);
 
@@ -197,16 +198,31 @@ const router = new VueRouter({
       },
       children: [
         {
-          path: 'stats',
+          path: 'stat',
           component: Stats,
         },
         {
-          path: 'dois',
+          path: 'doi',
           component: DoiManager,
         },
         {
-          path: 'users',
+          path: 'user',
           component: UserManager,
+          meta: {
+            adminRequired: true,
+          },
+        },
+        {
+          path: 'user/:uuid',
+          component: UserEdit,
+          props: true,
+          meta: {
+            adminRequired: true,
+          },
+        },
+        {
+          path: 'user/add',
+          component: UserEdit,
           meta: {
             adminRequired: true,
           },

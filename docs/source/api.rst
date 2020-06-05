@@ -46,17 +46,12 @@ Dataset
     **GET** Get a list of all datasets. Can be limited by parameters.
 
 
-.. function:: /dataset/claim
-
-    **POST** Claim datasets (``email``->``UUID``) belonging to the current user.
-
-
-.. function:: /dataset/user
+.. function:: /dataset/user/
 
     **GET** Get a list of datasets created or received by current user or ``username`` (if provided as parameter).
 
 
-.. function:: /dataset/<identifier>
+.. function:: /dataset/<identifier>/
 
     **GET** Get information about the dataset with uuid ``identifier``.
 
@@ -65,7 +60,7 @@ Dataset
     **PATCH** Update the dataset with uuid ``identifier``.
 
 
-.. function:: /dataset/<identifier>/log
+.. function:: /dataset/<identifier>/log/
 
     **GET** Get a list of changes done to the dataset with uuid ``identifier``.
 
@@ -80,17 +75,12 @@ Project
     **POST** Add a new project.
 
 
-.. function:: /project/claim
-
-    **POST** Claim projects (``email``->``UUID``) belonging to the current user.
-
-
-.. function:: /project/user
+.. function:: /project/user/
 
     **GET** Get a list of projects created or received by current user or ``username`` (if provided as parameter).
 
 
-.. function:: /project/<identifier>
+.. function:: /project/<identifier>/
 
     **GET** Get information about the project with uuid ``identifier``.
 
@@ -99,7 +89,7 @@ Project
     **PATCH** Update the project with uuid ``identifier``.
 
 
-.. function:: /project/<identifier>/log
+.. function:: /project/<identifier>/log/
 
     **GET** Get a list of changes done to the project with uuid ``identifier``.
 
@@ -111,73 +101,65 @@ User
 
     **GET** Get a list of all users.
 
+    **POST** Add a new user.
 
-.. function:: /user/me
+
+.. function:: /user/me/
 
     **GET** Get information about the current user.
 
     **PUT** Update information about the current user.
 
 
-.. function:: /user/me/log
+.. function:: /user/me/apikey/
+
+    **POST** Generate a new API key for the current user.
+
+
+.. function:: /user/me/log/
 
     **GET** Get a list of changes done to the current user.
 
 
-.. function:: /user/me/actionLog
+.. function:: /user/me/actionLog/
 
     **GET** Get a list of changes done by the current user.
 
 
-.. function:: /user/<uuid>
+.. function:: /user/<uuid>/
 
     **GET** Get information about user with ``uuid``.
 
     **PUT** Update information about user with ``uuid``.
 
+    **PUT** Delete the user with ``uuid``.
 
-.. function:: /user/<uuid>/log
+
+.. function:: /user/<uuid>/apikey/
+
+    **POST** Generate a new API key for the user with ``uuid``.
+
+
+.. function:: /user/<uuid>/log/
 
     **GET** Get a list of changes done to the user with ``uuid``.
 
 
-.. function:: /user/<uuid>/actionLog
+.. function:: /user/<uuid>/actionLog/
 
     **GET** Get a list of changes done by the user with ``uuid``.
 
 
-.. function:: /user/logout
+.. function:: /user/logout/
 
     **GET** Log out current user.
 
 
-.. function:: /user/login
+.. function:: /user/login/oidc/
 
-    **GET** Log in via elixir.
-
-
-.. function:: /user/countries
-
-    **GET** Get a list of countries.
+    **GET** Log in using OpenID Connect (e.g. Elixir AAI)
 
 
-DOI
-===
+.. function:: /user/login/apikey/
 
-.. function:: /doi/
-
-    **GET** Get a list of all DOIs.
-
-    **POST** Add a new DOI.
-
-
-.. function:: /doi/<identifier>
-
-    **GET** Get information about the entity with DOI ``identifier``.
-
-
-.. function:: /doi/request/<identifier>
-
-    **GET** Get information about the DOI request with uuid ``identifier``.
-
-    **PATCH** Update information about the DOI request with uuid ``identifier``.
+    **GET** Log in using auth_id/api_key

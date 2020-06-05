@@ -46,6 +46,12 @@ def login_required(func):
 
 
 # requests
+@blueprint.route('/permissions/')
+def get_permission_info():
+    """Get a list of all permission types."""
+    return flask.jsonify({'permissions': list(PERMISSIONS.keys())})
+
+
 @blueprint.route('/login/')
 @blueprint.route('/login/oidc')
 def oidc_login():
@@ -62,7 +68,7 @@ def key_login():
     except json.decoder.JSONDecodeError:
         flask.abort(status=400)
 
-    if not 'api-user' in indata or not 'api-key' in indata:
+    if 'api-user' not in indata or 'api-key' not in indata:
         logging.debug('API key login - bad keys: %s', indata)
         return flask.Response(status=400)
     utils.verify_api_key(indata['api-user'], indata['api-key'])
@@ -111,19 +117,36 @@ def get_current_user_info():
         for field in outstructure:
             if field in data:
                 outstructure[field] = data[field]
-    return flask.jsonify({'user': outstructure})
+    return utils.response_json({'user': outstructure})
+
 
 # requests
-@blueprint.route('/me/apikey/')
+@blueprint.route('/me/apikey/', methods=['POST'])
+@blueprint.route('/<identifier>/apikey/', methods=['POST'])
 @login_required
-def get_new_api_key():
+def gen_new_api_key(identifier: str = None):
     """
-    Generate a new API key for the user.
+    Generate a new API key for the provided or current user.
+
+    Args:
+        identifier (str): The uuid of the user.
 
     Returns:
         flask.Response: The new API key
     """
-    user_data = flask.g.current_user
+    if not identifier:
+        user_data = flask.g.current_user
+    else:
+        if not has_permission('USER_MANAGEMENT'):
+            flask.abort(403)
+        try:
+            user_uuid = utils.str_to_uuid(identifier)
+        except ValueError:
+            flask.abort(status=404)
+
+        if not (user_data := flask.g.db['users'].find_one({'_id': user_uuid})):  # pylint: disable=superfluous-parens
+            flask.abort(status=404)
+
     apikey = utils.gen_api_key()
     new_hash = utils.gen_api_key_hash(apikey.key, apikey.salt)
     new_values = {'api_key': new_hash, 'api_salt': apikey.salt}
@@ -136,7 +159,71 @@ def get_new_api_key():
     else:
         utils.make_log('user', 'edit', 'New API key', user_data)
 
-    return flask.jsonify({'key': apikey.key})
+    return utils.response_json({'key': apikey.key})
+
+
+@blueprint.route('/<identifier>/', methods=['GET'])
+@login_required
+def get_user_data(identifier: str):
+    """
+    Get information about a user.
+
+    Args:
+        identifier (str): The uuid of the user.
+
+    Returns:
+        flask.Response: Information about the user as json.
+    """
+    if not has_permission('USER_MANAGEMENT'):
+        flask.abort(403)
+
+    try:
+        user_uuid = utils.str_to_uuid(identifier)
+    except ValueError:
+        flask.abort(status=404)
+
+    if not (user_info := flask.g.db['users'].find_one({'_id': user_uuid})):  # pylint: disable=superfluous-parens
+        flask.abort(status=404)
+
+    return utils.response_json({'user': user_info})
+
+
+@blueprint.route('/', methods=['POST'])
+@login_required
+def add_user():
+    """
+    Add a user.
+
+    Returns:
+        flask.Response: Information about the user as json.
+    """
+    if not has_permission('USER_MANAGEMENT'):
+        flask.abort(403)
+
+    new_user = structure.user()
+    try:
+        indata = flask.json.loads(flask.request.data)
+    except json.decoder.JSONDecodeError:
+        flask.abort(status=400)
+    validation = utils.basic_check_indata(indata, new_user, ('_id',
+                                                             'api_key',
+                                                             'api_salt'))
+    if not validation[0]:
+        flask.abort(status=validation[1])
+
+    if 'auth_id' not in indata:
+        flask.abort(status=400)
+
+    new_user.update(indata)
+
+    result = flask.g.db['users'].insert_one(new_user)
+    if not result.acknowledged:
+        logging.error('User Addition failed: %s', new_user['auth_id'])
+        flask.Response(status=500)
+    else:
+        utils.make_log('user', 'add', 'User added by admin', new_user)
+
+    return utils.response_json({'_id': result.inserted_id})
 
 
 @blueprint.route('/<identifier>/', methods=['DELETE'])
@@ -189,6 +276,7 @@ def update_current_user_info():
         flask.abort(status=400)
     validation = utils.basic_check_indata(indata, user_data, ('_id',
                                                               'api_key',
+                                                              'api_salt',
                                                               'auth_id',
                                                               'email',
                                                               'permissions'))
@@ -236,7 +324,8 @@ def update_user_info(identifier: str):
     except json.decoder.JSONDecodeError:
         flask.abort(status=400)
     validation = utils.basic_check_indata(indata, user_data, ('_id',
-                                                              'api_key'))
+                                                              'api_key',
+                                                              'api_salt'))
     if not validation[0]:
         flask.abort(status=validation[1])
 

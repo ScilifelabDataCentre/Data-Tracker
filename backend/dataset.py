@@ -145,7 +145,7 @@ def update_dataset(identifier):
     order = flask.g.db['orders'].find_one({'datasets': ds_uuid})
     if not user.has_permission('DATA_MANAGEMENT') and \
        order['creator'] != flask.g.current_user['_id'] and \
-           order['receiver'] != flask.g.current_user['_id']:
+       order['receiver'] != flask.g.current_user['_id']:
         flask.abort(status=403)
 
     try:

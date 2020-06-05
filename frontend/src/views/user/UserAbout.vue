@@ -15,10 +15,6 @@
         <th scope="row">Email</th>
         <td>{{user.email}}</td>
       </tr>
-      <tr>
-        <th scope="row">Country</th>
-        <td>{{user.country}}</td>
-      </tr>
       <tr v-if="user.permissions.length > 0">
         <th scope="row" :rowspan="user.permissions.length">Permissions</th>
         <td>
