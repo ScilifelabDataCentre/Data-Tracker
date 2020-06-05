@@ -160,7 +160,9 @@ export default {
               delete this.newUser.apiSalt;
               this.newUser.id = this.newUser._id;
               delete this.newUser._id;
-              this.newUser.permissions.forEach;
+              this.newUser.permissions.forEach((permission) => {
+                this.currentPermissions[permission] = true;
+              });
             });
         }
       });
