@@ -1,5 +1,5 @@
 <template>
-<div class="section">
+<div>
   <h1 class="title is-1">Edit User</h1>
   <form @submit="submitUserForm">
     <div class="field is-horizontal" v-if="newUser.id !== ''">
