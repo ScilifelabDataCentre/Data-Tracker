@@ -146,13 +146,10 @@ export default {
   created () {
     this.$store.dispatch('getPermissionTypes')
       .then((response) => {
-        console.log(response.data.permissions);
         response.data.permissions.forEach((permission) => {
-          console.log('asd');
           this.$set(this.currentPermissions, permission, false);
         });
         if (this.uuid) {
-          console.log('uuid: ' + this.uuid);
           this.$store.dispatch('getUser', this.uuid)
             .then((response) => {
               this.newUser = response.data.user;
