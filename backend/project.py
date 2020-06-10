@@ -45,8 +45,7 @@ def get_random(amount: int = 1):
             # return {_id, _title} for datasets
             result['datasets'] = [flask.g.db.datasets.find_one({'_id': dataset},
                                                                {'title': 1})
-                                  for dataset in result['datasets']
-            ]
+                                  for dataset in result['datasets']]
     return utils.response_json({'projects': results})
 
 
