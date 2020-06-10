@@ -62,18 +62,29 @@ def test_get_project(use_db):
         response = make_request(session, f'/api/project/{project["_id"]}')
         assert response.code == 200
         for field in project:
-            if field != 'owners':
+            if field == 'datasets':
+                for i, ds_uuid in enumerate(project[field]):
+                    assert ds_uuid == response.data['project'][field][i]['_id']
+            elif field != 'owners':
                 assert project[field] == response.data['project'][field]
         as_user(session, proj_owner['auth_id'])
         response = make_request(session, f'/api/project/{project["_id"]}')
         assert response.code == 200
         for field in project:
-            assert project[field] == response.data['project'][field]
+            if field == 'datasets':
+                for i, ds_uuid in enumerate(project[field]):
+                    assert ds_uuid == response.data['project'][field][i]['_id']
+            else:
+                assert project[field] == response.data['project'][field]
         as_user(session, USERS['root'])
         response = make_request(session, f'/api/project/{project["_id"]}')
         assert response.code == 200
         for field in project:
-            assert project[field] == response.data['project'][field]
+            if field == 'datasets':
+                for i, ds_uuid in enumerate(project[field]):
+                    assert ds_uuid == response.data['project'][field][i]['_id']
+            else:
+                assert project[field] == response.data['project'][field]
 
 
 def test_get_project_bad():
