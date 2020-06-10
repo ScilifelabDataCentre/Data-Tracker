@@ -32,6 +32,21 @@ def get_random(amount: int = 1):
 
     """
     results = list(flask.g.db['projects'].aggregate([{'$sample': {'size': amount}}]))
+
+    for result in results:
+        # only show owner if owner/admin
+        if not flask.g.current_user or\
+           (not user.has_permission('DATA_MANAGEMENT') and
+            flask.g.current_user['_id'] not in result['owners'] and
+            flask.g.current_user['email'] not in result['owners']):
+            logging.debug('Not allowed to access owners %s', flask.g.current_user)
+            del result['owners']
+
+            # return {_id, _title} for datasets
+            result['datasets'] = [flask.g.db.datasets.find_one({'_id': dataset},
+                                                               {'title': 1})
+                                  for dataset in result['datasets']
+            ]
     return utils.response_json({'projects': results})
 
 
@@ -56,12 +71,18 @@ def get_project(identifier):
     if not result:
         return flask.Response(status=404)
 
+    # only show owner if owner/admin
     if not flask.g.current_user or\
        (not user.has_permission('DATA_MANAGEMENT') and
         flask.g.current_user['_id'] not in result['owners'] and
         flask.g.current_user['email'] not in result['owners']):
         logging.debug('Not allowed to access owners %s', flask.g.current_user)
         del result['owners']
+
+    # return {_id, _title} for datasets
+    result['datasets'] = [flask.g.db.datasets.find_one({'_id': dataset},
+                                                       {'title': 1})
+                          for dataset in result['datasets']]
 
     return utils.response_json({'project': result})
 
