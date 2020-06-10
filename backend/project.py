@@ -49,12 +49,20 @@ def get_project(identifier):
     """
     try:
         uuid = utils.str_to_uuid(identifier)
-        result = flask.g.db['projects'].find_one({'_id': uuid})
     except ValueError:
-        result = None
+        flask.abort(status=404)
 
+    result = flask.g.db['projects'].find_one({'_id': uuid})
     if not result:
         return flask.Response(status=404)
+
+    if not flask.g.current_user or\
+       (not user.has_permission('DATA_MANAGEMENT') and
+        flask.g.current_user['_id'] not in result['owners'] and
+        flask.g.current_user['email'] not in result['owners']):
+        logging.debug('Not allowed to access owners %s', flask.g.current_user)
+        del result['owners']
+
     return utils.response_json({'project': result})
 
 

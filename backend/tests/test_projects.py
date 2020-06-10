@@ -47,12 +47,29 @@ def test_get_project(use_db):
     """
     db = use_db
     session = requests.Session()
-    for _ in range(10):
+    for _ in range(5):
         project = list(db['projects'].aggregate([{'$sample': {'size': 1}}]))[0]
-        print(project)
         project['_id'] = str(project['_id'])
+        proj_owner = db['users'].find_one({'_id': project['owners'][0]})
+        if not proj_owner:
+            proj_owner = db['users'].find_one({'email': project['owners'][0]})
+        if not proj_owner:
+            print('Unknown user for owner')
+            assert False
         project['owners'] = [str(entry) for entry in project['owners']]
+
         project['datasets'] = [str(entry) for entry in project['datasets']]
+        response = make_request(session, f'/api/project/{project["_id"]}')
+        assert response.code == 200
+        for field in project:
+            if field != 'owners':
+                assert project[field] == response.data['project'][field]
+        as_user(session, proj_owner['auth_id'])
+        response = make_request(session, f'/api/project/{project["_id"]}')
+        assert response.code == 200
+        for field in project:
+            assert project[field] == response.data['project'][field]
+        as_user(session, USERS['root'])
         response = make_request(session, f'/api/project/{project["_id"]}')
         assert response.code == 200
         for field in project:
