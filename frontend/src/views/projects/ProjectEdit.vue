@@ -10,7 +10,7 @@
                name="PROJECT_ID"
                type="text"
                placeholder="uuid"
-               v-model="newProject.uuid"
+               v-model="newProject.id"
                disabled />
       </div>
     </div>
@@ -105,7 +105,7 @@ import {mapGetters} from 'vuex';
 
 export default {
   name: 'ProjectEdit',
-  props: ['id'],
+  props: ['uuid'],
   components: {
   },
   computed: {
@@ -124,10 +124,14 @@ export default {
     }
   },
   created () {
-    this.$store.dispatch('getProject', this.id)
-      .then(() => {
-        this.newProject = this.project;
-      });
+    if (this.uuid) {
+      this.$store.dispatch('getProject', this.uuid)
+        .then(() => {
+          this.newProject = this.project;
+          this.newProject.id = this.newProject._id;
+          delete this.newProject._id;
+        });
+    }
   },
   methods: {
     cancelChanges(event) {
