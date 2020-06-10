@@ -42,6 +42,46 @@
              type="text"
              placeholder="Dataset creator" />
     </div>
+
+    <div class="columns">
+      <div class="column">
+        <div class="field">
+          <label class="label">Extra fields</label>
+          <div class="field is-grouped">
+            <input id="dataset-extra-key"
+                   class="input"
+                   v-model="extraKey"
+                   name="DATASET_EXTRA_KEY"
+                   type="text"
+                   placeholder="Key" />
+            <input id="dataset-extra-value"
+                   class="input"
+                   v-model="extraValue"
+                   name="DATASET_EXTRA_VALUE"
+                   type="text"
+                   placeholder="Value" />
+            <div class="control">
+              <button class="button is-light" @click="saveExtra">Save</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="column">
+        <table class="table is-fullwidth">
+          <thead>
+            <th scope="column">Key</th>
+            <th scope="column">Value</th>
+          </thead>
+          <tbody>
+            <tr v-for="key in Object.keys(newDataset.extra)" :key="key">
+              <td>{{key}}</td>
+              <td>{{newDataset.extra[key]}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
     <div class="field is-grouped">
       <div class="control">
         <button class="button is-link">Submit</button>
