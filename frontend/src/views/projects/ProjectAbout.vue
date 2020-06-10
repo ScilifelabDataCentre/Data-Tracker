@@ -13,7 +13,7 @@
             {{ project.contact }}
           </td>
         </tr>
-        <tr v-if="project.dmp > 0">
+        <tr v-if="project.dmp.length > 0">
           <th scope="row">
             Data Management Plan
           </th>
@@ -39,6 +39,17 @@
           <th scope="row">{{ field }}</th>
           <td>{{ dataset.extra[field] }}</td>
         </tr>
+        <tr v-if="project.publications.length > 0">
+          <th scope="row">
+            Publications
+          </th>
+          <td>
+            <ul v-for="publication in project.publications" :key="publication.doi">
+              <li>{{ publication.title }}: {{ publication.doi }}</li>
+            </ul>
+          </td>
+        </tr>
+
       </tbody>
     </table>
   </div>
