@@ -42,7 +42,11 @@
       </tbody>
     </table>
   </div>
-  <router-link to="edit">Edit</router-link>
+  <router-link v-if="project.owners" to="edit">
+    <button class="button is-link">
+      Edit
+    </button>
+  </router-link>
 </div>
 </template>
 
