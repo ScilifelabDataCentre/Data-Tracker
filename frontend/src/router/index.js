@@ -73,16 +73,16 @@ const router = new VueRouter({
           component: ProjectEdit,
         },
         {
-          path: ':id',
-          redirect: ':id/about',
+          path: ':uuid',
+          redirect: ':uuid/about',
         },
         {
-          path: ':id/about',
+          path: ':uuid/about',
           component: ProjectAbout,
           props: true,
         },
         {
-          path: ':id/edit',
+          path: ':uuid/edit',
           component: ProjectEdit,
           props: true,
           meta: {
