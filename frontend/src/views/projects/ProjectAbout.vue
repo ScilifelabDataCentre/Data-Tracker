@@ -1,43 +1,43 @@
 <template>
 <div class="project-info">
   <div v-if="Object.keys(project).length > 0">
-    <div class="project-title">{{ project.title }}</div>
+    <h1 class="title is-2">{{ project.title }}</h1>
     <div class="project-description field" v-html="project.description"></div>
     <table class="table is-hoverable is-striped">
       <tbody>
-        <tr>
+        <tr v-if="project.contact.length > 0">
           <th scope="row">
-            Contact 
+            Contact
           </th>
           <td>
             {{ project.contact }}
           </td>
         </tr>
-        <tr v-if="project.dmp.length > 0">
+        <tr v-if="project.dmp > 0">
           <th scope="row">
-            Data management plan
+            Data Management Plan
           </th>
           <td>
             {{ project.dmp }}
           </td>
+        </tr>
+        <tr v-for="field in Object.keys(project.extra)" :key="field">
+          <th scope="row">{{ field }}</th>
+          <td>{{ project.extra[field] }}</td>
         </tr>
         <tr v-if="project.datasets.length > 0">
           <th scope="row">
             Datasets
           </th>
           <td>
-            <ul v-for="dataset in project.datasets" :key="dataset">
-              <li class="test"><a :href="'/dataset/' + dataset">{{ dataset }}</a></li>
+            <ul v-for="dataset in project.datasets" :key="dataset._id">
+              <li><a :href="'/dataset/' + dataset._id">{{ dataset.title }}</a></li>
             </ul>
           </td>
         </tr>
-        <tr v-for="extraField in project.extras" :key="extraField.key">
-          <th scope="row" :rowspan="user.permissions.length">
-            {{ extraField.key }}
-          </th>
-          <td>
-            {{ extraField.value }}
-          </td>
+        <tr v-for="field in Object.keys(project.extra)" :key="field">
+          <th scope="row">{{ field }}</th>
+          <td>{{ dataset.extra[field] }}</td>
         </tr>
       </tbody>
     </table>
