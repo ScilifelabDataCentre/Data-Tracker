@@ -3,14 +3,14 @@
   <form @submit="submitProjectForm">
 
     <div class="field" v-if="newProject.id !== -1">
-      <label for="project-id" class="label">Project ID</label>
+      <label for="project-id" class="label">Project UUID</label>
       <div class="control">
         <input id="project-id"
                class="input"
                name="PROJECT_ID"
                type="text"
-               placeholder="id"
-               v-model="newProject.id"
+               placeholder="uuid"
+               v-model="newProject.uuid"
                disabled />
       </div>
     </div>
@@ -55,7 +55,7 @@
         <button class="button is-light @click=cancelChanges">Cancel</button>
       </div>
       <div class="control">
-        <button class="button is-danger" v-if="newProject.id != -1 && (user.permission === 'Steward' || user.permission === 'Admin')" @click="deleteProject">Delete</button>
+        <button class="button is-danger" v-if="newProject.id != -1" @click="deleteProject">Delete</button>
       </div>
     </div>
   </form>
