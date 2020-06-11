@@ -107,16 +107,7 @@ export default {
 
     submitUserForm(event) {
       event.preventDefault();
-      let newData = this.newUser;
-      newData.auth_id = newData.authId;
-      delete newData.authId;
-      newData.permissions = [];
-      Object.keys(this.currentPermissions).forEach((permission) => {
-        if (this.currentPermissions[permission]) {
-          newData.permissions.push(permission);
-        }
-      });
-      this.$store.dispatch('saveUser', newData)
+      this.$store.dispatch('updateCurrentUser', this.newUser)
         .then(() => {
           this.$router.push("/user/about");
         });

@@ -108,7 +108,7 @@
 import {mapGetters} from 'vuex';
 
 export default {
-  name: 'UserAbout',
+  name: 'CurrentUserAbout',
   data () {
     return {
     }
@@ -119,11 +119,11 @@ export default {
                    'user_datasets',
                    'user_projects']),
   },
-  created () {
-    this.$store.dispatch('getUser');
-    this.$store.dispatch('getUserOrders');
-    this.$store.dispatch('getUserDatasets');
-    this.$store.dispatch('getUserProjects');
+  mounted () {
+    this.$store.dispatch('getCurrentUser');
+    this.$store.dispatch('getCurrentUserOrders');
+    this.$store.dispatch('getCurrentUserDatasets');
+    this.$store.dispatch('getCurrentUserProjects');
   }
 }
 </script>
