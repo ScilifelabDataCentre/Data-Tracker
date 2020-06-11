@@ -39,6 +39,40 @@ const actions = {
     });
   },
 
+  updateCurrentUser(context, payload) {
+    return new Promise((resolve, reject) => {
+      axios
+        .patch('/api/user/me/',
+               payload,
+               {
+                 headers: getCsrfHeader(),
+               })
+        .then((response) => {
+          resolve(response);
+        })
+        .catch(function (err) {
+          reject(err);
+        });
+    });
+  },
+  
+  genApiKeyCurrentUser() {
+    return new Promise((resolve, reject) => {
+      axios
+        .post('/api/user/me/apikey/',
+              {},
+              {
+                headers: getCsrfHeader(),
+              })
+        .then((response) => {
+          resolve(response);
+        })
+        .catch(function (err) {
+          reject(err);
+        });
+    });
+  },
+  
   loginKey (context, payload) {
     return new Promise((resolve, reject) => {
       axios
@@ -56,7 +90,7 @@ const actions = {
     });
   },
 
-  getUserOrders ({ commit }) {
+  getCurrentUserOrders ({ commit }) {
     return new Promise((resolve, reject) => {
       axios
         .get('/api/order/user/')
@@ -70,7 +104,7 @@ const actions = {
     });
   },
 
-  getUserDatasets ({ commit }) {
+  getCurrentUserDatasets ({ commit }) {
     return new Promise((resolve, reject) => {
       axios
         .get('/api/dataset/user/')
@@ -84,7 +118,7 @@ const actions = {
     });
   },
 
-  getUserProjects ({ commit }) {
+  getCurrentUserProjects ({ commit }) {
     return new Promise((resolve, reject) => {
       axios
         .get('/api/project/user/')
