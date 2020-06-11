@@ -315,5 +315,5 @@ VALIDATION_MAPPER = {'affiliation': validate_string,
                      'links': validate_links,
                      'owners': validate_user,
                      'permissions': validate_permissions,
-                     'publications': validate_publications,
+                     'publications': validate_string,
                      'title': validate_title}

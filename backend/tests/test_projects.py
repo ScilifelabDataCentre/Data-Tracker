@@ -203,8 +203,7 @@ def test_add_project(use_db):
               'contact': 'user@example.com',
               'dmp': 'https://dmp_url_test',
               'owners': [str(user_info['_id'])],
-              'publications': [{'title': 'A test publication title',
-                                'doi': 'doi://a_test_doi_value'}],
+              'publications': ['A test publication title, doi://a_test_doi_value'],
               'title': 'Test title',
               'datasets': [str(dataset_info['_id'])]}
     indata.update(TEST_LABEL)
@@ -389,8 +388,7 @@ def test_update_project(use_db):
               'contact': 'user_updated@example.com',
               'dmp': 'https://dmp_updated_url_test',
               'owners': [str(project_info['owners'][0])],
-              'publications': [{'title': 'Updated publication title',
-                                'doi': 'doi://updated_doi_value'}],
+              'publications': ['Updated publication title, doi://updated_doi_value'],
               'title': 'Test title updated',
               'datasets': [str(uuids[1])]}
     indata.update(TEST_LABEL)
@@ -425,8 +423,7 @@ def test_update_project(use_db):
               'contact': 'user_updated@example.com2',
               'dmp': 'https://dmp_updated_url_test2',
               'owners': [str(user_info['_id'])],
-              'publications': [{'title': 'Updated publication title2',
-                                'doi': 'doi://updated_doi_value'}],
+              'publications': ['Updated publication title2, doi://updated_doi_value'],
               'title': 'Test title updated',
               'datasets': [str(uuids[1]), str(uuids[1])]}
     indata.update(TEST_LABEL)

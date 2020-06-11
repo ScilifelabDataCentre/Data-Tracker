@@ -123,7 +123,7 @@ def gen_projects(db, nr_projects: int = 500):
                    'dmp': f'http://dmp-url{i}',
                    'owners': list(set(random.choice(users)[random.choice(('email', '_id'))]
                                       for _ in range(random.randint(1,3)))),
-                   'publications': [{'title': f'Title {j}', 'doi': f'doi{j}'}
+                   'publications': [{f'Title {j}, doi:doi{j}'}
                                     for j in range(random.randint(0, 5))],
                    'title': f'Project {i} Title'}
         project.update(changes)
