@@ -46,10 +46,60 @@
              type="text"
              placeholder="Contact information" />
     </div>
+
+    <div class="field">
+      <label class="label" for="project-contact">Data Management Plan</label>
+      <input id="project-dmp"
+             class="input"
+             v-model="newProject.dmp"
+             name="PROJECT_DMP"
+             type="text"
+             placeholder="https://dmp.url" />
+    </div>
+    
     <div class="columns">
       <div class="column">
         <div class="field">
           <label class="label">Extra fields</label>
+          <div class="field is-grouped">
+            <input id="project-extra-key"
+                   class="input"
+                   v-model="extraKey"
+                   name="PROJECT_EXTRA_KEY"
+                   type="text"
+                   placeholder="Key" />
+            <input id="project-extra-value"
+                   class="input"
+                   v-model="extraValue"
+                   name="PROJECT_EXTRA_VALUE"
+                   type="text"
+                   placeholder="Value" />
+            <div class="control">
+              <button class="button is-light" @click="saveExtra">Save</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="column">
+        <table class="table is-fullwidth">
+          <thead>
+            <th scope="column">Key</th>
+            <th scope="column">Value</th>
+          </thead>
+          <tbody>
+            <tr v-for="key in Object.keys(newProject.extra)" :key="key">
+              <td>{{ key }}</td>
+              <td>{{ newProject.extra[key] }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="columns">
+      <div class="column">
+        <div class="field">
+          <label class="label">Publications</label>
           <div class="field is-grouped">
             <input id="project-extra-key"
                    class="input"
@@ -123,7 +173,8 @@ export default {
         extra: {}
       },
       extraKey: '',
-      extraValue: ''
+      extraValue: '',
+      publication: {'title': '', 'doi': ''}
     }
   },
   created () {
@@ -162,7 +213,7 @@ export default {
         this.$router.push("/project/browser");
       }
       else {
-        this.$router.push("/project/" + this.newProject.id + "/about");
+        this.$router.push("/project/" + this.uuid + "/about");
       }
     },
 
