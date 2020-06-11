@@ -66,7 +66,7 @@ import {mapGetters} from 'vuex';
 
 export default {
   name: 'ProjectAbout',
-  props: ['id'],
+  props: ['uuid'],
   components: {
   },
   computed: {
@@ -77,7 +77,7 @@ export default {
     }
   },
   created () {
-    this.$store.dispatch('getProject', this.id);
+    this.$store.dispatch('getProject', this.uuid);
   },
 
 }
