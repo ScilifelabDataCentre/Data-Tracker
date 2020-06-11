@@ -44,8 +44,8 @@
             Publications
           </th>
           <td>
-            <ul v-for="publication in project.publications" :key="publication.doi">
-              <li>{{ publication.title }}: {{ publication.doi }}</li>
+            <ul v-for="publication in project.publications" :key="publication">
+              <li>{{ publication }}</li>
             </ul>
           </td>
         </tr>
