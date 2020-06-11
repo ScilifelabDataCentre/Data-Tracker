@@ -95,6 +95,12 @@
       </tbody>
     </table>
   </div>
+  <router-link to="edit">
+    <button class="button is-link">
+      Edit
+    </button>
+  </router-link>
+
 </div>
 </template>
 
