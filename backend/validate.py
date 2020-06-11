@@ -199,7 +199,7 @@ def validate_publications(data: list) -> bool:
     """
     Validate input for the ``publications`` field.
 
-    It must have the form ``[{'title': value, 'doi': value}, ...]``.
+    It must have the form ``['publication text', ...]``.
 
     Args:
         data (list): The data to be validated.
@@ -213,13 +213,8 @@ def validate_publications(data: list) -> bool:
     if not isinstance(data, list):
         raise ValueError('Must be a list')
     for entry in data:
-        if not isinstance(entry, dict):
-            raise ValueError('Must be a list of dicts')
-        for key in entry:
-            if key not in ('title', 'doi'):
-                raise ValueError('Bad key in dict')
-            if not isinstance(entry[key], str):
-                raise ValueError('Values must be type str')
+        if not isinstance(entry, str):
+            raise ValueError('Must be a list of strings')
     return True
 
 
@@ -315,5 +310,5 @@ VALIDATION_MAPPER = {'affiliation': validate_string,
                      'links': validate_links,
                      'owners': validate_user,
                      'permissions': validate_permissions,
-                     'publications': validate_string,
+                     'publications': validate_publications,
                      'title': validate_title}
