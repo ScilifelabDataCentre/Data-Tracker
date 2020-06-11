@@ -76,7 +76,7 @@ export default {
     return {
     }
   },
-  created () {
+  mounted () {
     this.$store.dispatch('getProject', this.uuid);
   },
 
