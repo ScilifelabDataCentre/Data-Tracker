@@ -9,8 +9,9 @@ import StartPage from '../views/StartPage.vue'
 
 import LoginPageKey from '../views/LoginPageKey.vue'
 
-const UserAbout = () => import(/* webpackChunkName: "user" */ '../views/user/UserAbout.vue')
-const UserContainer = () => import(/* webpackChunkName: "user" */ '../views/user/UserContainer.vue')
+const CurrentUserAbout = () => import(/* webpackChunkName: "user" */ '../views/user/CurrentUserAbout.vue')
+const CurrentUserEdit = () => import(/* webpackChunkName: "user" */ '../views/user/CurrentUserEdit.vue')
+const CurrentUserContainer = () => import(/* webpackChunkName: "user" */ '../views/user/CurrentUserContainer.vue')
 
 const DatasetAbout = () => import(/* webpackChunkName: "dataset" */ '../views/datasets/DatasetAbout.vue')
 const DatasetBrowser = () => import(/* webpackChunkName: "dataset" */ '../views/datasets/DatasetBrowser.vue')
@@ -167,7 +168,7 @@ const router = new VueRouter({
     
     {
       path: '/user',
-      component: UserContainer,
+      component: CurrentUserContainer,
       meta: {
         loginRequired: true,
       },
@@ -178,11 +179,11 @@ const router = new VueRouter({
         },
         {
           path: 'about',
-          component: UserAbout,
+          component: CurrentUserAbout,
         },
         {
           path: 'edit',
-          component: UserAbout,
+          component: CurrentUserEdit,
           meta: {
             loginRequired: true,
           },
