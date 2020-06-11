@@ -5,15 +5,19 @@
     <tbody>
       <tr>
         <th scope="row">Name</th>
-        <td>{{user.name}}</td>
+        <td>{{ user.name }}</td>
       </tr>
       <tr>
         <th scope="row">Affiliation</th>
-        <td>{{user.affiliation}}</td>
+        <td>{{ user.affiliation }}</td>
       </tr>
       <tr>
         <th scope="row">Email</th>
-        <td>{{user.email}}</td>
+        <td>{{ user.email }}</td>
+      </tr>
+      <tr>
+        <th scope="row">Authentication ID</th>
+        <td>{{ user.authId }}</td>
       </tr>
       <tr v-if="user.permissions.length > 0">
         <th scope="row" :rowspan="user.permissions.length">Permissions</th>
