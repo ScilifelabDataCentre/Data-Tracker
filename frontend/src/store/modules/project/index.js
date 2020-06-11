@@ -47,16 +47,13 @@ const actions = {
     });
   },
 
-  deleteProject (context, project_id) {
+  deleteProject (context, payload) {
     return new Promise((resolve, reject) => {
       axios
-        .post('/api/project/delete',
-              {
-                'id': project_id,
-              },
-              {
-                headers: getCsrfHeader(),
-              })
+        .delete('/api/project/' + payload + '/',
+                {
+                  headers: getCsrfHeader(),
+                })
         .then((response) => {
           resolve(response);
         })
@@ -65,28 +62,39 @@ const actions = {
         });
     });
   },
+
   saveProject (context, payload) {
     return new Promise((resolve, reject) => {
-      const newProject = {'project': payload};
-      let url = '';
-      if (newProject.project.id === -1) {
-        url = '/api/project/add/';
+      let projectUuid = payload.id;
+      delete payload.id
+      if (projectUuid === -1) {
+        axios
+          .post('/api/project/',
+                payload,
+                {
+                  headers: getCsrfHeader(),
+                })
+          .then((response) => {
+            resolve(response);
+          })
+          .catch(function (err) {
+            reject(err);
+          });
       }
       else {
-        url = '/api/project/' + newProject.project.id + '/update';
+        axios
+          .patch('/api/project/' + projectUuid + '/',
+                 payload,
+                 {
+                   headers: getCsrfHeader(),
+                 })
+          .then((response) => {
+            resolve(response);
+          })
+          .catch(function (err) {
+            reject(err);
+          });
       }
-      axios
-        .post(url,
-              newProject,
-              {
-                  headers: getCsrfHeader(),
-              })
-        .then((response) => {
-          resolve(response);
-        })
-        .catch(function (err) {
-          reject(err);
-        });
     });
   },
 }
