@@ -77,8 +77,8 @@
           </thead>
           <tbody>
             <tr v-for="key in Object.keys(newProject.extra)" :key="key">
-              <td>{{key}}</td>
-              <td>{{newOrder.extra[key]}}</td>
+              <td>{{ key }}</td>
+              <td>{{ newProject.extra[key] }}</td>
             </tr>
           </tbody>
         </table>
@@ -117,10 +117,13 @@ export default {
         id: -1,
         title: '',
         description: '',
+        dmp: '',
         contact: '',
         datasets: [],
+        extra: {}
       },
-      value: null,
+      extraKey: '',
+      extraValue: ''
     }
   },
   created () {
@@ -134,6 +137,25 @@ export default {
     }
   },
   methods: {
+    saveExtra(event) {
+      event.preventDefault();
+      if (this.extraKey !== '') {
+        if (this.newProject.extra[this.extraKey] !== undefined) {
+          if (this.extraValue === '') {
+            this.$delete(this.newProject.extra, this.extraKey);
+          }
+          else {
+            this.newProject.extra[this.extraKey] = this.extraValue;
+          }
+        }
+        else {
+          if (this.extraValue !== '') {
+            this.$set(this.newProject.extra, this.extraKey, this.extraValue);
+          }
+        }
+      }
+    },    
+
     cancelChanges(event) {
       event.preventDefault();
       if (this.newProject.id === -1) {
