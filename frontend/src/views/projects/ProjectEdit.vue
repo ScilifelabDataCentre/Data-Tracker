@@ -56,7 +56,31 @@
              type="text"
              placeholder="https://dmp.url" />
     </div>
-    
+
+    <div class="columns">
+      <div class="column">
+        <div class="field">
+          <label class="label">Publications</label>
+          <input id="project-publication-value"
+                 class="input"
+                 v-model="publication"
+                 name="PROJECT_PUBLICATION"
+                 type="text"
+                 placeholder="Value" />
+          <div class="control">
+            <button class="button is-primary" @click="savePublication">Add</button>
+          </div>
+        </div>
+      </div>
+      <div class="column">
+        <ul>
+          <li class="nobullet" href="#" v-for="(pubtext, i) in newProject.publications" :key="pubtext">
+            {{ pubtext }} <a class="delete" href="#" @click="deletePublication(i)"></a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
     <div class="columns">
       <div class="column">
         <div class="field">
@@ -96,29 +120,6 @@
       </div>
     </div>
 
-    <div class="columns">
-      <div class="column">
-        <div class="field">
-          <label class="label">Publications</label>
-          <input id="project-publication-value"
-                 class="input"
-                 v-model="publication"
-                 name="PROJECT_PUBLICATION"
-                 type="text"
-                 placeholder="Value" />
-          <div class="control">
-            <button class="button is-primary" @click="savePublication">Add</button>
-          </div>
-        </div>
-      </div>
-      <div class="column">
-        <ul>
-          <li class="nobullet" href="#" v-for="(pubtext, i) in newProject.publications" :key="pubtext">
-            {{ pubtext }} <a class="delete" href="#" @click="deletePublication(i)"></a>
-          </li>
-        </ul>
-      </div>
-    </div>
     <div class="field is-grouped">
       <div class="control">
         <button class="button is-link" @click="submitProjectForm">Submit</button>
@@ -214,7 +215,7 @@ export default {
 
     deleteProject(event) {
       event.preventDefault();
-      this.$store.dispatch('deleteProject', this.newProject.id)
+      this.$store.dispatch('deleteProject', this.uuid)
         .then(() => {
           this.$router.push("/project/browser");
         });
