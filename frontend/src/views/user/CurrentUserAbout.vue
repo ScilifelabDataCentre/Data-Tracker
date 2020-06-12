@@ -62,7 +62,7 @@
             <td>
               <ul>
 		<li v-for="ds_uuid in order.datasets" :key="ds_uuid">
-                  <a :href="'/dataset/' + ds_uuid">{{ ds_uuid }}</a>
+                  <a :href="'/order/' + ds_uuid">{{ ds_uuid }}</a>
 		</li>
               </ul>
             </td>
@@ -105,7 +105,7 @@
 	</thead>
 	<tbody>
           <tr v-for="project in userProjects" :key="project._id">
-            <td><a :href="'/dataset/' + project._id">{{ project._id }}</a></td>
+            <td><a :href="'/project/' + project._id">{{ project._id }}</a></td>
             <td>{{ project.title }}</td>
           </tr>
 	</tbody>
