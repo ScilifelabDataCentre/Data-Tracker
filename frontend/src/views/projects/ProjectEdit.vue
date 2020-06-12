@@ -76,7 +76,7 @@
       </div>
       <div class="column">
         <ul>
-          <li class="nobullet" href="#" v-for="(pubtext, i) in newProject.publications" :key="pubtext">
+          <li class="nobullet" href="#" v-for="(pubtext, i) in newProject.publications" :key="i">
             <div class="tag is-light">{{ pubtext }} <button class="delete" href="#" @click="deletePublication(i)"></button></div>
           </li>
         </ul>
@@ -88,7 +88,10 @@
         <div class="field">
           <div class="control">
             <div class="select">
-              <select v-model="datasetSelection" @change="addDataset">
+              <label class="label" for="project-datasets">Datasets</label>
+              <select id="project-datasets"
+                      name="PROJECT_DATASETS"
+                      v-model="datasetSelection" @change="addDataset">
                 <option :value="-1">Choose dataset to add</option>
                 <option v-for="(dataset, i) in userDatasets" :key="dataset._id" :value="i">{{ dataset.title }}</option>
               </select>
@@ -273,9 +276,11 @@ export default {
       let newData = this.newProject;
       let datasetUuids = [];
       this.newData.datasets.forEach((dataset) => {
+        console.log(dataset);
         datasetUuids.push(dataset._id);
       });
       newData.datasets = datasetUuids;
+      console.log(newData);
       this.$store.dispatch('saveProject', newData)
         .then((response) => {
           // add performed
