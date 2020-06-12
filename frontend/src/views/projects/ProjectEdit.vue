@@ -84,7 +84,7 @@
       <div class="column">
         <ul>
           <li class="nobullet" href="#" v-for="(pubtext, i) in newProject.publications" :key="i">
-            <div class="tag is-light">{{ pubtext }} <button class="delete" href="#" @click="deletePublication(i)"></button></div>
+            <div class="tag is-light">{{ pubtext }} <button class="delete" href="#" @click="deletePublication($event, i)"></button></div>
           </li>
         </ul>
       </div>
@@ -110,7 +110,7 @@
         <ul>
           <li></li>
           <li class="nobullet" href="#" v-for="(dataset, i) in newProject.datasets" :key="dataset._id">
-            <div class="tag is-light">{{ dataset.title }} <button class="delete" href="#" @click="deleteDataset(i)"></button></div>
+            <div class="tag is-light">{{ dataset.title }} <button class="delete" href="#" @click="deleteDataset($event, i)"></button></div>
           </li>
         </ul>
       </div>
@@ -138,7 +138,7 @@
       <div class="column">
         <ul>
           <li class="nobullet" href="#" v-for="(userId, i) in newProject.owners" :key="i">
-            <div class="tag is-light">{{ userId }} <button class="delete" href="#" @click="deleteOwner(i)"></button></div>
+            <div class="tag is-light">{{ userId }} <button class="delete" href="#" @click="deleteOwner($event, i)"></button></div>
           </li>
         </ul>
       </div>
@@ -274,7 +274,8 @@ export default {
       this.publication = '';
     },
 
-    deletePublication(position) {
+    deletePublication(event, position) {
+      event.preventDefault();
       this.newProject.publications.splice(position, 1);
     },
 
@@ -286,7 +287,8 @@ export default {
       }
     },
 
-    deleteDataset(position) {
+    deleteDataset(event, position) {
+      event.preventDefault();
       this.newProject.datasets.splice(position, 1);
     },
     
@@ -296,7 +298,8 @@ export default {
       this.owner = '';
     },
 
-    deleteOwner(position) {
+    deleteOwner(event, position) {
+      event.preventDefault();
       this.newProject.owners.splice(position, 1);
     },
 
