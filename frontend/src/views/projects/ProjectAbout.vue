@@ -21,10 +21,6 @@
             {{ project.dmp }}
           </td>
         </tr>
-        <tr v-for="field in Object.keys(project.extra)" :key="field">
-          <th scope="row">{{ field }}</th>
-          <td>{{ project.extra[field] }}</td>
-        </tr>
         <tr v-if="project.datasets.length > 0">
           <th scope="row">
             Datasets
@@ -37,7 +33,7 @@
         </tr>
         <tr v-for="field in Object.keys(project.extra)" :key="field">
           <th scope="row">{{ field }}</th>
-          <td>{{ dataset.extra[field] }}</td>
+          <td>{{ project.extra[field] }}</td>
         </tr>
         <tr v-if="project.publications.length > 0">
           <th scope="row">
