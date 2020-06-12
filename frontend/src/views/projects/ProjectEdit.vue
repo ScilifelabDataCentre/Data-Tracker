@@ -326,8 +326,10 @@ export default {
       event.preventDefault();
       let newData = this.newProject;
       let datasetUuids = [];
+      for (let i=0; i < newData.datasets.length; i++) {
+        datasetUuids.push(newData.datasets[i]._id);
+      }
       newData.datasets = datasetUuids;
-      console.log(newData);
       this.$store.dispatch('saveProject', newData)
         .then((response) => {
           // add performed
