@@ -3,7 +3,7 @@
   <h1 class="title is-1">Edit Project <span v-if="newProject.title.length > 0">({{ newProject.title }})</span></h1>
   <form @submit="submitProjectForm">
 
-    <div class="field" v-if="newProject.id !== -1">
+    <div class="field" v-if="newProject.id !== '-1'">
       <label for="project-id" class="label">Project UUID</label>
       <div class="control">
         <input id="project-id"
@@ -336,14 +336,13 @@ export default {
       this.$store.dispatch('saveProject', newData)
         .then((response) => {
           // add performed
-          let id = -1;
-          if (this.uuid === null) {
+          let id = '-1';
+          if (this.uuid === undefined) {
             id = response.data._id;
           }
           else {
             id = this.uuid;
           }
-          console.log(id);
           this.$router.push("/project/" + id + "/about");
         })
         .catch(() => {
