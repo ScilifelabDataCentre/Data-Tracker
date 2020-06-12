@@ -220,6 +220,7 @@ def update_project(identifier):  # pylint: disable=too-many-branches
                 # do not reject existing datasets
                 if dataset_uuid in project['datasets']:
                     continue
+                # allow new ones only if owner
                 order_info = flask.g.db['orders'].find_one({'datasets': dataset_uuid})
                 if not order_info:
                     flask.abort(status=400)
