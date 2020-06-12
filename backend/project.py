@@ -213,19 +213,13 @@ def update_project(identifier):  # pylint: disable=too-many-branches
     if not validation[0]:
         flask.abort(status=validation[1])
 
-    if 'owners' in indata and indata['owners']:
-        if not user.has_permission('DATA_MANAGEMENT'):
-            if len(indata['owners']) != 1:
-                flask.abort(status=400)
-            user_uuid = utils.str_to_uuid(indata['owners'][0])
-            if user_uuid != flask.g.current_user['_id']:
-                flask.abort(status=400)
-
     if 'datasets' in indata:
         if not user.has_permission('DATA_MANAGEMENT'):
-            for project_uuid_str in indata['datasets']:
-                project_uuid = utils.str_to_uuid(project_uuid_str)
-                order_info = flask.g.db['orders'].find_one({'datasets': project_uuid})
+            for dataset_uuid_str in indata['datasets']:
+                dataset_uuid = utils.str_to_uuid(dataset_uuid_str)
+                if dataset_uuid in project['datasets']:
+                    continue
+                order_info = flask.g.db['orders'].find_one({'datasets': dataset_uuid})
                 if not order_info:
                     flask.abort(status=400)
                 if order_info['creator'] != flask.g.current_user['_id'] and\
