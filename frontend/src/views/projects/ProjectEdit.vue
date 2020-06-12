@@ -1,5 +1,6 @@
 <template>
 <div class="project-edit">
+  <h1 class="title is-1">Edit Project <span v-if="newProject.title.length > 0">({{ newProject.title }})</span></h1>
   <form @submit="submitProjectForm">
 
     <div class="field" v-if="newProject.id !== -1">
@@ -60,9 +61,9 @@
     <div class="columns">
       <div class="column">
         <div class="field">
-          <label class="label">Publications</label>
+          <label class="label" for="project-publication">Publications</label>
           <div class="field is-grouped">
-            <input id="project-publication-value"
+            <input id="project-publication"
                    class="input"
                    v-model="publication"
                    name="PROJECT_PUBLICATION"
@@ -82,7 +83,7 @@
         </ul>
       </div>
     </div>
-
+    
     <div class="columns">
       <div class="column">
         <div class="field">
@@ -103,6 +104,32 @@
         <ul>
           <li class="nobullet" href="#" v-for="(dataset, i) in newProject.datasets" :key="dataset._id">
             <div class="tag is-light">{{ dataset.title }} <button class="delete" href="#" @click="deleteDataset(i)"></button></div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="columns">
+      <div class="column">
+        <div class="field">
+          <label class="label" for="project-owner">Owners</label>
+          <div class="field is-grouped">
+            <input id="project-owner"
+                   class="input"
+                   v-model="owner"
+                   name="PROJECT_OWNER"
+                   type="text"
+                   placeholder="Value" />
+            <div class="control">
+              <button class="button is-primary" @click="addOwner">Add</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="column">
+        <ul>
+          <li class="nobullet" href="#" v-for="(userId, i) in newProject.owners" :key="i">
+            <div class="tag is-light">{{ userId }} <button class="delete" href="#" @click="deleteOwner(i)"></button></div>
           </li>
         </ul>
       </div>
@@ -155,7 +182,7 @@
         <button class="button is-light" @click="cancelChanges">Cancel</button>
       </div>
       <div class="control">
-        <button class="button is-danger" v-if="newProject.id != -1" @click="deleteProject">Delete</button>
+        <button class="button is-danger" v-if="newProject.id !== -1" @click="deleteProject">Delete</button>
       </div>
       <p v-if="submitError" class="help is-danger">Action failed</p>
     </div>
@@ -192,6 +219,7 @@ export default {
       publication: '',
       submitError: false,
       datasetSelection: -1,
+      owner: '',
     }
   },
 
@@ -249,6 +277,16 @@ export default {
       this.newProject.datasets.splice(position, 1);
     },
     
+    addOwner(event) {
+      event.preventDefault();
+      this.newProject.owners.push(this.owner);
+      this.owner = '';
+    },
+
+    deleteOwner(position) {
+      this.newProject.owners.splice(position, 1);
+    },
+
     cancelChanges(event) {
       event.preventDefault();
       if (this.uuid === null) {
@@ -275,10 +313,6 @@ export default {
       event.preventDefault();
       let newData = this.newProject;
       let datasetUuids = [];
-      this.newData.datasets.forEach((dataset) => {
-        console.log(dataset);
-        datasetUuids.push(dataset._id);
-      });
       newData.datasets = datasetUuids;
       console.log(newData);
       this.$store.dispatch('saveProject', newData)
