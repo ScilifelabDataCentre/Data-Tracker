@@ -332,12 +332,13 @@ export default {
         .then((response) => {
           // add performed
           let id = -1;
-          if (response.data) {
-            id = response.data.id;
+          if (this.uuid === null) {
+            id = response.data._id;
           }
           else {
-            id = this.newProject.id
+            id = this.uuid;
           }
+          console.log(id);
           this.$router.push("/project/" + id + "/about");
         })
         .catch(() => {
