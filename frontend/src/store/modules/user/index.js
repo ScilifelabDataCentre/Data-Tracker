@@ -4,9 +4,9 @@ import {getCsrfHeader} from '../../helpers.js';
 
 const state = {
   user: {},
-  user_datasets: [],
-  user_orders: [],
-  user_projects: [],
+  userDatasets: [],
+  userOrders: [],
+  userProjects: [],
 }
 
 const mutations = {

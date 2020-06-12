@@ -115,9 +115,9 @@ export default {
   },
   computed: {
     ...mapGetters(['user',
-                   'user_orders',
-                   'user_datasets',
-                   'user_projects']),
+                   'userOrders',
+                   'userDatasets',
+                   'userProjects']),
   },
   mounted () {
     this.$store.dispatch('getCurrentUser');
