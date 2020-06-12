@@ -4,7 +4,7 @@ import {getCsrfHeader} from '../../helpers.js';
 
 const state = {
   project: {},
-  projects: {},
+  projects: [],
 }
 
 const mutations = {
@@ -27,6 +27,7 @@ const actions = {
         })
         .catch((err) => {
           dispatch('updateNotification', ['Unable to retrieve project', 'warning'])
+          commit('UPDATE_PROJECT', {});
           reject(err);
         });
     });
@@ -42,6 +43,7 @@ const actions = {
         })
         .catch((err) => {
           dispatch('updateNotification', ['Unable to retrieve project list', 'warning'])
+          commit('UPDATE_PROJECTS', []);
           reject(err);
       });
     });
