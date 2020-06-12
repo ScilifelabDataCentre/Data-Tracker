@@ -34,7 +34,7 @@
     </tbody>
   </table>
 
-  <div v-if="user_orders.length > 0">
+  <div v-if="userOrders.length > 0">
     <h4 class="title is-4">Orders</h4>
     <table class="table is-hoverable is-striped">
       <thead>
@@ -45,7 +45,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="order in user_orders" :key="order._id">
+        <tr v-for="order in userOrders" :key="order._id">
           <td><a :href="'/dataset/' + order._id">{{ order._id }}</a></td>
           <td>{{ order.title }}</td>
           <td>
@@ -60,7 +60,7 @@
     </table>
   </div>
 
-  <div v-if="user_datasets.length > 0">
+  <div v-if="userDatasets.length > 0">
     <h4 class="title is-4">Datasets</h4>
     <table class="table is-hoverable is-striped">
       <thead>
@@ -70,7 +70,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="dataset in user_datasets" :key="dataset._id">
+        <tr v-for="dataset in userDatasets" :key="dataset._id">
           <td><a :href="'/dataset/' + dataset._id">{{ dataset._id }}</a></td>
           <td>{{ dataset.title }}</td>
         </tr>
@@ -78,7 +78,7 @@
     </table>
   </div>
 
-  <div v-if="user_projects.length > 0">
+  <div v-if="userProjects.length > 0">
     <h4 class="title is-4">Projects</h4>
     <table class="table is-hoverable is-striped is-fullwidth">
       <thead>
@@ -88,7 +88,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="project in user_projects" :key="project._id">
+        <tr v-for="project in userProjects" :key="project._id">
           <td><a :href="'/dataset/' + project._id">{{ project._id }}</a></td>
           <td>{{ project.title }}</td>
         </tr>
