@@ -88,8 +88,9 @@
         <div class="field">
           <div class="control">
             <div class="select">
-              <select @change="addDataset">
-                <option v-for="(dataset, i) in availableDatasets" :key="dataset._id" :value="i">{{ dataset.title }}</option>
+              <select v-model="datasetSelection" @change="addDataset">
+                <option :value="-1">Choose dataset to add</option>
+                <option v-for="(dataset, i) in userDatasets" :key="dataset._id" :value="i">{{ dataset.title }}</option>
               </select>
             </div>
           </div>
@@ -174,7 +175,7 @@ export default {
   data () {
     return {
       newProject: {
-        id: -1,
+        id: '-1',
         title: '',
         description: '',
         dmp: '',
@@ -187,6 +188,7 @@ export default {
       extraValue: '',
       publication: '',
       submitError: false,
+      datasetSelection: -1,
     }
   },
 
@@ -232,8 +234,12 @@ export default {
       this.newProject.publications.splice(position, 1);
     },
 
-    addDataset(position) {
-      this.newProject.datasets.push(this.availableDatasets[position]);
+    addDataset(event) {
+      event.preventDefault();
+      if (this.datasetSelection !== '-1' && !this.newProject.datasets.includes(this.userDatasets[this.datasetSelection])) {
+        this.newProject.datasets.push(this.userDatasets[this.datasetSelection]);
+        this.datasetSelection = -1;
+      }
     },
 
     deleteDataset(position) {
