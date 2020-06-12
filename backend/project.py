@@ -178,16 +178,16 @@ def delete_project(identifier: str):
 @user.login_required
 def update_project(identifier):  # pylint: disable=too-many-branches
     """
-    Add a project.
+    Update a project.
 
     Returns:
-        flask.Response: Json structure with the ``_id`` of the project.
+        flask.Response: Status code.
     """
     try:
-        ds_uuid = utils.str_to_uuid(identifier)
+        project_uuid = utils.str_to_uuid(identifier)
     except ValueError:
         return flask.abort(status=404)
-    project = flask.g.db['projects'].find_one({'_id': ds_uuid})
+    project = flask.g.db['projects'].find_one({'_id': project_uuid})
     if not project:
         flask.abort(status=404)
 
@@ -216,9 +216,9 @@ def update_project(identifier):  # pylint: disable=too-many-branches
 
     if 'datasets' in indata:
         if not user.has_permission('DATA_MANAGEMENT'):
-            for ds_uuid_str in indata['datasets']:
-                ds_uuid = utils.str_to_uuid(ds_uuid_str)
-                order_info = flask.g.db['orders'].find_one({'datasets': ds_uuid})
+            for project_uuid_str in indata['datasets']:
+                project_uuid = utils.str_to_uuid(project_uuid_str)
+                order_info = flask.g.db['orders'].find_one({'datasets': project_uuid})
                 if not order_info:
                     flask.abort(status=400)
                 if order_info['creator'] != flask.g.current_user['_id'] and\
