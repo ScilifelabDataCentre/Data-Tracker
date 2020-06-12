@@ -77,7 +77,7 @@
       <div class="column">
         <ul>
           <li class="nobullet" href="#" v-for="(pubtext, i) in newProject.publications" :key="pubtext">
-            {{ pubtext }} <button class="delete" href="#" @click="deletePublication(i)"></button>
+            <div class="tag is-light">{{ pubtext }} <button class="delete" href="#" @click="deletePublication(i)"></button></div>
           </li>
         </ul>
       </div>
@@ -99,7 +99,7 @@
       <div class="column">
         <ul>
           <li class="nobullet" href="#" v-for="(dataset, i) in newProject.datasets" :key="dataset._id">
-            {{ dataset.title }} <button class="delete" href="#" @click="deleteDataset(i)"></button>
+            <div class="tag is-light">{{ dataset.title }} <button class="delete" href="#" @click="deleteDataset(i)"></button></div>
           </li>
         </ul>
       </div>
