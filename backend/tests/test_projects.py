@@ -49,6 +49,9 @@ def test_get_project(use_db):
     session = requests.Session()
     for _ in range(5):
         project = list(db['projects'].aggregate([{'$sample': {'size': 1}}]))[0]
+        owner_emails = [db['users'].find_one({'$or': [{'_id': identifier},
+                                                      {'email': identifier}]})['email']
+                        for identifier in project['owners']]
         project['_id'] = str(project['_id'])
         proj_owner = db['users'].find_one({'_id': project['owners'][0]})
         if not proj_owner:
@@ -67,6 +70,9 @@ def test_get_project(use_db):
                     assert ds_uuid == response.data['project'][field][i]['_id']
             elif field != 'owners':
                 assert project[field] == response.data['project'][field]
+            else:
+                if field in response.data['project']:
+                    assert response.data['project'][field] == owner_emails
         as_user(session, proj_owner['auth_id'])
         response = make_request(session, f'/api/project/{project["_id"]}')
         assert response.code == 200
@@ -74,6 +80,8 @@ def test_get_project(use_db):
             if field == 'datasets':
                 for i, ds_uuid in enumerate(project[field]):
                     assert ds_uuid == response.data['project'][field][i]['_id']
+            elif field == 'owners':
+                assert response.data['project'][field] == owner_emails
             else:
                 assert project[field] == response.data['project'][field]
         as_user(session, USERS['root'])
@@ -83,6 +91,8 @@ def test_get_project(use_db):
             if field == 'datasets':
                 for i, ds_uuid in enumerate(project[field]):
                     assert ds_uuid == response.data['project'][field][i]['_id']
+            elif field == 'owners':
+                assert response.data['project'][field] == owner_emails
             else:
                 assert project[field] == response.data['project'][field]
 
@@ -137,16 +147,13 @@ def test_add_project_permissions(use_db):
                                        data=indata,
                                        ret_json=True)
     for response in responses:
-        if response.role in ('base', 'data', 'root'):
-            assert response.code == 200
-            assert '_id' in response.data
-            assert len(response.data['_id']) == 36
-        elif response.role == 'no-login':
+        if response.role == 'no-login':
             assert response.code == 401
             assert not response.data
         else:
-            assert response.code == 400
-            assert not response.data
+            assert response.code == 200
+            assert '_id' in response.data
+            assert len(response.data['_id']) == 36
 
     dataset_info = next(db['datasets'].aggregate([{'$sample': {'size': 1}}]))
     order_info = db['orders'].find_one({'datasets': dataset_info['_id']})
