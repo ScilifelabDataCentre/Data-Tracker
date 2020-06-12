@@ -113,6 +113,9 @@ def add_project():  # pylint: disable=too-many-branches
     if not validation[0]:
         flask.abort(status=validation[1])
 
+    if 'title' not in indata:
+        flask.abort(status=400)
+
     if not indata.get('owners'):
         indata['owners'] = [flask.g.current_user['_id']]
 
