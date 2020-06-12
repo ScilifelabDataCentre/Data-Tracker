@@ -180,6 +180,9 @@ def update_project(identifier):  # pylint: disable=too-many-branches
     """
     Update a project.
 
+    Args:
+        identifier (str): The project uuid.
+
     Returns:
         flask.Response: Status code.
     """
@@ -198,7 +201,11 @@ def update_project(identifier):  # pylint: disable=too-many-branches
 
     # permission check
     if not user.has_permission('DATA_MANAGEMENT'):
-        if flask.g.current_user['_id'] not in project['owners']:
+        if flask.g.current_user['_id'] not in project['owners'] or\
+           flask.g.current_user['email'] not in project['owners']:
+            logging.debug('Unauthorized update attempt (project %s, user %s)',
+                          project_uuid,
+                          flask.g.current_user['_id'])
             flask.abort(status=403)
 
     # indata validation
@@ -234,3 +241,18 @@ def update_project(identifier):  # pylint: disable=too-many-branches
         utils.make_log('project', 'edit', 'Project updated', project)
 
     return flask.Response(status=200)
+
+
+@blueprint.route('/user/', methods=['GET'])
+@user.login_required
+def list_user_projects():  # pylint: disable=too-many-branches
+    """
+    List project owned by the user.
+
+    Returns:
+        flask.Response: JSON structure.
+    """
+    results = list(flask.g.db['projects'].find({'$or': [{'owners': flask.g.current_user['_id']},
+                                                        {'owners': flask.g.current_user['email']}]}))
+    logging.debug(results)
+    return utils.response_json({'projects': results})
