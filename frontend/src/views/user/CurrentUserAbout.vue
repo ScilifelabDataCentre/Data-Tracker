@@ -96,7 +96,7 @@
   <section class="section">
     <div v-if="userProjects.length > 0">
       <h2 class="title is-3">Projects</h2>
-      <table class="table is-hoverable is-striped is-fullwidth">
+      <table class="table is-hoverable is-striped">
 	<thead>
           <tr>
             <th>UUID</th>
