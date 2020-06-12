@@ -89,7 +89,11 @@ def validate_datasets(data: list) -> bool:
     Raises:
         ValueError: Validation failed.
     """
+    if not isinstance(data, list):
+        raise ValueError(f'Must be list ({data})')
     for ds_entry in data:
+        if not isinstance(ds_entry, str):
+            raise ValueError(f'Must be str ({ds_entry})')
         try:
             ds_uuid = uuid.UUID(ds_entry)
         except ValueError:
