@@ -75,7 +75,7 @@
       <div class="column">
         <ul>
           <li class="nobullet" href="#" v-for="(pubtext, i) in newProject.publications" :key="pubtext">
-            {{ pubtext }} <a class="delete" href="#" @click="deletePublication(i)"></a>
+            {{ pubtext }} <button class="delete" href="#" @click="deletePublication(i)"></button>
           </li>
         </ul>
       </div>
@@ -130,6 +130,7 @@
       <div class="control">
         <button class="button is-danger" v-if="newProject.id != -1" @click="deleteProject">Delete</button>
       </div>
+      <p v-if="submitError" class="help is-danger">Action failed</p>
     </div>
   </form>
 </div>
@@ -161,6 +162,7 @@ export default {
       extraKey: '',
       extraValue: '',
       publication: '',
+      submitError: false,
     }
   },
   created () {
@@ -218,7 +220,11 @@ export default {
       this.$store.dispatch('deleteProject', this.uuid)
         .then(() => {
           this.$router.push("/project/browser");
+        })
+        .catch(() => {
+          this.submitError = true;
         });
+
     },
 
     submitProjectForm(event) {
@@ -234,6 +240,9 @@ export default {
             id = this.newProject.id
           }
           this.$router.push("/project/" + id + "/about");
+        })
+        .catch(() => {
+          this.submitError = true;
         });
     },
   },
