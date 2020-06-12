@@ -108,14 +108,7 @@ def add_project():  # pylint: disable=too-many-branches
     if not validation[0]:
         flask.abort(status=validation[1])
 
-    if 'owners' in indata and indata['owners']:
-        if not user.has_permission('DATA_MANAGEMENT'):
-            if len(indata['owners']) != 1:
-                flask.abort(status=400)
-            user_uuid = utils.str_to_uuid(indata['owners'][0])
-            if user_uuid != flask.g.current_user['_id']:
-                flask.abort(status=400)
-    else:
+    if not indata.get('owners'):
         indata['owners'] = [flask.g.current_user['_id']]
 
     if 'datasets' in indata:
