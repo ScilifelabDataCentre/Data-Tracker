@@ -61,14 +61,16 @@
       <div class="column">
         <div class="field">
           <label class="label">Publications</label>
-          <input id="project-publication-value"
-                 class="input"
-                 v-model="publication"
-                 name="PROJECT_PUBLICATION"
-                 type="text"
-                 placeholder="Value" />
-          <div class="control">
-            <button class="button is-primary" @click="savePublication">Add</button>
+          <div class="field is-grouped">
+            <input id="project-publication-value"
+                   class="input"
+                   v-model="publication"
+                   name="PROJECT_PUBLICATION"
+                   type="text"
+                   placeholder="Value" />
+            <div class="control">
+              <button class="button is-primary" @click="addPublication">Add</button>
+            </div>
           </div>
         </div>
       </div>
@@ -81,6 +83,27 @@
       </div>
     </div>
 
+    <div class="columns">
+      <div class="column">
+        <div class="field">
+          <div class="control">
+            <div class="select">
+              <select @change="addDataset">
+                <option v-for="(dataset, i) in availableDatasets" :key="dataset._id" :value="i">{{ dataset.title }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="column">
+        <ul>
+          <li class="nobullet" href="#" v-for="(dataset, i) in newProject.datasets" :key="dataset._id">
+            {{ dataset.title }} <button class="delete" href="#" @click="deleteDataset(i)"></button>
+          </li>
+        </ul>
+      </div>
+    </div>
+    
     <div class="columns">
       <div class="column">
         <div class="field">
@@ -145,8 +168,9 @@ export default {
   components: {
   },
   computed: {
-    ...mapGetters(['project', 'user']),
+    ...mapGetters(['project', 'user', 'userDatasets']),
   },
+
   data () {
     return {
       newProject: {
@@ -165,16 +189,19 @@ export default {
       submitError: false,
     }
   },
-  created () {
+
+  mounted () {
     if (this.uuid) {
       this.$store.dispatch('getProject', this.uuid)
         .then(() => {
           this.newProject = this.project;
           this.newProject.id = this.newProject._id;
           delete this.newProject._id;
+          this.$store.dispatch('getCurrentUserDatasets')
         });
     }
   },
+
   methods: {
     saveExtra(event) {
       event.preventDefault();
@@ -195,7 +222,7 @@ export default {
       }
     },
 
-    savePublication(event) {
+    addPublication(event) {
       event.preventDefault();
       this.newProject.publications.push(this.publication);
       this.publication = '';
@@ -203,6 +230,14 @@ export default {
 
     deletePublication(position) {
       this.newProject.publications.splice(position, 1);
+    },
+
+    addDataset(position) {
+      this.newProject.datasets.push(this.availableDatasets[position]);
+    },
+
+    deleteDataset(position) {
+      this.newProject.datasets.splice(position, 1);
     },
     
     cancelChanges(event) {
@@ -229,7 +264,13 @@ export default {
 
     submitProjectForm(event) {
       event.preventDefault();
-      this.$store.dispatch('saveProject', this.newProject)
+      let newData = this.newProject;
+      let datasetUuids = [];
+      this.newData.datasets.forEach((dataset) => {
+        datasetUuids.push(dataset._id);
+      });
+      newData.datasets = datasetUuids;
+      this.$store.dispatch('saveProject', newData)
         .then((response) => {
           // add performed
           let id = -1;
