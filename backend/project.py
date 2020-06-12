@@ -77,6 +77,11 @@ def get_project(identifier):
         flask.g.current_user['email'] not in result['owners']):
         logging.debug('Not allowed to access owners %s', flask.g.current_user)
         del result['owners']
+    else:
+        for i, owner in enumerate(result['owners']):
+            if not utils.is_email(owner):
+                owner_info = flask.g.db['users'].find_one(owner)
+                result['owners'][i] = owner_info['email']
 
     # return {_id, _title} for datasets
     result['datasets'] = [flask.g.db.datasets.find_one({'_id': dataset},
