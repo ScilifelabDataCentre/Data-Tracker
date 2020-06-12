@@ -98,7 +98,7 @@
             <div class="select">
               <select id="project-datasets"
                       name="PROJECT_DATASETS"
-                      v-model="datasetSelection" @change="addDataset">
+                      v-model="datasetSelection" @change="addDataset" :disabled="userDatasets.length === 0">
                 <option :value="-1">Choose dataset to add</option>
                 <option v-for="(dataset, i) in userDatasets" :key="dataset._id" :value="i">{{ dataset.title }}</option>
               </select>
