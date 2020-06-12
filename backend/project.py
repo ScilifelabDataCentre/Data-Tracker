@@ -224,9 +224,9 @@ def update_project(identifier):  # pylint: disable=too-many-branches
             order_info = flask.g.db['orders'].find_one({'datasets': dataset_uuid})
             if not order_info:
                 flask.abort(status=400)
-            if (not user.has_permission('DATA_MANAGEMENT') and
-                order_info['creator'] != flask.g.current_user['_id'] and
-                order_info['receiver'] != flask.g.current_user['_id']):
+            if not user.has_permission('DATA_MANAGEMENT') and\
+               order_info['creator'] != flask.g.current_user['_id'] and\
+               order_info['receiver'] != flask.g.current_user['_id']:
                 flask.abort(status=400)
 
     project.update(indata)
@@ -249,7 +249,8 @@ def list_user_projects():  # pylint: disable=too-many-branches
     Returns:
         flask.Response: JSON structure.
     """
-    results = list(flask.g.db['projects'].find({'$or': [{'owners': flask.g.current_user['_id']},
-                                                        {'owners': flask.g.current_user['email']}]}))
+    results = list(flask.g.db['projects']
+                   .find({'$or': [{'owners': flask.g.current_user['_id']},
+                                  {'owners': flask.g.current_user['email']}]}))
     logging.debug(results)
     return utils.response_json({'projects': results})
