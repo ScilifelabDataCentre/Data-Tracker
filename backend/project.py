@@ -201,7 +201,7 @@ def update_project(identifier):  # pylint: disable=too-many-branches
 
     # permission check
     if not user.has_permission('DATA_MANAGEMENT'):
-        if flask.g.current_user['_id'] not in project['owners'] or\
+        if flask.g.current_user['_id'] not in project['owners'] and\
            flask.g.current_user['email'] not in project['owners']:
             logging.debug('Unauthorized update attempt (project %s, user %s)',
                           project_uuid,
