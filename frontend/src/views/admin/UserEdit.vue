@@ -114,7 +114,7 @@
       <div class="control">
         <button class="button is-danger" v-if="newUser.id !== ''" @click="deleteUser">Delete</button>
       </div>
-      <p v-if="badSubmit" class="help is-danger">Failed to perform action</p>
+      <p v-if="badSubmit" class="help is-danger">Action failed</p>
     </div>
   </form>
   
@@ -208,7 +208,3 @@ export default {
   },
 }
 </script>
-
-<style scoped>
-
-</style>
