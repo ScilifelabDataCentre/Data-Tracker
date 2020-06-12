@@ -125,7 +125,7 @@
         <button class="button is-link" @click="submitProjectForm">Submit</button>
       </div>
       <div class="control">
-        <button class="button is-light @click=cancelChanges">Cancel</button>
+        <button class="button is-light" @click="cancelChanges">Cancel</button>
       </div>
       <div class="control">
         <button class="button is-danger" v-if="newProject.id != -1" @click="deleteProject">Delete</button>
@@ -205,7 +205,7 @@ export default {
     
     cancelChanges(event) {
       event.preventDefault();
-      if (this.uuid) {
+      if (this.uuid === null) {
         this.$router.push("/project/browser");
       }
       else {
