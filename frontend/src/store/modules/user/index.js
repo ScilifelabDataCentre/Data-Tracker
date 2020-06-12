@@ -14,13 +14,13 @@ const mutations = {
     state.user = payload;
   },
   UPDATE_USER_DATASETS (state, payload) {
-    state.user_datasets = payload;
+    state.userDatasets = payload;
   },
   UPDATE_USER_ORDERS (state, payload) {
-    state.user_orders = payload;
+    state.userOrders = payload;
   },
   UPDATE_USER_PROJECTS (state, payload) {
-    state.user_projects = payload;
+    state.userProjects = payload;
   },
 }
 
