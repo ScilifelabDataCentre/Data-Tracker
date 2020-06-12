@@ -235,6 +235,8 @@ def is_email(indata: str):
     Returns:
         bool: Is the indata an email address or not.
     """
+    if not isinstance(indata, str):
+        return False
     return bool(REGEX['email'].search(indata))
 
 
