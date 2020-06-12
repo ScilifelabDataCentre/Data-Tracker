@@ -75,7 +75,7 @@
                    type="text"
                    placeholder="Value" />
             <div class="control">
-              <button class="button is-light" @click="saveExtra">Save</button>
+              <button class="button is-primary" @click="saveExtra">Save</button>
             </div>
           </div>
         </div>
@@ -100,44 +100,28 @@
       <div class="column">
         <div class="field">
           <label class="label">Publications</label>
-          <div class="field is-grouped">
-            <input id="project-extra-key"
-                   class="input"
-                   v-model="extraKey"
-                   name="PROJECT_EXTRA_KEY"
-                   type="text"
-                   placeholder="Key" />
-            <input id="project-extra-value"
-                   class="input"
-                   v-model="extraValue"
-                   name="PROJECT_EXTRA_VALUE"
-                   type="text"
-                   placeholder="Value" />
-            <div class="control">
-              <button class="button is-light" @click="saveExtra">Save</button>
-            </div>
+          <input id="project-publication-value"
+                 class="input"
+                 v-model="publication"
+                 name="PROJECT_PUBLICATION"
+                 type="text"
+                 placeholder="Value" />
+          <div class="control">
+            <button class="button is-primary" @click="savePublication">Add</button>
           </div>
         </div>
       </div>
       <div class="column">
-        <table class="table is-fullwidth">
-          <thead>
-            <th scope="column">Key</th>
-            <th scope="column">Value</th>
-          </thead>
-          <tbody>
-            <tr v-for="key in Object.keys(newProject.extra)" :key="key">
-              <td>{{ key }}</td>
-              <td>{{ newProject.extra[key] }}</td>
-            </tr>
-          </tbody>
-        </table>
+        <ul>
+          <li class="nobullet" href="#" v-for="(pubtext, i) in newProject.publications" :key="pubtext">
+            {{ pubtext }} <a class="delete" href="#" @click="deletePublication(i)"></a>
+          </li>
+        </ul>
       </div>
     </div>
-
     <div class="field is-grouped">
       <div class="control">
-        <button class="button is-link">Submit</button>
+        <button class="button is-link" @click="submitProjectForm">Submit</button>
       </div>
       <div class="control">
         <button class="button is-light @click=cancelChanges">Cancel</button>
@@ -170,11 +154,12 @@ export default {
         dmp: '',
         contact: '',
         datasets: [],
+        publications: [],
         extra: {}
       },
       extraKey: '',
       extraValue: '',
-      publication: {'title': '', 'doi': ''}
+      publication: '',
     }
   },
   created () {
@@ -205,11 +190,21 @@ export default {
           }
         }
       }
-    },    
+    },
 
+    savePublication(event) {
+      event.preventDefault();
+      this.newProject.publications.push(this.publication);
+      this.publication = '';
+    },
+
+    deletePublication(position) {
+      this.newProject.publications.splice(position, 1);
+    },
+    
     cancelChanges(event) {
       event.preventDefault();
-      if (this.newProject.id === -1) {
+      if (this.uuid) {
         this.$router.push("/project/browser");
       }
       else {
@@ -224,6 +219,7 @@ export default {
           this.$router.push("/project/browser");
         });
     },
+
     submitProjectForm(event) {
       event.preventDefault();
       this.$store.dispatch('saveProject', this.newProject)
@@ -244,9 +240,7 @@ export default {
 </script>
 
 <style scoped>
-.warning {
-    font-weight: bold;
-    text-align: center;
-    font-size: large;
+.no-bullet {
+    list-style-type: none;
 }
 </style>
