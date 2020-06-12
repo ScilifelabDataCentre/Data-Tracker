@@ -217,6 +217,7 @@ def update_project(identifier):  # pylint: disable=too-many-branches
         if not user.has_permission('DATA_MANAGEMENT'):
             for dataset_uuid_str in indata['datasets']:
                 dataset_uuid = utils.str_to_uuid(dataset_uuid_str)
+                # do not reject existing datasets
                 if dataset_uuid in project['datasets']:
                     continue
                 order_info = flask.g.db['orders'].find_one({'datasets': dataset_uuid})
