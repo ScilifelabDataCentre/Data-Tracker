@@ -47,7 +47,7 @@ def test_get_project(use_db):
     """
     db = use_db
     session = requests.Session()
-    for _ in range(5):
+    for _ in range(3):
         project = list(db['projects'].aggregate([{'$sample': {'size': 1}}]))[0]
         owner_emails = [db['users'].find_one({'$or': [{'_id': identifier},
                                                       {'email': identifier}]})['email']
@@ -271,6 +271,22 @@ def test_add_project_bad():
     Bad requests.
     """
     indata = {'title': ''}
+    indata.update(TEST_LABEL)
+
+    responses = make_request_all_roles(f'/api/project/',
+                                       method='POST',
+                                       data=indata,
+                                       ret_json=True)
+    for response in responses:
+        if response.role == 'no-login':
+            assert response.code == 401
+            assert not response.data
+        else:
+            assert response.code == 400
+            assert not response.data
+
+
+    indata = {}
     indata.update(TEST_LABEL)
 
     responses = make_request_all_roles(f'/api/project/',
