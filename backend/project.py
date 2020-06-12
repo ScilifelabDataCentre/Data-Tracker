@@ -118,6 +118,12 @@ def add_project():  # pylint: disable=too-many-branches
 
     if not indata.get('owners'):
         indata['owners'] = [flask.g.current_user['_id']]
+    else:
+        for i, owner in enumerate(indata['owners']):
+            if utils.is_email(owner):
+                owner_info = flask.g.db['users'].find_one({'email': owner})
+                if owner_info:
+                    indata['owners'][i] = owner_info['_id']
 
     if 'datasets' in indata:
         for i, dataset_uuid_str in enumerate(indata['datasets']):
@@ -215,6 +221,13 @@ def update_project(identifier):  # pylint: disable=too-many-branches
     validation = utils.basic_check_indata(indata, project, prohibited=('_id'))
     if not validation[0]:
         flask.abort(status=validation[1])
+
+    if indata.get('owners'):
+        for i, owner in enumerate(indata['owners']):
+            if utils.is_email(owner):
+                owner_info = flask.g.db['users'].find_one({'email': owner})
+                if owner_info:
+                    indata['owners'][i] = owner_info['_id']
 
     if 'datasets' in indata:
         for i, dataset_uuid_str in enumerate(indata['datasets']):
