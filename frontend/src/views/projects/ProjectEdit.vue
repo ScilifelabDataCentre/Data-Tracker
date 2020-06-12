@@ -148,19 +148,23 @@
       <div class="column">
         <div class="field">
           <label class="label">Extra fields</label>
-          <div class="field is-grouped">
-            <input id="project-extra-key"
-                   class="input"
-                   v-model="extraKey"
-                   name="PROJECT_EXTRA_KEY"
-                   type="text"
-                   placeholder="Key" />
-            <input id="project-extra-value"
-                   class="input"
-                   v-model="extraValue"
-                   name="PROJECT_EXTRA_VALUE"
-                   type="text"
-                   placeholder="Value" />
+          <div class="field has-addons">
+            <div class="control">
+              <input id="project-extra-key"
+                     class="input"
+                     v-model="extraKey"
+                     name="PROJECT_EXTRA_KEY"
+                     type="text"
+                     placeholder="Key" />
+              <div class="control">
+              <input id="project-extra-value"
+                     class="input"
+                     v-model="extraValue"
+                     name="PROJECT_EXTRA_VALUE"
+                     type="text"
+                     placeholder="Value" />
+              </div>
+            </div>
             <div class="control">
               <button class="button is-primary" @click="saveExtra">Save</button>
             </div>
