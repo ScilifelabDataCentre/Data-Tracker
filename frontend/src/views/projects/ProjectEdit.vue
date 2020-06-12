@@ -50,27 +50,33 @@
 
     <div class="field">
       <label class="label" for="project-contact">Data Management Plan</label>
-      <input id="project-dmp"
-             class="input"
-             v-model="newProject.dmp"
-             name="PROJECT_DMP"
-             type="text"
-             placeholder="https://dmp.url" />
+      <div class="control">
+        <input id="project-dmp"
+               class="input"
+               v-model="newProject.dmp"
+               name="PROJECT_DMP"
+               type="text"
+               placeholder="https://dmp.url" />
+      </div>
     </div>
 
     <div class="columns">
       <div class="column">
         <div class="field">
           <label class="label" for="project-publication">Publications</label>
-          <div class="field is-grouped">
-            <input id="project-publication"
-                   class="input"
-                   v-model="publication"
-                   name="PROJECT_PUBLICATION"
-                   type="text"
-                   placeholder="Value" />
+          <div class="field has-addons">
             <div class="control">
-              <button class="button is-primary" @click="addPublication">Add</button>
+              <div class="field is-grouped">
+                <input id="project-publication"
+                       class="input"
+                       v-model="publication"
+                       name="PROJECT_PUBLICATION"
+                       type="text"
+                       placeholder="Value" />
+                <div class="control">
+                  <button class="button is-primary" @click="addPublication">Add</button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -87,9 +93,9 @@
     <div class="columns">
       <div class="column">
         <div class="field">
+          <label class="label" for="project-datasets">Datasets</label>
           <div class="control">
             <div class="select">
-              <label class="label" for="project-datasets">Datasets</label>
               <select id="project-datasets"
                       name="PROJECT_DATASETS"
                       v-model="datasetSelection" @change="addDataset">
@@ -102,6 +108,7 @@
       </div>
       <div class="column">
         <ul>
+          <li></li>
           <li class="nobullet" href="#" v-for="(dataset, i) in newProject.datasets" :key="dataset._id">
             <div class="tag is-light">{{ dataset.title }} <button class="delete" href="#" @click="deleteDataset(i)"></button></div>
           </li>
@@ -113,13 +120,15 @@
       <div class="column">
         <div class="field">
           <label class="label" for="project-owner">Owners</label>
-          <div class="field is-grouped">
-            <input id="project-owner"
-                   class="input"
-                   v-model="owner"
-                   name="PROJECT_OWNER"
-                   type="text"
-                   placeholder="Value" />
+          <div class="field has-addons">
+            <div class="control">
+              <input id="project-owner"
+                     class="input"
+                     v-model="owner"
+                     name="PROJECT_OWNER"
+                     type="text"
+                     placeholder="Value" />
+            </div>
             <div class="control">
               <button class="button is-primary" @click="addOwner">Add</button>
             </div>
