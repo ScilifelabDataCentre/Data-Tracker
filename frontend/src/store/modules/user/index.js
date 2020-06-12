@@ -135,9 +135,9 @@ const actions = {
 
 const getters = {
   user: state => state.user,
-  user_orders: state => state.user_orders,
-  user_datasets: state => state.user_datasets,
-  user_projects: state => state.user_projects,
+  userOrders: state => state.user_orders,
+  userDatasets: state => state.user_datasets,
+  userProjects: state => state.user_projects,
 }
 
 const userModule = {
