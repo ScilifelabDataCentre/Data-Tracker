@@ -214,19 +214,20 @@ def update_project(identifier):  # pylint: disable=too-many-branches
         flask.abort(status=validation[1])
 
     if 'datasets' in indata:
-        if not user.has_permission('DATA_MANAGEMENT'):
-            for dataset_uuid_str in indata['datasets']:
-                dataset_uuid = utils.str_to_uuid(dataset_uuid_str)
-                # do not reject existing datasets
-                if dataset_uuid in project['datasets']:
-                    continue
-                # allow new ones only if owner
-                order_info = flask.g.db['orders'].find_one({'datasets': dataset_uuid})
-                if not order_info:
-                    flask.abort(status=400)
-                if order_info['creator'] != flask.g.current_user['_id'] and\
-                   order_info['receiver'] != flask.g.current_user['_id']:
-                    flask.abort(status=400)
+        for i, dataset_uuid_str in enumerate(indata['datasets']):
+            dataset_uuid = utils.str_to_uuid(dataset_uuid_str)
+            indata['datasets'][i] = dataset_uuid
+            # do not reject existing datasets
+            if dataset_uuid in project['datasets']:
+                continue
+            # allow new ones only if owner or DATA_MANAGEMENT
+            order_info = flask.g.db['orders'].find_one({'datasets': dataset_uuid})
+            if not order_info:
+                flask.abort(status=400)
+            if (not user.has_permission('DATA_MANAGEMENT') and
+                order_info['creator'] != flask.g.current_user['_id'] and
+                order_info['receiver'] != flask.g.current_user['_id']):
+                flask.abort(status=400)
 
     project.update(indata)
 
