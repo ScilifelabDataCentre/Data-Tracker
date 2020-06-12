@@ -34,6 +34,12 @@
     </tbody>
   </table>
 
+  <router-link to="edit">
+    <button class="button is-link">
+      Edit
+    </button>
+  </router-link>
+  
   <div v-if="userOrders.length > 0">
     <h4 class="title is-4">Orders</h4>
     <table class="table is-hoverable is-striped">
@@ -95,12 +101,6 @@
       </tbody>
     </table>
   </div>
-  <router-link to="edit">
-    <button class="button is-link">
-      Edit
-    </button>
-  </router-link>
-
 </div>
 </template>
 
