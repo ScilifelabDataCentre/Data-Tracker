@@ -156,14 +156,14 @@
                      name="PROJECT_EXTRA_KEY"
                      type="text"
                      placeholder="Key" />
-              <div class="control">
+            </div>
+            <div class="control">
               <input id="project-extra-value"
                      class="input"
                      v-model="extraValue"
                      name="PROJECT_EXTRA_VALUE"
                      type="text"
                      placeholder="Value" />
-              </div>
             </div>
             <div class="control">
               <button class="button is-primary" @click="saveExtra">Save</button>
