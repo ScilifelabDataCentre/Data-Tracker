@@ -73,7 +73,7 @@ export default {
     return {
     }
   },
-  created () {
+  mounted () {
     this.$store.dispatch('getDataset', this.uuid);
   },
 }
