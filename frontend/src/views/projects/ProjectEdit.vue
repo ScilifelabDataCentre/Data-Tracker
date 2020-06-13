@@ -98,9 +98,9 @@
             <div class="select">
               <select id="project-datasets"
                       name="PROJECT_DATASETS"
-                      v-model="datasetSelection" @change="addDataset" :disabled="userDatasets.length === 0">
+                      v-model="datasetSelection" @change="addDataset" :disabled="availableDatasets.length === 0">
                 <option :value="-1">Choose dataset to add</option>
-                <option v-for="(dataset, i) in userDatasets" :key="dataset._id" :value="i">{{ dataset.title }}</option>
+                <option v-for="(dataset, i) in availableDatasets" :key="dataset._id" :value="i">{{ dataset.title }}</option>
               </select>
             </div>
           </div>
@@ -212,7 +212,7 @@ export default {
   components: {
   },
   computed: {
-    ...mapGetters(['project', 'user', 'userDatasets']),
+    ...mapGetters(['project', 'user']),
   },
 
   data () {
@@ -233,6 +233,7 @@ export default {
       submitError: false,
       datasetSelection: -1,
       owner: '',
+      availableDatasets: '',
     }
   },
 
@@ -243,7 +244,30 @@ export default {
           this.newProject = this.project;
           this.newProject.id = this.newProject._id;
           delete this.newProject._id;
-          this.$store.dispatch('getCurrentUserDatasets')
+        });
+      this.$store.dispatch('getCurrentUser', this.uuid)
+        .then(() => {
+          if (this.user.permissions.includes('DATA_MANAGEMENT')) {
+            this.$store.dispatch('getDatasets')
+              .then((response) => {
+                this.availableDatasets = response.data.datasets;
+              });
+          }
+          else {
+            this.$store.dispatch('getCurrentUserDatasets')
+              .then((response) => {
+                this.availableDatasets = response.data.datasets;
+              });
+          }
+          this.availableDatasets.sort((a, b) => {
+            if (a.title > b.title) {
+              return 1;
+            }
+            if (a.title < b.title) {
+              return -1;
+            }
+            return 0;
+          });
         });
     }
   },
@@ -281,8 +305,8 @@ export default {
 
     addDataset(event) {
       event.preventDefault();
-      if (this.datasetSelection !== '-1' && !this.newProject.datasets.includes(this.userDatasets[this.datasetSelection])) {
-        this.newProject.datasets.push(this.userDatasets[this.datasetSelection]);
+      if (this.datasetSelection !== '-1' && !this.newProject.datasets.includes(this.availableDatasets[this.datasetSelection])) {
+        this.newProject.datasets.push(this.availableDatasets[this.datasetSelection]);
         this.datasetSelection = -1;
       }
     },
