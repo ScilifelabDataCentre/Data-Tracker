@@ -32,6 +32,20 @@ def get_random(amount: int = 1):
 
     """
     results = list(flask.g.db['projects'].aggregate([{'$sample': {'size': amount}}]))
+
+    for result in results:
+        # only show owner if owner/admin
+        if not flask.g.current_user or\
+           (not user.has_permission('DATA_MANAGEMENT') and
+            flask.g.current_user['_id'] not in result['owners'] and
+            flask.g.current_user['email'] not in result['owners']):
+            logging.debug('Not allowed to access owners %s', flask.g.current_user)
+            del result['owners']
+
+            # return {_id, _title} for datasets
+            result['datasets'] = [flask.g.db.datasets.find_one({'_id': dataset},
+                                                               {'title': 1})
+                                  for dataset in result['datasets']]
     return utils.response_json({'projects': results})
 
 
@@ -49,12 +63,31 @@ def get_project(identifier):
     """
     try:
         uuid = utils.str_to_uuid(identifier)
-        result = flask.g.db['projects'].find_one({'_id': uuid})
     except ValueError:
-        result = None
+        flask.abort(status=404)
 
+    result = flask.g.db['projects'].find_one({'_id': uuid})
     if not result:
         return flask.Response(status=404)
+
+    # only show owner if owner/admin
+    if not flask.g.current_user or\
+       (not user.has_permission('DATA_MANAGEMENT') and
+        flask.g.current_user['_id'] not in result['owners'] and
+        flask.g.current_user['email'] not in result['owners']):
+        logging.debug('Not allowed to access owners %s', flask.g.current_user)
+        del result['owners']
+    else:
+        for i, owner in enumerate(result['owners']):
+            if not utils.is_email(owner):
+                owner_info = flask.g.db['users'].find_one(owner)
+                result['owners'][i] = owner_info['email']
+
+    # return {_id, _title} for datasets
+    result['datasets'] = [flask.g.db.datasets.find_one({'_id': dataset},
+                                                       {'title': 1})
+                          for dataset in result['datasets']]
+
     return utils.response_json({'project': result})
 
 
@@ -80,26 +113,30 @@ def add_project():  # pylint: disable=too-many-branches
     if not validation[0]:
         flask.abort(status=validation[1])
 
-    if 'owners' in indata and indata['owners']:
-        if not user.has_permission('DATA_MANAGEMENT'):
-            if len(indata['owners']) != 1:
-                flask.abort(status=400)
-            user_uuid = utils.str_to_uuid(indata['owners'][0])
-            if user_uuid != flask.g.current_user['_id']:
-                flask.abort(status=400)
-    else:
+    if 'title' not in indata:
+        flask.abort(status=400)
+
+    if not indata.get('owners'):
         indata['owners'] = [flask.g.current_user['_id']]
+    else:
+        for i, owner in enumerate(indata['owners']):
+            if utils.is_email(owner):
+                owner_info = flask.g.db['users'].find_one({'email': owner})
+                if owner_info:
+                    indata['owners'][i] = owner_info['_id']
 
     if 'datasets' in indata:
-        if not user.has_permission('DATA_MANAGEMENT'):
-            for ds_uuid_str in indata['datasets']:
-                ds_uuid = utils.str_to_uuid(ds_uuid_str)
-                order_info = flask.g.db['orders'].find_one({'datasets': ds_uuid})
-                if not order_info:
-                    flask.abort(status=400)
-                if order_info['creator'] != flask.g.current_user['_id'] and\
-                   order_info['receiver'] != flask.g.current_user['_id']:
-                    flask.abort(status=400)
+        for i, dataset_uuid_str in enumerate(indata['datasets']):
+            dataset_uuid = utils.str_to_uuid(dataset_uuid_str)
+            indata['datasets'][i] = dataset_uuid
+            # allow new ones only if owner or DATA_MANAGEMENT
+            order_info = flask.g.db['orders'].find_one({'datasets': dataset_uuid})
+            if not order_info:
+                flask.abort(status=400)
+            if not user.has_permission('DATA_MANAGEMENT') and\
+               order_info['creator'] != flask.g.current_user['_id'] and\
+               order_info['receiver'] != flask.g.current_user['_id']:
+                flask.abort(status=400)
 
     project.update(indata)
 
@@ -150,16 +187,19 @@ def delete_project(identifier: str):
 @user.login_required
 def update_project(identifier):  # pylint: disable=too-many-branches
     """
-    Add a project.
+    Update a project.
+
+    Args:
+        identifier (str): The project uuid.
 
     Returns:
-        flask.Response: Json structure with the ``_id`` of the project.
+        flask.Response: Status code.
     """
     try:
-        ds_uuid = utils.str_to_uuid(identifier)
+        project_uuid = utils.str_to_uuid(identifier)
     except ValueError:
         return flask.abort(status=404)
-    project = flask.g.db['projects'].find_one({'_id': ds_uuid})
+    project = flask.g.db['projects'].find_one({'_id': project_uuid})
     if not project:
         flask.abort(status=404)
 
@@ -170,7 +210,11 @@ def update_project(identifier):  # pylint: disable=too-many-branches
 
     # permission check
     if not user.has_permission('DATA_MANAGEMENT'):
-        if flask.g.current_user['_id'] not in project['owners']:
+        if flask.g.current_user['_id'] not in project['owners'] and\
+           flask.g.current_user['email'] not in project['owners']:
+            logging.debug('Unauthorized update attempt (project %s, user %s)',
+                          project_uuid,
+                          flask.g.current_user['_id'])
             flask.abort(status=403)
 
     # indata validation
@@ -178,24 +222,28 @@ def update_project(identifier):  # pylint: disable=too-many-branches
     if not validation[0]:
         flask.abort(status=validation[1])
 
-    if 'owners' in indata and indata['owners']:
-        if not user.has_permission('DATA_MANAGEMENT'):
-            if len(indata['owners']) != 1:
-                flask.abort(status=400)
-            user_uuid = utils.str_to_uuid(indata['owners'][0])
-            if user_uuid != flask.g.current_user['_id']:
-                flask.abort(status=400)
+    if indata.get('owners'):
+        for i, owner in enumerate(indata['owners']):
+            if utils.is_email(owner):
+                owner_info = flask.g.db['users'].find_one({'email': owner})
+                if owner_info:
+                    indata['owners'][i] = owner_info['_id']
 
     if 'datasets' in indata:
-        if not user.has_permission('DATA_MANAGEMENT'):
-            for ds_uuid_str in indata['datasets']:
-                ds_uuid = utils.str_to_uuid(ds_uuid_str)
-                order_info = flask.g.db['orders'].find_one({'datasets': ds_uuid})
-                if not order_info:
-                    flask.abort(status=400)
-                if order_info['creator'] != flask.g.current_user['_id'] and\
-                   order_info['receiver'] != flask.g.current_user['_id']:
-                    flask.abort(status=400)
+        for i, dataset_uuid_str in enumerate(indata['datasets']):
+            dataset_uuid = utils.str_to_uuid(dataset_uuid_str)
+            indata['datasets'][i] = dataset_uuid
+            # do not reject existing datasets
+            if dataset_uuid in project['datasets']:
+                continue
+            # allow new ones only if owner or DATA_MANAGEMENT
+            order_info = flask.g.db['orders'].find_one({'datasets': dataset_uuid})
+            if not order_info:
+                flask.abort(status=400)
+            if not user.has_permission('DATA_MANAGEMENT') and\
+               order_info['creator'] != flask.g.current_user['_id'] and\
+               order_info['receiver'] != flask.g.current_user['_id']:
+                flask.abort(status=400)
 
     project.update(indata)
 
@@ -206,3 +254,19 @@ def update_project(identifier):  # pylint: disable=too-many-branches
         utils.make_log('project', 'edit', 'Project updated', project)
 
     return flask.Response(status=200)
+
+
+@blueprint.route('/user/', methods=['GET'])
+@user.login_required
+def list_user_projects():  # pylint: disable=too-many-branches
+    """
+    List project owned by the user.
+
+    Returns:
+        flask.Response: JSON structure.
+    """
+    results = list(flask.g.db['projects']
+                   .find({'$or': [{'owners': flask.g.current_user['_id']},
+                                  {'owners': flask.g.current_user['email']}]}))
+    logging.debug(results)
+    return utils.response_json({'projects': results})

@@ -1,10 +1,20 @@
 FROM node:alpine as build
 
-COPY ./frontend /code
-WORKDIR /code
+COPY ./frontend/package.json /package.json
+
+WORKDIR /
 
 RUN yarn install
+
+COPY ./frontend /code
+
+RUN mv /node_modules /code/
+
+WORKDIR /code/
+
 RUN yarn build
+
+
 
 FROM nginx:alpine
 

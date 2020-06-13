@@ -152,15 +152,7 @@ Datasets
     * Can be removed by any user listed in ``owners``.
 Publications
     * List of publications related to the project.
-    * Entry::
-
-       {
-         'title': 'name',
-         'doi': 'doi-id',
-	 ...
-       }
-
-    * ``title`` + ``doi`` mandatory, but may also add e.g. ``journal`` and ``year``.
+    * ``str``
 DMP
     Data management plan. Should be provided as an URL.
 Owners

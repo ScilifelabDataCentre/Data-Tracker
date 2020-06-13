@@ -47,16 +47,54 @@ def test_get_project(use_db):
     """
     db = use_db
     session = requests.Session()
-    for _ in range(10):
+    for _ in range(3):
         project = list(db['projects'].aggregate([{'$sample': {'size': 1}}]))[0]
-        print(project)
+        owner_emails = [db['users'].find_one({'$or': [{'_id': identifier},
+                                                      {'email': identifier}]})['email']
+                        for identifier in project['owners']]
         project['_id'] = str(project['_id'])
+        proj_owner = db['users'].find_one({'_id': project['owners'][0]})
+        if not proj_owner:
+            proj_owner = db['users'].find_one({'email': project['owners'][0]})
+        if not proj_owner:
+            print('Unknown user for owner')
+            assert False
         project['owners'] = [str(entry) for entry in project['owners']]
+
         project['datasets'] = [str(entry) for entry in project['datasets']]
         response = make_request(session, f'/api/project/{project["_id"]}')
         assert response.code == 200
         for field in project:
-            assert project[field] == response.data['project'][field]
+            if field == 'datasets':
+                for i, ds_uuid in enumerate(project[field]):
+                    assert ds_uuid == response.data['project'][field][i]['_id']
+            elif field != 'owners':
+                assert project[field] == response.data['project'][field]
+            else:
+                if field in response.data['project']:
+                    assert response.data['project'][field] == owner_emails
+        as_user(session, proj_owner['auth_id'])
+        response = make_request(session, f'/api/project/{project["_id"]}')
+        assert response.code == 200
+        for field in project:
+            if field == 'datasets':
+                for i, ds_uuid in enumerate(project[field]):
+                    assert ds_uuid == response.data['project'][field][i]['_id']
+            elif field == 'owners':
+                assert response.data['project'][field] == owner_emails
+            else:
+                assert project[field] == response.data['project'][field]
+        as_user(session, USERS['root'])
+        response = make_request(session, f'/api/project/{project["_id"]}')
+        assert response.code == 200
+        for field in project:
+            if field == 'datasets':
+                for i, ds_uuid in enumerate(project[field]):
+                    assert ds_uuid == response.data['project'][field][i]['_id']
+            elif field == 'owners':
+                assert response.data['project'][field] == owner_emails
+            else:
+                assert project[field] == response.data['project'][field]
 
 
 def test_get_project_bad():
@@ -109,16 +147,13 @@ def test_add_project_permissions(use_db):
                                        data=indata,
                                        ret_json=True)
     for response in responses:
-        if response.role in ('base', 'data', 'root'):
-            assert response.code == 200
-            assert '_id' in response.data
-            assert len(response.data['_id']) == 36
-        elif response.role == 'no-login':
+        if response.role == 'no-login':
             assert response.code == 401
             assert not response.data
         else:
-            assert response.code == 400
-            assert not response.data
+            assert response.code == 200
+            assert '_id' in response.data
+            assert len(response.data['_id']) == 36
 
     dataset_info = next(db['datasets'].aggregate([{'$sample': {'size': 1}}]))
     order_info = db['orders'].find_one({'datasets': dataset_info['_id']})
@@ -175,8 +210,7 @@ def test_add_project(use_db):
               'contact': 'user@example.com',
               'dmp': 'https://dmp_url_test',
               'owners': [str(user_info['_id'])],
-              'publications': [{'title': 'A test publication title',
-                                'doi': 'doi://a_test_doi_value'}],
+              'publications': ['A test publication title, doi://a_test_doi_value'],
               'title': 'Test title',
               'datasets': [str(dataset_info['_id'])]}
     indata.update(TEST_LABEL)
@@ -237,6 +271,22 @@ def test_add_project_bad():
     Bad requests.
     """
     indata = {'title': ''}
+    indata.update(TEST_LABEL)
+
+    responses = make_request_all_roles(f'/api/project/',
+                                       method='POST',
+                                       data=indata,
+                                       ret_json=True)
+    for response in responses:
+        if response.role == 'no-login':
+            assert response.code == 401
+            assert not response.data
+        else:
+            assert response.code == 400
+            assert not response.data
+
+
+    indata = {}
     indata.update(TEST_LABEL)
 
     responses = make_request_all_roles(f'/api/project/',
@@ -361,8 +411,7 @@ def test_update_project(use_db):
               'contact': 'user_updated@example.com',
               'dmp': 'https://dmp_updated_url_test',
               'owners': [str(project_info['owners'][0])],
-              'publications': [{'title': 'Updated publication title',
-                                'doi': 'doi://updated_doi_value'}],
+              'publications': ['Updated publication title, doi://updated_doi_value'],
               'title': 'Test title updated',
               'datasets': [str(uuids[1])]}
     indata.update(TEST_LABEL)
@@ -397,8 +446,7 @@ def test_update_project(use_db):
               'contact': 'user_updated@example.com2',
               'dmp': 'https://dmp_updated_url_test2',
               'owners': [str(user_info['_id'])],
-              'publications': [{'title': 'Updated publication title2',
-                                'doi': 'doi://updated_doi_value'}],
+              'publications': ['Updated publication title2, doi://updated_doi_value'],
               'title': 'Test title updated',
               'datasets': [str(uuids[1]), str(uuids[1])]}
     indata.update(TEST_LABEL)

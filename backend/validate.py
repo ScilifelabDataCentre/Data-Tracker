@@ -89,7 +89,11 @@ def validate_datasets(data: list) -> bool:
     Raises:
         ValueError: Validation failed.
     """
+    if not isinstance(data, list):
+        raise ValueError(f'Must be list ({data})')
     for ds_entry in data:
+        if not isinstance(ds_entry, str):
+            raise ValueError(f'Must be str ({ds_entry})')
         try:
             ds_uuid = uuid.UUID(ds_entry)
         except ValueError:
@@ -199,7 +203,7 @@ def validate_publications(data: list) -> bool:
     """
     Validate input for the ``publications`` field.
 
-    It must have the form ``[{'title': value, 'doi': value}, ...]``.
+    It must have the form ``['publication text', ...]``.
 
     Args:
         data (list): The data to be validated.
@@ -213,13 +217,8 @@ def validate_publications(data: list) -> bool:
     if not isinstance(data, list):
         raise ValueError('Must be a list')
     for entry in data:
-        if not isinstance(entry, dict):
-            raise ValueError('Must be a list of dicts')
-        for key in entry:
-            if key not in ('title', 'doi'):
-                raise ValueError('Bad key in dict')
-            if not isinstance(entry[key], str):
-                raise ValueError('Values must be type str')
+        if not isinstance(entry, str):
+            raise ValueError('Must be a list of strings')
     return True
 
 

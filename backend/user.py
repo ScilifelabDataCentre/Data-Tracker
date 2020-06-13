@@ -110,6 +110,7 @@ def get_current_user_info():
     """
     data = flask.g.current_user
     outstructure = {'affiliation': '',
+                    'auth_id': '',
                     'email': '',
                     'name': '',
                     'permissions': ''}
@@ -288,7 +289,7 @@ def update_current_user_info():
     result = flask.g.db['users'].update_one({'_id': user_data['_id']},
                                             {'$set': user_data})
     if not result.acknowledged:
-        logging.error('User update failed: %s', indata)
+        logging.error('User self-update failed: %s', indata)
         flask.Response(status=500)
     else:
         utils.make_log('user', 'edit', 'User self-updated', user_data)

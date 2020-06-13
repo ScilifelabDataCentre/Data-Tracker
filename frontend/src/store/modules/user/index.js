@@ -4,9 +4,9 @@ import {getCsrfHeader} from '../../helpers.js';
 
 const state = {
   user: {},
-  user_datasets: [],
-  user_orders: [],
-  user_projects: [],
+  userDatasets: [],
+  userOrders: [],
+  userProjects: [],
 }
 
 const mutations = {
@@ -14,13 +14,13 @@ const mutations = {
     state.user = payload;
   },
   UPDATE_USER_DATASETS (state, payload) {
-    state.user_datasets = payload;
+    state.userDatasets = payload;
   },
   UPDATE_USER_ORDERS (state, payload) {
-    state.user_orders = payload;
+    state.userOrders = payload;
   },
   UPDATE_USER_PROJECTS (state, payload) {
-    state.user_projects = payload;
+    state.userProjects = payload;
   },
 }
 
@@ -39,6 +39,40 @@ const actions = {
     });
   },
 
+  updateCurrentUser(context, payload) {
+    return new Promise((resolve, reject) => {
+      axios
+        .patch('/api/user/me/',
+               payload,
+               {
+                 headers: getCsrfHeader(),
+               })
+        .then((response) => {
+          resolve(response);
+        })
+        .catch(function (err) {
+          reject(err);
+        });
+    });
+  },
+  
+  genApiKeyCurrentUser() {
+    return new Promise((resolve, reject) => {
+      axios
+        .post('/api/user/me/apikey/',
+              {},
+              {
+                headers: getCsrfHeader(),
+              })
+        .then((response) => {
+          resolve(response);
+        })
+        .catch(function (err) {
+          reject(err);
+        });
+    });
+  },
+  
   loginKey (context, payload) {
     return new Promise((resolve, reject) => {
       axios
@@ -56,7 +90,7 @@ const actions = {
     });
   },
 
-  getUserOrders ({ commit }) {
+  getCurrentUserOrders ({ commit }) {
     return new Promise((resolve, reject) => {
       axios
         .get('/api/order/user/')
@@ -70,7 +104,7 @@ const actions = {
     });
   },
 
-  getUserDatasets ({ commit }) {
+  getCurrentUserDatasets ({ commit }) {
     return new Promise((resolve, reject) => {
       axios
         .get('/api/dataset/user/')
@@ -84,7 +118,7 @@ const actions = {
     });
   },
 
-  getUserProjects ({ commit }) {
+  getCurrentUserProjects ({ commit }) {
     return new Promise((resolve, reject) => {
       axios
         .get('/api/project/user/')
@@ -101,9 +135,9 @@ const actions = {
 
 const getters = {
   user: state => state.user,
-  user_orders: state => state.user_orders,
-  user_datasets: state => state.user_datasets,
-  user_projects: state => state.user_projects,
+  userOrders: state => state.userOrders,
+  userDatasets: state => state.userDatasets,
+  userProjects: state => state.userProjects,
 }
 
 const userModule = {
