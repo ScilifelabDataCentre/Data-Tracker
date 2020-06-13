@@ -66,18 +66,14 @@ const actions = {
 
   saveDataset (context, payload) {
     return new Promise((resolve, reject) => {
-      const newDataset = payload;
-      let url = '';
-        url = '/api/dataset/' + newDataset.uuid + '/edit/';
-      delete newDataset.uuid;
-      delete newDataset.identifier;
-      delete newDataset.dataUrls;
+      let datasetUuid = payload.id;
+      delete payload.id;
       axios
-        .post(url,
-              newDataset,
-              {
-                headers: getCsrfHeader(),
-              })
+        .patch('/api/dataset/' + datasetUuid + '/',
+               payload,
+               {
+                 headers: getCsrfHeader(),
+               })
         .then((response) => {
           resolve(response);
         })
