@@ -7,15 +7,13 @@
         <label for="user-id" class="label">Identifier</label>
       </div>
       <div class="field-body">
-        <div class="control">
-          <input id="user-id"
-                 class="input"
-                 name="USER_ID"
-                 type="text"
-                 placeholder=""
-                 v-model="newUser.id"
-                 disabled="true"/>
-        </div>
+        <input id="user-id"
+               class="input"
+               name="USER_ID"
+               type="text"
+               placeholder=""
+               v-model="newUser.id"
+               disabled="true"/>
       </div>
     </div>
 
