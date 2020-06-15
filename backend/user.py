@@ -366,7 +366,7 @@ def get_user_log(identifier: str = None):
     Returns:
         flask.Response: Information about the user as json.
     """
-    if identifier == None:
+    if identifier is None:
         identifier = str(flask.g.current_user['_id'])
 
     if str(flask.g.current_user['_id']) != identifier and not has_permission('USER_MANAGEMENT'):
@@ -399,7 +399,7 @@ def get_user_actions(identifier: str = None):
     Returns:
         flask.Response: Information about the user as json.
     """
-    if identifier == None:
+    if identifier is None:
         identifier = str(flask.g.current_user['_id'])
 
     if str(flask.g.current_user['_id']) != identifier and not has_permission('USER_MANAGEMENT'):
