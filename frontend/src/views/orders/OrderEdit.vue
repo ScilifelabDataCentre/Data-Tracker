@@ -49,7 +49,7 @@
              v-model="newOrder.receiver"
              name="ORDER_RECEIVER"
              type="text"
-             placeholder="User _id or email" />
+             placeholder="User UUID or email" />
     </div>
     <div class="columns">
       <div class="column">
@@ -134,13 +134,13 @@ export default {
     }
   },
 
-  created () {
-    if (this.uuid) {
+  mounted () {
+    if (this.uuid !== undefined) {
       this.$store.dispatch('getOrder', this.uuid)
         .then(() => {
           this.newOrder = this.order;
           this.newOrder.id = this.newOrder._id;
-          this.newOrder.creator = this.creator.id;
+          this.newOrder.creator = this.newOrder.creator.identifier;
           delete this.newOrder._id;
           delete this.newOrder.datasets;
         });

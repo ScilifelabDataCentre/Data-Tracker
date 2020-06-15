@@ -6,7 +6,7 @@
     <tbody>
       <tr>
         <th scope="row">Creator</th>
-        <td>{{order.creator.name}} <span v-if="order.creator._id !== order.creator.name">({{order.creator._id}})</span></td>
+        <td>{{order.creator.name}} <span v-if="order.creator.identifier !== order.creator.name">({{order.creator.identifier}})</span></td>
       </tr>
       <tr>
         <th scope="row">Receiver</th>
