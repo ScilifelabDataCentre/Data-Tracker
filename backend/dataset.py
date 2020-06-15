@@ -167,6 +167,40 @@ def update_dataset(identifier):
     return flask.Response(status=200)
 
 
+@blueprint.route('/<identifier>/log/', methods=['GET'])
+@user.login_required
+def get_dataset_log(identifier: str = None):
+    """
+    Get change logs for the user entry with uuid ``identifier``.
+
+    Can be accessed by creator (order), receiver (order), and admin (DATA_MANAGEMENT).
+
+    Args:
+        identifier (str): The uuid of the dataset.
+
+    Returns:
+        flask.Response: Logs as json.
+    """
+    try:
+        dataset_uuid = utils.str_to_uuid(identifier)
+    except ValueError:
+        flask.abort(status=404)
+
+    if not user.has_permission('DATA_MANAGEMENT'):
+        order_data = flask.g.db['orders'].find_one({'datasets': dataset_uuid})
+        if not order_data:
+            flask.abort(403)
+        if flask.g.current_user['_id'] not in order_data['receiver'] and \
+           flask.g.current_user['email'] not in order_data['creator']:
+           flask.abort(403)
+
+    dataset_logs = list(flask.g.db['logs'].find({'data_type': 'dataset', 'data._id': dataset_uuid}))
+
+    utils.incremental_logs(dataset_logs)
+
+    return utils.response_json({'logs': dataset_logs})
+
+
 # helper functions
 def build_dataset_info(identifier: str):
     """
