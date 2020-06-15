@@ -139,7 +139,7 @@ def get_order_logs(identifier):
 
     if not user.has_permission('DATA_MANAGEMENT'):
         user_entries = (flask.g.current_user['_id'], flask.g.current_user['email'])
-        order_data = flask.g.db['orders'].find_one({'datasets': dataset_uuid})
+        order_data = flask.g.db['orders'].find_one({'_id': order_uuid})
         if not order_data:
             flask.abort(403)
         if order_data['creator'] not in user_entries:
