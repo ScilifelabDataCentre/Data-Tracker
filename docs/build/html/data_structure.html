@@ -340,7 +340,7 @@
 </ul>
 <div class="section" id="id3">
 <h3>Fields<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
-<dl>
+<dl class="simple">
 <dt>_id</dt><dd><p>Uuid for the project.</p>
 </dd>
 <dt>Title</dt><dd><p>Title of the project.</p>
@@ -355,18 +355,9 @@
 <li><p>Can be removed by any user listed in <code class="docutils literal notranslate"><span class="pre">owners</span></code>.</p></li>
 </ul>
 </dd>
-<dt>Publications</dt><dd><ul>
+<dt>Publications</dt><dd><ul class="simple">
 <li><p>List of publications related to the project.</p></li>
-<li><p>Entry:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;doi&#39;</span><span class="p">:</span> <span class="s1">&#39;doi-id&#39;</span><span class="p">,</span>
-  <span class="o">...</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">title</span></code> + <code class="docutils literal notranslate"><span class="pre">doi</span></code> mandatory, but may also add e.g. <code class="docutils literal notranslate"><span class="pre">journal</span></code> and <code class="docutils literal notranslate"><span class="pre">year</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></li>
 </ul>
 </dd>
 <dt>DMP</dt><dd><p>Data management plan. Should be provided as an URL.</p>
