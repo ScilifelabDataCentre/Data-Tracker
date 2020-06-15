@@ -325,7 +325,7 @@ def update_order(identifier: str):  # pylint: disable=too-many-branches
         flask.abort(status=validation[1])
 
     # creator
-    if indata.get('creator'):
+    if indata.get('creator') and indata['creator'] != order['creator']:
         if not user.has_permission('DATA_MANAGEMENT'):
             flask.abort(status=403)
         if new_identifier := utils.check_email_uuid(indata['creator']):
