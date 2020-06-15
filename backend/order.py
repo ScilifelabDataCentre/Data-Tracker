@@ -146,10 +146,14 @@ def get_order_logs(identifier):
            flask.abort(403)
 
     order_logs = list(flask.g.db['logs'].find({'data_type': 'order', 'data._id': order_uuid}))
+    for log in order_logs:
+        del log['data_type']
 
     utils.incremental_logs(order_logs)
 
-    return utils.response_json({'logs': order_logs})
+    return utils.response_json({'entry_id': order_uuid,
+                                'data_type': 'order',
+                                'logs': order_logs})
 
 
 @blueprint.route('/', methods=['POST'])
