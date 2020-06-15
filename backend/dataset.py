@@ -187,11 +187,12 @@ def get_dataset_log(identifier: str = None):
         flask.abort(status=404)
 
     if not user.has_permission('DATA_MANAGEMENT'):
+        user_entries = (flask.g.current_user['_id'], flask.g.current_user['email'])
         order_data = flask.g.db['orders'].find_one({'datasets': dataset_uuid})
         if not order_data:
             flask.abort(403)
-        if flask.g.current_user['_id'] not in order_data['receiver'] and \
-           flask.g.current_user['email'] not in order_data['creator']:
+        if order_data['receiver'] not in user_entries and \
+           order_data['creator'] not in user_entries:
            flask.abort(403)
 
     dataset_logs = list(flask.g.db['logs'].find({'data_type': 'dataset', 'data._id': dataset_uuid}))
