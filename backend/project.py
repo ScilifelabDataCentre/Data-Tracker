@@ -270,3 +270,37 @@ def list_user_projects():  # pylint: disable=too-many-branches
                                   {'owners': flask.g.current_user['email']}]}))
     logging.debug(results)
     return utils.response_json({'projects': results})
+
+
+@blueprint.route('/<identifier>/log/', methods=['GET'])
+@user.login_required
+def get_project_log(identifier: str = None):
+    """
+    Get change logs for the user entry with uuid ``identifier``.
+
+    Can be accessed by owners and admin (DATA_MANAGEMENT).
+
+    Args:
+        identifier (str): The uuid of the project.
+
+    Returns:
+        flask.Response: Logs as json.
+    """
+    try:
+        project_uuid = utils.str_to_uuid(identifier)
+    except ValueError:
+        flask.abort(status=404)
+
+    if not user.has_permission('DATA_MANAGEMENT'):
+        project_data = flask.g.db['projects'].find_one({'_id': project_uuid})
+        if not project_data:
+            flask.abort(403)
+        if flask.g.current_user['_id'] not in project_data['owners'] and \
+           flask.g.current_user['email'] not in project_data['owners']:
+           flask.abort(403)
+
+    project_logs = list(flask.g.db['logs'].find({'data_type': 'project', 'data._id': project_uuid}))
+
+    utils.incremental_logs(project_logs)
+
+    return utils.response_json({'logs': project_logs})
