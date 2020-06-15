@@ -50,11 +50,23 @@
       </tbody>
     </table>
   </div>
-  <router-link :to="'/dataset/' + uuid + '/edit'" v-if="dataset.creator === user.name || user.permissions.includes('DATA_MANAGEMENT')">
-    <button class="button is-link">
-      Edit
-    </button>
-  </router-link>
+
+    <div v-if="dataset.creator === user.name || user.permissions.includes('DATA_MANAGEMENT')" class="field is-grouped">
+    <div class="control">
+      <router-link to="edit">
+        <button class="button is-link">
+          Edit
+        </button>
+      </router-link>
+    </div>
+    <div class="control">
+      <router-link to="log">
+        <button class="button is-light">
+          Logs
+        </button>
+      </router-link>
+    </div>
+  </div>
 </div>
 </template>
 

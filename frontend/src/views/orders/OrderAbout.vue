@@ -31,11 +31,22 @@
       </tr>
     </tbody>
   </table>
-  <router-link :to="'/order/' + uuid + '/edit'">
-    <button class="button is-link">
-      Edit
-    </button>
-  </router-link>
+  <div class="field is-grouped">
+    <div class="control">
+      <router-link to="edit">
+        <button class="button is-link">
+          Edit
+        </button>
+      </router-link>
+    </div>
+    <div class="control">
+      <router-link to="log">
+        <button class="button is-light">
+          Logs
+        </button>
+      </router-link>
+    </div>
+  </div>
 </div>
 </template>
 

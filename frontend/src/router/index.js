@@ -34,6 +34,8 @@ const OrderBrowser = () => import(/* webpackChunkName: "order" */ '../views/orde
 const OrderContainer = () => import(/* webpackChunkName: "order" */ '../views/orders/OrderContainer.vue')
 const OrderEdit = () => import(/* webpackChunkName: "order" */ '../views/orders/OrderEdit.vue')
 
+const LogViewer = () => import(/* webpackChunkName: "logs" */ '../components/LogViewer.vue')
+
 Vue.use(VueRouter);
 
 const router = new VueRouter({
@@ -90,6 +92,12 @@ const router = new VueRouter({
             loginRequired: true,
           },
         },
+        {
+          path: ':uuid/log',
+          component: LogViewer,
+          props: {'dataType': 'project' },
+        },
+
       ],
     },
 
@@ -123,6 +131,11 @@ const router = new VueRouter({
           },
         },
         {
+          path: ':uuid/log',
+          component: LogViewer,
+          props: {'dataType': 'dataset' },
+        },
+        {
           path: ':uuid',
           redirect: ':uuid/about',
         },
@@ -153,6 +166,11 @@ const router = new VueRouter({
           path: ':uuid/about',
           component: OrderAbout,
           props: true,
+        },
+        {
+          path: ':uuid/log',
+          component: LogViewer,
+          props: {'dataType': 'order' },
         },
         {
           path: ':uuid/edit',
@@ -188,6 +206,12 @@ const router = new VueRouter({
             loginRequired: true,
           },
         },
+        {
+          path: 'log',
+          component: LogViewer,
+          props: {'dataType': 'me' },
+        },
+
       ],
     },
 
@@ -221,6 +245,12 @@ const router = new VueRouter({
             adminRequired: true,
           },
         },
+        {
+          path: 'user/:uuid/log',
+          component: LogViewer,
+          props: {'dataType': 'user' },
+        },
+
         {
           path: 'user/add',
           component: UserEdit,
