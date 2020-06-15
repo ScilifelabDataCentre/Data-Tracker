@@ -28,9 +28,11 @@ def test_get_order_permissions(use_db):
     for order in orders:
         # to simplify comparison
         order['_id'] = str(order['_id'])
-        order['receiver'] = str(order['receiver'])
         owner = db['users'].find_one({'_id': order['creator']})
-        order['creator'] = str(order['creator'])
+        if isinstance(order['receiver'], uuid.UUID):
+            order['receiver'] = db['users'].find_one({'_id': order['receiver']})['email']
+        if isinstance(order['creator'], uuid.UUID):
+            order['creator'] = owner['email']
         for i, ds in enumerate(order['datasets']):
             order['datasets'][i] = next(db['datasets'].aggregate([{'$match': {'_id': ds}},
                                                                   {'$project': {'_id': 1,
@@ -50,7 +52,7 @@ def test_get_order_permissions(use_db):
                     elif field == '_id':
                         continue
                     elif field == 'creator':
-                        assert data[field]['id'] == order[field]
+                        assert data[field]['identifier'] == order[field]
                         assert data[field]['name'] == owner['name']
                     else:
                         assert order[field] == data[field]
@@ -73,7 +75,7 @@ def test_get_order_permissions(use_db):
             elif field == '_id':
                 continue
             elif field == 'creator':
-                assert data[field]['id'] == order[field]
+                assert data[field]['identifier'] == order[field]
                 assert data[field]['name'] == owner['name']
             else:
                 assert order[field] == data[field]
@@ -94,8 +96,9 @@ def test_get_order(use_db):
         order['_id'] = str(order['_id'])
         owner = db['users'].find_one({'_id': order['creator']})
         if isinstance(order['receiver'], uuid.UUID):
-            order['receiver'] = str(order['receiver'])
-        order['creator'] = str(order['creator'])
+            order['receiver'] = db['users'].find_one({'_id': order['receiver']})['email']
+        if isinstance(order['creator'], uuid.UUID):
+            order['creator'] = owner['email']
         for i, ds in enumerate(order['datasets']):
             order['datasets'][i] = next(db['datasets'].aggregate([{'$match': {'_id': ds}},
                                                                   {'$project': {'_id': 1,
@@ -115,7 +118,7 @@ def test_get_order(use_db):
             elif field == '_id':
                 continue
             elif field == 'creator':
-                assert data[field]['id'] == order[field]
+                assert data[field]['identifier'] == order[field]
                 assert data[field]['name'] == owner['name']
             else:
                 assert order[field] == data[field]
