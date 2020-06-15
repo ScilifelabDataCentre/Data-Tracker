@@ -245,13 +245,19 @@ def update_project(identifier):  # pylint: disable=too-many-branches
                order_info['receiver'] != flask.g.current_user['_id']:
                 flask.abort(status=400)
 
-    project.update(indata)
+    is_different = False
+    for field in indata:
+        if indata[field] != project[field]:
+            is_different = True
+            break
 
-    result = flask.g.db['projects'].update_one({'_id': project['_id']}, {'$set': project})
-    if not result.acknowledged:
-        logging.error('Project update failed: %s', indata)
-    else:
-        utils.make_log('project', 'edit', 'Project updated', project)
+    if indata and is_different:
+        result = flask.g.db['projects'].update_one({'_id': project['_id']}, {'$set': indata})
+        if not result.acknowledged:
+            logging.error('Project update failed: %s', indata)
+        else:
+            project.update(indata)
+            utils.make_log('project', 'edit', 'Project updated', project)
 
     return flask.Response(status=200)
 
