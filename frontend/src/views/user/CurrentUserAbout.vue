@@ -48,7 +48,14 @@
       <div class="control">
 	<router-link to="log">
           <button class="button is-light">
-            Logs
+            Entry Log
+          </button>
+	</router-link>
+      </div>
+      <div class="control">
+	<router-link to="actions">
+          <button class="button is-light">
+            User Action log
           </button>
 	</router-link>
       </div>
