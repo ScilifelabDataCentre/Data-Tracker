@@ -12,6 +12,7 @@
           <li><span class="field-title">Action:</span> {{ log.action }}</li>
           <li><span class="field-title">Comment:</span> {{ log.comment }}</li>
           <li><span class="field-title">User:</span> {{ log.user }}</li>
+          <li><span class="field-title">Time:</span> {{ log.timestamp }}</li>
           <li><span class="field-title">Change:</span>
             <ul>
               <li v-for="field in Object.keys(log.data)" :key="field">
