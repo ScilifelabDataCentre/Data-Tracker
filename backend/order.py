@@ -48,12 +48,13 @@ def list_orders():
                                                             'creator': 1,
                                                             'receiver': 1}))
     else:
-        orders = list(flask.g.db['orders'].find({'$or': [{'creator': flask.g.current_user['_id'],
-                                                          'creator': flask.g.current_user['email']}]},
-                                                projection={'_id': 1,
-                                                            'title': 1,
-                                                            'creator': 1,
-                                                            'receiver': 1}))
+        orders = list(flask.g.db['orders']
+                      .find({'$or': [{'creator': flask.g.current_user['_id']},
+                                     {'creator': flask.g.current_user['email']}]},
+                            projection={'_id': 1,
+                                        'title': 1,
+                                        'creator': 1,
+                                        'receiver': 1}))
 
     return utils.response_json({'orders': orders})
 
