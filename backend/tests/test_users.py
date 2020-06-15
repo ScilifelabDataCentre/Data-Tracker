@@ -431,3 +431,43 @@ def test_key_reset(use_db):
                                     method='POST')
             assert response.code == 200
             assert not response.data
+
+
+def test_get_user_logs_access(use_db):
+    """
+    Get user logs.
+
+    Assert that USER_MANAGEMENT or actual user is required.
+    """
+    db = use_db
+    user_uuid = db['users'].find_one({'auth_id': USERS['base']}, {'_id': 1})['_id']
+    responses = make_request_all_roles(f'/api/user/{user_uuid}/log/',
+                                       ret_json=True)
+    for response in responses:
+        if response.role in ('base', 'users', 'root'):
+            assert response.code == 200
+            assert 'logs' in response.data
+        elif response.role == 'no-login':
+            assert response.code == 401
+            assert not response.data
+        else:
+            assert response.code == 403
+            assert not response.data
+
+
+def test_get_current_user_logs(use_db):
+    """
+    Get current user logs.
+
+    Should return logs for all logged in users.
+    """
+    db = use_db
+    responses = make_request_all_roles(f'/api/user/me/log/',
+                                       ret_json=True)
+    for response in responses:
+        if response.role == 'no-login':
+            assert response.code == 401
+            assert not response.data
+        else:
+            assert response.code == 200
+            assert 'logs' in response.data
