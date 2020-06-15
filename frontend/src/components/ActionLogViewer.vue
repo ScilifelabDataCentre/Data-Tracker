@@ -1,6 +1,6 @@
 <template>
 <div class="dataset-info">
-  <h1 class="title is-2">Changelog for {{ capitalize(dType) }} Entry</h1>
+  <h1 class="title is-2">Actions by User</h1>
   <div v-if="logs.length === 0">
     No logs found.
   </div>
