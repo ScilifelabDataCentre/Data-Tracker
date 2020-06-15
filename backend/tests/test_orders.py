@@ -994,6 +994,11 @@ def test_list_all_orders(use_db):
         elif response.role == 'no-login':
             assert response.code == 401
             assert not response.data
+
+        elif response.role == 'orders':
+            assert response.code == 200
+            assert len(response.data['orders']) == 0
+
         else:
             assert response.code == 403
             assert not response.data

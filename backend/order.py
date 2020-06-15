@@ -42,12 +42,19 @@ def list_orders():
     Returns:
         flask.Response: Json structure with a list of orders.
     """
-    if not user.has_permission('DATA_MANAGEMENT'):
-        flask.abort(status=403)
-    orders = list(flask.g.db['orders'].find(projection={'_id': 1,
-                                                        'title': 1,
-                                                        'creator': 1,
-                                                        'receiver': 1}))
+    if user.has_permission('DATA_MANAGEMENT'):
+        orders = list(flask.g.db['orders'].find(projection={'_id': 1,
+                                                            'title': 1,
+                                                            'creator': 1,
+                                                            'receiver': 1}))
+    else:
+        orders = list(flask.g.db['orders'].find({'$or': [{'creator': flask.g.current_user['_id'],
+                                                          'creator': flask.g.current_user['email']}]},
+                                                projection={'_id': 1,
+                                                            'title': 1,
+                                                            'creator': 1,
+                                                            'receiver': 1}))
+
     return utils.response_json({'orders': orders})
 
 
