@@ -327,10 +327,18 @@ def update_user_info(identifier: str):
     validation = utils.basic_check_indata(indata, user_data, ('_id',
                                                               'api_key',
                                                               'api_salt'))
+
     if not validation[0]:
         flask.abort(status=validation[1])
 
-    if indata:
+    # Avoid "updating" and making log if there are no changes
+    is_different = False
+    for field in indata:
+        if indata[field] != user_data[field]:
+            is_different = True
+            break
+
+    if indata and is_different:
         result = flask.g.db['users'].update_one({'_id': user_data['_id']},
                                                 {'$set': indata})
         if not result.acknowledged:
