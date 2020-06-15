@@ -351,9 +351,10 @@ def update_user_info(identifier: str):
     return flask.Response(status=200)
 
 
+@blueprint.route('/me/log/', methods=['GET'])
 @blueprint.route('/<identifier>/log/', methods=['GET'])
 @login_required
-def get_user_log(identifier: str):
+def get_user_log(identifier: str = None):
     """
     Get change logs for the user entry with uuid ``identifier``.
 
@@ -365,6 +366,9 @@ def get_user_log(identifier: str):
     Returns:
         flask.Response: Information about the user as json.
     """
+    if identifier == None:
+        identifier = str(flask.g.current_user['_id'])
+
     if str(flask.g.current_user['_id']) != identifier and not has_permission('USER_MANAGEMENT'):
         flask.abort(403)
 
