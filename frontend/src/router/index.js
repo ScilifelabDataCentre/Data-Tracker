@@ -35,6 +35,7 @@ const OrderContainer = () => import(/* webpackChunkName: "order" */ '../views/or
 const OrderEdit = () => import(/* webpackChunkName: "order" */ '../views/orders/OrderEdit.vue')
 
 const LogViewer = () => import(/* webpackChunkName: "logs" */ '../components/LogViewer.vue')
+const ActionLogViewer = () => import(/* webpackChunkName: "logs" */ '../components/ActionLogViewer.vue')
 
 Vue.use(VueRouter);
 
@@ -211,6 +212,11 @@ const router = new VueRouter({
           component: LogViewer,
           props: {'dataType': 'me' },
         },
+        {
+          path: 'actions',
+          component: ActionLogViewer,
+          props: {'dataType': 'me' },
+        },
 
       ],
     },
@@ -248,6 +254,11 @@ const router = new VueRouter({
         {
           path: 'user/:uuid/log',
           component: LogViewer,
+          props: {'dataType': 'user' },
+        },
+        {
+          path: 'user/:uuid/actions',
+          component: ActionLogViewer,
           props: {'dataType': 'user' },
         },
 
