@@ -125,7 +125,7 @@ User
     **GET** Get a list of changes done to the current user.
 
 
-.. function:: /user/me/actionLog/
+.. function:: /user/me/actions/
 
     **GET** Get a list of changes done by the current user.
 
@@ -163,7 +163,7 @@ User
     **GET** Get a list of changes done to the user with ``uuid``.
 
 
-.. function:: /user/<uuid>/actionLog/
+.. function:: /user/<uuid>/actions/
 
     .. note::
 
