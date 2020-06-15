@@ -150,7 +150,7 @@ def get_order_log(identifier):
 
     utils.incremental_logs(order_logs)
 
-    return utils.response_json({'logs': dataset_logs})
+    return utils.response_json({'logs': order_logs})
 
 
 @blueprint.route('/', methods=['POST'])
