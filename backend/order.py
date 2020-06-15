@@ -133,28 +133,24 @@ def get_order_log(identifier):
         flask.Response: Json structure for the logs.
     """
     try:
-        uuid = utils.str_to_uuid(identifier)
+        order_uuid = utils.str_to_uuid(identifier)
     except ValueError:
-        return flask.abort(status=404)
+        flask.abort(status=404)
 
-    order = flask.g.db['orders'].find_one({'_id': uuid})
-    if order:
-        is_owner = order['creator'] == flask.session['user_id']
-    logs = list(flask.g.db['logs'].find({'data_type': 'order', 'data._id': uuid}))
-    if not (user.has_permission('DATA_MANAGEMENT') or is_owner):
-        return flask.abort(status=403)
-    if not logs:
-        return flask.abort(status=404)
+    if not user.has_permission('DATA_MANAGEMENT'):
+        user_entries = (flask.g.current_user['_id'], flask.g.current_user['email'])
+        order_data = flask.g.db['orders'].find_one({'datasets': dataset_uuid})
+        if not order_data:
+            flask.abort(403)
+        if order_data['receiver'] not in user_entries and \
+           order_data['creator'] not in user_entries:
+           flask.abort(403)
 
-    utils.incremental_logs(logs)
-    for log in logs:
-        del log['data_type']
+    order_logs = list(flask.g.db['logs'].find({'data_type': 'order', 'data._id': order_uuid}))
 
-    out_log = {'entry_id': uuid,
-               'data_type': 'order',
-               'logs': logs}
+    utils.incremental_logs(order_logs)
 
-    return utils.response_json(out_log)
+    return utils.response_json({'logs': dataset_logs})
 
 
 @blueprint.route('/', methods=['POST'])
