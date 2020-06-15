@@ -183,7 +183,7 @@ def test_get_order_logs_permissions(use_db):
     assert 'logs' in response.data
 
 
-def test_get_log(use_db):
+def test_get_order_logs(use_db):
     """
     Request the logs for multiple orders.
 
@@ -202,7 +202,7 @@ def test_get_log(use_db):
         assert response.code == 200
 
 
-def test_get_log_bad():
+def test_get_order_logs_bad():
     """
     Request the logs for multiple orders.
 
@@ -212,7 +212,7 @@ def test_get_log_bad():
     for _ in range(2):
         as_user(session, USERS['data'])
         response = make_request(session, f'/api/order/{uuid.uuid4()}/log/', ret_json=True)
-        assert response.code == 404
+        assert response.code == 200
         response = make_request(session, f'/api/order/{random_string()}/log/', ret_json=True)
         assert response.code == 404
 
