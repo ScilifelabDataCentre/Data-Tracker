@@ -345,6 +345,7 @@ def update_user_info(identifier: str):
             logging.error('User update failed: %s', indata)
             flask.Response(status=500)
         else:
+            user_data.update(indata)
             utils.make_log('user', 'edit', 'User updated', user_data)
 
     return flask.Response(status=200)
