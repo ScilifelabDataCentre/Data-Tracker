@@ -200,7 +200,7 @@ def get_dataset_log(identifier: str = None):
             flask.abort(403)
         if order_data['receiver'] not in user_entries and \
            order_data['creator'] not in user_entries:
-           flask.abort(403)
+            flask.abort(403)
 
     dataset_logs = list(flask.g.db['logs'].find({'data_type': 'dataset', 'data._id': dataset_uuid}))
     for log in dataset_logs:

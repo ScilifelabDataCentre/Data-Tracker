@@ -303,7 +303,7 @@ def get_project_log(identifier: str = None):
             flask.abort(403)
         if flask.g.current_user['_id'] not in project_data['owners'] and \
            flask.g.current_user['email'] not in project_data['owners']:
-           flask.abort(403)
+            flask.abort(403)
 
     project_logs = list(flask.g.db['logs'].find({'data_type': 'project', 'data._id': project_uuid}))
 

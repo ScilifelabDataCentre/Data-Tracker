@@ -143,10 +143,9 @@ def get_order_logs(identifier):
         if not order_data:
             flask.abort(403)
         if order_data['creator'] not in user_entries:
-           flask.abort(403)
+            flask.abort(403)
 
     order_logs = list(flask.g.db['logs'].find({'data_type': 'order', 'data._id': order_uuid}))
-
     for log in order_logs:
         del log['data_type']
 
