@@ -150,33 +150,37 @@ def test_get_order_bad():
             assert not response.data
 
 
-def test_get_log_permissions(use_db):
+def test_get_order_logs_permissions(use_db):
     """
-    Request the logs for multiple orders.
+    Get order logs.
 
-    Confirm that only the correct users can access them.
+    Assert that DATA_MANAGEMENT or user in creator is required.
     """
-    session = requests.session()
     db = use_db
-    orders = db['orders'].aggregate([{'$sample': {'size': 2}}])
-    for order in orders:
-        logs = list(db['logs'].find({'data_type': 'order', 'data._id': order['_id']}))
-        responses = make_request_all_roles(f'/api/order/{order["_id"]}/log/', ret_json=True)
-        for response in responses:
-            if response.role in ('data', 'root'):
-                assert len(response.data['logs']) == len(logs)
-                assert response.code == 200
-            elif response.role == 'no-login':
-                assert response.code == 401
-                assert not response.data
-            else:
-                assert response.code == 403
-                assert not response.data
-        owner = db['users'].find_one({'_id': order['creator']})
-        as_user(session, owner['api_key'])
-        response = make_request(session, f'/api/order/{order["_id"]}/log/', ret_json=True)
-        assert response.code == 200
-        assert response.data
+    order_data = db['orders'].aggregate([{'$sample': {'size': 1}}]).next()
+    user_data = db['users'].find_one({'_id': order_data['creator']})
+    responses = make_request_all_roles(f'/api/order/{order_data["_id"]}/log/',
+                                       ret_json=True)
+    for response in responses:
+        if response.role in ('data', 'root'):
+            assert response.code == 200
+            assert 'logs' in response.data
+        elif response.role == 'no-login':
+            assert response.code == 401
+            assert not response.data
+        else:
+            assert response.code == 403
+            assert not response.data
+
+    session = requests.Session()
+
+    as_user(session, user_data['auth_id'])
+    response = make_request(session,
+                             f'/api/order/{order_data["_id"]}/log/',
+                             ret_json=True)
+
+    assert response.code == 200
+    assert 'logs' in response.data
 
 
 def test_get_log(use_db):
