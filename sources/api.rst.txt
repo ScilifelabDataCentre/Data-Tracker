@@ -99,6 +99,10 @@ User
 
 .. function:: /user/
 
+    .. note::
+
+        Only for users with ``USER_MANAGEMENT``.
+
     **GET** Get a list of all users.
 
     **POST** Add a new user.
@@ -121,12 +125,17 @@ User
     **GET** Get a list of changes done to the current user.
 
 
-.. function:: /user/me/actionLog/
+.. function:: /user/me/actions/
 
     **GET** Get a list of changes done by the current user.
 
 
 .. function:: /user/<uuid>/
+
+    .. note::
+
+        Only for users with ``USER_MANAGEMENT``.
+
 
     **GET** Get information about user with ``uuid``.
 
@@ -137,15 +146,28 @@ User
 
 .. function:: /user/<uuid>/apikey/
 
+    .. note::
+
+        Only for users with ``USER_MANAGEMENT``.
+
+
     **POST** Generate a new API key for the user with ``uuid``.
 
 
 .. function:: /user/<uuid>/log/
 
+    .. note::
+
+        Only for the actual user and users with ``USER_MANAGEMENT``.
+
     **GET** Get a list of changes done to the user with ``uuid``.
 
 
-.. function:: /user/<uuid>/actionLog/
+.. function:: /user/<uuid>/actions/
+
+    .. note::
+
+        Only for the actual user and users with ``USER_MANAGEMENT``.
 
     **GET** Get a list of changes done by the user with ``uuid``.
 
