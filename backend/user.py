@@ -357,13 +357,15 @@ def get_user_log(identifier: str):
     """
     Get change logs for the user entry with uuid ``identifier``.
 
+    Can be accessed by actual user and admin (USER_MANAGEMENT).
+
     Args:
         identifier (str): The uuid of the user.
 
     Returns:
         flask.Response: Information about the user as json.
     """
-    if not has_permission('USER_MANAGEMENT'):
+    if str(flask.g.current_user['_id']) != identifier and not has_permission('USER_MANAGEMENT'):
         flask.abort(403)
 
     try:
