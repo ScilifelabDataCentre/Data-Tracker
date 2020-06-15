@@ -378,11 +378,41 @@ def get_user_log(identifier: str = None):
         flask.abort(status=404)
 
     user_logs = list(flask.g.db['logs'].find({'data_type': 'user', 'data._id': user_uuid}))
-    if not user_logs:
+
+    utils.incremental_logs(user_logs)
+
+    return utils.response_json({'logs': user_logs})
+
+
+@blueprint.route('/me/actions/', methods=['GET'])
+@blueprint.route('/<identifier>/actions/', methods=['GET'])
+@login_required
+def get_user_actions(identifier: str = None):
+    """
+    Get a list of actions (changes) by the user entry with uuid ``identifier``.
+
+    Can be accessed by actual user and admin (USER_MANAGEMENT).
+
+    Args:
+        identifier (str): The uuid of the user.
+
+    Returns:
+        flask.Response: Information about the user as json.
+    """
+    if identifier == None:
+        identifier = str(flask.g.current_user['_id'])
+
+    if str(flask.g.current_user['_id']) != identifier and not has_permission('USER_MANAGEMENT'):
+        flask.abort(403)
+
+    try:
+        user_uuid = utils.str_to_uuid(identifier)
+    except ValueError:
         flask.abort(status=404)
 
-    logging.debug(user_logs)
-    utils.incremental_logs(user_logs)
+    # only report a list of actions, not the actual data
+    user_logs = list(flask.g.db['logs'].find({'user': user_uuid}, {'data': 0, 'user': 0}))
+
 
     return utils.response_json({'logs': user_logs})
 
