@@ -206,12 +206,7 @@ export default {
     
     cancelChanges(event) {
       event.preventDefault();
-      if (this.newDataset.id === '') {
-        this.$router.push("/dataset/browser");
-      }
-      else {
-        this.$router.push("/dataset/" + this.newDataset.id + "/about");
-      }
+      this.$router.push("/dataset/" + this.newDataset.id + "/about");
     },
 
     deleteDataset(event) {

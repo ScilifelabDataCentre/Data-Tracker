@@ -69,7 +69,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       let projectUuid = payload.id;
       delete payload.id
-      if (projectUuid === -1) {
+      if (projectUuid === '-1') {
         axios
           .post('/api/project/',
                 payload,
