@@ -104,7 +104,7 @@ def get_order(identifier):
         flask.abort(status=403)
 
     order_creator = flask.g.db['users'].find_one({'_id': order['creator']})
-    order['creator'] = {'name': order['creator'], 'id': order['creator']}
+    order['creator'] = {'name': order['creator'], '_id': order['creator']}
     if order_creator:
         order['creator']['name'] = order_creator['name']
 
