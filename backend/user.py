@@ -411,8 +411,11 @@ def get_user_actions(identifier: str = None):
         flask.abort(status=404)
 
     # only report a list of actions, not the actual data
-    user_logs = list(flask.g.db['logs'].find({'user': user_uuid}, {'data': 0, 'user': 0}))
+    user_logs = list(flask.g.db['logs'].find({'user': user_uuid}, {'user': 0}))
 
+    for entry in user_logs:
+        entry['entry_id'] = entry['data']['_id']
+        del entry['data']
 
     return utils.response_json({'logs': user_logs})
 
