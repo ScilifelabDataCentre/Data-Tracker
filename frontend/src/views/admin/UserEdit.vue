@@ -176,14 +176,14 @@ export default {
 
     cancelChanges(event) {
       event.preventDefault();
-      this.$router.push("/admin/user");
+      this.$router.push("../list");
     },
 
     deleteUser(event) {
       event.preventDefault();
       this.$store.dispatch('deleteUser', this.newUser.id)
         .then(() => {
-          this.$router.push("/admin/user");
+          this.$router.push("../list");
         });
     },
 
@@ -200,7 +200,7 @@ export default {
       });
       this.$store.dispatch('saveUser', newData)
         .then(() => {
-          this.$router.push("/admin/user");
+          this.$router.push("../list");
         });
     },
   },

@@ -29,7 +29,7 @@
       <div class="navbar-dropdown">
         <router-link to="/admin/stats" class="navbar-item">Statistics</router-link>
         <router-link to="/admin/dois" class="navbar-item">DOI management</router-link>
-        <router-link to="/admin/user" class="navbar-item">User management</router-link>
+        <router-link to="/admin/user/list" class="navbar-item">User management</router-link>
       </div>
     </div>
     <div class="navbar-end">

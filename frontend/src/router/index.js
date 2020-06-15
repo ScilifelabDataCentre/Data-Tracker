@@ -237,14 +237,14 @@ const router = new VueRouter({
           component: DoiManager,
         },
         {
-          path: 'user',
+          path: 'user/list',
           component: UserManager,
           meta: {
             adminRequired: true,
           },
         },
         {
-          path: 'user/:uuid',
+          path: 'user/:uuid/edit',
           component: UserEdit,
           props: true,
           meta: {
