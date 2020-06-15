@@ -433,7 +433,7 @@ def test_key_reset(use_db):
             assert not response.data
 
 
-def test_get_user_logs_access(use_db):
+def test_get_user_logs_permissions(use_db):
     """
     Get user logs.
 
@@ -453,6 +453,25 @@ def test_get_user_logs_access(use_db):
         else:
             assert response.code == 403
             assert not response.data
+
+
+def test_get_user_logs(use_db):
+    """
+    Request the logs for multiple users.
+
+    Confirm that the logs contain only the intended fields.
+    """
+    session = requests.session()
+    db = use_db
+    users = db['users'].aggregate([{'$sample': {'size': 2}}])
+    for user in users:
+        logs = list(db['logs'].find({'data_type': 'user', 'data._id': user['_id']}))
+        as_user(session, USERS['users'])
+        response = make_request(session, f'/api/user/{user["_id"]}/log/', ret_json=True)
+        assert response.data['dataType'] == 'user'
+        assert response.data['entryId'] == str(user['_id'])
+        assert len(response.data['logs']) == len(logs)
+        assert response.code == 200
 
 
 def test_get_current_user_logs(use_db):

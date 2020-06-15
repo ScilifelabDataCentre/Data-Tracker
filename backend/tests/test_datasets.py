@@ -328,7 +328,7 @@ def test_list_datasets():
         assert len(response.data['datasets']) == 500
 
 
-def test_get_dataset_logs_access(use_db):
+def test_get_dataset_logs_permissions(use_db):
     """
     Get dataset logs.
 
@@ -361,3 +361,22 @@ def test_get_dataset_logs_access(use_db):
 
     assert response.code == 200
     assert 'logs' in response.data
+
+
+def test_get_dataset_logs(use_db):
+    """
+    Request the logs for multiple datasets.
+
+    Confirm that the logs contain only the intended fields.
+    """
+    session = requests.session()
+    db = use_db
+    datasets = db['datasets'].aggregate([{'$sample': {'size': 2}}])
+    for dataset in datasets:
+        logs = list(db['logs'].find({'data_type': 'dataset', 'data._id': dataset['_id']}))
+        as_user(session, USERS['data'])
+        response = make_request(session, f'/api/dataset/{dataset["_id"]}/log/', ret_json=True)
+        assert response.data['dataType'] == 'dataset'
+        assert response.data['entryId'] == str(dataset['_id'])
+        assert len(response.data['logs']) == len(logs)
+        assert response.code == 200

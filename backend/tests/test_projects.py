@@ -651,7 +651,7 @@ def test_list_projects():
         assert len(response.data['projects']) == 500
 
 
-def test_get_project_logs_access(use_db):
+def test_get_project_logs_permissions(use_db):
     """
     Get project logs.
 
@@ -683,3 +683,22 @@ def test_get_project_logs_access(use_db):
 
     assert response.code == 200
     assert 'logs' in response.data
+
+
+def test_get_project_logs(use_db):
+    """
+    Request the logs for multiple projects.
+
+    Confirm that the logs contain only the intended fields.
+    """
+    session = requests.session()
+    db = use_db
+    projects = db['projects'].aggregate([{'$sample': {'size': 2}}])
+    for project in projects:
+        logs = list(db['logs'].find({'data_type': 'project', 'data._id': project['_id']}))
+        as_user(session, USERS['data'])
+        response = make_request(session, f'/api/project/{project["_id"]}/log/', ret_json=True)
+        assert response.data['dataType'] == 'project'
+        assert response.data['entryId'] == str(project['_id'])
+        assert len(response.data['logs']) == len(logs)
+        assert response.code == 200
