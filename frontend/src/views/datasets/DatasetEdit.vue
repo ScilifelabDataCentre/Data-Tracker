@@ -121,7 +121,7 @@
         <button class="button is-light" @click="cancelChanges">Cancel</button>
       </div>
       <div class="control">
-        <button class="button is-danger" v-if="dataset.uuid && (user.role === 'Steward' || user.role === 'Admin')" @click="deleteDataset">Delete</button>
+        <button class="button is-danger" v-if="user.permissions.includes('DATA_MANAGEMENT') || fullPermissions" @click="deleteDataset">Delete</button>
       </div>
     </div>
   </form>
@@ -152,6 +152,7 @@ export default {
         links: [],
         extra: {},
       },
+      fullPermissions: false,
       extraKey: '',
       extraValue: '',
       linkDesc: '',
@@ -167,6 +168,9 @@ export default {
         delete this.newDataset._id;
         delete this.newDataset.related;
         delete this.newDataset.projects;
+        if (this.newDataset.creator === this.user.name) {
+          this.fullPermissions = true;
+        }
         delete this.newDataset.creator;
       });
   },
