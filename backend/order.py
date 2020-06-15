@@ -104,9 +104,14 @@ def get_order(identifier):
         flask.abort(status=403)
 
     order_creator = flask.g.db['users'].find_one({'_id': order['creator']})
-    order['creator'] = {'name': order['creator'], '_id': order['creator']}
+    order['creator'] = {'name': order['creator'], 'identifier': order['creator']}
     if order_creator:
         order['creator']['name'] = order_creator['name']
+        order['creator']['identifier'] = order_creator['email']
+
+    order_receiver = flask.g.db['users'].find_one({'_id': order['receiver']})
+    if order_receiver:
+        order['receiver'] = order_receiver['email']
 
     # convert dataset list into {title, _id}
     order['datasets'] = list(flask.g.db['datasets']
