@@ -155,13 +155,20 @@ def update_dataset(identifier):
     validation = utils.basic_check_indata(indata, dataset, prohibited=('_id'))
     if not validation[0]:
         flask.abort(status=validation[1])
-    dataset.update(indata)
-    if indata:
-        result = flask.g.db['datasets'].update_one({'_id': dataset['_id']}, {'$set': dataset})
+
+    is_different = False
+    for field in indata:
+        if indata[field] != dataset[field]:
+            is_different = True
+            break
+
+    if indata and is_different:
+        result = flask.g.db['datasets'].update_one({'_id': dataset['_id']}, {'$set': indata})
         if not result.acknowledged:
             logging.error('Dataset update failed: %s', dataset)
             flask.abort(status=500)
         else:
+            dataset.update(indata)
             utils.make_log('dataset', 'edit', 'Dataset updated', dataset)
 
     return flask.Response(status=200)
