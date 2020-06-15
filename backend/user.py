@@ -379,9 +379,14 @@ def get_user_log(identifier: str = None):
 
     user_logs = list(flask.g.db['logs'].find({'data_type': 'user', 'data._id': user_uuid}))
 
+    for log in user_logs:
+        del log['data_type']
+
     utils.incremental_logs(user_logs)
 
-    return utils.response_json({'logs': user_logs})
+    return utils.response_json({'entry_id': user_uuid,
+                                'data_type': 'user',
+                                'logs': user_logs})
 
 
 @blueprint.route('/me/actions/', methods=['GET'])

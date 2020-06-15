@@ -146,6 +146,7 @@ def get_order_logs(identifier):
            flask.abort(403)
 
     order_logs = list(flask.g.db['logs'].find({'data_type': 'order', 'data._id': order_uuid}))
+
     for log in order_logs:
         del log['data_type']
 

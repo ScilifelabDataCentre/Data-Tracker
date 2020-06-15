@@ -307,6 +307,11 @@ def get_project_log(identifier: str = None):
 
     project_logs = list(flask.g.db['logs'].find({'data_type': 'project', 'data._id': project_uuid}))
 
+    for log in project_logs:
+        del log['data_type']
+
     utils.incremental_logs(project_logs)
 
-    return utils.response_json({'logs': project_logs})
+    return utils.response_json({'entry_id': project_uuid,
+                                'data_type': 'project',
+                                'logs': project_logs})

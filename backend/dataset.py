@@ -203,10 +203,14 @@ def get_dataset_log(identifier: str = None):
            flask.abort(403)
 
     dataset_logs = list(flask.g.db['logs'].find({'data_type': 'dataset', 'data._id': dataset_uuid}))
+    for log in dataset_logs:
+        del log['data_type']
 
     utils.incremental_logs(dataset_logs)
 
-    return utils.response_json({'logs': dataset_logs})
+    return utils.response_json({'entry_id': dataset_uuid,
+                                'data_type': 'dataset',
+                                'logs': dataset_logs})
 
 
 # helper functions
