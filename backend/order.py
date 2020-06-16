@@ -339,11 +339,12 @@ def update_order(identifier: str):  # pylint: disable=too-many-branches
         flask.abort(status=validation[1])
 
     # creator
-    if indata.get('creator') and indata['creator'] != order['creator']:
-        if not user.has_permission('DATA_MANAGEMENT'):
-            flask.abort(status=403)
-        if new_identifier := utils.check_email_uuid(indata['creator']):
-            indata['creator'] = new_identifier
+    if indata.get('creator'):
+        new_identifier = utils.check_email_uuid(indata['creator']) or indata['creator']
+        if order['creator'] not in (new_identifier, indata['creator']):
+            if not user.has_permission('DATA_MANAGEMENT'):
+                flask.abort(status=403)
+        indata['creator'] = new_identifier
     else:
         indata['creator'] = flask.g.current_user['_id']
     # receiver
@@ -353,16 +354,19 @@ def update_order(identifier: str):  # pylint: disable=too-many-branches
         else:
             flask.abort(400)
 
-    for key in indata:
-        if key not in order:
-            flask.abort(status=400)
+    is_different = False
+    for field in indata:
+        if indata[field] != order[field]:
+            is_different = True
+            break
 
     order.update(indata)
 
-    result = flask.g.db['orders'].update_one({'_id': order['_id']}, {'$set': order})
-    if not result.acknowledged:
-        logging.error('Order update failed: %s', order)
-    else:
-        utils.make_log('order', 'edit', 'Order updated', order)
+    if is_different:
+        result = flask.g.db['orders'].update_one({'_id': order['_id']}, {'$set': order})
+        if not result.acknowledged:
+            logging.error('Order update failed: %s', order)
+        else:
+            utils.make_log('order', 'edit', 'Order updated', order)
 
     return flask.Response(status=200)
