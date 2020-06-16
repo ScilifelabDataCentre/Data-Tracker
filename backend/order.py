@@ -45,6 +45,7 @@ def list_orders():
     if user.has_permission('DATA_MANAGEMENT'):
         orders = list(flask.g.db['orders'].find(projection={'_id': 1,
                                                             'title': 1,
+                                                            'description': 1,
                                                             'creator': 1,
                                                             'receiver': 1}))
     else:
@@ -53,6 +54,7 @@ def list_orders():
                                      {'creator': flask.g.current_user['email']}]},
                             projection={'_id': 1,
                                         'title': 1,
+                                        'description': 1,
                                         'creator': 1,
                                         'receiver': 1}))
 
