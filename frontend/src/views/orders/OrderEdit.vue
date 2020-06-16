@@ -40,7 +40,8 @@
              v-model="newOrder.creator"
              name="ORDER_CREATOR"
              type="text"
-             placeholder="Data creator (e.g. facility name)" />
+             placeholder="Data creator (e.g. facility name)"
+             :disabled="!user.permissions.includes('DATA_MANAGEMENT')"/>
     </div>
     <div class="field">
       <label class="label" for="order-receiver">Receiver</label>
@@ -144,6 +145,9 @@ export default {
           delete this.newOrder._id;
           delete this.newOrder.datasets;
         });
+    }
+    else {
+      this.newOrder.creator = this.user.email;
     }
   },
 
