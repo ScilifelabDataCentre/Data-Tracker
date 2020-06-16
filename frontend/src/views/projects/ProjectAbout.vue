@@ -8,7 +8,7 @@
       </div>
     </section>
     <section class="section">
-      <table class="table is-hoverable is-striped">
+      <table class="info-list table is-hoverable is-striped">
 	<tbody>
           <tr v-if="project.contact.length > 0">
             <th scope="row">
@@ -95,3 +95,9 @@ export default {
 
 }
 </script>
+
+<style scoped>
+.info-list th {
+  text-align: right;
+}
+</style>

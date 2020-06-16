@@ -7,15 +7,17 @@
     </div>
   </section>
   <section class="section">
-    <table class="table is-hoverable">
+    <table class="info-list table is-hoverable is-striped">
       <tbody>
 	<tr>
           <th scope="row">Creator</th>
           <td>{{order.creator.name}} <span v-if="order.creator.identifier !== order.creator.name">({{order.creator.identifier}})</span></td>
+          <td></td>
 	</tr>
 	<tr>
           <th scope="row">Receiver</th>
           <td>{{order.receiver}}</td>
+          <td></td>
 	</tr>
 	<tr>
           <th scope="row">Datasets</th>
@@ -31,8 +33,9 @@
           </td>
 	</tr>
 	<tr v-for="field in Object.keys(order.extra)" :key="field">
-          <th scope="row">{{ field }}</th>
+          <th scope="row">{{ capitalize(field) }}</th>
           <td>{{ order.extra[field] }}</td>
+          <td></td>
 	</tr>
       </tbody>
     </table>
@@ -90,6 +93,17 @@ export default {
           this.$store.dispatch('getOrder', this.uuid);
         });
     },
+
+    capitalize (text) {
+      return text.charAt(0).toUpperCase() + text.slice(1);
+    }
+
   },
 }
 </script>
+
+<style scoped>
+.info-list th {
+  text-align: right;
+}
+</style>
