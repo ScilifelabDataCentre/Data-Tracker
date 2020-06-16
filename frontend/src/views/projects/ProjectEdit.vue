@@ -238,36 +238,41 @@ export default {
   },
 
   mounted () {
+    this.$store.dispatch('getCurrentUser', this.uuid)
+      .then(() => {
+        let sortFunc = (a, b) => {
+          let aTitle = a.title.toUpperCase();
+          let bTitle = b.title.toUpperCase();
+          if (aTitle > bTitle) {
+            return 1;
+          }
+          if (aTitle < bTitle) {
+            return -1;
+          }
+          return 0;
+        };
+        if (this.user.permissions.includes('DATA_MANAGEMENT')) {
+          this.$store.dispatch('getDatasets')
+            .then((response) => {
+              this.availableDatasets = response.data.datasets;
+              this.availableDatasets.sort(sortFunc);
+            });
+        }
+        else {
+          this.$store.dispatch('getCurrentUserDatasets')
+            .then((response) => {
+              this.availableDatasets = response.data.datasets;
+              this.availableDatasets.sort(sortFunc);
+            });
+        }
+      });
+
     if (this.uuid) {
       this.$store.dispatch('getProject', this.uuid)
         .then(() => {
           this.newProject = this.project;
           this.newProject.id = this.newProject._id;
           delete this.newProject._id;
-        });
-      this.$store.dispatch('getCurrentUser', this.uuid)
-        .then(() => {
-          if (this.user.permissions.includes('DATA_MANAGEMENT')) {
-            this.$store.dispatch('getDatasets')
-              .then((response) => {
-                this.availableDatasets = response.data.datasets;
-              });
-          }
-          else {
-            this.$store.dispatch('getCurrentUserDatasets')
-              .then((response) => {
-                this.availableDatasets = response.data.datasets;
-              });
-          }
-          this.availableDatasets.sort((a, b) => {
-            if (a.title > b.title) {
-              return 1;
-            }
-            if (a.title < b.title) {
-              return -1;
-            }
-            return 0;
-          });
         });
     }
   },
@@ -329,7 +334,7 @@ export default {
 
     cancelChanges(event) {
       event.preventDefault();
-      if (this.uuid === null) {
+      if (this.uuid === undefined) {
         this.$router.push("/project/browser");
       }
       else {

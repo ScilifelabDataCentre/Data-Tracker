@@ -162,7 +162,7 @@ def update_dataset(identifier):
             is_different = True
             break
 
-    if indata and is_different:
+    if is_different:
         result = flask.g.db['datasets'].update_one({'_id': dataset['_id']}, {'$set': indata})
         if not result.acknowledged:
             logging.error('Dataset update failed: %s', dataset)
