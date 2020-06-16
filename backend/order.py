@@ -198,8 +198,9 @@ def add_order():  # pylint: disable=too-many-branches
     else:
         indata['creator'] = flask.g.current_user['_id']
     # receiver
-    if 'receiver' in indata and new_identifier := utils.check_email_uuid(indata['receiver']):
-        indata['receiver'] = new_identifier
+    if 'receiver' in indata:
+        if new_identifier := utils.check_email_uuid(indata['receiver']):
+            indata['receiver'] = new_identifier
 
     order.update(indata)
 
