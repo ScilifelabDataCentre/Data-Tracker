@@ -1,36 +1,43 @@
 <template>
 <div class="order-info">
   <h1 class="title is-2">{{ order.title }}</h1>
-  <div class="order-description field" v-html="order.description"></div>
-  <table class="table is-hoverable">
-    <tbody>
-      <tr>
-        <th scope="row">Creator</th>
-        <td>{{order.creator.name}} <span v-if="order.creator.identifier !== order.creator.name">({{order.creator.identifier}})</span></td>
-      </tr>
-      <tr>
-        <th scope="row">Receiver</th>
-        <td>{{order.receiver}}</td>
-      </tr>
-      <tr>
-        <th scope="row">Datasets</th>
-        <td>
-          <ul>
-            <li v-for="dataset in order.datasets" :key="dataset._id">
-              <router-link :to="'/dataset/' + dataset._id">{{dataset.title}}</router-link>
-            </li>
-          </ul>
-        </td>
-        <td>
-          <button class="button is-link" @click="addDataset">Add</button>
-        </td>
-      </tr>
-      <tr v-for="field in Object.keys(order.extra)" :key="field">
-        <th scope="row">{{ field }}</th>
-        <td>{{ order.extra[field] }}</td>
-      </tr>
-    </tbody>
-  </table>
+  <section class="section">
+    <div class="content">
+      <vue-simple-markdown :source="order.description"></vue-simple-markdown>
+    </div>
+  </section>
+  <section class="section">
+    <table class="table is-hoverable">
+      <tbody>
+	<tr>
+          <th scope="row">Creator</th>
+          <td>{{order.creator.name}} <span v-if="order.creator.identifier !== order.creator.name">({{order.creator.identifier}})</span></td>
+	</tr>
+	<tr>
+          <th scope="row">Receiver</th>
+          <td>{{order.receiver}}</td>
+	</tr>
+	<tr>
+          <th scope="row">Datasets</th>
+          <td>
+            <ul>
+              <li v-for="dataset in order.datasets" :key="dataset._id">
+		<router-link :to="'/dataset/' + dataset._id">{{dataset.title}}</router-link>
+              </li>
+            </ul>
+          </td>
+          <td>
+            <button class="button is-link" @click="addDataset">Add</button>
+          </td>
+	</tr>
+	<tr v-for="field in Object.keys(order.extra)" :key="field">
+          <th scope="row">{{ field }}</th>
+          <td>{{ order.extra[field] }}</td>
+	</tr>
+      </tbody>
+    </table>
+  </section>
+  
   <div class="field is-grouped">
     <div class="control">
       <router-link to="edit">
