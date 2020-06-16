@@ -381,9 +381,3 @@ export default {
   },
 }
 </script>
-
-<style scoped>
-.no-bullet {
-    list-style-type: none;
-}
-</style>

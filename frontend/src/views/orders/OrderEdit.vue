@@ -207,9 +207,3 @@ export default {
   },
 }
 </script>
-
-<style scoped>
-.field {
-    margin: 0.4em 0em;
-}
-</style>

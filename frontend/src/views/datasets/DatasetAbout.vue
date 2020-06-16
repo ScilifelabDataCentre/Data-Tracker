@@ -96,38 +96,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-.dataset-title {
-    font-weight: bold;
-    font-size: 2em;
-    text-align: center;
-    margin: 0em 0em 0.4em 0em;
-}
-
-.data-header {
-    text-align: right;
-    font-weight: bold;
-}
-
-.field-header.td {
-    font-weight: bold;
-}
-
-.field {
-    margin: 0.4em 0em;
-}
-
-.table td {
-    border: 0px;
-}
-.warning {
-    font-weight: bold;
-    text-align: center;
-    font-size: large;
-}
-.timestamp {
-    font-style: italic;
-    font-size: 1em;
-}
-</style>
