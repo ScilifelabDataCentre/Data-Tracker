@@ -7,9 +7,15 @@ Base URL for the API is ``<url>/api``. All API description have the base implied
 Order
 =====
 
+    .. note::
+
+        Only for users with ``ORDERS_SELF`` or ``USER_MANAGEMENT``.
+
+
 .. function:: /order/
 
-    **GET** Get a list of all orders. Can be limited by parameters. Only for users with permission ``DATA_MANAGEMENT``.
+    **GET** Get a list of all orders the user can access. All orders will be listed for a user with ``DATA_MANAGEMENT``.
+    Can be limited by parameters.
 
     **POST** Add a new order.
 
@@ -28,9 +34,9 @@ Order
     **POST** Add a new dataset belonging to order with uuid ``identifier``.
 
 
-.. function:: /order/user[/<username>]
+.. function:: /order/user/
 
-    **GET** Get a list of orders created or received by current user or ``<username>`` (if provided).
+    **GET** Get a list of orders created or received by current user.
     
 
 .. function:: /order/<identifier>/log
@@ -48,7 +54,7 @@ Dataset
 
 .. function:: /dataset/user/
 
-    **GET** Get a list of datasets created or received by current user or ``username`` (if provided as parameter).
+    **GET** Get a list of datasets created or received by current user.
 
 
 .. function:: /dataset/<identifier>/
@@ -75,9 +81,9 @@ Project
     **POST** Add a new project.
 
 
-.. function:: /project/user/
+.. function:: /project/user/[username>/]
 
-    **GET** Get a list of projects created or received by current user or ``username`` (if provided as parameter).
+    **GET** Get a list of projects created or received by current user.
 
 
 .. function:: /project/<identifier>/
