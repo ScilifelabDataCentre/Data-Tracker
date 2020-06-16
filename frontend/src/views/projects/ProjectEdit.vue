@@ -238,36 +238,37 @@ export default {
   },
 
   mounted () {
+    this.$store.dispatch('getCurrentUser', this.uuid)
+      .then(() => {
+        if (this.user.permissions.includes('DATA_MANAGEMENT')) {
+          this.$store.dispatch('getDatasets')
+            .then((response) => {
+              this.availableDatasets = response.data.datasets;
+            });
+        }
+        else {
+          this.$store.dispatch('getCurrentUserDatasets')
+            .then((response) => {
+              this.availableDatasets = response.data.datasets;
+            });
+        }
+        this.availableDatasets.sort((a, b) => {
+          if (a.title > b.title) {
+            return 1;
+          }
+          if (a.title < b.title) {
+            return -1;
+          }
+          return 0;
+        });
+      });
+
     if (this.uuid) {
       this.$store.dispatch('getProject', this.uuid)
         .then(() => {
           this.newProject = this.project;
           this.newProject.id = this.newProject._id;
           delete this.newProject._id;
-        });
-      this.$store.dispatch('getCurrentUser', this.uuid)
-        .then(() => {
-          if (this.user.permissions.includes('DATA_MANAGEMENT')) {
-            this.$store.dispatch('getDatasets')
-              .then((response) => {
-                this.availableDatasets = response.data.datasets;
-              });
-          }
-          else {
-            this.$store.dispatch('getCurrentUserDatasets')
-              .then((response) => {
-                this.availableDatasets = response.data.datasets;
-              });
-          }
-          this.availableDatasets.sort((a, b) => {
-            if (a.title > b.title) {
-              return 1;
-            }
-            if (a.title < b.title) {
-              return -1;
-            }
-            return 0;
-          });
         });
     }
   },
