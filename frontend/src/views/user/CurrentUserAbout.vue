@@ -37,11 +37,29 @@
       </tbody>
     </table>
 
-  <router-link to="edit">
-    <button class="button is-link">
-      Edit
-    </button>
-  </router-link>
+    <div class="field is-grouped">
+      <div class="control">
+	<router-link to="edit">
+          <button class="button is-link">
+            Edit
+          </button>
+	</router-link>
+      </div>
+      <div class="control">
+	<router-link to="log">
+          <button class="button is-light">
+            Entry Log
+          </button>
+	</router-link>
+      </div>
+      <div class="control">
+	<router-link to="actions">
+          <button class="button is-light">
+            User Action log
+          </button>
+	</router-link>
+      </div>
+    </div>
   </section>
 
   <section class="section">
@@ -52,20 +70,12 @@
           <tr>
             <th>UUID</th>
             <th>Title</th>
-            <th>Datasets</th>
           </tr>
 	</thead>
 	<tbody>
           <tr v-for="order in userOrders" :key="order._id">
             <td><a :href="'/dataset/' + order._id">{{ order._id }}</a></td>
             <td>{{ order.title }}</td>
-            <td>
-              <ul>
-		<li v-for="ds_uuid in order.datasets" :key="ds_uuid">
-                  <a :href="'/order/' + ds_uuid">{{ ds_uuid }}</a>
-		</li>
-              </ul>
-            </td>
           </tr>
 	</tbody>
       </table>

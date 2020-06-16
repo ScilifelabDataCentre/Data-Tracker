@@ -165,10 +165,17 @@
 <p>Base URL for the API is <code class="docutils literal notranslate"><span class="pre">&lt;url&gt;/api</span></code>. All API description have the base implied before the first <code class="docutils literal notranslate"><span class="pre">/</span></code>.</p>
 <div class="section" id="order">
 <h2>Order<a class="headerlink" href="#order" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Only for users with <code class="docutils literal notranslate"><span class="pre">ORDERS_SELF</span></code> or <code class="docutils literal notranslate"><span class="pre">USER_MANAGEMENT</span></code>.</p>
+</div>
+</div></blockquote>
 <dl class="py function">
 <dt>
 <code class="sig-name descname">/order/</code></dt>
-<dd><p><strong>GET</strong> Get a list of all orders. Can be limited by parameters. Only for users with permission <code class="docutils literal notranslate"><span class="pre">DATA_MANAGEMENT</span></code>.</p>
+<dd><p><strong>GET</strong> Get a list of all orders the user can access. All orders will be listed for a user with <code class="docutils literal notranslate"><span class="pre">DATA_MANAGEMENT</span></code>.
+Can be limited by parameters.</p>
 <p><strong>POST</strong> Add a new order.</p>
 </dd></dl>
 
@@ -188,8 +195,8 @@
 
 <dl class="py function">
 <dt>
-<code class="sig-name descname">/order/user[/&lt;username&gt;]</code></dt>
-<dd><p><strong>GET</strong> Get a list of orders created or received by current user or <code class="docutils literal notranslate"><span class="pre">&lt;username&gt;</span></code> (if provided).</p>
+<code class="sig-name descname">/order/user/</code></dt>
+<dd><p><strong>GET</strong> Get a list of orders created or received by current user.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -210,7 +217,7 @@
 <dl class="py function">
 <dt>
 <code class="sig-name descname">/dataset/user/</code></dt>
-<dd><p><strong>GET</strong> Get a list of datasets created or received by current user or <code class="docutils literal notranslate"><span class="pre">username</span></code> (if provided as parameter).</p>
+<dd><p><strong>GET</strong> Get a list of datasets created or received by current user.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -239,8 +246,8 @@
 
 <dl class="py function">
 <dt>
-<code class="sig-name descname">/project/user/</code></dt>
-<dd><p><strong>GET</strong> Get a list of projects created or received by current user or <code class="docutils literal notranslate"><span class="pre">username</span></code> (if provided as parameter).</p>
+<code class="sig-name descname">/project/user/[username&gt;/]</code></dt>
+<dd><p><strong>GET</strong> Get a list of projects created or received by current user.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -263,7 +270,11 @@
 <dl class="py function">
 <dt>
 <code class="sig-name descname">/user/</code></dt>
-<dd><p><strong>GET</strong> Get a list of all users.</p>
+<dd><div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Only for users with <code class="docutils literal notranslate"><span class="pre">USER_MANAGEMENT</span></code>.</p>
+</div>
+<p><strong>GET</strong> Get a list of all users.</p>
 <p><strong>POST</strong> Add a new user.</p>
 </dd></dl>
 
@@ -288,14 +299,18 @@
 
 <dl class="py function">
 <dt>
-<code class="sig-name descname">/user/me/actionLog/</code></dt>
+<code class="sig-name descname">/user/me/actions/</code></dt>
 <dd><p><strong>GET</strong> Get a list of changes done by the current user.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt>
 <code class="sig-name descname">/user/&lt;uuid&gt;/</code></dt>
-<dd><p><strong>GET</strong> Get information about user with <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p>
+<dd><div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Only for users with <code class="docutils literal notranslate"><span class="pre">USER_MANAGEMENT</span></code>.</p>
+</div>
+<p><strong>GET</strong> Get information about user with <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p>
 <p><strong>PUT</strong> Update information about user with <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p>
 <p><strong>PUT</strong> Delete the user with <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p>
 </dd></dl>
@@ -303,19 +318,31 @@
 <dl class="py function">
 <dt>
 <code class="sig-name descname">/user/&lt;uuid&gt;/apikey/</code></dt>
-<dd><p><strong>POST</strong> Generate a new API key for the user with <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p>
+<dd><div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Only for users with <code class="docutils literal notranslate"><span class="pre">USER_MANAGEMENT</span></code>.</p>
+</div>
+<p><strong>POST</strong> Generate a new API key for the user with <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt>
 <code class="sig-name descname">/user/&lt;uuid&gt;/log/</code></dt>
-<dd><p><strong>GET</strong> Get a list of changes done to the user with <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p>
+<dd><div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Only for the actual user and users with <code class="docutils literal notranslate"><span class="pre">USER_MANAGEMENT</span></code>.</p>
+</div>
+<p><strong>GET</strong> Get a list of changes done to the user with <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt>
-<code class="sig-name descname">/user/&lt;uuid&gt;/actionLog/</code></dt>
-<dd><p><strong>GET</strong> Get a list of changes done by the user with <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p>
+<code class="sig-name descname">/user/&lt;uuid&gt;/actions/</code></dt>
+<dd><div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Only for the actual user and users with <code class="docutils literal notranslate"><span class="pre">USER_MANAGEMENT</span></code>.</p>
+</div>
+<p><strong>GET</strong> Get a list of changes done by the user with <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p>
 </dd></dl>
 
 <dl class="py function">

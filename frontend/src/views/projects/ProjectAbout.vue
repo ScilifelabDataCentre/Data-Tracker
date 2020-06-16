@@ -49,11 +49,23 @@
       </tbody>
     </table>
   </div>
-  <router-link v-if="project.owners" to="edit">
-    <button class="button is-link">
-      Edit
-    </button>
-  </router-link>
+
+  <div v-if="project.owners" class="field is-grouped">
+    <div class="control">
+      <router-link to="edit">
+        <button class="button is-link">
+          Edit
+        </button>
+      </router-link>
+    </div>
+    <div class="control">
+      <router-link to="log">
+        <button class="button is-link">
+          Logs
+        </button>
+      </router-link>
+    </div>
+  </div>
 </div>
 </template>
 

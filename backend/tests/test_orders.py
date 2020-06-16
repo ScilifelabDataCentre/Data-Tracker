@@ -28,9 +28,11 @@ def test_get_order_permissions(use_db):
     for order in orders:
         # to simplify comparison
         order['_id'] = str(order['_id'])
-        order['receiver'] = str(order['receiver'])
         owner = db['users'].find_one({'_id': order['creator']})
-        order['creator'] = str(order['creator'])
+        if isinstance(order['receiver'], uuid.UUID):
+            order['receiver'] = db['users'].find_one({'_id': order['receiver']})['email']
+        if isinstance(order['creator'], uuid.UUID):
+            order['creator'] = owner['email']
         for i, ds in enumerate(order['datasets']):
             order['datasets'][i] = next(db['datasets'].aggregate([{'$match': {'_id': ds}},
                                                                   {'$project': {'_id': 1,
@@ -50,7 +52,7 @@ def test_get_order_permissions(use_db):
                     elif field == '_id':
                         continue
                     elif field == 'creator':
-                        assert data[field]['id'] == order[field]
+                        assert data[field]['identifier'] == order[field]
                         assert data[field]['name'] == owner['name']
                     else:
                         assert order[field] == data[field]
@@ -73,7 +75,7 @@ def test_get_order_permissions(use_db):
             elif field == '_id':
                 continue
             elif field == 'creator':
-                assert data[field]['id'] == order[field]
+                assert data[field]['identifier'] == order[field]
                 assert data[field]['name'] == owner['name']
             else:
                 assert order[field] == data[field]
@@ -94,8 +96,9 @@ def test_get_order(use_db):
         order['_id'] = str(order['_id'])
         owner = db['users'].find_one({'_id': order['creator']})
         if isinstance(order['receiver'], uuid.UUID):
-            order['receiver'] = str(order['receiver'])
-        order['creator'] = str(order['creator'])
+            order['receiver'] = db['users'].find_one({'_id': order['receiver']})['email']
+        if isinstance(order['creator'], uuid.UUID):
+            order['creator'] = owner['email']
         for i, ds in enumerate(order['datasets']):
             order['datasets'][i] = next(db['datasets'].aggregate([{'$match': {'_id': ds}},
                                                                   {'$project': {'_id': 1,
@@ -115,7 +118,7 @@ def test_get_order(use_db):
             elif field == '_id':
                 continue
             elif field == 'creator':
-                assert data[field]['id'] == order[field]
+                assert data[field]['identifier'] == order[field]
                 assert data[field]['name'] == owner['name']
             else:
                 assert order[field] == data[field]
@@ -150,36 +153,40 @@ def test_get_order_bad():
             assert not response.data
 
 
-def test_get_log_permissions(use_db):
+def test_get_order_logs_permissions(use_db):
     """
-    Request the logs for multiple orders.
+    Get order logs.
 
-    Confirm that only the correct users can access them.
+    Assert that DATA_MANAGEMENT or user in creator is required.
     """
-    session = requests.session()
     db = use_db
-    orders = db['orders'].aggregate([{'$sample': {'size': 2}}])
-    for order in orders:
-        logs = list(db['logs'].find({'data_type': 'order', 'data._id': order['_id']}))
-        responses = make_request_all_roles(f'/api/order/{order["_id"]}/log/', ret_json=True)
-        for response in responses:
-            if response.role in ('data', 'root'):
-                assert len(response.data['logs']) == len(logs)
-                assert response.code == 200
-            elif response.role == 'no-login':
-                assert response.code == 401
-                assert not response.data
-            else:
-                assert response.code == 403
-                assert not response.data
-        owner = db['users'].find_one({'_id': order['creator']})
-        as_user(session, owner['api_key'])
-        response = make_request(session, f'/api/order/{order["_id"]}/log/', ret_json=True)
-        assert response.code == 200
-        assert response.data
+    order_data = db['orders'].aggregate([{'$sample': {'size': 1}}]).next()
+    user_data = db['users'].find_one({'_id': order_data['creator']})
+    responses = make_request_all_roles(f'/api/order/{order_data["_id"]}/log/',
+                                       ret_json=True)
+    for response in responses:
+        if response.role in ('data', 'root'):
+            assert response.code == 200
+            assert 'logs' in response.data
+        elif response.role == 'no-login':
+            assert response.code == 401
+            assert not response.data
+        else:
+            assert response.code == 403
+            assert not response.data
+
+    session = requests.Session()
+
+    as_user(session, user_data['auth_id'])
+    response = make_request(session,
+                             f'/api/order/{order_data["_id"]}/log/',
+                             ret_json=True)
+
+    assert response.code == 200
+    assert 'logs' in response.data
 
 
-def test_get_log(use_db):
+def test_get_order_logs(use_db):
     """
     Request the logs for multiple orders.
 
@@ -198,7 +205,7 @@ def test_get_log(use_db):
         assert response.code == 200
 
 
-def test_get_log_bad():
+def test_get_order_logs_bad():
     """
     Request the logs for multiple orders.
 
@@ -208,7 +215,7 @@ def test_get_log_bad():
     for _ in range(2):
         as_user(session, USERS['data'])
         response = make_request(session, f'/api/order/{uuid.uuid4()}/log/', ret_json=True)
-        assert response.code == 404
+        assert response.code == 200
         response = make_request(session, f'/api/order/{random_string()}/log/', ret_json=True)
         assert response.code == 404
 
@@ -987,6 +994,11 @@ def test_list_all_orders(use_db):
         elif response.role == 'no-login':
             assert response.code == 401
             assert not response.data
+
+        elif response.role == 'orders':
+            assert response.code == 200
+            assert len(response.data['orders']) == 0
+
         else:
             assert response.code == 403
             assert not response.data

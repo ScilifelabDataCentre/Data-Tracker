@@ -649,3 +649,56 @@ def test_list_projects():
     for response in responses:
         assert response.code == 200
         assert len(response.data['projects']) == 500
+
+
+def test_get_project_logs_permissions(use_db):
+    """
+    Get project logs.
+
+    Assert that DATA_MANAGEMENT or user in owners is required.
+    """
+    db = use_db
+    project_data = db['projects'].aggregate([{'$sample': {'size': 1}}]).next()
+    user_data = db['users'].find_one({'$or': [{'_id': project_data['owners'][0]},
+                                              {'email': project_data['owners'][0]}]})
+    responses = make_request_all_roles(f'/api/project/{project_data["_id"]}/log/',
+                                       ret_json=True)
+    for response in responses:
+        if response.role in ('data', 'root'):
+            assert response.code == 200
+            assert 'logs' in response.data
+        elif response.role == 'no-login':
+            assert response.code == 401
+            assert not response.data
+        else:
+            assert response.code == 403
+            assert not response.data
+
+    session = requests.Session()
+
+    as_user(session, user_data['auth_id'])
+    response = make_request(session,
+                             f'/api/project/{project_data["_id"]}/log/',
+                             ret_json=True)
+
+    assert response.code == 200
+    assert 'logs' in response.data
+
+
+def test_get_project_logs(use_db):
+    """
+    Request the logs for multiple projects.
+
+    Confirm that the logs contain only the intended fields.
+    """
+    session = requests.session()
+    db = use_db
+    projects = db['projects'].aggregate([{'$sample': {'size': 2}}])
+    for project in projects:
+        logs = list(db['logs'].find({'data_type': 'project', 'data._id': project['_id']}))
+        as_user(session, USERS['data'])
+        response = make_request(session, f'/api/project/{project["_id"]}/log/', ret_json=True)
+        assert response.data['dataType'] == 'project'
+        assert response.data['entryId'] == str(project['_id'])
+        assert len(response.data['logs']) == len(logs)
+        assert response.code == 200

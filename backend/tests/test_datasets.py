@@ -326,3 +326,57 @@ def test_list_datasets():
     for response in responses:
         assert response.code == 200
         assert len(response.data['datasets']) == 500
+
+
+def test_get_dataset_logs_permissions(use_db):
+    """
+    Get dataset logs.
+
+    Assert that DATA_MANAGEMENT or user in creator or receivers is required.
+    """
+    db = use_db
+    dataset_data = db['datasets'].aggregate([{'$sample': {'size': 1}}]).next()
+    order_data = db['orders'].find_one({'datasets': dataset_data['_id']})
+    user_data = db['users'].find_one({'$or': [{'_id': order_data['creator']},
+                                              {'email': order_data['receiver']}]})
+    responses = make_request_all_roles(f'/api/dataset/{dataset_data["_id"]}/log/',
+                                       ret_json=True)
+    for response in responses:
+        if response.role in ('data', 'root'):
+            assert response.code == 200
+            assert 'logs' in response.data
+        elif response.role == 'no-login':
+            assert response.code == 401
+            assert not response.data
+        else:
+            assert response.code == 403
+            assert not response.data
+
+    session = requests.Session()
+
+    as_user(session, user_data['auth_id'])
+    response = make_request(session,
+                             f'/api/dataset/{dataset_data["_id"]}/log/',
+                             ret_json=True)
+
+    assert response.code == 200
+    assert 'logs' in response.data
+
+
+def test_get_dataset_logs(use_db):
+    """
+    Request the logs for multiple datasets.
+
+    Confirm that the logs contain only the intended fields.
+    """
+    session = requests.session()
+    db = use_db
+    datasets = db['datasets'].aggregate([{'$sample': {'size': 2}}])
+    for dataset in datasets:
+        logs = list(db['logs'].find({'data_type': 'dataset', 'data._id': dataset['_id']}))
+        as_user(session, USERS['data'])
+        response = make_request(session, f'/api/dataset/{dataset["_id"]}/log/', ret_json=True)
+        assert response.data['dataType'] == 'dataset'
+        assert response.data['entryId'] == str(dataset['_id'])
+        assert len(response.data['logs']) == len(logs)
+        assert response.code == 200

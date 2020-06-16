@@ -1,7 +1,7 @@
 <template>
 <div class="user-manager">
   <h1 id="user-table-header" class="title is-1">List of users</h1>
-  <router-link to="user/add">
+  <router-link to="add">
     <img class="icon-add" :src="require('../../assets/open-iconic/svg/plus.svg')" alt="Add" />
   </router-link>
   <table class="table is-hoverable is-striped" v-if="users.length > 0" aria-describedby="user-table-header">
@@ -11,14 +11,20 @@
         <th scope="col">Authentication ID</th>
         <th scope="col">Email</th>
         <th scope="col">Affiliation</th>
+	<th scope="col">Edit</th>
+	<th scope="col">Logs</th>
+	<th scope="col">Actions</th>
       </tr>
     </thead>
     <tbody>
-      <tr v @click="editUser($event, user._id)" v-for="user in users" :key="user._id">
+      <tr v-for="user in users" :key="user._id">
         <td>{{user.name}}</td>
         <td>{{user.authId}}</td>
         <td>{{user.email}}</td>
         <td>{{user.affiliation}}</td>
+	<td><router-link :to="user._id + '/edit'"><button class="button is-link">E</button></router-link></td>
+	<td><router-link :to="user._id + '/log'"><button class="button is-light is-link">L</button></router-link></td>
+        <td><router-link :to="user._id + '/actions'"><button class="button is-light is-danger">A</button></router-link></td>
       </tr>
     </tbody>
   </table>
@@ -43,12 +49,5 @@ export default {
   created () {
     this.$store.dispatch('getUsers', this.id);
   },
-
-  methods: {
-    editUser(event, uuid) {
-      event.preventDefault();
-      this.$router.push('/admin/user/' + uuid);
-    }
-  }
 }
 </script>

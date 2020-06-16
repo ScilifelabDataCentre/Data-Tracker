@@ -431,3 +431,102 @@ def test_key_reset(use_db):
                                     method='POST')
             assert response.code == 200
             assert not response.data
+
+
+def test_get_user_logs_permissions(use_db):
+    """
+    Get user logs.
+
+    Assert that USER_MANAGEMENT or actual user is required.
+    """
+    db = use_db
+    user_uuid = db['users'].find_one({'auth_id': USERS['base']}, {'_id': 1})['_id']
+    responses = make_request_all_roles(f'/api/user/{user_uuid}/log/',
+                                       ret_json=True)
+    for response in responses:
+        if response.role in ('base', 'users', 'root'):
+            assert response.code == 200
+            assert 'logs' in response.data
+        elif response.role == 'no-login':
+            assert response.code == 401
+            assert not response.data
+        else:
+            assert response.code == 403
+            assert not response.data
+
+
+def test_get_user_logs(use_db):
+    """
+    Request the logs for multiple users.
+
+    Confirm that the logs contain only the intended fields.
+    """
+    session = requests.session()
+    db = use_db
+    users = db['users'].aggregate([{'$sample': {'size': 2}}])
+    for user in users:
+        logs = list(db['logs'].find({'data_type': 'user', 'data._id': user['_id']}))
+        as_user(session, USERS['users'])
+        response = make_request(session, f'/api/user/{user["_id"]}/log/', ret_json=True)
+        assert response.data['dataType'] == 'user'
+        assert response.data['entryId'] == str(user['_id'])
+        assert len(response.data['logs']) == len(logs)
+        assert response.code == 200
+
+
+def test_get_current_user_logs(use_db):
+    """
+    Get current user logs.
+
+    Should return logs for all logged in users.
+    """
+    db = use_db
+    responses = make_request_all_roles(f'/api/user/me/log/',
+                                       ret_json=True)
+    for response in responses:
+        if response.role == 'no-login':
+            assert response.code == 401
+            assert not response.data
+        else:
+            assert response.code == 200
+            assert 'logs' in response.data
+
+
+def test_get_user_actions_access(use_db):
+    """
+    Get user logs.
+
+    Assert that USER_MANAGEMENT or actual user is required.
+    """
+    db = use_db
+    user_uuid = db['users'].find_one({'auth_id': USERS['base']}, {'_id': 1})['_id']
+    responses = make_request_all_roles(f'/api/user/{user_uuid}/actions/',
+                                       ret_json=True)
+    for response in responses:
+        if response.role in ('base', 'users', 'root'):
+            assert response.code == 200
+            assert 'logs' in response.data
+        elif response.role == 'no-login':
+            assert response.code == 401
+            assert not response.data
+        else:
+            assert response.code == 403
+            assert not response.data
+
+
+def test_get_current_user_actions(use_db):
+    """
+    Get current user logs.
+
+    Should return logs for all logged in users.
+    """
+    db = use_db
+    responses = make_request_all_roles(f'/api/user/me/actions/',
+                                       ret_json=True)
+    for response in responses:
+        if response.role == 'no-login':
+            assert response.code == 401
+            assert not response.data
+        else:
+            assert response.code == 200
+            assert 'logs' in response.data

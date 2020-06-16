@@ -42,12 +42,20 @@ def list_orders():
     Returns:
         flask.Response: Json structure with a list of orders.
     """
-    if not user.has_permission('DATA_MANAGEMENT'):
-        flask.abort(status=403)
-    orders = list(flask.g.db['orders'].find(projection={'_id': 1,
-                                                        'title': 1,
-                                                        'creator': 1,
-                                                        'receiver': 1}))
+    if user.has_permission('DATA_MANAGEMENT'):
+        orders = list(flask.g.db['orders'].find(projection={'_id': 1,
+                                                            'title': 1,
+                                                            'creator': 1,
+                                                            'receiver': 1}))
+    else:
+        orders = list(flask.g.db['orders']
+                      .find({'$or': [{'creator': flask.g.current_user['_id']},
+                                     {'creator': flask.g.current_user['email']}]},
+                            projection={'_id': 1,
+                                        'title': 1,
+                                        'creator': 1,
+                                        'receiver': 1}))
+
     return utils.response_json({'orders': orders})
 
 
@@ -104,9 +112,14 @@ def get_order(identifier):
         flask.abort(status=403)
 
     order_creator = flask.g.db['users'].find_one({'_id': order['creator']})
-    order['creator'] = {'name': order['creator'], 'id': order['creator']}
+    order['creator'] = {'name': order['creator'], 'identifier': order['creator']}
     if order_creator:
         order['creator']['name'] = order_creator['name']
+        order['creator']['identifier'] = order_creator['email']
+
+    order_receiver = flask.g.db['users'].find_one({'_id': order['receiver']})
+    if order_receiver:
+        order['receiver'] = order_receiver['email']
 
     # convert dataset list into {title, _id}
     order['datasets'] = list(flask.g.db['datasets']
@@ -118,7 +131,7 @@ def get_order(identifier):
 
 
 @blueprint.route('/<identifier>/log/', methods=['GET'])
-def get_order_log(identifier):
+def get_order_logs(identifier):
     """
     List changes to the dataset.
 
@@ -133,28 +146,27 @@ def get_order_log(identifier):
         flask.Response: Json structure for the logs.
     """
     try:
-        uuid = utils.str_to_uuid(identifier)
+        order_uuid = utils.str_to_uuid(identifier)
     except ValueError:
-        return flask.abort(status=404)
+        flask.abort(status=404)
 
-    order = flask.g.db['orders'].find_one({'_id': uuid})
-    if order:
-        is_owner = order['creator'] == flask.session['user_id']
-    logs = list(flask.g.db['logs'].find({'data_type': 'order', 'data._id': uuid}))
-    if not (user.has_permission('DATA_MANAGEMENT') or is_owner):
-        return flask.abort(status=403)
-    if not logs:
-        return flask.abort(status=404)
+    if not user.has_permission('DATA_MANAGEMENT'):
+        user_entries = (flask.g.current_user['_id'], flask.g.current_user['email'])
+        order_data = flask.g.db['orders'].find_one({'_id': order_uuid})
+        if not order_data:
+            flask.abort(403)
+        if order_data['creator'] not in user_entries:
+            flask.abort(403)
 
-    utils.incremental_logs(logs)
-    for log in logs:
+    order_logs = list(flask.g.db['logs'].find({'data_type': 'order', 'data._id': order_uuid}))
+    for log in order_logs:
         del log['data_type']
 
-    out_log = {'entry_id': uuid,
-               'data_type': 'order',
-               'logs': logs}
+    utils.incremental_logs(order_logs)
 
-    return utils.response_json(out_log)
+    return utils.response_json({'entry_id': order_uuid,
+                                'data_type': 'order',
+                                'logs': order_logs})
 
 
 @blueprint.route('/', methods=['POST'])
@@ -177,13 +189,13 @@ def add_order():  # pylint: disable=too-many-branches
     if not validation[0]:
         flask.abort(status=validation[1])
     # creator
-    if 'creator' in indata:
+    if indata.get('creator'):
         if not user.has_permission('DATA_MANAGEMENT'):
             flask.abort(status=403)
         if new_identifier := utils.check_email_uuid(indata['creator']):
             indata['creator'] = new_identifier
     else:
-        order['creator'] = flask.g.current_user['_id']
+        indata['creator'] = flask.g.current_user['_id']
     # receiver
     if 'receiver' in indata:
         if new_identifier := utils.check_email_uuid(indata['receiver']):
@@ -326,13 +338,13 @@ def update_order(identifier: str):  # pylint: disable=too-many-branches
         flask.abort(status=validation[1])
 
     # creator
-    if indata.get('creator'):
+    if indata.get('creator') and indata['creator'] != order['creator']:
         if not user.has_permission('DATA_MANAGEMENT'):
             flask.abort(status=403)
         if new_identifier := utils.check_email_uuid(indata['creator']):
             indata['creator'] = new_identifier
     else:
-        order['creator'] = flask.g.current_user['_id']
+        indata['creator'] = flask.g.current_user['_id']
     # receiver
     if indata.get('receiver'):
         if new_identifier := utils.check_email_uuid(indata['receiver']):

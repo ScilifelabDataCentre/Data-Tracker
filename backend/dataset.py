@@ -155,16 +155,62 @@ def update_dataset(identifier):
     validation = utils.basic_check_indata(indata, dataset, prohibited=('_id'))
     if not validation[0]:
         flask.abort(status=validation[1])
-    dataset.update(indata)
-    if indata:
-        result = flask.g.db['datasets'].update_one({'_id': dataset['_id']}, {'$set': dataset})
+
+    is_different = False
+    for field in indata:
+        if indata[field] != dataset[field]:
+            is_different = True
+            break
+
+    if indata and is_different:
+        result = flask.g.db['datasets'].update_one({'_id': dataset['_id']}, {'$set': indata})
         if not result.acknowledged:
             logging.error('Dataset update failed: %s', dataset)
             flask.abort(status=500)
         else:
+            dataset.update(indata)
             utils.make_log('dataset', 'edit', 'Dataset updated', dataset)
 
     return flask.Response(status=200)
+
+
+@blueprint.route('/<identifier>/log/', methods=['GET'])
+@user.login_required
+def get_dataset_log(identifier: str = None):
+    """
+    Get change logs for the user entry with uuid ``identifier``.
+
+    Can be accessed by creator (order), receiver (order), and admin (DATA_MANAGEMENT).
+
+    Args:
+        identifier (str): The uuid of the dataset.
+
+    Returns:
+        flask.Response: Logs as json.
+    """
+    try:
+        dataset_uuid = utils.str_to_uuid(identifier)
+    except ValueError:
+        flask.abort(status=404)
+
+    if not user.has_permission('DATA_MANAGEMENT'):
+        user_entries = (flask.g.current_user['_id'], flask.g.current_user['email'])
+        order_data = flask.g.db['orders'].find_one({'datasets': dataset_uuid})
+        if not order_data:
+            flask.abort(403)
+        if order_data['receiver'] not in user_entries and \
+           order_data['creator'] not in user_entries:
+            flask.abort(403)
+
+    dataset_logs = list(flask.g.db['logs'].find({'data_type': 'dataset', 'data._id': dataset_uuid}))
+    for log in dataset_logs:
+        del log['data_type']
+
+    utils.incremental_logs(dataset_logs)
+
+    return utils.response_json({'entry_id': dataset_uuid,
+                                'data_type': 'dataset',
+                                'logs': dataset_logs})
 
 
 # helper functions
