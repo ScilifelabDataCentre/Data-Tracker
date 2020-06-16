@@ -60,7 +60,7 @@
     </div>
     <div class="control">
       <router-link to="log">
-        <button class="button is-link">
+        <button class="button is-light">
           Logs
         </button>
       </router-link>
