@@ -189,8 +189,9 @@ def add_order():  # pylint: disable=too-many-branches
     if not validation[0]:
         flask.abort(status=validation[1])
     # creator
+    user_ids = (flask.g.current_user['_id'], flask.g.current_user['email'])
     if indata.get('creator'):
-        if not user.has_permission('DATA_MANAGEMENT'):
+        if indata['creator'] not in user_ids and not user.has_permission('DATA_MANAGEMENT'):
             flask.abort(status=403)
         if new_identifier := utils.check_email_uuid(indata['creator']):
             indata['creator'] = new_identifier
