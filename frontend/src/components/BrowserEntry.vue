@@ -1,7 +1,13 @@
 <template>
-<div class="browser-entry message">
-  <div class="message-header"><router-link :to="'/' + entry_type + '/' + entry._id"> {{ entry.title }}</router-link></div>
-  <div v-html="entry.description" class="message-body"></div>
+<div class="browser-entry card">
+  <div class="card-content">
+    <p class="has-text-weight-bold">
+      <router-link :to="'/' + entry_type + '/' + entry._id"> {{ entry.title }}</router-link>
+    </p>
+    <div>
+      {{ entry.description }}
+    </div>
+  </div>
   <div class="fade-helper"></div>
 </div>
 </template>
@@ -13,12 +19,15 @@ export default {
 }
 </script>
 
+
 <style scoped>
 .browser-entry {
-  height: 9em;
+  height: 7em;
   position: relative;
   overflow: hidden;
+  margin-bottom: 0.5em;
 }
+
 .browser-entry .fade-helper { 
   position: absolute;
   bottom: 0; 
