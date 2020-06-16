@@ -240,27 +240,31 @@ export default {
   mounted () {
     this.$store.dispatch('getCurrentUser', this.uuid)
       .then(() => {
+        let sortFunc = (a, b) => {
+          let aTitle = a.title.toUpperCase();
+          let bTitle = b.title.toUpperCase();
+          if (aTitle > bTitle) {
+            return 1;
+          }
+          if (aTitle < bTitle) {
+            return -1;
+          }
+          return 0;
+        };
         if (this.user.permissions.includes('DATA_MANAGEMENT')) {
           this.$store.dispatch('getDatasets')
             .then((response) => {
               this.availableDatasets = response.data.datasets;
+              this.availableDatasets.sort(sortFunc);
             });
         }
         else {
           this.$store.dispatch('getCurrentUserDatasets')
             .then((response) => {
               this.availableDatasets = response.data.datasets;
+              this.availableDatasets.sort(sortFunc);
             });
         }
-        this.availableDatasets.sort((a, b) => {
-          if (a.title > b.title) {
-            return 1;
-          }
-          if (a.title < b.title) {
-            return -1;
-          }
-          return 0;
-        });
       });
 
     if (this.uuid) {
