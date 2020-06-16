@@ -255,9 +255,8 @@ def validate_title(data: str) -> bool:
     Raises:
         ValueError: Validation failed.
     """
-    if validate_string(data):
-        if not data:
-            raise ValueError('Must not be empty')
+    if validate_string(data) and not data:
+        raise ValueError('Must not be empty')
     return True
 
 
