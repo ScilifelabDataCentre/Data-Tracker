@@ -329,7 +329,7 @@ export default {
 
     cancelChanges(event) {
       event.preventDefault();
-      if (this.uuid === null) {
+      if (this.uuid === undefined) {
         this.$router.push("/project/browser");
       }
       else {
