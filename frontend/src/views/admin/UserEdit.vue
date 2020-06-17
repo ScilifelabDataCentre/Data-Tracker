@@ -73,15 +73,15 @@
       </div>
     </div>
 
-    <div class="field is-horizontal">
+    <div v-if="newUser.id !== ''" class="field is-horizontal">
       <div class="field-label is-normal">
-        <span class="label">API key</span>
+        <label class="label" for="gen-new-key">API key</label>
       </div>
       <div class="field-body">
-        <div v-if="newUser.id !== ''" class="field">
-          <button class="button is-primary" @click="newApiKey">Generate new</button>
+        <div class="field">
+          <button id="gen-new-key" class="button is-primary" @click="newApiKey">New API key</button>
           <div v-if="apiKey !== ''">
-            {{ apiKey }}
+             <span class="has-text-weight-bold">New key:</span> {{ apiKey }}
           </div>
         </div>
       </div>
@@ -104,7 +104,7 @@
     
     <div class="field is-grouped">
       <div class="control">
-        <button class="button is-link">Submit</button>
+        <button class="button is-primary">Submit</button>
       </div>
       <div class="control">
         <button class="button is-light" @click="cancelChanges">Cancel</button>
@@ -141,7 +141,7 @@ export default {
     }
   },
 
-  created () {
+  mounted () {
     this.$store.dispatch('getPermissionTypes')
       .then((response) => {
         response.data.permissions.forEach((permission) => {
@@ -176,14 +176,19 @@ export default {
 
     cancelChanges(event) {
       event.preventDefault();
-      this.$router.push("../list");
+      if (this.newUser.id === '') {
+        this.$router.push("list");
+      }
+      else {
+        this.$router.push("../list");
+      }
     },
 
     deleteUser(event) {
       event.preventDefault();
       this.$store.dispatch('deleteUser', this.newUser.id)
         .then(() => {
-          this.$router.push("../list");
+            this.$router.push("../list");
         });
     },
 
@@ -199,8 +204,13 @@ export default {
         }
       });
       this.$store.dispatch('saveUser', newData)
-        .then(() => {
-          this.$router.push("../list");
+        .then((response) => {
+          if (response.data._id !== undefined) {
+            this.$router.push("list");
+          }
+          else {
+            this.$router.push("../list");
+          }
         });
     },
   },

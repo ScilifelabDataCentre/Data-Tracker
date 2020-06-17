@@ -36,7 +36,7 @@
       </div>
       <div class="field-body">
         <div v-if="newUser.id !== ''" class="field">
-          <button class="button is-primary" @click="newApiKey">Generate new</button>
+          <button class="button is-primary" @click="newApiKey">New API Key</button>
           <div v-if="apiKey !== ''">
             {{ apiKey }}
           </div>
@@ -46,7 +46,7 @@
     
     <div class="field is-grouped">
       <div class="control">
-        <button class="button is-link">Submit</button>
+        <button class="button is-primary">Submit</button>
       </div>
       <div class="control">
         <button class="button is-light" @click="cancelChanges">Cancel</button>
