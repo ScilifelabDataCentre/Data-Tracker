@@ -18,7 +18,6 @@
             </p>
             <vue-simple-markdown :source="random_ds.description"></vue-simple-markdown>
           </div>
-          <div class="fade-helper"></div>
         </div>
       </div>
     </div>
@@ -37,7 +36,6 @@
             </p>
               <vue-simple-markdown :source="random_proj.description"></vue-simple-markdown>
           </div>
-          <div class="fade-helper"></div>
         </div>
       </div>
     </div>
@@ -76,19 +74,19 @@ export default {
 
 <style scoped>
 .browser-entry {
-  height: 15em;
+  max-height: 15em;
   position: relative;
   overflow: hidden;
-  margin-bottom: 0.5em;
+  text-overflow: ellipsis;
 }
 
-.browser-entry .fade-helper { 
+.browser-entry:after {
+  content: "";
   position: absolute;
-  bottom: 0; 
+  top: 13em;
   left: 0;
+  height: 2em;
   width: 100%; 
-  margin: 0;
-  padding: 1.5em 0;
-  background-image: linear-gradient(to bottom, transparent, white);
+  background: linear-gradient(rgba(255,255,255,0), #FFF);
 }
 </style>
