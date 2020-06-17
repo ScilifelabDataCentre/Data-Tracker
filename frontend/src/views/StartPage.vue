@@ -1,10 +1,10 @@
 <template>
 <div class="start-page">
-  <section class="section">
-    <h1 class="title is-1">SciLifeLab Data Tracker</h1>
-    Welcome to the SciLifeLab Data Tracker, a system for tracking datasets generated at SciLifeLab.
+  <h1 class="title is-1">SciLifeLab Data Tracker</h1>
+    <section id="introduction" class="section">
+      Welcome to the SciLifeLab Data Tracker, a system for tracking datasets generated at SciLifeLab.
   </section>
-  <section class="section">
+  <section id="random-dataset" class="section">
     <div v-if="random_ds !== undefined">
       <div>
         <h2 class="title is-3">Random Dataset</h2>
@@ -22,7 +22,7 @@
       </div>
     </div>
     </section>
-    <section class="section">
+    <section id="random-project" class="section">
     <div v-if="random_proj !== undefined">
       <div>
         <h2 class="title is-3">Random Project</h2>
