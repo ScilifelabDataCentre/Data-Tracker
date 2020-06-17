@@ -1,8 +1,8 @@
 <template>
 <div class="user-manager">
   <h1 id="user-table-header" class="title is-1">List of users</h1>
-  <router-link to="add">
-    <img class="icon-add" :src="require('../../assets/open-iconic/svg/plus.svg')" alt="Add" />
+  <router-link class="button is-link" to="add">
+    Add
   </router-link>
   <table class="table is-hoverable is-striped" v-if="users.length > 0" aria-describedby="user-table-header">
     <thead>

@@ -1,8 +1,8 @@
 <template>
 <div class="project-browser">
-  <h1 class="title is-2">Projects</h1>
-  <router-link v-if="user.name" to="/project/add">
-    <img class="icon-add" :src="require('../../assets/open-iconic/svg/plus.svg')" alt="Add" />
+  <h1 class="title is-1">Projects</h1>
+  <router-link class="button is-link" to="add">
+    Add
   </router-link>
   <browser-entry v-for="project in projects" :key="project.id" :entry="project" entry_type="project">
   </browser-entry>
@@ -30,10 +30,3 @@ export default {
   },
 }
 </script>
-
-<style scoped>
-.icon-add {
-  width: 1.2em;
-  height: 1.2em;
-}
-</style>
