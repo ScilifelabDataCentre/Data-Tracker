@@ -15,7 +15,7 @@
     <router-view class="section"></router-view>
   </div>
 
-  <footer>
+  <footer class="footer">
     <img :src="require('./assets/img/data-centre-logo.svg')" alt="SciLife Data Centre logo" class="logo"/>
   </footer>
 </div>
