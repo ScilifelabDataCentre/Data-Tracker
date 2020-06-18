@@ -21,14 +21,14 @@ Terminology
 ===========
 
 * Fields:
-  
+
   - Fields in the documents for the datatype/collection.
-    
+
 * Computed fields:
 
   - Values that are either calculated or retrieved from documents in other collection(s).
   - Included when the entity is requested via API.
-  
+
 
 
 Order
@@ -39,6 +39,34 @@ Order
 * Can have any number of associated datasets.
 * Deleting an order will delete all owned datasets.
 
+Summary
+-------
+
++---------------+-----------------------------------------------------+-------------------+
+| Field         | Description                                         | Default           |
++===============+=====================================================+===================+
+| _id           | UUID of the Entry                                   | Set by system     |
++---------------+-----------------------------------------------------+-------------------+
+| title         | Title of the Entry                                  | Must be non-empty |
++---------------+-----------------------------------------------------+-------------------+
+| description   | Description in markdown                             | Empty             |
++---------------+-----------------------------------------------------+-------------------+
+| generators    | List of users who generated data                    | Entry creator     |
++---------------+-----------------------------------------------------+-------------------+
+| authors       | List of users responsible for e.g. samples (e.g PI) | Entry creator     |
++---------------+-----------------------------------------------------+-------------------+
+| organisation  | User who is data controller                         | Entry creator     |
++---------------+-----------------------------------------------------+-------------------+
+| editors       | List of users who can edit the order and datasets   | Entry creator     |
++---------------+-----------------------------------------------------+-------------------+
+| receivers     | List of users who received data from facility       | Empty             |
++---------------+-----------------------------------------------------+-------------------+
+| datasets      | List of associated datasets                         | Empty             |
++---------------+-----------------------------------------------------+-------------------+
+| tags_standard | Tags defined in the system                          | Empty             |
++---------------+-----------------------------------------------------+-------------------+
+| tags_user     | Tags defined by the users                           | Empty             |
++---------------+-----------------------------------------------------+-------------------+
 
 Fields
 ------
@@ -104,7 +132,7 @@ Dataset
 * Multiple datasets may be associated with the same order.
 
 * The association to a specific order cannot be changed.
-  
+
   -  Once associated with an order, it will stay so.
 
 * Can have identifier(s) (e.g. DOIs).
@@ -115,6 +143,25 @@ Dataset
   - ``organisation``
   - ``editors``
   - ``receivers``
+
+Summary
+-------
+
++------------------+----------------------------------+-------------------+
+| Field            | Description                      | Default           |
++==================+==================================+===================+
+| _id              | UUID of the Entry                | Set by system     |
++------------------+----------------------------------+-------------------+
+| title            | Title of the Entry               | Must be non-empty |
++------------------+----------------------------------+-------------------+
+| description      | Description in markdown          | Empty             |
++------------------+----------------------------------+-------------------+
+| tags_standard    | Tags defined in the system       | Empty             |
++------------------+----------------------------------+-------------------+
+| tags_user        | Tags defined by the users        | Empty             |
++------------------+----------------------------------+-------------------+
+| cross_references | External identifiers, links etc. | Empty             |
++------------------+----------------------------------+-------------------+
 
 Fields
 ------
@@ -128,13 +175,13 @@ Fields
     * Entry description.
     * May use markdown for formatting.
     * **Default:** Empty
-:tags_standard: 
+:tags_standard:
     * A standard set of tags that are defined by the system.
     * **Default:** Empty
-:tags_user: 
+:tags_user:
     * User-defined tags for the system.
     * **Default:** Empty
-:cross_references: 
+:cross_references:
     * External references to the data.
     * E.g. DOIs or database IDs.
     * **Default:** Empty
@@ -163,6 +210,28 @@ Collection
 * Provides a way of grouping datasets before publication.
 * Should aid requesting a DOI from Figshare for the collection.
 
+Summary
+-------
+
++------------------+---------------------------------------------------+-------------------+
+| Field            | Description                                       | Default           |
++==================+===================================================+===================+
+| _id              | UUID of the Entry                                 | Set by system     |
++------------------+---------------------------------------------------+-------------------+
+| title            | Title of the Entry                                | Must be non-empty |
++------------------+---------------------------------------------------+-------------------+
+| description      | Description in markdown                           | Empty             |
++------------------+---------------------------------------------------+-------------------+
+| tags_standard    | Tags defined in the system                        | Empty             |
++------------------+---------------------------------------------------+-------------------+
+| tags_user        | Tags defined by the users                         | Empty             |
++------------------+---------------------------------------------------+-------------------+
+| cross_references | External identifiers, links etc.                  | Empty             |
++------------------+---------------------------------------------------+-------------------+
+| editors          | List of users who can edit the order and datasets | Entry creator     |
++------------------+---------------------------------------------------+-------------------+
+
+
 Fields
 ------
 :_id:
@@ -175,13 +244,13 @@ Fields
     * Entry description.
     * May use markdown for formatting.
     * **Default:** Empty
-:tags_standard: 
+:tags_standard:
     * A standard set of tags that are defined by the system.
     * **Default:** Empty
-:tags_user: 
+:tags_user:
     * User-defined tags for the system.
     * **Default:** Empty
-:cross_references: 
+:cross_references:
     * External references to the data.
     * E.g. DOIs or database IDs.
     * **Default:** Empty
@@ -212,6 +281,29 @@ User
 * A user with the permission ``USER_MANAGEMENT`` can create and modify users.
 * A user with the permission ``ORDER_USERS`` can create and modify "partial" users.
 
+Summary
+-------
+
++-------------+-------------------------------------+-------------------+
+| Field       | Description                         | Default           |
++=============+=====================================+===================+
+| _id         | UUID of the Entry                   | Set by system     |
++-------------+-------------------------------------+-------------------+
+| email       | Email address for the user          | Must be non-empty |
++-------------+-------------------------------------+-------------------+
+| auth_ids    | List of identfiers from e.g. Elixir | Empty             |
++-------------+-------------------------------------+-------------------+
+| api_key     | Hash for the API key                | Empty             |
++-------------+-------------------------------------+-------------------+
+| api_salt    | Salt for API api_key                | Empty             |
++-------------+-------------------------------------+-------------------+
+| name        | Name of the user                    | Must be non-empty |
++-------------+-------------------------------------+-------------------+
+| orcid       | ORCID of the user                   | Empty             |
++-------------+-------------------------------------+-------------------+
+| permissions | List of permissions for the user    | Empty             |
++-------------+-------------------------------------+-------------------+
+
 
 Fields
 ------
@@ -220,11 +312,12 @@ Fields
     * Set by the system upon entry creation, never modified.
 :email:
     * Email address for the user.
-    * **Default:** Empty
+    * **Default:** Must be set
 :auth_ids:
     * List of identifiers used by e.g. Elixir AAI.
+    * ``{'local': 'id@local'}`` can be used with the API key
 :api_key:
-    * API key for authorization to API or login.
+    * Hash for the API key for authorization to API or login.
 :api_salt:
     * Salt for the API key.
 :name:
@@ -233,6 +326,8 @@ Fields
       - Could also be name of e.g. facility or university.
 :affiliation:
     * Affiliation of the user.
+:orcid:
+    * ORCID of the user.
 :permissions:
     * A list of the extra permissions the user has (see :ref:`permissions_section`).
 
@@ -246,6 +341,28 @@ Log
 * A full cope of the new entry is saved.
 
   - In case of deletion, ``_id`` is saved as ``data``.
+
+Summary
+-------
+
++-------------+--------------------------------------------+-------------------+
+| Field       | Description                                | Default           |
++=============+============================================+===================+
+| _id         | UUID of the Entry                          | Set by system     |
++-------------+--------------------------------------------+-------------------+
+| action      | type of action                             | Must be non-empty |
++-------------+--------------------------------------------+-------------------+
+| comment     | Short description of the action            | Empty             |
++-------------+--------------------------------------------+-------------------+
+| data_type   | The modified collection (e.g. order)       | Must be non-empty |
++-------------+--------------------------------------------+-------------------+
+| data        | Complete copy of the new entry             | Must be non-empty |
++-------------+--------------------------------------------+-------------------+
+| timestamp   | Timestamp for the change                   | Must be non-empty |
++-------------+--------------------------------------------+-------------------+
+| user        | UUID for the user who performed the action | Must be non-empty |
++-------------+--------------------------------------------+-------------------+
+
 
 Fields
 ------
