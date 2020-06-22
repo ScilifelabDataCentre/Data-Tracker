@@ -1,5 +1,7 @@
 """Main app for the Data Tracker."""
 
+import logging
+
 import flask
 
 import config
@@ -10,6 +12,7 @@ import project
 import user
 import utils
 
+from authlib.integrations.flask_client import OAuth
 
 app = flask.Flask(__name__)  # pylint: disable=invalid-name
 app.config.update(config.init())
@@ -22,6 +25,9 @@ app.register_blueprint(order.blueprint, url_prefix='/api/order')
 app.register_blueprint(project.blueprint, url_prefix='/api/project')
 app.register_blueprint(user.blueprint, url_prefix='/api/user')
 
+
+oauth = OAuth(app)
+oauth.register('google', client_kwargs={'scope': 'openid profile email'})
 
 @app.before_request
 def prepare():
@@ -60,6 +66,56 @@ def finalize(response):
 def api_base():
     """List entities."""
     return flask.jsonify({'entities': ['dataset', 'order', 'project', 'user']})
+
+
+@app.route('/api/login/oidc/login/')
+def oidc_login():
+    """Perform a login using OpenID Connect (e.g. Elixir AAI)."""
+    redirect_uri = flask.url_for('oidc_authorize', _external=True)
+    logging.debug(f'oauth content: {dir(oauth)}')
+    return oauth.google.authorize_redirect(redirect_uri)
+
+
+@app.route('/api/login/oidc/authorize/')
+def oidc_authorize():
+    """Authorize a login using OpenID Connect (e.g. Elixir AAI)."""
+    token = oauth.google.authorize_access_token()
+    resp = oauth.google.get('account/verify_credentials.json')
+    profile = resp.json()
+    response = {'token': str(token),
+                'resp': str(resp),
+                'profile': str(profile)}
+    logging.debug(f'response.token: {token}')
+    logging.debug(f'response.resp: {resp}')
+    logging.debug(f'response.profile: {profile}')
+
+    return flask.redirect('/')
+
+
+# requests
+@app.route('/api/login/apikey/', methods=['POST'])
+def key_login():
+    """Log in using an apikey."""
+    try:
+        indata = flask.json.loads(flask.request.data)
+    except json.decoder.JSONDecodeError:
+        flask.abort(status=400)
+
+    if 'api-user' not in indata or 'api-key' not in indata:
+        logging.debug('API key login - bad keys: %s', indata)
+        return flask.Response(status=400)
+    utils.verify_api_key(indata['api-user'], indata['api-key'])
+    user.do_login(auth_id=indata['api-user'])
+    return flask.Response(status=200)
+
+
+@app.route('/api/logout/')
+def logout():
+    """Log out the current user."""
+    flask.session.clear()
+    response = flask.redirect("/", code=302)
+    response.set_cookie('_csrf_token', utils.gen_csrf_token(), 0)
+    return response
 
 
 @app.errorhandler(400)

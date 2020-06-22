@@ -52,39 +52,6 @@ def get_permission_info():
     return flask.jsonify({'permissions': list(PERMISSIONS.keys())})
 
 
-@blueprint.route('/login/')
-@blueprint.route('/login/oidc')
-def oidc_login():
-    """Perform an Elixir AAI login."""
-    return flask.Response(status=501)
-
-
-# requests
-@blueprint.route('/login/apikey/', methods=['POST'])
-def key_login():
-    """Log in using an apikey."""
-    try:
-        indata = flask.json.loads(flask.request.data)
-    except json.decoder.JSONDecodeError:
-        flask.abort(status=400)
-
-    if 'api-user' not in indata or 'api-key' not in indata:
-        logging.debug('API key login - bad keys: %s', indata)
-        return flask.Response(status=400)
-    utils.verify_api_key(indata['api-user'], indata['api-key'])
-    do_login(auth_id=indata['api-user'])
-    return flask.Response(status=200)
-
-
-@blueprint.route('/logout/')
-def logout():
-    """Log out the current user."""
-    flask.session.clear()
-    response = flask.redirect("/", code=302)
-    response.set_cookie('_csrf_token', utils.gen_csrf_token(), 0)
-    return response
-
-
 @blueprint.route('/')
 @login_required
 def list_users():
