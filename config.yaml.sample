@@ -1,6 +1,6 @@
 ---
 mongo:
-  host: "db"
+  host: "localhost"
   port: 27017
   user: "mongoadmin"
   password: "mongopassword"
@@ -11,5 +11,11 @@ flask:
   secret: "secret"
 
 dev_mode:
-  api: false
-  testing: false
+  api: true
+  testing: true
+
+oidc:
+  entry:
+    client_secret: ""
+    client_id: ""
+    server_metadata_url: "" # openid config url
