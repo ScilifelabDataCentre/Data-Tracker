@@ -68,6 +68,7 @@ def init() -> dict:
             base_name = oidc_entry.upper()
             for conf_part in config['oidc'][oidc_entry]:
                 config[f'{base_name}_{conf_part.upper()}'] = config['oidc'][oidc_entry][conf_part]
+        del config['oidc']
 
     config['SESSION_COOKIE_NAME'] = 'dt_session'
     config['SECRET_KEY'] = config['flask']['secret']
