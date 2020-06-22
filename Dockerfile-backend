@@ -1,5 +1,11 @@
 FROM python:alpine
 
+RUN apk add gcc musl-dev python3-dev libffi-dev openssl-dev
+
+COPY ./backend/requirements.txt /requirements.txt
+
+RUN pip3 install -r /requirements.txt
+
 ADD . /code
 COPY config.yaml.sample /config.yaml
 RUN sed -i 's/host:.*/host: "db"/' /config.yaml
@@ -8,7 +14,5 @@ RUN sed -i 's/testing: false/testing: true/' /config.yaml
 WORKDIR /code/backend
 
 ENV PYTHONPATH /code/backend
-
-RUN pip3 install -r requirements.txt
 
 CMD ["python3", "app.py", "--config_file", "/config.yaml"]
