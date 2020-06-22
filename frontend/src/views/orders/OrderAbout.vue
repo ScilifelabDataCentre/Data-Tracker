@@ -1,36 +1,46 @@
 <template>
 <div class="order-info">
   <h1 class="title is-2">{{ order.title }}</h1>
-  <div class="order-description field" v-html="order.description"></div>
-  <table class="table is-hoverable">
-    <tbody>
-      <tr>
-        <th scope="row">Creator</th>
-        <td>{{order.creator.name}} <span v-if="order.creator.identifier !== order.creator.name">({{order.creator.identifier}})</span></td>
-      </tr>
-      <tr>
-        <th scope="row">Receiver</th>
-        <td>{{order.receiver}}</td>
-      </tr>
-      <tr>
-        <th scope="row">Datasets</th>
-        <td>
-          <ul>
-            <li v-for="dataset in order.datasets" :key="dataset._id">
-              <router-link :to="'/dataset/' + dataset._id">{{dataset.title}}</router-link>
-            </li>
-          </ul>
-        </td>
-        <td>
-          <button class="button is-link" @click="addDataset">Add</button>
-        </td>
-      </tr>
-      <tr v-for="field in Object.keys(order.extra)" :key="field">
-        <th scope="row">{{ field }}</th>
-        <td>{{ order.extra[field] }}</td>
-      </tr>
-    </tbody>
-  </table>
+  <section class="section">
+    <div class="content">
+      <vue-simple-markdown :source="order.description"></vue-simple-markdown>
+    </div>
+  </section>
+  <section class="section">
+    <table class="info-list table is-hoverable is-striped">
+      <tbody>
+	<tr>
+          <th scope="row">Creator</th>
+          <td>{{order.creator.name}} <span v-if="order.creator.identifier !== order.creator.name">({{order.creator.identifier}})</span></td>
+          <td></td>
+	</tr>
+	<tr>
+          <th scope="row">Receiver</th>
+          <td>{{order.receiver}}</td>
+          <td></td>
+	</tr>
+	<tr>
+          <th scope="row">Datasets</th>
+          <td>
+            <ul>
+              <li v-for="dataset in order.datasets" :key="dataset._id">
+		<router-link :to="'/dataset/' + dataset._id">{{dataset.title}}</router-link>
+              </li>
+            </ul>
+          </td>
+          <td>
+            <button class="button is-link" @click="addDataset">Add</button>
+          </td>
+	</tr>
+	<tr v-for="field in Object.keys(order.extra)" :key="field">
+          <th scope="row">{{ capitalize(field) }}</th>
+          <td>{{ order.extra[field] }}</td>
+          <td></td>
+	</tr>
+      </tbody>
+    </table>
+  </section>
+  
   <div class="field is-grouped">
     <div class="control">
       <router-link to="edit">
@@ -83,41 +93,17 @@ export default {
           this.$store.dispatch('getOrder', this.uuid);
         });
     },
+
+    capitalize (text) {
+      return text.charAt(0).toUpperCase() + text.slice(1);
+    }
+
   },
 }
 </script>
 
 <style scoped>
-.order-title {
-    font-weight: bold;
-    font-size: 2em;
-    text-align: center;
-    margin: 0em 0em 0.4em 0em;
-}
-
-.data-header {
-    text-align: right;
-    font-weight: bold;
-}
-
-.field-header.td {
-    font-weight: bold;
-}
-
-.field {
-    margin: 0.4em 0em;
-}
-
-.table td {
-    border: 0px;
-}
-.warning {
-    font-weight: bold;
-    text-align: center;
-    font-size: large;
-}
-.timestamp {
-    font-style: italic;
-    font-size: 1em;
+.info-list th {
+  text-align: right;
 }
 </style>

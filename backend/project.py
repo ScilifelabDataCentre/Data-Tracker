@@ -170,9 +170,9 @@ def delete_project(identifier: str):
         flask.abort(status=404)
 
     # permission check
-    if not user.has_permission('DATA_MANAGEMENT'):
-        if flask.g.current_user['_id'] not in project['owners']:
-            flask.abort(status=403)
+    if not user.has_permission('DATA_MANAGEMENT') and \
+       flask.g.current_user['_id'] not in project['owners']:
+        flask.abort(status=403)
 
     result = flask.g.db['projects'].delete_one({'_id': ds_uuid})
     if not result.acknowledged:
@@ -209,13 +209,13 @@ def update_project(identifier):  # pylint: disable=too-many-branches
         flask.abort(status=400)
 
     # permission check
-    if not user.has_permission('DATA_MANAGEMENT'):
-        if flask.g.current_user['_id'] not in project['owners'] and\
-           flask.g.current_user['email'] not in project['owners']:
-            logging.debug('Unauthorized update attempt (project %s, user %s)',
-                          project_uuid,
-                          flask.g.current_user['_id'])
-            flask.abort(status=403)
+    if not user.has_permission('DATA_MANAGEMENT') and \
+       flask.g.current_user['_id'] not in project['owners'] and\
+       flask.g.current_user['email'] not in project['owners']:
+        logging.debug('Unauthorized update attempt (project %s, user %s)',
+                      project_uuid,
+                      flask.g.current_user['_id'])
+        flask.abort(status=403)
 
     # indata validation
     validation = utils.basic_check_indata(indata, project, prohibited=('_id'))

@@ -56,9 +56,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-.field-title {
-    font-weight: bold;
-}
-</style>

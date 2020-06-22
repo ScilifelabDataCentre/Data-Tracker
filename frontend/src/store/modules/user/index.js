@@ -3,7 +3,13 @@ import axios from 'axios';
 import {getCsrfHeader} from '../../helpers.js';
 
 const state = {
-  user: {},
+  user: {
+    affiliation: '',
+    authId: '',
+    email: '',
+    name: '',
+    permissions: []
+  },
   userDatasets: [],
   userOrders: [],
   userProjects: [],

@@ -118,7 +118,7 @@ User
 
     **GET** Get information about the current user.
 
-    **PUT** Update information about the current user.
+    **PATCH** Update information about the current user.
 
 
 .. function:: /user/me/apikey/
@@ -145,9 +145,9 @@ User
 
     **GET** Get information about user with ``uuid``.
 
-    **PUT** Update information about user with ``uuid``.
+    **PATCH** Update information about user with ``uuid``.
 
-    **PUT** Delete the user with ``uuid``.
+    **DELETE** Delete the user with ``uuid``.
 
 
 .. function:: /user/<uuid>/apikey/

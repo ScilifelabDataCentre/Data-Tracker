@@ -1,5 +1,6 @@
 <template>
 <div class="dataset-edit">
+  <h1 class="title is-1">Edit Dataset</h1>
   <form @submit="submitDatasetForm">
     <div class="field" v-if="newDataset.id !== '-1'">
       <label for="dataset-id" class="label">Dataset UUID</label>
@@ -56,7 +57,7 @@
                      placeholder="https://link.url" />
             </div>
             <div class="control">
-              <button class="button is-light" @click="addLink">Save</button>
+              <button class="button is-info" @click="addLink">Save</button>
             </div>
           </div>
         </div>
@@ -92,7 +93,7 @@
                      placeholder="Value" />
             </div>
             <div class="control">
-              <button class="button is-light" @click="saveExtra">Save</button>
+              <button class="button is-info" @click="saveExtra">Save</button>
             </div>
           </div>
         </div>
@@ -115,7 +116,7 @@
 
     <div class="field is-grouped">
       <div class="control">
-        <button class="button is-link" @click="submitDatasetForm">Submit</button>
+        <button class="button is-primary" @click="submitDatasetForm">Submit</button>
       </div>
       <div class="control">
         <button class="button is-light" @click="cancelChanges">Cancel</button>

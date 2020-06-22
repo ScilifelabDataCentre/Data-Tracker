@@ -1,5 +1,6 @@
 <template>
 <div class="order-edit">
+  <h1 class="title is-1">Edit Order</h1>
   <form @submit="submitOrderForm">
     <div class="field" v-if="newOrder.id !== ''">
       <label for="order-id" class="label">Identifier</label>
@@ -56,21 +57,25 @@
       <div class="column">
         <div class="field">
           <label class="label">Extra fields</label>
-          <div class="field is-grouped">
-            <input id="order-extra-key"
-                   class="input"
-                   v-model="extraKey"
-                   name="ORDER_EXTRA_KEY"
-                   type="text"
-                   placeholder="Key" />
-            <input id="order-extra-value"
-                   class="input"
-                   v-model="extraValue"
-                   name="ORDER_EXTRA_VALUE"
-                   type="text"
-                   placeholder="Value" />
+          <div class="field has-addons">
             <div class="control">
-              <button class="button is-light" @click="saveExtra">Save</button>
+              <input id="order-extra-key"
+                     class="input"
+                     v-model="extraKey"
+                     name="ORDER_EXTRA_KEY"
+                     type="text"
+                     placeholder="Key" />
+            </div>
+            <div class="control">
+              <input id="order-extra-value"
+                     class="input"
+                     v-model="extraValue"
+                     name="ORDER_EXTRA_VALUE"
+                     type="text"
+                     placeholder="Value" />
+            </div>
+            <div class="control">
+              <button class="button is-info" @click="saveExtra">Save</button>
             </div>
           </div>
         </div>
@@ -92,7 +97,7 @@
     </div>
     <div class="field is-grouped">
       <div class="control">
-        <button class="button is-link">Submit</button>
+        <button class="button is-primary">Submit</button>
       </div>
       <div class="control">
         <button class="button is-light" @click="cancelChanges">Cancel</button>
@@ -173,7 +178,7 @@ export default {
 
     cancelChanges(event) {
       event.preventDefault();
-      if (this.newOrder.id === -1) {
+      if (this.newOrder.id === '') {
         this.$router.push("/order/browser");
       }
       else {
@@ -207,9 +212,3 @@ export default {
   },
 }
 </script>
-
-<style scoped>
-.field {
-    margin: 0.4em 0em;
-}
-</style>

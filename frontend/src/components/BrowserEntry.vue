@@ -1,8 +1,11 @@
 <template>
-<div class="browser-entry message">
-  <div class="message-header"><router-link :to="'/' + entry_type + '/' + entry._id"> {{ entry.title }}</router-link></div>
-  <div v-html="entry.description" class="message-body"></div>
-  <div class="fade-helper"></div>
+<div class="browser-entry card">
+  <div class="card-content">
+    <p class="has-text-weight-bold">
+      <router-link :to="'/' + entry_type + '/' + entry._id"> {{ entry.title }}</router-link>
+    </p>
+    <vue-simple-markdown :source="entry.description"></vue-simple-markdown>
+  </div>
 </div>
 </template>
 
@@ -13,19 +16,23 @@ export default {
 }
 </script>
 
+
 <style scoped>
 .browser-entry {
-  height: 9em;
+  max-height: 15em;
   position: relative;
   overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 0.5em;
 }
-.browser-entry .fade-helper { 
+
+.browser-entry:after {
+  content: "";
   position: absolute;
-  bottom: 0; 
+  top: 13em;
   left: 0;
+  height: 2em;
   width: 100%; 
-  margin: 0;
-  padding: 1.5em 0;
-  background-image: linear-gradient(to bottom, transparent, white);
+  background: linear-gradient(rgba(255,255,255,0), #FFF);
 }
 </style>

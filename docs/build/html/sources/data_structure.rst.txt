@@ -9,208 +9,327 @@ The Data Tracker is based on a few main components:
 * Project
 * User
 * Log
-* DOI
+
 
 General
 =======
 
 * ``Title`` may never be empty.
- 
+
+
 Terminology
 ===========
 
 * Fields:
-  
+
   - Fields in the documents for the datatype/collection.
-    
+
 * Computed fields:
 
   - Values that are either calculated or retrieved from documents in other collection(s).
   - Included when the entity is requested via API.
 
 
+
 Order
 =====
 
-* Added automatically when e.g. order in order portal changes to ``accepted``.
-  
-  - Import data from order portal.
-
+* Requires special permission to add (``ORDERS_SPECIAL``)
+* May only be accessed and modified by users listed in ``editors`` or users with ``DATA_MANAGEMENT``.
 * Can have any number of associated datasets.
 * Deleting an order will delete all owned datasets.
+
+Summary
+-------
+
++---------------+-----------------------------------------------------+-------------------+
+| Field         | Description                                         | Default           |
++===============+=====================================================+===================+
+| _id           | UUID of the Entry                                   | Set by system     |
++---------------+-----------------------------------------------------+-------------------+
+| title         | Title of the Entry                                  | Must be non-empty |
++---------------+-----------------------------------------------------+-------------------+
+| description   | Description in markdown                             | Empty             |
++---------------+-----------------------------------------------------+-------------------+
+| generators    | List of users who generated data                    | Entry creator     |
++---------------+-----------------------------------------------------+-------------------+
+| authors       | List of users responsible for e.g. samples (e.g PI) | Entry creator     |
++---------------+-----------------------------------------------------+-------------------+
+| organisation  | User who is data controller                         | Entry creator     |
++---------------+-----------------------------------------------------+-------------------+
+| editors       | List of users who can edit the order and datasets   | Entry creator     |
++---------------+-----------------------------------------------------+-------------------+
+| receivers     | List of users who received data from facility       | Empty             |
++---------------+-----------------------------------------------------+-------------------+
+| datasets      | List of associated datasets                         | Empty             |
++---------------+-----------------------------------------------------+-------------------+
+| tags_standard | Tags defined in the system                          | Empty             |
++---------------+-----------------------------------------------------+-------------------+
+| tags_user     | Tags defined by the users                           | Empty             |
++---------------+-----------------------------------------------------+-------------------+
 
 Fields
 ------
 
-_id
-    Uuid for the order.
-Title
-    Title of the order.
-Description
-    Description in markdown.
-Creator
-    * In most cases, this is the facility generating the data.
-    * Can be set to e.g. external if a non-facility wants to add a dataset.
-Receiver
-    * Email or uuid of the user who made the order.
-    * Input to add will be an email address, which is mapped to the user collection.
-      
-       - Uuid saved: user exists.
-       - Email saved: user does not exist.
+:_id:
+    * UUID of the entry.
+    * Set by the system upon entry creation, never modified.
+:title:
+    * Entry title.
+    * Must be non-empty.
+:description:
+    * Entry description.
+    * May use markdown for formatting.
+    * **Default:** Empty
+:generators:
+    * List of ``users``.
 
-Datasets
-    Datasets generated for the order.
-Extra fields
-    Custom fields in the style ``{'key': 'key_name', 'value': 'data value'}``.
+    * Corresponds to e.g. the facility or people generating the data (from samples).
 
-Computed fields
----------------
-Datasets
-    When an order is requested, ``datasets`` will also contain the title of each dataset, i.e::
+    * May be shown openly on all associated datasets.
 
-        {
-          'title': 'title',
-          '_id': 'uuid'
-        }
+      - Access may be limited by other settings.
+
+    * **Default:** The user that created the entry.
+:authors:
+    * List of ``users``.
+
+    * Corresponds to e.g. the researcher who leads the project the samples came from.
+
+    * May be shown openly on all associated datasets.
+
+      - Access may be limited by other settings.
+
+    * **Default:** The user that created the entry.
+:organisation:
+    * A single ``user`` who is the data controller for the datasets generated from the order (e.g. a University).
+    * **Default:** The user that created the entry.
+:editors:
+    * List of ``users``.
+    * Users that may edit the order and dataset entries. May add datasets to an order.
+    * **Default:** The user that created the entry.
+:receivers:
+    * List of ``users``.
+    * Corresponds to the users who received the data from the facility
+    * **Default:** Empty
+:datasets:
+    * List of datasets associated to the order.
+    * Cannot be modified directly but must be modified through specialised means.
+    * **Default:** Empty
+:tags_standard:
+    * A standard set of tags that are defined by the system.
+    * **Default:** Empty
+:tags_user:
+    * User-defined tags for the system.
+    * **Default:** Empty
 
 
 Dataset
 =======
 
-* Data generated by e.g. facility.
-* Must be "owned" by *one* order.
-* The association to a specific order cannot be changed. Once associated with an order, it will stay so.
-* One per "data delivery" from facility.
+* Dataset generated by e.g. facility.
+* A dataset must be associated with **one** order.
+* Multiple datasets may be associated with the same order.
+
+* The association to a specific order cannot be changed.
+
+  -  Once associated with an order, it will stay so.
+
 * Can have identifier(s) (e.g. DOIs).
-* Data links can be added by ``receiver``.
-* ``Receiver`` and ``creator`` can edit the entry (inherited from ``order``)
+* Will use some fields from its order:
+
+  - ``generators``
+  - ``authors``
+  - ``organisation``
+  - ``editors``
+  - ``receivers``
+
+Summary
+-------
+
++------------------+----------------------------------+-------------------+
+| Field            | Description                      | Default           |
++==================+==================================+===================+
+| _id              | UUID of the Entry                | Set by system     |
++------------------+----------------------------------+-------------------+
+| title            | Title of the Entry               | Must be non-empty |
++------------------+----------------------------------+-------------------+
+| description      | Description in markdown          | Empty             |
++------------------+----------------------------------+-------------------+
+| tags_standard    | Tags defined in the system       | Empty             |
++------------------+----------------------------------+-------------------+
+| tags_user        | Tags defined by the users        | Empty             |
++------------------+----------------------------------+-------------------+
+| cross_references | External identifiers, links etc. | Empty             |
++------------------+----------------------------------+-------------------+
 
 Fields
 ------
-_id
-    Uuid for the dataset.
-Title
-    Title of the dataset.
-Description
-    Description in markdown.
-Links
-    * List of links to where the dataset can be found.
-    * List entry::
-
-       {
-         'title': 'name',
-         'url': 'https://place',
-         'hashes': {
-           'type': 'sha256',
-           'files': [{
-              'name': 'filename',
-              'hash': 'FEDCBA9...'
-             },
-             ...
-           ]
-         }
-       }
-
-    * ``title`` and ``url`` are mandatory for each link, ``hashes`` is optional.
-Extra
-    Custom fields in the style ``{'key': 'key_name', 'value': 'data value'}``.
+:_id:
+    * UUID of the entry.
+    * Set by the system upon entry creation, never modified.
+:title:
+    * Entry title.
+    * Must be non-empty.
+:description:
+    * Entry description.
+    * May use markdown for formatting.
+    * **Default:** Empty
+:tags_standard:
+    * A standard set of tags that are defined by the system.
+    * **Default:** Empty
+:tags_user:
+    * User-defined tags for the system.
+    * **Default:** Empty
+:cross_references:
+    * External references to the data.
+    * E.g. DOIs or database IDs.
+    * **Default:** Empty
 
 
 Computed fields
 ---------------
-Related
-    All other datasets from the same order.
-Projects
-    All projects associated with the dataset.
-Identifiers
-    May contain a local identifier and any DOIs generated from the entry.
-Creator
-    Name of e.g. facility that generated the dataset. Inherited from ``order``. 
+:related:
+    * ``datasets`` from order, except the current dataset.
+:collections:
+    * List of collections containing the current dataset in ``datasets``.
+:generators:
+    * ``generators`` from order.
+:authors:
+    * ``authors`` from order.
+:organisation:
+    * ``organisation`` from order.
 
 
-Project
-=======
+Collection
+==========
 
-* Created by users.
-* Can have multiple owners.
+* May be created by any users.
+* Can have multiple ``editors``.
 * Can have identifiers.
-* Intended as a way for a user to have a page to show off their data and be able to get an identifier (DOI).
+* Provides a way of grouping datasets before publication.
+* Should aid requesting a DOI from Figshare for the collection.
+
+Summary
+-------
+
++------------------+---------------------------------------------------+-------------------+
+| Field            | Description                                       | Default           |
++==================+===================================================+===================+
+| _id              | UUID of the Entry                                 | Set by system     |
++------------------+---------------------------------------------------+-------------------+
+| title            | Title of the Entry                                | Must be non-empty |
++------------------+---------------------------------------------------+-------------------+
+| description      | Description in markdown                           | Empty             |
++------------------+---------------------------------------------------+-------------------+
+| tags_standard    | Tags defined in the system                        | Empty             |
++------------------+---------------------------------------------------+-------------------+
+| tags_user        | Tags defined by the users                         | Empty             |
++------------------+---------------------------------------------------+-------------------+
+| cross_references | External identifiers, links etc.                  | Empty             |
++------------------+---------------------------------------------------+-------------------+
+| editors          | List of users who can edit the order and datasets | Entry creator     |
++------------------+---------------------------------------------------+-------------------+
+
 
 Fields
 ------
-_id
-    Uuid for the project.
-Title
-    Title of the project.
-Description
-    Description in markdown.
-Contact
-    Contact information (email) for the project.
-Datasets
-    * Datasets associated with the project.
-    * Can be added by the ``receiver`` or ``creator`` of the dataset.
-    * Can be removed by any user listed in ``owners``.
-Publications
-    * List of publications related to the project.
-    * ``str``
-DMP
-    Data management plan. Should be provided as an URL.
-Owners
-    List of ``uuid`` or ``email`` entries. Just like ``order``, ``email`` can be used if user not in db yet. Allows e.g. facilities to prepare project pages for a group of datasets.
-Extra fields
-    Custom fields in the style ``{'key': 'key_name', 'value': 'data value'}``.
+:_id:
+    * UUID of the collection.
+    * Set by the system upon entry creation, never modified.
+:title:
+    * Entry title.
+    * Must be non-empty.
+:description:
+    * Entry description.
+    * May use markdown for formatting.
+    * **Default:** Empty
+:tags_standard:
+    * A standard set of tags that are defined by the system.
+    * **Default:** Empty
+:tags_user:
+    * User-defined tags for the system.
+    * **Default:** Empty
+:cross_references:
+    * External references to the data.
+    * E.g. DOIs or database IDs.
+    * **Default:** Empty
+:editors:
+    * List of ``users``.
+    * Users that may edit the collection.
 
-Computed fields:
----
+      - May add datasets to an order.
 
-Identifiers
-    May contain a local identifier and any DOIs generated from the entry.
+    * **Default:** The user that created the entry.
 
 
 User
 ====
 
 * Everyone using the system is a user.
-* Login via Elixir AAI.
-* On first login, the user will be added to db.
 
-   * Use ``auth_id`` to recognize user.
+  - Including facilities, organisations ...
 
-   * Read e.g. ``email`` from the login info.
+* Login via e.g. Elixir AAI.
+
+  - On first login, the user will be added to db.
 
 * API can also be accessed using an API key.
-  
-   * API key may be generated by any user.
 
-* A user with the permission ``USER_MANAGEMENT``  can create a user entry for a facility.
-* A user can "claim entries".
+  - API key may be generated by any user.
 
-   * Will identify all order ``receiver`` and project ``owners`` entries with the users email.
+* A user with the permission ``USER_MANAGEMENT`` can create and modify users.
+* A user with the permission ``ORDER_USERS`` can create and modify "partial" users.
 
-   * The ``email`` will be replaced with the users ``uuid`` upon claim.
+Summary
+-------
 
-* Facilities cannot log in via Elixir, but must do so via an ``api_key``.
++-------------+-------------------------------------+-------------------+
+| Field       | Description                         | Default           |
++=============+=====================================+===================+
+| _id         | UUID of the Entry                   | Set by system     |
++-------------+-------------------------------------+-------------------+
+| email       | Email address for the user          | Must be non-empty |
++-------------+-------------------------------------+-------------------+
+| auth_ids    | List of identfiers from e.g. Elixir | Empty             |
++-------------+-------------------------------------+-------------------+
+| api_key     | Hash for the API key                | Empty             |
++-------------+-------------------------------------+-------------------+
+| api_salt    | Salt for API api_key                | Empty             |
++-------------+-------------------------------------+-------------------+
+| name        | Name of the user                    | Must be non-empty |
++-------------+-------------------------------------+-------------------+
+| orcid       | ORCID of the user                   | Empty             |
++-------------+-------------------------------------+-------------------+
+| permissions | List of permissions for the user    | Empty             |
++-------------+-------------------------------------+-------------------+
+
 
 Fields
 ------
-_id
-    Uuid for the user.
-Email
-    Email address of the user.
-Auth_id
-    Identifer received from Elixir. Will be set to `--facility--` for facilities to prevent Elixir login.
-Api_key
-    Key that can be used as an alternative to login for authentication.
-Api_salt
-    Salt for the API key.
-Name
-    Name of the user (can be e.g. name of facility for facility accounts).
-Affiliation
-    University/company etc.
-Country
-    The country of the user.
-Permissions
-    A list of the extra permissions the user has (see :ref:`permissions_section`).
+:_id:
+    * UUID of the entry.
+    * Set by the system upon entry creation, never modified.
+:email:
+    * Email address for the user.
+    * **Default:** Must be set
+:auth_ids:
+    * List of identifiers used by e.g. Elixir AAI.
+    * ``{'local': 'id@local'}`` can be used with the API key
+:api_key:
+    * Hash for the API key for authorization to API or login.
+:api_salt:
+    * Salt for the API key.
+:name:
+    * Name of the user
+
+      - Could also be name of e.g. facility or university.
+:affiliation:
+    * Affiliation of the user.
+:orcid:
+    * ORCID of the user.
+:permissions:
+    * A list of the extra permissions the user has (see :ref:`permissions_section`).
 
 
 Log
@@ -219,21 +338,53 @@ Log
 * Whenever an entry (``order``, ``dataset``, ``project``, or ``user``) is changed, a log should be written.
 * All logs are in the same collection.
 * The log needs parsing to show changes between different versions of an entry.
+* A full cope of the new entry is saved.
+
+  - In case of deletion, ``_id`` is saved as ``data``.
+
+Summary
+-------
+
++-------------+--------------------------------------------+-------------------+
+| Field       | Description                                | Default           |
++=============+============================================+===================+
+| _id         | UUID of the Entry                          | Set by system     |
++-------------+--------------------------------------------+-------------------+
+| action      | type of action                             | Must be non-empty |
++-------------+--------------------------------------------+-------------------+
+| comment     | Short description of the action            | Empty             |
++-------------+--------------------------------------------+-------------------+
+| data_type   | The modified collection (e.g. order)       | Must be non-empty |
++-------------+--------------------------------------------+-------------------+
+| data        | Complete copy of the new entry             | Must be non-empty |
++-------------+--------------------------------------------+-------------------+
+| timestamp   | Timestamp for the change                   | Must be non-empty |
++-------------+--------------------------------------------+-------------------+
+| user        | UUID for the user who performed the action | Must be non-empty |
++-------------+--------------------------------------------+-------------------+
+
 
 Fields
 ------
-_id
-    Uuid for the log.
-Action
-    Type of action (add, edit, or delete).
-Comment
-    Short description of why it was made (e.g. "Add Dataset from addDataset".
-Data_type
-    The collection that was modified (``order``, ``dataset``, ``project``, or ``user``).
-Data
-    * Add/edit: complete copy of the new/updated document.
+:_id:
+    * UUID of the entry.
+    * Set by the system upon entry creation, never modified.
+:action:
+    * Type of action
+
+      - Add
+      - Edit
+      - Delete
+:comment:
+    * Short description of why it was made
+
+      - "Add Dataset from order ``X``".
+:data_type:
+    * The collection that was modified, e.g. ``order``
+:data:
+    * Add/edit: full copy of the new/updated document.
     * Delete: the ``_id`` of the document.
-Timestamp
-    The time the action was performed.
-User
-    Uuid of the user that performed the action.
+:timestamp:
+    * The time the action was performed.
+:user:
+    ``_id`` of the user that performed the action.

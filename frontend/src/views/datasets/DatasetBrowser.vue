@@ -1,9 +1,6 @@
 <template>
 <div class="dataset-browser">
-  <h1 class="title is-2">Datasets</h1>
-  <router-link v-if="user.role === 'Steward' || user.role === 'Admin'" to="/dataset/add">
-    <img class="icon-add" :src="require('../../assets/open-iconic/svg/plus.svg')" alt="Add" />
-  </router-link>
+  <h1 class="title is-1">Datasets</h1>
   <browser-entry v-for="dataset in datasets" :key="dataset.id" :entry="dataset" entry_type="dataset">
   </browser-entry>
 </div>
@@ -30,10 +27,3 @@ export default {
   },
 }
 </script>
-
-<style scoped>
-.icon-add {
-  width: 1.2em;
-  height: 1.2em;
-}
-</style>

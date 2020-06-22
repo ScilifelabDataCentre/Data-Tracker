@@ -24,7 +24,6 @@ const ProjectContainer = () => import(/* webpackChunkName: "project" */ '../view
 const ProjectEdit = () => import(/* webpackChunkName: "project" */ '../views/projects/ProjectEdit.vue')
 
 const AdminContainer = () => import(/* webpackChunkName: "admin" */ '../views/admin/AdminContainer.vue')
-const DoiManager = () => import(/* webpackChunkName: "admin" */ '../views/admin/DoiManager.vue')
 const Stats = () => import(/* webpackChunkName: "admin" */ '../views/admin/Stats.vue')
 const UserManager = () => import(/* webpackChunkName: "admin" */ '../views/admin/UserManager.vue')
 const UserEdit = () => import(/* webpackChunkName: "admin" */ '../views/admin/UserEdit.vue')
@@ -231,10 +230,6 @@ const router = new VueRouter({
         {
           path: 'stat',
           component: Stats,
-        },
-        {
-          path: 'doi',
-          component: DoiManager,
         },
         {
           path: 'user/list',

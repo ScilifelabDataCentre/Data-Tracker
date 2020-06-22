@@ -1,6 +1,6 @@
 <template>
 <div class="project-edit">
-  <h1 class="title is-1">Edit Project <span v-if="newProject.title.length > 0">({{ newProject.title }})</span></h1>
+  <h1 class="title is-1">Edit Project</h1>
   <form @submit="submitProjectForm">
 
     <div class="field" v-if="newProject.id !== '-1'">
@@ -74,7 +74,7 @@
                        type="text"
                        placeholder="Value" />
                 <div class="control">
-                  <button class="button is-primary" @click="addPublication">Add</button>
+                  <button class="button is-info" @click="addPublication">Add</button>
                 </div>
               </div>
             </div>
@@ -130,7 +130,7 @@
                      placeholder="Value" />
             </div>
             <div class="control">
-              <button class="button is-primary" @click="addOwner">Add</button>
+              <button class="button is-info" @click="addOwner">Add</button>
             </div>
           </div>
         </div>
@@ -166,7 +166,7 @@
                      placeholder="Value" />
             </div>
             <div class="control">
-              <button class="button is-primary" @click="saveExtra">Save</button>
+              <button class="button is-info" @click="saveExtra">Save</button>
             </div>
           </div>
         </div>
@@ -189,7 +189,7 @@
 
     <div class="field is-grouped">
       <div class="control">
-        <button class="button is-link" @click="submitProjectForm">Submit</button>
+        <button class="button is-primary" @click="submitProjectForm">Submit</button>
       </div>
       <div class="control">
         <button class="button is-light" @click="cancelChanges">Cancel</button>
@@ -381,9 +381,3 @@ export default {
   },
 }
 </script>
-
-<style scoped>
-.no-bullet {
-    list-style-type: none;
-}
-</style>

@@ -4,7 +4,7 @@
 
   <section class="section">
     <h2 class="title is-3">Basic Information</h2>
-    <table class="table is-hoverable is-striped">
+    <table class="info-list table is-hoverable is-striped">
       <tbody>
 	<tr>
           <th scope="row">Name</th>
@@ -150,5 +150,7 @@ export default {
 </script>
 
 <style scoped>
-  
+.info-list th {
+  text-align: right;
+}
 </style>

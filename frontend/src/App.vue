@@ -1,9 +1,12 @@
 <template>
 <div id="app">
   <nav-bar></nav-bar>
-
+  
   <transition name="notification-fade">
-    <div v-if="notification.message" :class="{notification: true, 'is-info': type === 'normal', 'is-danger': notification.type === 'warning'}">
+    <div v-if="notification.message" :class="{notification: true, 
+                                             'is-info': type === 'normal', 
+                                             'is-danger': notification.type === 'warning'}">
+      <hr class="navbar-divider">
       {{ notification.message }}
     </div>
   </transition>
@@ -11,10 +14,10 @@
   <div class="container">
     <router-view class="section"></router-view>
   </div>
-  <footer class="footer">
-    <img class="logo" :src="require('./assets/img/data-centre-logo.svg')" alt="SciLife Data Centre logo"/>
-  </footer>
 
+  <footer class="footer">
+    <img :src="require('./assets/img/data-centre-logo.svg')" alt="SciLife Data Centre logo" class="logo"/>
+  </footer>
 </div>
 </template>
 
@@ -38,6 +41,14 @@ export default {
   created () {
     this.$store.dispatch('getCurrentUser');
   },
+
+  methods: {
+    resetNotification(event) {
+      event.preventDefault();
+      this.$store.dispatch('updateNotification', ['', '']);
+    }
+  }
+  
 }
 </script>
 
@@ -48,16 +59,15 @@ export default {
   text-align: center;
 }
 
-img.logo {
-    height: 70px;
-}
-
 .notification-fade-enter-active, .notification-fade-leave-active {
-    transition: opacity .5s;
+    transition: opacity .3s;
 }
 
 .notification-fade-enter, .notification-fade-leave-to {
     opacity: 0;
 }
 
+img.logo {
+    height: 4em;
+}
 </style>
