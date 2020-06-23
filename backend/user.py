@@ -411,7 +411,7 @@ def add_user(user_info: dict):
         logging.error('Failed to add user with email', user_info['email'])
         flask.Response(status=500)
     else:
-        utils.make_log('user', 'add', 'Creating new user from OAuth', new_data)
+        utils.make_log('user', 'add', 'Creating new user from OAuth', new_user)
 
 
 def do_login(auth_id: str):
