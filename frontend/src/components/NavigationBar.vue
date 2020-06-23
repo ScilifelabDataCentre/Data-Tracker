@@ -42,7 +42,6 @@
         <a class="navbar-link">Log In</a>
         <div class="navbar-dropdown">
           <a class="navbar-item" href="/api/login/oidc/google">Google</a>
-	  <a class="navbar-item" href="/api/login/oidc/elixir">Elixir AAI</a>
           <router-link to="/login/key" class="navbar-item">API key</router-link>
         </div>
       </div>
