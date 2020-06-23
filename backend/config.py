@@ -72,5 +72,5 @@ def init() -> dict:
 
     config['SESSION_COOKIE_NAME'] = 'dt_session'
     config['SECRET_KEY'] = config['flask']['secret']
-    config['SESSION_COOKIE_SAMESITE'] = 'Strict'
+#    config['SESSION_COOKIE_SAMESITE'] = 'Strict'
     return config

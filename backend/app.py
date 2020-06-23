@@ -71,23 +71,30 @@ def api_base():
 @app.route('/api/login/oidc/login/')
 def oidc_login():
     """Perform a login using OpenID Connect (e.g. Elixir AAI)."""
+    auth_name = 'google'
+    client = oauth.create_client(auth_name)
     redirect_uri = flask.url_for('oidc_authorize', _external=True)
     logging.debug(f'oauth content: {dir(oauth)}')
-    return oauth.google.authorize_redirect(redirect_uri)
+    return client.authorize_redirect(redirect_uri)
 
 
 @app.route('/api/login/oidc/authorize/')
 def oidc_authorize():
     """Authorize a login using OpenID Connect (e.g. Elixir AAI)."""
-    token = oauth.google.authorize_access_token()
-    resp = oauth.google.get('account/verify_credentials.json')
-    profile = resp.json()
-    response = {'token': str(token),
-                'resp': str(resp),
-                'profile': str(profile)}
-    logging.debug(f'response.token: {token}')
-    logging.debug(f'response.resp: {resp}')
-    logging.debug(f'response.profile: {profile}')
+    auth_name = 'google'
+    client = oauth.create_client(auth_name)
+    token = client.authorize_access_token()
+    if 'id_token' in token:
+        user_info = client.parse_id_token(token)
+    else:
+        user_info = client.userinfo()
+    if auth_name == 'google':
+        user_info['auth_id'] = f'{user_info["email"]}@google'
+    else:
+        user_info['auth_id'] = 'unknown'
+    if not user.do_login(user_info['auth_id']):
+        user.add_user(user_info)
+        user.do_login(user_info['auth_id'])
 
     return flask.redirect('/')
 

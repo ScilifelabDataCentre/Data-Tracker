@@ -393,29 +393,40 @@ def get_user_actions(identifier: str = None):
 
 
 # helper functions
-def do_login(*, auth_id: str = None, api_key: str = None):
+def add_user(user_info: dict):
+    """
+    Add a new user to the database.
+
+    Args:
+        user_info (dict): Information about the user
+    """
+    new_user = structure.user()
+
+    new_user['email'] = user_info['email']
+    new_user['name'] = user_info['name']
+    new_user['auth_id'] = user_info['auth_id']
+    
+    result = flask.g.db['users'].insert_one(new_user)
+    if not result.acknowledged:
+        logging.error('Failed to add user with email', user_info['email'])
+        flask.Response(status=500)
+    else:
+        utils.make_log('user', 'add', 'Creating new user from OAuth', new_data)
+
+
+def do_login(auth_id: str):
     """
     Set all relevant variables for a logged in user.
 
-    Users not in db will be added.
-
     Args:
         auth_id (str): Authentication id for the user.
-        api_key (str): API key for the user.
 
     Returns bool: Whether the login succeeded.
-    """
-    if auth_id:
-        user = flask.g.db['users'].find_one({'auth_id': auth_id})
-    elif api_key:
-        user = flask.g.db['users'].find_one({'api_key': api_key})
-    else:
-        user = structure.user()
-        user['auth_id'] = auth_id
-        user['api_key'] = api_key
-        response = flask.g.db['users'].insert_one(user)
-        if not response.acknowledged:
-            logging.error(f'Failed to write user to db: {user}')
+   """
+    user = flask.g.db['users'].find_one({'auth_id': auth_id})
+
+    if not user:
+        return False
 
     flask.session['user_id'] = user['_id']
     flask.session.permanent = True
