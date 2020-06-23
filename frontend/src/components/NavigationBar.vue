@@ -35,7 +35,7 @@
         <a class="navbar-link">{{ user.name }}</a>
         <div class="navbar-dropdown">
           <router-link to="/user" class="navbar-item">Info</router-link>
-          <a href="/api/user/logout" class="navbar-item">Logout</a>
+          <a href="/api/logout/" class="navbar-item">Logout</a>
         </div>
       </div>
       <div v-else class="navbar-item has-dropdown is-hoverable">
