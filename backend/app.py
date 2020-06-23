@@ -27,7 +27,8 @@ app.register_blueprint(user.blueprint, url_prefix='/api/user')
 
 
 oauth = OAuth(app)
-oauth.register('google', client_kwargs={'scope': 'openid profile email'})
+for auth_name in app.config.get('oidc_names'):
+    oauth.register(auth_name, client_kwargs={'scope': 'openid profile email'})
 
 @app.before_request
 def prepare():
@@ -68,30 +69,29 @@ def api_base():
     return flask.jsonify({'entities': ['dataset', 'order', 'project', 'user']})
 
 
-@app.route('/api/login/oidc/login/')
-def oidc_login():
+@app.route('/api/login/oidc/login/<auth_name>/')
+def oidc_login(auth_name):
     """Perform a login using OpenID Connect (e.g. Elixir AAI)."""
-    auth_name = 'google'
     client = oauth.create_client(auth_name)
-    redirect_uri = flask.url_for('oidc_authorize', _external=True)
-    logging.debug(f'oauth content: {dir(oauth)}')
+    redirect_uri = flask.url_for('oidc_authorize',
+                                 auth_name=auth_name,
+                                 _external=True)
     return client.authorize_redirect(redirect_uri)
 
 
-@app.route('/api/login/oidc/authorize/')
-def oidc_authorize():
+@app.route('/api/login/oidc/authorize/<auth_name>/')
+def oidc_authorize(auth_name):
     """Authorize a login using OpenID Connect (e.g. Elixir AAI)."""
-    auth_name = 'google'
     client = oauth.create_client(auth_name)
     token = client.authorize_access_token()
     if 'id_token' in token:
         user_info = client.parse_id_token(token)
     else:
         user_info = client.userinfo()
-    if auth_name == 'google':
-        user_info['auth_id'] = f'{user_info["email"]}@google'
+    if auth_name != 'elixir':
+        user_info['auth_id'] = f'{user_info["email"]}::{auth_name}'
     else:
-        user_info['auth_id'] = 'unknown'
+        user_info['auth_id'] = token['sub']
     if not user.do_login(user_info['auth_id']):
         user.add_user(user_info)
         user.do_login(user_info['auth_id'])
