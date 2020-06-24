@@ -178,16 +178,21 @@ User
     **GET** Get a list of changes done by the user with ``uuid``.
 
 
-.. function:: /user/logout/
+.. function:: /logout/
 
     **GET** Log out current user.
 
 
-.. function:: /user/login/oidc/
+.. function:: /login/oidc/<auth_name>/login/
 
-    **GET** Log in using OpenID Connect (e.g. Elixir AAI)
+    **GET** Log in using OpenID Connect (e.g. Elixir AAI) for service ``auth_name``.
 
 
-.. function:: /user/login/apikey/
+.. function:: /login/oidc/<auth_name>/authorize/
+
+    **GET** Authorize using OpenID Connect (e.g. Elixir AAI) for service ``auth_name`` (via ``login``).
+
+
+.. function:: /login/apikey/
 
     **GET** Log in using auth_id/api_key
