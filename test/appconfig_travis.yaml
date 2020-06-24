@@ -12,3 +12,9 @@ flask:
 dev_mode:
   api: true
   testing: false
+
+oidc:
+  oidcserver:
+    client_secret: "a secret"
+    client_id: "an id"
+    server_metadata_url: "https://example.com" # openid config url

@@ -41,3 +41,19 @@ def test_key_login():
                                     '/api/developer/loginhello')
             assert response.code == 200
             assert response.data == {'test': 'success'}
+
+
+def test_list_login_types():
+    """List possible ways to login"""
+    responses = helpers.make_request_all_roles('/api/login/', ret_json=True)
+    for response in responses:
+        assert response.code == 200
+        assert response.data == {'types': ['apikey', 'oidc']}
+
+
+def test_list_oidc_types():
+    """List supported oidc logins"""
+    responses = helpers.make_request_all_roles('/api/login/oidc/', ret_json=True)
+    for response in responses:
+        assert response.code == 200
+        assert response.data == {'oidc server': '/api/login/oidc/oidcserver'}
