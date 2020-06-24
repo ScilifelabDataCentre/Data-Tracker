@@ -395,7 +395,7 @@ def get_user_actions(identifier: str = None):
 # helper functions
 def add_user(user_info: dict):
     """
-    Add a new user to the database.
+    Add a new user to the database from first oidc login.
 
     Args:
         user_info (dict): Information about the user
@@ -411,7 +411,7 @@ def add_user(user_info: dict):
         logging.error('Failed to add user with email', user_info['email'])
         flask.Response(status=500)
     else:
-        utils.make_log('user', 'add', 'Creating new user from OAuth', new_user)
+        utils.make_log('user', 'add', 'Creating new user from OAuth', new_user, no_user=True)
 
 
 def do_login(auth_id: str):

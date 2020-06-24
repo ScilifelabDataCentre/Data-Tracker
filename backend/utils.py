@@ -263,7 +263,7 @@ def make_timestamp():
     return datetime.datetime.now()
 
 
-def make_log(data_type: str, action: str, comment: str, data: dict = None):
+def make_log(data_type: str, action: str, comment: str, data: dict = None, no_user: bool = False):
     """
     Log a change in the system.
 
@@ -284,11 +284,16 @@ def make_log(data_type: str, action: str, comment: str, data: dict = None):
         bool: Whether the log insertion successed.
     """
     log = structure.log()
+    if no_user:
+        active_user = 'system'
+    else:
+        active_user = flask.g.current_user['_id']
+
     log.update({'action': action,
                 'comment': comment,
                 'data_type': data_type,
                 'data': data,
-                'user': flask.g.current_user['_id']})
+                'user': active_user})
     result = flask.g.db['logs'].insert_one(log)
     if not result.acknowledged:
         logging.error(f'Log failed: A:{action} C:{comment} D:{data} ' +
