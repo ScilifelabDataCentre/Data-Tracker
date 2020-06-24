@@ -63,6 +63,14 @@ def init() -> dict:
         config['TESTING'] = True
         config['ENV'] = 'development'
 
+    if config.get('oidc'):
+        for oidc_entry in config['oidc']:
+            base_name = oidc_entry.upper()
+            for conf_part in config['oidc'][oidc_entry]:
+                config[f'{base_name}_{conf_part.upper()}'] = config['oidc'][oidc_entry][conf_part]
+    config['oidc_names'] = config['oidc'].keys()
+    del config['oidc']
+
     config['SESSION_COOKIE_NAME'] = 'dt_session'
     config['SECRET_KEY'] = config['flask']['secret']
     config['SESSION_COOKIE_SAMESITE'] = 'Lax'

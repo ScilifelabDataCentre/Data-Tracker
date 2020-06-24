@@ -82,7 +82,7 @@ const actions = {
   loginKey (context, payload) {
     return new Promise((resolve, reject) => {
       axios
-        .post('/api/user/login/apikey/',
+        .post('/api/login/apikey/',
               payload,
               {
                 headers: getCsrfHeader(),

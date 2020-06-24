@@ -1,6 +1,6 @@
 <template>
 <div class="dataset-info">
-  <h1 class="title is-2">Changelog for {{ capitalize(dType) }} Entry</h1>
+  <h1 class="title is-2">Changelog for {{ dType | capitalize }} Entry</h1>
   <div v-if="logs.length === 0">
     No logs found.
   </div>
@@ -38,6 +38,7 @@ export default {
       logs: [],
       uuid: '',
       dType: '',
+      loaded: false,
     }
   },
   mounted () {
@@ -55,11 +56,5 @@ export default {
         this.logs = response.data.logs;
       });
   },
-
-  methods: {
-    capitalize (text) {
-      return text.charAt(0).toUpperCase() + text.slice(1);
-    }
-  }
 }
 </script>

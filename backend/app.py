@@ -1,5 +1,8 @@
 """Main app for the Data Tracker."""
 
+import json
+import logging
+
 import flask
 
 import config
@@ -10,6 +13,7 @@ import project
 import user
 import utils
 
+from authlib.integrations.flask_client import OAuth
 
 app = flask.Flask(__name__)  # pylint: disable=invalid-name
 app.config.update(config.init())
@@ -22,6 +26,10 @@ app.register_blueprint(order.blueprint, url_prefix='/api/order')
 app.register_blueprint(project.blueprint, url_prefix='/api/project')
 app.register_blueprint(user.blueprint, url_prefix='/api/user')
 
+
+oauth = OAuth(app)
+for oidc_name in app.config.get('oidc_names'):
+    oauth.register(oidc_name, client_kwargs={'scope': 'openid profile email'})
 
 @app.before_request
 def prepare():
@@ -59,7 +67,81 @@ def finalize(response):
 @app.route('/api/')
 def api_base():
     """List entities."""
-    return flask.jsonify({'entities': ['dataset', 'order', 'project', 'user']})
+    return flask.jsonify({'entities': ['dataset', 'order', 'project', 'user', 'login']})
+
+
+@app.route('/api/login/')
+def login_types():
+    """List login types."""
+    return flask.jsonify({'types': ['apikey', 'oidc']})
+
+
+@app.route('/api/login/oidc/')
+def oidc_types():
+    """List OpenID Connect types."""
+    auth_types = {}
+    for auth_name in app.config.get('oidc_names'):
+        auth_types[auth_name] = f'/api/login/oidc/{auth_name}/login/'
+
+    return flask.jsonify(auth_types)
+
+
+@app.route('/api/login/oidc/login/<auth_name>/')
+def oidc_login(auth_name):
+    """Perform a login using OpenID Connect (e.g. Elixir AAI)."""
+    client = oauth.create_client(auth_name)
+    redirect_uri = flask.url_for('oidc_authorize',
+                                 auth_name=auth_name,
+                                 _external=True)
+    return client.authorize_redirect(redirect_uri)
+
+
+@app.route('/api/login/oidc/authorize/<auth_name>/')
+def oidc_authorize(auth_name):
+    """Authorize a login using OpenID Connect (e.g. Elixir AAI)."""
+    if auth_name not in app.config.get('oidc_names'):
+        flask.abort(status=404)
+    client = oauth.create_client(auth_name)
+    token = client.authorize_access_token()
+    if 'id_token' in token:
+        user_info = client.parse_id_token(token)
+    else:
+        user_info = client.userinfo()
+    if auth_name != 'elixir':
+        user_info['auth_id'] = f'{user_info["email"]}::{auth_name}'
+    else:
+        user_info['auth_id'] = token['sub']
+    if not user.do_login(user_info['auth_id']):
+        user.add_user(user_info)
+        user.do_login(user_info['auth_id'])
+
+    return flask.redirect('/')
+
+
+# requests
+@app.route('/api/login/apikey/', methods=['POST'])
+def key_login():
+    """Log in using an apikey."""
+    try:
+        indata = flask.json.loads(flask.request.data)
+    except json.decoder.JSONDecodeError:
+        flask.abort(status=400)
+
+    if 'api-user' not in indata or 'api-key' not in indata:
+        logging.debug('API key login - bad keys: %s', indata)
+        return flask.Response(status=400)
+    utils.verify_api_key(indata['api-user'], indata['api-key'])
+    user.do_login(auth_id=indata['api-user'])
+    return flask.Response(status=200)
+
+
+@app.route('/api/logout/')
+def logout():
+    """Log out the current user."""
+    flask.session.clear()
+    response = flask.redirect("/", code=302)
+    response.set_cookie('_csrf_token', utils.gen_csrf_token(), 0)
+    return response
 
 
 @app.errorhandler(400)

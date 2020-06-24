@@ -29,7 +29,7 @@
             </td>
           </tr>
           <tr v-for="field in Object.keys(dataset.extra)" :key="field">
-            <th scope="row">{{ capitalize(field) }}</th>
+            <th scope="row">{{ field | capitalize }}</th>
             <td>{{ dataset.extra[field] }}</td>
           </tr>
           <tr v-if="dataset.projects.length > 0">
@@ -94,12 +94,6 @@ export default {
   mounted () {
     this.$store.dispatch('getDataset', this.uuid);
   },
-
-  methods: {
-    capitalize (text) {
-      return text.charAt(0).toUpperCase() + text.slice(1);
-    }
-  }
 }
 </script>
 

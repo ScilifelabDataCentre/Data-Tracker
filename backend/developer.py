@@ -16,12 +16,7 @@ def login(identifier: str):
     Args:
         identifer (str): User ``auth_id`` or ``api_key``.
     """
-    if len(identifier) == 128 and '@' not in identifier:
-        # api key
-        res = user.do_login(api_key=identifier)
-    else:
-        # auth id
-        res = user.do_login(auth_id=identifier)
+    res = user.do_login(auth_id=identifier)
     if res:
         return flask.Response(status=200)
     return flask.Response(status=500)
