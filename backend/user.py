@@ -422,7 +422,7 @@ def do_login(auth_id: str):
         auth_id (str): Authentication id for the user.
 
     Returns bool: Whether the login succeeded.
-   """
+    """
     user = flask.g.db['users'].find_one({'auth_id': auth_id})
 
     if not user:
