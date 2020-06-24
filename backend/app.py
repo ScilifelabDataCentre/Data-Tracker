@@ -81,12 +81,13 @@ def oidc_types():
     """List OpenID Connect types."""
     auth_types = {}
     for auth_name in app.config.get('oidc_names'):
-        auth_types[auth_name] = f'/api/login/oidc/{auth_name}/login/'
+        auth_types[auth_name] = flask.url_for('oidc_login',
+                                              auth_name=auth_name)
 
     return flask.jsonify(auth_types)
 
 
-@app.route('/api/login/oidc/login/<auth_name>/')
+@app.route('/api/login/oidc/<auth_name>/login/')
 def oidc_login(auth_name):
     """Perform a login using OpenID Connect (e.g. Elixir AAI)."""
     client = oauth.create_client(auth_name)
@@ -96,7 +97,7 @@ def oidc_login(auth_name):
     return client.authorize_redirect(redirect_uri)
 
 
-@app.route('/api/login/oidc/authorize/<auth_name>/')
+@app.route('/api/login/oidc/<auth_name>/authorize/')
 def oidc_authorize(auth_name):
     """Authorize a login using OpenID Connect (e.g. Elixir AAI)."""
     if auth_name not in app.config.get('oidc_names'):

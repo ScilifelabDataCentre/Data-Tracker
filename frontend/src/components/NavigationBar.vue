@@ -41,7 +41,7 @@
       <div v-else class="navbar-item has-dropdown is-hoverable">
         <a class="navbar-link">Log In</a>
         <div class="navbar-dropdown" v-for="authName in Object.keys(oidcTypes)" :key="authName">
-          <a class="navbar-item" href="oidcTypes[authname]">{{ authName | capitalize }}</a>
+          <a class="navbar-item" :href="oidcTypes[authName]">{{ authName | capitalize }}</a>
           <router-link to="/login/key" class="navbar-item">API key</router-link>
         </div>
       </div>
