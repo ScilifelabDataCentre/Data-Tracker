@@ -735,7 +735,6 @@ def test_update_order(use_db):
                                     ret_json=True)
 
             if role in ('orders', 'data', 'root'):
-                print(role, indata)
                 assert response.code == 200
                 assert not response.data
                 new_order = db['orders'].find_one({'_id': order['_id']})
