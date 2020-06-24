@@ -66,7 +66,23 @@ def finalize(response):
 @app.route('/api/')
 def api_base():
     """List entities."""
-    return flask.jsonify({'entities': ['dataset', 'order', 'project', 'user']})
+    return flask.jsonify({'entities': ['dataset', 'order', 'project', 'user', 'login']})
+
+
+@app.route('/api/login/')
+def login_types():
+    """List login types."""
+    return flask.jsonify({'types': ['apikey', 'oidc']})
+
+
+@app.route('/api/login/oidc/')
+def oidc_types():
+    """List OpenID Connect types."""
+    auth_types = {}
+    for auth_name in app.config.get('oidc_names'):
+        auth_types[auth_name] = f'/api/login/oidc/{auth_name}/login/'
+
+    return flask.jsonify(auth_types)
 
 
 @app.route('/api/login/oidc/login/<auth_name>/')
