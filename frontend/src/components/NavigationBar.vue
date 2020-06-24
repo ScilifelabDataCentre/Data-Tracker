@@ -40,8 +40,8 @@
       </div>
       <div v-else class="navbar-item has-dropdown is-hoverable">
         <a class="navbar-link">Log In</a>
-        <div class="navbar-dropdown">
-          <a class="navbar-item" href="/api/login/oidc/login/google/">Google</a>
+        <div class="navbar-dropdown" v-for="authName in Object.keys(oidcTypes)" :key="authName">
+          <a class="navbar-item" href="oidcTypes[authname]">{{ authName | capitalize }}</a>
           <router-link to="/login/key" class="navbar-item">API key</router-link>
         </div>
       </div>
@@ -52,6 +52,7 @@
 
 <script>
 import {mapGetters} from 'vuex';
+import axios from 'axios';
 
 export default {
   name: 'NavigationBar',
@@ -61,8 +62,16 @@ export default {
   data() {
     return {
       'showMenu': false,
+      'oidcTypes': {},
     }
-  }
+  },
+  mounted () {
+    axios
+      .get('/api/login/oidc/')
+      .then((response) => {
+        this.oidcTypes = response.data;
+      });
+  },
 }
 </script>
 
