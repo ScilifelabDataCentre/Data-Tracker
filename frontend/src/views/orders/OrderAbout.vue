@@ -33,7 +33,7 @@
           </td>
 	</tr>
 	<tr v-for="field in Object.keys(order.extra)" :key="field">
-          <th scope="row">{{ capitalize(field) }}</th>
+          <th scope="row">{{ field | capitalize }}</th>
           <td>{{ order.extra[field] }}</td>
           <td></td>
 	</tr>
@@ -93,11 +93,6 @@ export default {
           this.$store.dispatch('getOrder', this.uuid);
         });
     },
-
-    capitalize (text) {
-      return text.charAt(0).toUpperCase() + text.slice(1);
-    }
-
   },
 }
 </script>
