@@ -98,6 +98,8 @@ def oidc_login(auth_name):
 @app.route('/api/login/oidc/authorize/<auth_name>/')
 def oidc_authorize(auth_name):
     """Authorize a login using OpenID Connect (e.g. Elixir AAI)."""
+    if auth_name not in app.config.get('oidc_names'):
+        flask.abort(status=404)
     client = oauth.create_client(auth_name)
     token = client.authorize_access_token()
     if 'id_token' in token:
