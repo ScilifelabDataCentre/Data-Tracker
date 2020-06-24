@@ -1,5 +1,6 @@
 """Main app for the Data Tracker."""
 
+import json
 import logging
 
 import flask
@@ -27,8 +28,8 @@ app.register_blueprint(user.blueprint, url_prefix='/api/user')
 
 
 oauth = OAuth(app)
-for auth_name in app.config.get('oidc_names'):
-    oauth.register(auth_name, client_kwargs={'scope': 'openid profile email'})
+for oidc_name in app.config.get('oidc_names'):
+    oauth.register(oidc_name, client_kwargs={'scope': 'openid profile email'})
 
 @app.before_request
 def prepare():
