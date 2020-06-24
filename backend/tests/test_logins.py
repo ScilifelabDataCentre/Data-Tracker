@@ -1,8 +1,10 @@
-"""Tests for dataset requests."""
+"""Tests for logins."""
 import json
 import re
 import requests
 import uuid
+
+import helpers
 
 from helpers import make_request, as_user, make_request_all_roles, USERS, use_db, random_string
 # pylint: disable=redefined-outer-name
@@ -26,7 +28,7 @@ def test_key_login():
     as_user(session, None)
     for i, userid in enumerate(USERS):
         response = make_request(session,
-                                '/api/user/login/apikey/',
+                                '/api/login/apikey/',
                                 data = {'api-user': USERS[userid],
                                         'api-key': str(i-1)},
                                 method='POST')
