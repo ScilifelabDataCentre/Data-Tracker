@@ -63,7 +63,7 @@ def test_get_order_permissions(use_db):
                 assert response.code == 403
                 assert not response.data
 
-        as_user(session, owner['api_key'])
+        as_user(session, owner['auth_id'])
         response = make_request(session, f'/api/order/{order["_id"]}/')
         assert response.code == 200
         data = response.data['order']
@@ -263,10 +263,7 @@ def test_list_user_orders_permissions(use_db):
                 assert response.code == 403
                 assert not response.data
 
-        if user['auth_id'] != '--facility--':
-            as_user(session, user['auth_id'])
-        else:
-            as_user(session, user['api_key'])
+        as_user(session, user['auth_id'])
         response = make_request(session, f'/api/order/user/')
         if user_orders:
             assert response.code == 200
@@ -294,10 +291,7 @@ def test_list_user_orders(use_db):
                                                       {'creator': user['_id']}]}))
         order_uuids = [str(order['_id']) for order in user_orders]
 
-        if user['auth_id'] != '--facility--':
-            as_user(session, user['auth_id'])
-        else:
-            as_user(session, user['api_key'])
+        as_user(session, user['auth_id'])
         response = make_request(session, f'/api/order/user/')
         if user_orders:
             assert response.code == 200
@@ -588,7 +582,7 @@ def test_add_dataset_permissions(use_db):
                 assert not response.data
         # as order creator
         owner = db['users'].find_one({'_id': order['creator']})
-        as_user(session, owner['api_key'])
+        as_user(session, owner['auth_id'])
         response = make_request(session,
                                 f'/api/order/{order["_id"]}/dataset/',
                                 method='POST',
