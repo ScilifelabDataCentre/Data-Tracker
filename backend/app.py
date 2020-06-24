@@ -82,8 +82,7 @@ def oidc_types():
     auth_types = {}
     for auth_name in app.config.get('oidc_names'):
         auth_types[auth_name] = flask.url_for('oidc_login',
-                                              auth_name=auth_name,
-                                              _external=True)
+                                              auth_name=auth_name)
 
     return flask.jsonify(auth_types)
 
