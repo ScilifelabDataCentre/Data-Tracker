@@ -162,7 +162,7 @@ def test_add_project_permissions(use_db):
                    'datasets': [str(dataset_info['_id'])]})
 
     session = requests.Session()
-    as_user(session, user_info['api_key'])
+    as_user(session, user_info['auth_id'])
     response = make_request(session,
                             f'/api/project/',
                             method='POST',
@@ -204,7 +204,7 @@ def test_add_project(use_db):
     session = requests.Session()
     user_info = db['users'].find_one({'_id': order_info['creator']})
 
-    as_user(session, user_info['api_key'])
+    as_user(session, user_info['auth_id'])
     
     indata = {'description': 'Test description',
               'contact': 'user@example.com',
