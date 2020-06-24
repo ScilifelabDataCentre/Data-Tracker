@@ -347,19 +347,25 @@ Can be limited by parameters.</p>
 
 <dl class="py function">
 <dt>
-<code class="sig-name descname">/user/logout/</code></dt>
+<code class="sig-name descname">/logout/</code></dt>
 <dd><p><strong>GET</strong> Log out current user.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt>
-<code class="sig-name descname">/user/login/oidc/</code></dt>
-<dd><p><strong>GET</strong> Log in using OpenID Connect (e.g. Elixir AAI)</p>
+<code class="sig-name descname">/login/oidc/&lt;auth_name&gt;/login/</code></dt>
+<dd><p><strong>GET</strong> Log in using OpenID Connect (e.g. Elixir AAI) for service <code class="docutils literal notranslate"><span class="pre">auth_name</span></code>.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt>
-<code class="sig-name descname">/user/login/apikey/</code></dt>
+<code class="sig-name descname">/login/oidc/&lt;auth_name&gt;/authorize/</code></dt>
+<dd><p><strong>GET</strong> Authorize using OpenID Connect (e.g. Elixir AAI) for service <code class="docutils literal notranslate"><span class="pre">auth_name</span></code> (via <code class="docutils literal notranslate"><span class="pre">login</span></code>).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt>
+<code class="sig-name descname">/login/apikey/</code></dt>
 <dd><p><strong>GET</strong> Log in using auth_id/api_key</p>
 </dd></dl>
 

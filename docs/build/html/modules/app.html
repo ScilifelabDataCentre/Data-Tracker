@@ -151,6 +151,9 @@
   <h1>Source code for app</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Main app for the Data Tracker.&quot;&quot;&quot;</span>
 
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
 <span class="kn">import</span> <span class="nn">flask</span>
 
 <span class="kn">import</span> <span class="nn">config</span>
@@ -161,6 +164,7 @@
 <span class="kn">import</span> <span class="nn">user</span>
 <span class="kn">import</span> <span class="nn">utils</span>
 
+<span class="kn">from</span> <span class="nn">authlib.integrations.flask_client</span> <span class="kn">import</span> <span class="n">OAuth</span>
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>  <span class="c1"># pylint: disable=invalid-name</span>
 <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">init</span><span class="p">())</span>
@@ -173,6 +177,10 @@
 <span class="n">app</span><span class="o">.</span><span class="n">register_blueprint</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">blueprint</span><span class="p">,</span> <span class="n">url_prefix</span><span class="o">=</span><span class="s1">&#39;/api/project&#39;</span><span class="p">)</span>
 <span class="n">app</span><span class="o">.</span><span class="n">register_blueprint</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">blueprint</span><span class="p">,</span> <span class="n">url_prefix</span><span class="o">=</span><span class="s1">&#39;/api/user&#39;</span><span class="p">)</span>
 
+
+<span class="n">oauth</span> <span class="o">=</span> <span class="n">OAuth</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">oidc_name</span> <span class="ow">in</span> <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;oidc_names&#39;</span><span class="p">):</span>
+    <span class="n">oauth</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">oidc_name</span><span class="p">,</span> <span class="n">client_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;scope&#39;</span><span class="p">:</span> <span class="s1">&#39;openid profile email&#39;</span><span class="p">})</span>
 
 <div class="viewcode-block" id="prepare"><a class="viewcode-back" href="../code.app.html#app.prepare">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">before_request</span>
 <span class="k">def</span> <span class="nf">prepare</span><span class="p">():</span>
@@ -210,7 +218,81 @@
 <div class="viewcode-block" id="api_base"><a class="viewcode-back" href="../code.app.html#app.api_base">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/api/&#39;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">api_base</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;List entities.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">({</span><span class="s1">&#39;entities&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;dataset&#39;</span><span class="p">,</span> <span class="s1">&#39;order&#39;</span><span class="p">,</span> <span class="s1">&#39;project&#39;</span><span class="p">,</span> <span class="s1">&#39;user&#39;</span><span class="p">]})</span></div>
+    <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">({</span><span class="s1">&#39;entities&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;dataset&#39;</span><span class="p">,</span> <span class="s1">&#39;order&#39;</span><span class="p">,</span> <span class="s1">&#39;project&#39;</span><span class="p">,</span> <span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="s1">&#39;login&#39;</span><span class="p">]})</span></div>
+
+
+<div class="viewcode-block" id="login_types"><a class="viewcode-back" href="../code.app.html#app.login_types">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/api/login/&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">login_types</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;List login types.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">({</span><span class="s1">&#39;types&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;apikey&#39;</span><span class="p">,</span> <span class="s1">&#39;oidc&#39;</span><span class="p">]})</span></div>
+
+
+<div class="viewcode-block" id="oidc_types"><a class="viewcode-back" href="../code.app.html#app.oidc_types">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/api/login/oidc/&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">oidc_types</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;List OpenID Connect types.&quot;&quot;&quot;</span>
+    <span class="n">auth_types</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">auth_name</span> <span class="ow">in</span> <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;oidc_names&#39;</span><span class="p">):</span>
+        <span class="n">auth_types</span><span class="p">[</span><span class="n">auth_name</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;/api/login/oidc/</span><span class="si">{auth_name}</span><span class="s1">/login/&#39;</span>
+
+    <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">(</span><span class="n">auth_types</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="oidc_login"><a class="viewcode-back" href="../code.app.html#app.oidc_login">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/api/login/oidc/login/&lt;auth_name&gt;/&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">oidc_login</span><span class="p">(</span><span class="n">auth_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Perform a login using OpenID Connect (e.g. Elixir AAI).&quot;&quot;&quot;</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">oauth</span><span class="o">.</span><span class="n">create_client</span><span class="p">(</span><span class="n">auth_name</span><span class="p">)</span>
+    <span class="n">redirect_uri</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;oidc_authorize&#39;</span><span class="p">,</span>
+                                 <span class="n">auth_name</span><span class="o">=</span><span class="n">auth_name</span><span class="p">,</span>
+                                 <span class="n">_external</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">client</span><span class="o">.</span><span class="n">authorize_redirect</span><span class="p">(</span><span class="n">redirect_uri</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="oidc_authorize"><a class="viewcode-back" href="../code.app.html#app.oidc_authorize">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/api/login/oidc/authorize/&lt;auth_name&gt;/&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">oidc_authorize</span><span class="p">(</span><span class="n">auth_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Authorize a login using OpenID Connect (e.g. Elixir AAI).&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">auth_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;oidc_names&#39;</span><span class="p">):</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">404</span><span class="p">)</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">oauth</span><span class="o">.</span><span class="n">create_client</span><span class="p">(</span><span class="n">auth_name</span><span class="p">)</span>
+    <span class="n">token</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">authorize_access_token</span><span class="p">()</span>
+    <span class="k">if</span> <span class="s1">&#39;id_token&#39;</span> <span class="ow">in</span> <span class="n">token</span><span class="p">:</span>
+        <span class="n">user_info</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">parse_id_token</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">user_info</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">userinfo</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">auth_name</span> <span class="o">!=</span> <span class="s1">&#39;elixir&#39;</span><span class="p">:</span>
+        <span class="n">user_info</span><span class="p">[</span><span class="s1">&#39;auth_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{user_info[&quot;email&quot;]}</span><span class="s1">::</span><span class="si">{auth_name}</span><span class="s1">&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">user_info</span><span class="p">[</span><span class="s1">&#39;auth_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">token</span><span class="p">[</span><span class="s1">&#39;sub&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">do_login</span><span class="p">(</span><span class="n">user_info</span><span class="p">[</span><span class="s1">&#39;auth_id&#39;</span><span class="p">]):</span>
+        <span class="n">user</span><span class="o">.</span><span class="n">add_user</span><span class="p">(</span><span class="n">user_info</span><span class="p">)</span>
+        <span class="n">user</span><span class="o">.</span><span class="n">do_login</span><span class="p">(</span><span class="n">user_info</span><span class="p">[</span><span class="s1">&#39;auth_id&#39;</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span></div>
+
+
+<span class="c1"># requests</span>
+<div class="viewcode-block" id="key_login"><a class="viewcode-back" href="../code.app.html#app.key_login">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/api/login/apikey/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">key_login</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Log in using an apikey.&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">indata</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">decoder</span><span class="o">.</span><span class="n">JSONDecodeError</span><span class="p">:</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s1">&#39;api-user&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">indata</span> <span class="ow">or</span> <span class="s1">&#39;api-key&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">indata</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;API key login - bad keys: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">indata</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+    <span class="n">utils</span><span class="o">.</span><span class="n">verify_api_key</span><span class="p">(</span><span class="n">indata</span><span class="p">[</span><span class="s1">&#39;api-user&#39;</span><span class="p">],</span> <span class="n">indata</span><span class="p">[</span><span class="s1">&#39;api-key&#39;</span><span class="p">])</span>
+    <span class="n">user</span><span class="o">.</span><span class="n">do_login</span><span class="p">(</span><span class="n">auth_id</span><span class="o">=</span><span class="n">indata</span><span class="p">[</span><span class="s1">&#39;api-user&#39;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="logout"><a class="viewcode-back" href="../code.app.html#app.logout">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/api/logout/&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">logout</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Log out the current user.&quot;&quot;&quot;</span>
+    <span class="n">flask</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="mi">302</span><span class="p">)</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">set_cookie</span><span class="p">(</span><span class="s1">&#39;_csrf_token&#39;</span><span class="p">,</span> <span class="n">utils</span><span class="o">.</span><span class="n">gen_csrf_token</span><span class="p">(),</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">response</span></div>
 
 
 <div class="viewcode-block" id="error_bad_request"><a class="viewcode-back" href="../code.app.html#app.error_bad_request">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">errorhandler</span><span class="p">(</span><span class="mi">400</span><span class="p">)</span>

@@ -203,39 +203,6 @@
     <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">({</span><span class="s1">&#39;permissions&#39;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">PERMISSIONS</span><span class="o">.</span><span class="n">keys</span><span class="p">())})</span></div>
 
 
-<div class="viewcode-block" id="oidc_login"><a class="viewcode-back" href="../code.user.html#user.oidc_login">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/login/&#39;</span><span class="p">)</span>
-<span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/login/oidc&#39;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">oidc_login</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Perform an Elixir AAI login.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">501</span><span class="p">)</span></div>
-
-
-<span class="c1"># requests</span>
-<div class="viewcode-block" id="key_login"><a class="viewcode-back" href="../code.user.html#user.key_login">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/login/apikey/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>
-<span class="k">def</span> <span class="nf">key_login</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Log in using an apikey.&quot;&quot;&quot;</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">indata</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-    <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">decoder</span><span class="o">.</span><span class="n">JSONDecodeError</span><span class="p">:</span>
-        <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="s1">&#39;api-user&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">indata</span> <span class="ow">or</span> <span class="s1">&#39;api-key&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">indata</span><span class="p">:</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;API key login - bad keys: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">indata</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
-    <span class="n">utils</span><span class="o">.</span><span class="n">verify_api_key</span><span class="p">(</span><span class="n">indata</span><span class="p">[</span><span class="s1">&#39;api-user&#39;</span><span class="p">],</span> <span class="n">indata</span><span class="p">[</span><span class="s1">&#39;api-key&#39;</span><span class="p">])</span>
-    <span class="n">do_login</span><span class="p">(</span><span class="n">auth_id</span><span class="o">=</span><span class="n">indata</span><span class="p">[</span><span class="s1">&#39;api-user&#39;</span><span class="p">])</span>
-    <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="logout"><a class="viewcode-back" href="../code.user.html#user.logout">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/logout/&#39;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">logout</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Log out the current user.&quot;&quot;&quot;</span>
-    <span class="n">flask</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-    <span class="n">response</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="mi">302</span><span class="p">)</span>
-    <span class="n">response</span><span class="o">.</span><span class="n">set_cookie</span><span class="p">(</span><span class="s1">&#39;_csrf_token&#39;</span><span class="p">,</span> <span class="n">utils</span><span class="o">.</span><span class="n">gen_csrf_token</span><span class="p">(),</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">response</span></div>
-
-
 <div class="viewcode-block" id="list_users"><a class="viewcode-back" href="../code.user.html#user.list_users">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
 <span class="nd">@login_required</span>
 <span class="k">def</span> <span class="nf">list_users</span><span class="p">():</span>
@@ -340,9 +307,9 @@
     <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">response_json</span><span class="p">({</span><span class="s1">&#39;user&#39;</span><span class="p">:</span> <span class="n">user_info</span><span class="p">})</span></div>
 
 
-<div class="viewcode-block" id="add_user"><a class="viewcode-back" href="../code.user.html#user.add_user">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<div class="viewcode-block" id="add_user_post"><a class="viewcode-back" href="../code.user.html#user.add_user_post">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>
 <span class="nd">@login_required</span>
-<span class="k">def</span> <span class="nf">add_user</span><span class="p">():</span>
+<span class="k">def</span> <span class="nf">add_user_post</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Add a user.</span>
 
@@ -577,29 +544,40 @@
 
 
 <span class="c1"># helper functions</span>
-<div class="viewcode-block" id="do_login"><a class="viewcode-back" href="../code.user.html#user.do_login">[docs]</a><span class="k">def</span> <span class="nf">do_login</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">auth_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="add_user"><a class="viewcode-back" href="../code.user.html#user.add_user">[docs]</a><span class="k">def</span> <span class="nf">add_user</span><span class="p">(</span><span class="n">user_info</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Add a new user to the database.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        user_info (dict): Information about the user</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">new_user</span> <span class="o">=</span> <span class="n">structure</span><span class="o">.</span><span class="n">user</span><span class="p">()</span>
+
+    <span class="n">new_user</span><span class="p">[</span><span class="s1">&#39;email&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">user_info</span><span class="p">[</span><span class="s1">&#39;email&#39;</span><span class="p">]</span>
+    <span class="n">new_user</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">user_info</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+    <span class="n">new_user</span><span class="p">[</span><span class="s1">&#39;auth_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">user_info</span><span class="p">[</span><span class="s1">&#39;auth_id&#39;</span><span class="p">]</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;users&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">new_user</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">acknowledged</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Failed to add user with email&#39;</span><span class="p">,</span> <span class="n">user_info</span><span class="p">[</span><span class="s1">&#39;email&#39;</span><span class="p">])</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">make_log</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="s1">&#39;Creating new user from OAuth&#39;</span><span class="p">,</span> <span class="n">new_user</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="do_login"><a class="viewcode-back" href="../code.user.html#user.do_login">[docs]</a><span class="k">def</span> <span class="nf">do_login</span><span class="p">(</span><span class="n">auth_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Set all relevant variables for a logged in user.</span>
 
-<span class="sd">    Users not in db will be added.</span>
-
 <span class="sd">    Args:</span>
 <span class="sd">        auth_id (str): Authentication id for the user.</span>
-<span class="sd">        api_key (str): API key for the user.</span>
 
 <span class="sd">    Returns bool: Whether the login succeeded.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">auth_id</span><span class="p">:</span>
-        <span class="n">user</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;users&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;auth_id&#39;</span><span class="p">:</span> <span class="n">auth_id</span><span class="p">})</span>
-    <span class="k">elif</span> <span class="n">api_key</span><span class="p">:</span>
-        <span class="n">user</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;users&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;api_key&#39;</span><span class="p">:</span> <span class="n">api_key</span><span class="p">})</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">user</span> <span class="o">=</span> <span class="n">structure</span><span class="o">.</span><span class="n">user</span><span class="p">()</span>
-        <span class="n">user</span><span class="p">[</span><span class="s1">&#39;auth_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">auth_id</span>
-        <span class="n">user</span><span class="p">[</span><span class="s1">&#39;api_key&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">api_key</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;users&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">response</span><span class="o">.</span><span class="n">acknowledged</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Failed to write user to db: </span><span class="si">{user}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;users&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;auth_id&#39;</span><span class="p">:</span> <span class="n">auth_id</span><span class="p">})</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
 
     <span class="n">flask</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="s1">&#39;user_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">user</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span>
     <span class="n">flask</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">permanent</span> <span class="o">=</span> <span class="kc">True</span>

@@ -187,7 +187,18 @@
 </dl>
 <dl class="py function">
 <dt id="user.add_user">
-<code class="sig-prename descclassname">user.</code><code class="sig-name descname">add_user</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#add_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#user.add_user" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">user.</code><code class="sig-name descname">add_user</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user_info</span><span class="p">:</span> <span class="n">dict</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#add_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#user.add_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a new user to the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>user_info</strong> (<em>dict</em>) – Information about the user</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="user.add_user_post">
+<code class="sig-prename descclassname">user.</code><code class="sig-name descname">add_user_post</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#add_user_post"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#user.add_user_post" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a user.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -218,15 +229,11 @@
 
 <dl class="py function">
 <dt id="user.do_login">
-<code class="sig-prename descclassname">user.</code><code class="sig-name descname">do_login</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">auth_id</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">api_key</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#do_login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#user.do_login" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">user.</code><code class="sig-name descname">do_login</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">auth_id</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#do_login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#user.do_login" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set all relevant variables for a logged in user.</p>
-<p>Users not in db will be added.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>auth_id</strong> (<em>str</em>) – Authentication id for the user.</p></li>
-<li><p><strong>api_key</strong> (<em>str</em>) – API key for the user.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>auth_id</strong> (<em>str</em>) – Authentication id for the user.</p>
 </dd>
 </dl>
 <p>Returns bool: Whether the login succeeded.</p>
@@ -371,12 +378,6 @@
 </dd></dl>
 
 <dl class="py function">
-<dt id="user.key_login">
-<code class="sig-prename descclassname">user.</code><code class="sig-name descname">key_login</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#key_login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#user.key_login" title="Permalink to this definition">¶</a></dt>
-<dd><p>Log in using an apikey.</p>
-</dd></dl>
-
-<dl class="py function">
 <dt id="user.list_users">
 <code class="sig-prename descclassname">user.</code><code class="sig-name descname">list_users</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#list_users"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#user.list_users" title="Permalink to this definition">¶</a></dt>
 <dd><p>List all users.</p>
@@ -388,18 +389,6 @@
 <code class="sig-prename descclassname">user.</code><code class="sig-name descname">login_required</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#login_required"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#user.login_required" title="Permalink to this definition">¶</a></dt>
 <dd><p>Confirm that the user is logged in.</p>
 <p>Otherwise abort with status 401 Unauthorized.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="user.logout">
-<code class="sig-prename descclassname">user.</code><code class="sig-name descname">logout</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#logout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#user.logout" title="Permalink to this definition">¶</a></dt>
-<dd><p>Log out the current user.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="user.oidc_login">
-<code class="sig-prename descclassname">user.</code><code class="sig-name descname">oidc_login</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#oidc_login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#user.oidc_login" title="Permalink to this definition">¶</a></dt>
-<dd><p>Perform an Elixir AAI login.</p>
 </dd></dl>
 
 <dl class="py function">
