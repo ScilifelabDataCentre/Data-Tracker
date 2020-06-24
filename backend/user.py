@@ -158,7 +158,7 @@ def get_user_data(identifier: str):
 
 @blueprint.route('/', methods=['POST'])
 @login_required
-def add_user():
+def add_user_post():
     """
     Add a user.
 
@@ -405,7 +405,7 @@ def add_user(user_info: dict):
     new_user['email'] = user_info['email']
     new_user['name'] = user_info['name']
     new_user['auth_id'] = user_info['auth_id']
-    
+
     result = flask.g.db['users'].insert_one(new_user)
     if not result.acknowledged:
         logging.error('Failed to add user with email', user_info['email'])
