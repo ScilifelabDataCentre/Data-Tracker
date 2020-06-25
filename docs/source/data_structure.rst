@@ -289,29 +289,31 @@ User
 Summary
 -------
 
-+-------------+-------------------------------------+-------------------+---------+
-| Field       | Description                         | Default           | Public  |
-+=============+=====================================+===================+=========+
-| _id         | UUID of the Entry                   | Set by system     | Hidden  |
-+-------------+-------------------------------------+-------------------+---------+
-| affiliation | User affiliation (e.g. university)  | Empty             | Visible  |
-+-------------+-------------------------------------+-------------------+---------+
-| api_key     | Hash for the API key                | Empty             | Hidden  |
-+-------------+-------------------------------------+-------------------+---------+
-| api_salt    | Salt for API api_key                | Empty             | Hidden  |
-+-------------+-------------------------------------+-------------------+---------+
-| auth_ids    | List of identfiers from e.g. Elixir | Empty             | Hidden  |
-+-------------+-------------------------------------+-------------------+---------+
-| email       | Email address for the user          | Must be non-empty | Visible |
-+-------------+-------------------------------------+-------------------+---------+
-| name        | Name of the user                    | Must be non-empty | Visible |
-+-------------+-------------------------------------+-------------------+---------+
-| orcid       | ORCID of the user                   | Empty             | Visible |
-+-------------+-------------------------------------+-------------------+---------+
-| permissions | List of permissions for the user    | Empty             | Hidden  |
-+-------------+-------------------------------------+-------------------+---------+
-| url         | URL to e.g. homepage                | Empty             | Visible |
-+-------------+-------------------------------------+-------------------+---------+
++--------------+-------------------------------------+-------------------+---------+
+| Field        | Description                         | Default           | Public  |
++==============+=====================================+===================+=========+
+| _id          | UUID of the Entry                   | Set by system     | Hidden  |
++--------------+-------------------------------------+-------------------+---------+
+| affiliation  | User affiliation (e.g. university)  | Empty             | Visible |
++--------------+-------------------------------------+-------------------+---------+
+| api_key      | Hash for the API key                | Empty             | Hidden  |
++--------------+-------------------------------------+-------------------+---------+
+| api_salt     | Salt for API api_key                | Empty             | Hidden  |
++--------------+-------------------------------------+-------------------+---------+
+| auth_ids     | List of identfiers from e.g. Elixir | Empty             | Hidden  |
++--------------+-------------------------------------+-------------------+---------+
+| email        | Email address for the user          | Must be non-empty | Hidden  |
++--------------+-------------------------------------+-------------------+---------+
+| email_public | Email address to show publicly      | Empty             | Visible |
++--------------+-------------------------------------+-------------------+---------+
+| name         | Name of the user                    | Must be non-empty | Visible |
++--------------+-------------------------------------+-------------------+---------+
+| orcid        | ORCID of the user                   | Empty             | Visible |
++--------------+-------------------------------------+-------------------+---------+
+| permissions  | List of permissions for the user    | Empty             | Hidden  |
++--------------+-------------------------------------+-------------------+---------+
+| url          | URL to e.g. homepage                | Empty             | Visible |
++--------------+-------------------------------------+-------------------+---------+
 
 
 Fields
@@ -334,8 +336,11 @@ Fields
 :email:
     * Email address for the user.
     * **Default:** Must be set
+:email_public:
+    * Email to show to public on e.g. generated datasets.
+    * **Default:** Empty.
 :name:
-    * Name of the user
+    * Name of the user.
 
       - Could also be name of e.g. facility or university.
 :orcid:
