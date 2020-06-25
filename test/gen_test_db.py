@@ -82,7 +82,7 @@ def gen_facilities(db, nr_facilities: int = 30):
         changes = {'affiliation': 'University ' + random.choice(string.ascii_uppercase),
                    'api_key': utils.gen_api_key_hash(apikey.key, apikey.salt),
                    'api_salt': apikey.salt,
-                   'auth_ids': [f'facility {i}::local'],
+                   'auth_ids': [f'facility{i}::local'],
                    'email': f'facility{i}@domain{i}.se',
                    'name': f'Facility {i}',
                    'permissions': ['ORDERS_SELF']}
@@ -94,8 +94,8 @@ def gen_facilities(db, nr_facilities: int = 30):
 
 def gen_orders(db, nr_orders: int = 300):
     uuids = []
-    facility_re = re.compile('facility [0-9]*::local')
-    facilities = tuple(db['users'].find({'auth_id': facility_re}))
+    facility_re = re.compile('facility[0-9]*::local')
+    facilities = tuple(db['users'].find({'auth_ids': facility_re}))
     users = tuple(db['users'].find({'$and': [{'auth_id': {'$not': facility_re}},
                                              {'affiliation': {'$ne': 'Test University'}}]}))
     for i in range(1, nr_orders+1):
@@ -184,5 +184,3 @@ if __name__ == '__main__':
     gen_orders(DB)
     gen_datasets(DB)
     gen_projects(DB)
-    root_user = DB['users'].find_one({'name': 'Root Test'})
-    DB['logs'].update_many({}, {'$set': {'user': root_user['_id']}})
