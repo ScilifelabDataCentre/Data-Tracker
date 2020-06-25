@@ -460,7 +460,7 @@ def get_current_user():
     Returns:
         dict: The current user.
     """
-    return get_user(user_id=flask.session.get('user_id'))
+    return get_user(user_uuid=flask.session.get('user_id'))
 
 
 def get_user(user_uuid=None):
@@ -473,7 +473,7 @@ def get_user(user_uuid=None):
     Returns:
         dict: The current user.
     """
-    if user_id:
+    if user_uuid:
         user = flask.g.db['users'].find_one({'_id': user_uuid})
         if user:
             return user
