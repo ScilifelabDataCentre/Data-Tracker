@@ -5,6 +5,7 @@ import datetime
 import json
 import os
 import random
+import re
 import string
 
 import pytest
@@ -34,6 +35,8 @@ Response = collections.namedtuple('Response',
                                   ['data', 'code', 'role'],
                                   defaults=[None, None, None])
 
+FACILITY_RE = re.compile('facility[0-9]*::local')
+USER_RE = re.compile('.*::elixir')
 
 def db_connection():
     """Get a connection to the db as defined in the app config."""
