@@ -95,9 +95,9 @@ def gen_facilities(db, nr_facilities: int = 30):
 def gen_orders(db, nr_orders: int = 300):
     uuids = []
     facility_re = re.compile('facility[0-9]*::local')
+    user_re = re.compile('.*::elixir')
     facilities = tuple(db['users'].find({'auth_ids': facility_re}))
-    users = tuple(db['users'].find({'$and': [{'auth_id': {'$not': facility_re}},
-                                             {'affiliation': {'$ne': 'Test University'}}]}))
+    users = tuple(db['users'].find({'auth_ids': user_re}))
     for i in range(1, nr_orders+1):
         receiver_type = random.choice(('email', '_id'))
         order = structure.order()
@@ -149,7 +149,7 @@ def gen_users(db, nr_users: int = 100):
                      'api_key': utils.gen_api_key_hash(apikey['key'], apikey['salt']),
                      'api_salt': apikey['salt'],
                      'email': f'{"".join(user["name"].split())}@example.com',
-                     'auth_ids': f'{user["name"]}::testers'})
+                     'auth_ids': [f'{user["name"]}::testers']})
         db['users'].insert_one(user)
         make_log(db, action='add', data=user, data_type='user', comment='Generated', user='system')
 
@@ -159,7 +159,7 @@ def gen_users(db, nr_users: int = 100):
         changes = {'affiliation': 'University ' + random.choice(string.ascii_uppercase),
                    'api_key': utils.gen_api_key_hash(apikey.key, apikey.salt),
                    'api_salt': apikey.salt,
-                   'auth_id': f'hash{i}@elixir',
+                   'auth_ids': [f'hash{i}::elixir'],
                    'email': f'user{i}@place{i}.se',
                    'name': f'First Last {i}',
                    'permissions': list(set(random.choice(perm_keys)
