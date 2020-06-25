@@ -212,6 +212,7 @@ Collection
 * Provides a way of grouping datasets before publication.
 * Should aid requesting a DOI from Figshare for the collection.
 
+
 Summary
 -------
 
@@ -232,6 +233,7 @@ Summary
 +------------------+---------------------------------------------------+-------------------+---------+
 | editors          | List of users who can edit the order and datasets | Entry creator     | Hidden  |
 +------------------+---------------------------------------------------+-------------------+---------+
+
 
 Fields
 ------
@@ -264,6 +266,7 @@ Fields
     * **Default:** The user that created the entry.
 
 
+
 User
 ====
 
@@ -282,6 +285,7 @@ User
 * A user with the permission ``USER_MANAGEMENT`` can create and modify users.
 * A user with the permission ``ORDER_USERS`` can create and modify "partial" users.
 
+
 Summary
 -------
 
@@ -290,13 +294,15 @@ Summary
 +=============+=====================================+===================+=========+
 | _id         | UUID of the Entry                   | Set by system     | Hidden  |
 +-------------+-------------------------------------+-------------------+---------+
-| email       | Email address for the user          | Must be non-empty | Visible |
-+-------------+-------------------------------------+-------------------+---------+
-| auth_ids    | List of identfiers from e.g. Elixir | Empty             | Hidden  |
+| affiliation | User affiliation (e.g. university)  | Empty             | Visible  |
 +-------------+-------------------------------------+-------------------+---------+
 | api_key     | Hash for the API key                | Empty             | Hidden  |
 +-------------+-------------------------------------+-------------------+---------+
 | api_salt    | Salt for API api_key                | Empty             | Hidden  |
++-------------+-------------------------------------+-------------------+---------+
+| auth_ids    | List of identfiers from e.g. Elixir | Empty             | Hidden  |
++-------------+-------------------------------------+-------------------+---------+
+| email       | Email address for the user          | Must be non-empty | Visible |
 +-------------+-------------------------------------+-------------------+---------+
 | name        | Name of the user                    | Must be non-empty | Visible |
 +-------------+-------------------------------------+-------------------+---------+
@@ -310,42 +316,50 @@ Summary
 
 Fields
 ------
+
 :_id:
     * UUID of the entry.
     * Set by the system upon entry creation, never modified.
-:email:
-    * Email address for the user.
-    * **Default:** Must be set
+:affiliation:
+    * Affiliation of the user.
+:api_key:
+    * Hash for the API key for authorization to API or login.
+:api_salt:
+    * Salt for the API key.
 :auth_ids:
     * List of identifiers used by e.g. Elixir AAI.
     * Saved as strings.
     * The general form is ``email@location.suffix::source``, but the style may vary between sources.
     * Any of the auth_id can be used with the API key.
-:api_key:
-    * Hash for the API key for authorization to API or login.
-:api_salt:
-    * Salt for the API key.
+:email:
+    * Email address for the user.
+    * **Default:** Must be set
 :name:
     * Name of the user
 
       - Could also be name of e.g. facility or university.
-:affiliation:
-    * Affiliation of the user.
 :orcid:
     * ORCID of the user.
 :permissions:
     * A list of the extra permissions the user has (see :ref:`permissions_section`).
+:url:
+    * Url to e.g. a homepage
+    * If set, it must start with ``http://` or ``https://`.
+    * **Default:** Empty
+
 
 
 Log
 ===
 
 * Whenever an entry (``order``, ``dataset``, ``project``, or ``user``) is changed, a log should be written.
+* Only visible to entry owners and admins.
 * All logs are in the same collection.
 * The log needs parsing to show changes between different versions of an entry.
 * A full cope of the new entry is saved.
 
   - In case of deletion, ``_id`` is saved as ``data``.
+
 
 Summary
 -------
@@ -371,6 +385,7 @@ Summary
 
 Fields
 ------
+
 :_id:
     * UUID of the entry.
     * Set by the system upon entry creation, never modified.
