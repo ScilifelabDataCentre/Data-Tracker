@@ -119,7 +119,7 @@ def verify_api_key(username: str, api_key: str):
         username (str): The username to check.
         api_key (str): The received API key (hex).
     """
-    user_info = flask.g.db['users'].find_one({'auth_id': username})
+    user_info = flask.g.db['users'].find_one({'auth_ids': username})
     if not user_info:
         logging.warning('API key verification failed (bad username)')
         flask.abort(status=401)
