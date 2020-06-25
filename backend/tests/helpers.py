@@ -22,13 +22,13 @@ BASE_URL = f'{SETTINGS["host"]}:{SETTINGS["port"]}'
 TEST_LABEL = {'extra': {'testing': 'yes'}}
 
 USERS = {'no-login': None,
-         'base': 'base@testers',
-         'orders': 'orders@testers',
-         'owners': 'owners@testers',
-         'users': 'users@testers',
-         'data': 'data@testers',
-         'doi': 'doi@testers',
-         'root': 'root@testers'}
+         'base': 'base::testers',
+         'orders': 'orders::testers',
+         'owners': 'owners::testers',
+         'users': 'users::testers',
+         'data': 'data::testers',
+         'doi': 'doi::testers',
+         'root': 'root::testers'}
 
 Response = collections.namedtuple('Response',
                                   ['data', 'code', 'role'],
