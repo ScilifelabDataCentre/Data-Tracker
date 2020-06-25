@@ -20,7 +20,7 @@ Order
     **POST** Add a new order.
 
 
-.. function:: /order/<identifier>
+.. function:: /order/<identifier>/
 
     **GET** Get information about the order with uuid ``identifier``.
 
@@ -29,7 +29,7 @@ Order
     **PATCH** Update the order with uuid ``identifier``.
 
 
-.. function:: /order/<identifier>/dataset
+.. function:: /order/<identifier>/dataset/
 
     **POST** Add a new dataset belonging to order with uuid ``identifier``.
 
@@ -39,7 +39,7 @@ Order
     **GET** Get a list of orders created or received by current user.
     
 
-.. function:: /order/<identifier>/log
+.. function:: /order/<identifier>/log/
 
     **GET** Get a list of changes done to the order with uuid ``identifier``.
 
