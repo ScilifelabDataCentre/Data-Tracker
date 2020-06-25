@@ -9,7 +9,7 @@ import requests
 
 from helpers import make_request, as_user, make_request_all_roles,\
     dataset_for_tests, USERS, random_string, parse_time, TEST_LABEL, use_db,\
-    add_dataset, delete_dataset
+    add_dataset, delete_dataset, USER_RE
 
 
 def test_list_user_datasets(use_db):
@@ -20,7 +20,8 @@ def test_list_user_datasets(use_db):
     """
     session = requests.Session()
     db = use_db
-    users = db['users'].aggregate([{'$sample': {'size': 5}}])
+    users = db['users'].aggregate([{'$sample': {'size': 5}},
+                                   {'$match': {'auth_ids': USER_RE}}])
     for user in users:
         user_orders = list(db['orders'].find({'$or': [{'receiver': user['_id']},
                                                       {'creator': user['_id']}],
@@ -30,10 +31,7 @@ def test_list_user_datasets(use_db):
                                                            for order in user_orders))
         user_datasets = [str(uuid) for uuid in user_datasets]
 
-        if user['auth_id'] != '--facility--':
-            as_user(session, user['auth_id'])
-        else:
-            as_user(session, user['api_key'])
+        as_user(session, user['auth_ids'][0])
         response = make_request(session, f'/api/dataset/user/')
         assert response.code == 200
         assert len(user_datasets) == len(response.data['datasets'])
