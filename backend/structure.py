@@ -66,10 +66,13 @@ def user():
             'affiliation': '',
             'api_key': '',
             'api_salt': '',
-            'auth_id': '',
+            'auth_ids': [],
             'email': '',
+            'email_public': '',
             'name': '',
-            'permissions': []}
+            'orcid': '',
+            'permissions': [],
+            'url': ''}
 
 
 def log():

@@ -4,8 +4,8 @@ Validators for indata.
 Indata can be sent to ``validate_indata``, which will use the corresponding
 functions to check each field.
 """
-from typing import Any, Union
 import logging
+from typing import Any, Union
 import uuid
 
 import flask
@@ -176,6 +176,27 @@ def validate_links(data: list) -> bool:
     return True
 
 
+def validate_list_of_strings(data: list) -> bool:
+    """
+    Validate that input is a list of strings.
+
+    Args:
+        data (list): The data to be validated.
+
+    Returns:
+        bool: Validation passed.
+
+    Raises:
+        ValueError: Validation failed.
+    """
+    if not isinstance(data, list):
+        raise ValueError(f'Not a list ({data})')
+    for entry in data:
+        if not isinstance(entry, str):
+            raise ValueError(f'Not a string ({entry})')
+    return True
+
+
 def validate_permissions(data: list) -> bool:
     """
     Validate input for the ``permissions`` field.
@@ -227,7 +248,7 @@ def validate_string(data: str) -> bool:
     Validate input for field that must have a ``str`` value.
 
     Args:
-        data: The data to be validated.
+        data (str): The data to be validated.
 
     Returns:
         bool: Validation passed.
@@ -247,7 +268,7 @@ def validate_title(data: str) -> bool:
     It must be a non-empty string.
 
     Args:
-        data: The data to be validated.
+        data (str): The data to be validated.
 
     Returns:
         bool: Validation passed.
@@ -260,12 +281,36 @@ def validate_title(data: str) -> bool:
     return True
 
 
+def validate_url(data: str) -> bool:
+    """
+    Validate input for a url intended for browsers.
+
+    It must start with ``http(s)://`
+
+    Args:
+        data (str): The data to be validated.
+
+    Returns:
+        bool: Validation passed.
+
+    Raises:
+        ValueError: Validation failed.
+    """
+    if not isinstance(data, str):
+        raise ValueError('Must be a string')
+    if not data.startswith('http://') and not data.startswith('http://'):
+        raise ValueError('URLs must start with `http(s)://`')
+    return True
+
+
 def validate_user(data: Union[str, list]) -> bool:
     """
     Validate input for the ``user`` field.
 
-    It must be a non-empty string.
-    If uuid, confirms that uuid is present in db.
+    For compatibility, the input may be UUIDs as either string (single user) or
+    a list (single or multiple users).
+
+    All users must exist in the database.
 
     Args:
         data (Union[str, list]): The data to be validated.
@@ -281,37 +326,38 @@ def validate_user(data: Union[str, list]) -> bool:
     elif isinstance(data, list):
         user_uuids = data
     else:
-        raise ValueError(f'Bad data type ({data})')
+        raise ValueError(f'Bad data type (must be str/list): {data}')
     # empty is ok
     if not data:
         return True
-    # Non-registered user (email instead of uuid)
+
     for u_uuid in user_uuids:
-        if utils.is_email(u_uuid):
-            return True
         try:
             user_uuid = uuid.UUID(u_uuid)
         except ValueError:
             raise ValueError(f'Not a valid uuid ({data})')
         if not flask.g.db['users'].find_one({'_id': user_uuid}):
             raise ValueError(f'Uuid not in db ({data})')
-        return True
+    return True
 
 
 VALIDATION_MAPPER = {'affiliation': validate_string,
                      'api_key': validate_string,
-                     'auth_id': validate_string,
+                     'auth_ids': validate_list_of_strings,
                      'contact': validate_string,
+                     'creator': validate_creator,
                      'description': validate_string,
                      'dmp': validate_string,
-                     'name': validate_string,
-                     'creator': validate_creator,
-                     'receiver': validate_user,
                      'datasets': validate_datasets,
                      'email': validate_email,
+                     'email_public': validate_email,
                      'extra': validate_extra,
                      'links': validate_links,
+                     'name': validate_string,
+                     'orcid': validate_string,
                      'owners': validate_user,
                      'permissions': validate_permissions,
                      'publications': validate_publications,
+                     'receiver': validate_user,
+                     'url': validate_url,
                      'title': validate_title}
