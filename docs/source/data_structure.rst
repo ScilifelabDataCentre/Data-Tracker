@@ -42,31 +42,32 @@ Order
 Summary
 -------
 
-+---------------+-----------------------------------------------------+-------------------+
-| Field         | Description                                         | Default           |
-+===============+=====================================================+===================+
-| _id           | UUID of the Entry                                   | Set by system     |
-+---------------+-----------------------------------------------------+-------------------+
-| title         | Title of the Entry                                  | Must be non-empty |
-+---------------+-----------------------------------------------------+-------------------+
-| description   | Description in markdown                             | Empty             |
-+---------------+-----------------------------------------------------+-------------------+
-| generators    | List of users who generated data                    | Entry creator     |
-+---------------+-----------------------------------------------------+-------------------+
-| authors       | List of users responsible for e.g. samples (e.g PI) | Entry creator     |
-+---------------+-----------------------------------------------------+-------------------+
-| organisation  | User who is data controller                         | Entry creator     |
-+---------------+-----------------------------------------------------+-------------------+
-| editors       | List of users who can edit the order and datasets   | Entry creator     |
-+---------------+-----------------------------------------------------+-------------------+
-| receivers     | List of users who received data from facility       | Empty             |
-+---------------+-----------------------------------------------------+-------------------+
-| datasets      | List of associated datasets                         | Empty             |
-+---------------+-----------------------------------------------------+-------------------+
-| tags_standard | Tags defined in the system                          | Empty             |
-+---------------+-----------------------------------------------------+-------------------+
-| tags_user     | Tags defined by the users                           | Empty             |
-+---------------+-----------------------------------------------------+-------------------+
++---------------+-----------------------------------------------------+-------------------+-----------------------+
+| Field         | Description                                         | Default           | Public                |
++===============+=====================================================+===================+=======================+
+| _id           | UUID of the Entry                                   | Set by system     | Hidden                |
++---------------+-----------------------------------------------------+-------------------+-----------------------+
+| title         | Title of the Entry                                  | Must be non-empty | Hidden                |
++---------------+-----------------------------------------------------+-------------------+-----------------------+
+| description   | Description in markdown                             | Empty             | Hidden                |
++---------------+-----------------------------------------------------+-------------------+-----------------------+
+| generators    | List of users who generated data                    | Entry creator     | Visible (via dataset) |
++---------------+-----------------------------------------------------+-------------------+-----------------------+
+| authors       | List of users responsible for e.g. samples (e.g PI) | Entry creator     | Visible (via dataset) |
++---------------+-----------------------------------------------------+-------------------+-----------------------+
+| organisation  | User who is data controller                         | Entry creator     | Visible (via dataset) |
++---------------+-----------------------------------------------------+-------------------+-----------------------+
+| editors       | List of users who can edit the order and datasets   | Entry creator     | Hidden                |
++---------------+-----------------------------------------------------+-------------------+-----------------------+
+| receivers     | List of users who received data from facility       | Empty             | Hidden                |
++---------------+-----------------------------------------------------+-------------------+-----------------------+
+| datasets      | List of associated datasets                         | Empty             | Visible (via dataset) |
++---------------+-----------------------------------------------------+-------------------+-----------------------+
+| tags_standard | Tags defined in the system                          | Empty             | Hidden                |
++---------------+-----------------------------------------------------+-------------------+-----------------------+
+| tags_user     | Tags defined by the users                           | Empty             | Hidden                |
++---------------+-----------------------------------------------------+-------------------+-----------------------+
+
 
 Fields
 ------
@@ -147,21 +148,22 @@ Dataset
 Summary
 -------
 
-+------------------+----------------------------------+-------------------+
-| Field            | Description                      | Default           |
-+==================+==================================+===================+
-| _id              | UUID of the Entry                | Set by system     |
-+------------------+----------------------------------+-------------------+
-| title            | Title of the Entry               | Must be non-empty |
-+------------------+----------------------------------+-------------------+
-| description      | Description in markdown          | Empty             |
-+------------------+----------------------------------+-------------------+
-| tags_standard    | Tags defined in the system       | Empty             |
-+------------------+----------------------------------+-------------------+
-| tags_user        | Tags defined by the users        | Empty             |
-+------------------+----------------------------------+-------------------+
-| cross_references | External identifiers, links etc. | Empty             |
-+------------------+----------------------------------+-------------------+
++------------------+----------------------------------+-------------------+---------+
+| Field            | Description                      | Default           | Public  |
++==================+==================================+===================+=========+
+| _id              | UUID of the Entry                | Set by system     | Visible |
++------------------+----------------------------------+-------------------+---------+
+| title            | Title of the Entry               | Must be non-empty | Visible |
++------------------+----------------------------------+-------------------+---------+
+| description      | Description in markdown          | Empty             | Visible |
++------------------+----------------------------------+-------------------+---------+
+| tags_standard    | Tags defined in the system       | Empty             | Visible |
++------------------+----------------------------------+-------------------+---------+
+| tags_user        | Tags defined by the users        | Empty             | Visible |
++------------------+----------------------------------+-------------------+---------+
+| cross_references | External identifiers, links etc. | Empty             | Visible |
++------------------+----------------------------------+-------------------+---------+
+
 
 Fields
 ------
@@ -213,24 +215,23 @@ Collection
 Summary
 -------
 
-+------------------+---------------------------------------------------+-------------------+
-| Field            | Description                                       | Default           |
-+==================+===================================================+===================+
-| _id              | UUID of the Entry                                 | Set by system     |
-+------------------+---------------------------------------------------+-------------------+
-| title            | Title of the Entry                                | Must be non-empty |
-+------------------+---------------------------------------------------+-------------------+
-| description      | Description in markdown                           | Empty             |
-+------------------+---------------------------------------------------+-------------------+
-| tags_standard    | Tags defined in the system                        | Empty             |
-+------------------+---------------------------------------------------+-------------------+
-| tags_user        | Tags defined by the users                         | Empty             |
-+------------------+---------------------------------------------------+-------------------+
-| cross_references | External identifiers, links etc.                  | Empty             |
-+------------------+---------------------------------------------------+-------------------+
-| editors          | List of users who can edit the order and datasets | Entry creator     |
-+------------------+---------------------------------------------------+-------------------+
-
++------------------+---------------------------------------------------+-------------------+---------+
+| Field            | Description                                       | Default           | Public  |
++==================+===================================================+===================+=========+
+| _id              | UUID of the Entry                                 | Set by system     | Visible |
++------------------+---------------------------------------------------+-------------------+---------+
+| title            | Title of the Entry                                | Must be non-empty | Visible |
++------------------+---------------------------------------------------+-------------------+---------+
+| description      | Description in markdown                           | Empty             | Visible |
++------------------+---------------------------------------------------+-------------------+---------+
+| tags_standard    | Tags defined in the system                        | Empty             | Visible |
++------------------+---------------------------------------------------+-------------------+---------+
+| tags_user        | Tags defined by the users                         | Empty             | Visible |
++------------------+---------------------------------------------------+-------------------+---------+
+| cross_references | External identifiers, links etc.                  | Empty             | Visible |
++------------------+---------------------------------------------------+-------------------+---------+
+| editors          | List of users who can edit the order and datasets | Entry creator     | Hidden  |
++------------------+---------------------------------------------------+-------------------+---------+
 
 Fields
 ------
@@ -270,7 +271,7 @@ User
 
   - Including facilities, organisations ...
 
-* Login via e.g. Elixir AAI.
+* Login via e.g. Elixir AAI or API key.
 
   - On first login, the user will be added to db.
 
@@ -284,25 +285,27 @@ User
 Summary
 -------
 
-+-------------+-------------------------------------+-------------------+
-| Field       | Description                         | Default           |
-+=============+=====================================+===================+
-| _id         | UUID of the Entry                   | Set by system     |
-+-------------+-------------------------------------+-------------------+
-| email       | Email address for the user          | Must be non-empty |
-+-------------+-------------------------------------+-------------------+
-| auth_ids    | List of identfiers from e.g. Elixir | Empty             |
-+-------------+-------------------------------------+-------------------+
-| api_key     | Hash for the API key                | Empty             |
-+-------------+-------------------------------------+-------------------+
-| api_salt    | Salt for API api_key                | Empty             |
-+-------------+-------------------------------------+-------------------+
-| name        | Name of the user                    | Must be non-empty |
-+-------------+-------------------------------------+-------------------+
-| orcid       | ORCID of the user                   | Empty             |
-+-------------+-------------------------------------+-------------------+
-| permissions | List of permissions for the user    | Empty             |
-+-------------+-------------------------------------+-------------------+
++-------------+-------------------------------------+-------------------+---------+
+| Field       | Description                         | Default           | Public  |
++=============+=====================================+===================+=========+
+| _id         | UUID of the Entry                   | Set by system     | Hidden  |
++-------------+-------------------------------------+-------------------+---------+
+| email       | Email address for the user          | Must be non-empty | Visible |
++-------------+-------------------------------------+-------------------+---------+
+| auth_ids    | List of identfiers from e.g. Elixir | Empty             | Hidden  |
++-------------+-------------------------------------+-------------------+---------+
+| api_key     | Hash for the API key                | Empty             | Hidden  |
++-------------+-------------------------------------+-------------------+---------+
+| api_salt    | Salt for API api_key                | Empty             | Hidden  |
++-------------+-------------------------------------+-------------------+---------+
+| name        | Name of the user                    | Must be non-empty | Visible |
++-------------+-------------------------------------+-------------------+---------+
+| orcid       | ORCID of the user                   | Empty             | Visible |
++-------------+-------------------------------------+-------------------+---------+
+| permissions | List of permissions for the user    | Empty             | Hidden  |
++-------------+-------------------------------------+-------------------+---------+
+| url         | URL to e.g. homepage                | Empty             | Visible |
++-------------+-------------------------------------+-------------------+---------+
 
 
 Fields
@@ -315,7 +318,9 @@ Fields
     * **Default:** Must be set
 :auth_ids:
     * List of identifiers used by e.g. Elixir AAI.
-    * ``{'local': 'id@local'}`` can be used with the API key
+    * Saved as strings.
+    * The general form is ``email@location.suffix::source``, but the style may vary between sources.
+    * Any of the auth_id can be used with the API key.
 :api_key:
     * Hash for the API key for authorization to API or login.
 :api_salt:
@@ -387,4 +392,5 @@ Fields
 :timestamp:
     * The time the action was performed.
 :user:
-    ``_id`` of the user that performed the action.
+    * ``_id`` of the user that performed the action.
+    * Can be set to ``system`` for automated actions (e.g. creating a user after OIDC login)
