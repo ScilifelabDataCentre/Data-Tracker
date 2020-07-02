@@ -1,9 +1,11 @@
 FROM node:alpine
 
-ADD . /code
-WORKDIR /code/frontend
+ADD ./quasar /code
+WORKDIR /code
 
-#RUN yarn install
-#RUN cp -r node_modules /
+RUN yarn global add @quasar/cli
 
-CMD ["yarn", "run", "serve"]
+RUN yarn install
+RUN cp -r node_modules /
+
+CMD ["quasar", "dev"]

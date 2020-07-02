@@ -23,12 +23,10 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile-frontend
-    depends_on:
-      - backend
     volumes:
       - type: bind
-        source: .
-        target: /code
+        source: ./quasar/src
+        target: /code/src
   proxy:
     build:
       context: ./
