@@ -12,7 +12,7 @@
         />
 
         <q-toolbar-title>
-          Quasar App
+	  Data Tracker
         </q-toolbar-title>
 
         <div>Quasar v{{ $q.version }}</div>
@@ -24,19 +24,72 @@
       show-if-above
       bordered
       content-class="bg-grey-1"
-    >
+      >
+
       <q-list>
         <q-item-label
           header
           class="text-grey-8"
         >
-          Essential Links
+          Data types
         </q-item-label>
-        <EssentialLink
-          v-for="link in essentialLinks"
+
+        <!-- Show only if permitted -->
+        <NavEntry
+          v-if="true"
+          v-bind="orderLink"
+        />
+
+        <NavEntry
+          v-for="link in dataLinks"
           :key="link.title"
           v-bind="link"
         />
+
+        <div v-if="true">
+          <q-item-label
+            header
+            class="text-grey-8"
+            >
+            User Admin
+          </q-item-label>
+
+          <NavEntry
+            v-bind="adminUserLink"
+            />
+        </div>
+        <div
+          v-if="true"
+          >
+          <q-item-label
+            header
+            class="text-grey-8"
+            >
+            Current User
+          </q-item-label>
+
+          <NavEntry
+            v-for="link in userLinks"
+            :key="link.title"
+            v-bind="link"
+            />
+        </div>
+        <div
+          v-else
+          >
+          <q-item-label
+            header
+            class="text-grey-8"
+            >
+            Current User
+          </q-item-label>
+
+          <NavEntry
+            v-for="link in loginLinks"
+            :key="link.title"
+            v-bind="link"
+            />
+        </div>
       </q-list>
     </q-drawer>
 
@@ -47,61 +100,78 @@
 </template>
 
 <script>
-import EssentialLink from 'components/EssentialLink.vue'
+import NavEntry from 'components/NavEntry.vue'
 
 export default {
   name: 'MainLayout',
 
   components: {
-    EssentialLink
+    NavEntry
   },
 
   data () {
     return {
       leftDrawerOpen: false,
-      essentialLinks: [
+      orderLink: {
+        title: 'Orders',
+        caption: 'Order management',
+        icon: 'assignment',
+        link: '/orders'
+      },
+
+      adminUserLink: {
+        title: 'Users',
+        caption: 'User administration',
+        icon: 'people',
+        link: '/admin/users/'
+      },
+
+      dataLinks: [
         {
-          title: 'Docs',
-          caption: 'quasar.dev',
-          icon: 'school',
-          link: 'https://quasar.dev'
+          title: 'Datasets',
+          caption: 'Data deliveries',
+          icon: 'memory',
+          link: '/datasets'
         },
         {
-          title: 'Github',
-          caption: 'github.com/quasarframework',
-          icon: 'code',
-          link: 'https://github.com/quasarframework'
-        },
-        {
-          title: 'Discord Chat Channel',
-          caption: 'chat.quasar.dev',
-          icon: 'chat',
-          link: 'https://chat.quasar.dev'
-        },
-        {
-          title: 'Forum',
-          caption: 'forum.quasar.dev',
-          icon: 'record_voice_over',
-          link: 'https://forum.quasar.dev'
-        },
-        {
-          title: 'Twitter',
-          caption: '@quasarframework',
-          icon: 'rss_feed',
-          link: 'https://twitter.quasar.dev'
-        },
-        {
-          title: 'Facebook',
-          caption: '@QuasarFramework',
-          icon: 'public',
-          link: 'https://facebook.quasar.dev'
-        },
-        {
-          title: 'Quasar Awesome',
-          caption: 'Community Quasar projects',
-          icon: 'favorite',
-          link: 'https://awesome.quasar.dev'
+          title: 'Collections',
+          caption: 'Collections of datasets',
+          icon: 'local_library',
+          link: '/collections'
         }
+      ],
+      
+      userLinks: [
+        {
+          title: 'Current User',
+          caption: 'About the current user',
+          icon: 'person',
+          link: '/user/about'
+        },
+        {
+          title: 'Log Out',
+          caption: 'Log out the current user',
+          icon: 'exit_to_app',
+          link: '/api/logout/'
+        },
+      ],
+
+      loginLinks: [
+        {
+          title: 'Log In',
+          caption: 'Log in',
+          icon: 'login',
+          link: '/login'
+        },
+      ],
+
+      otherLinks: [
+        {
+          title: 'About',
+          caption: 'Information about the system',
+          icon: 'info',
+          link: '/about'
+        },
       ]
     }
   }
