@@ -8,12 +8,12 @@
   </div>
   <div class="row flex flex-center">
     <div class="col-md-4 col-lg-4 col-xs-10 col-sm-10">
-      <q-card class="q-pa-lg text-center box-shadow q-ma-md" tabindex="0" @keyup.enter="$router.push('/collections')" @click="$router.push('/datasets')">
+      <q-card class="q-pa-lg text-center box-shadow q-ma-md">
 	<q-card-section>
           <q-icon size="150px" name="memory" style="color: #045C64;"/>
           <div class="text-h5 text-weight-bold">Datasets</div>
         </q-card-section>
-	<q-card-section class="q-pt-none" vertical>
+	<q-card-section class="q-pt-none">
           <div class="text-subtitle1">
             {{ dsCount }} datasets available
           </div>
@@ -24,10 +24,16 @@
             </router-link>
           </div>
         </q-card-section>
+	<q-card-section class="q-pt-none">
+	  <q-btn
+            flat
+            dense
+            label="Browse Datasets" />
+	</q-card-section>
       </q-card>
     </div>
     <div class="col-md-4 col-lg-4 col-xs-10 col-sm-10">
-      <q-card class="q-pa-lg text-center box-shadow q-ma-md" tabindex="0" @keyup.enter="$router.push('/collections')" @click="$router.push('/collections')">
+      <q-card class="q-pa-lg text-center box-shadow q-ma-md">
 	<q-card-section>
           <q-icon size="150px" name="local_library" style="color: #045C64;" />
 
@@ -37,13 +43,14 @@
           <div class="text-subtitle1">
             {{ collCount }} collections available
           </div>
-          <div class="text-subtitle1" v-if="randomCollection._id.length > 0">
-            Random collection:
-            <router-link :to="'/datasets/' + 'randomCollection._id'">
-              {{ randomDataset.title }}
-            </router-link>
-          </div>
         </q-card-section>
+	<q-card-section class="q-pt-none">
+	  <q-btn
+            flat
+            dense
+            label="Browse Collections" />
+	</q-card-section>
+
       </q-card>
     </div>
   </div>
