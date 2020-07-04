@@ -23,6 +23,8 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile-frontend
+    ports:
+      - 127.0.0.1:8080:8080
     volumes:
       - type: bind
         source: ./quasar/src
