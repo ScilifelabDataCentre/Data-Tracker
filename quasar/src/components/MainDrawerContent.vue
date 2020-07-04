@@ -4,7 +4,7 @@
     header
     class="text-grey-8"
     >
-    Data Types
+    Data
   </q-item-label>
 
   <!-- Show only if permitted -->
@@ -24,7 +24,7 @@
       header
       class="text-grey-8"
       >
-      User Admin
+      Admin
     </q-item-label>
 
     <NavEntry
@@ -38,7 +38,7 @@
       header
       class="text-grey-8"
       >
-      Current User
+      User
     </q-item-label>
 
     <NavEntry
@@ -78,6 +78,20 @@
 
     <NavEntry
       v-for="link in loginLinks"
+      :key="link.title"
+      v-bind="link"
+      />
+  </div>
+  <div>
+    <q-item-label
+      header
+      class="text-grey-8"
+      >
+      Other
+    </q-item-label>
+
+    <NavEntry
+      v-for="link in otherLinks"
       :key="link.title"
       v-bind="link"
       />
@@ -163,6 +177,12 @@ export default {
       ],
 
       otherLinks: [
+        {
+          title: 'Home',
+          caption: 'Start page',
+          icon: 'home',
+          link: '/'
+        },
         {
           title: 'About',
           caption: 'Information about the system',
