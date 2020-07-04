@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 
 import currentUser from './currentUser'
+import datasets from './datasets'
 
 Vue.use(Vuex)
 
@@ -18,7 +19,7 @@ export default function (/* { ssrContext } */) {
   const Store = new Vuex.Store({
     modules: {
       currentUser,
-      // example
+      datasets
     },
 
     // enable strict mode (adds overhead!)
