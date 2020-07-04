@@ -28,6 +28,7 @@
 	  <q-btn
             flat
             dense
+	    to="/datasets"
             label="Browse Datasets" />
 	</q-card-section>
       </q-card>
@@ -48,6 +49,7 @@
 	  <q-btn
             flat
             dense
+	    to="/collections"
             label="Browse Collections" />
 	</q-card-section>
 
