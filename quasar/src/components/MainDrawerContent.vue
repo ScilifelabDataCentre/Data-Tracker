@@ -140,7 +140,7 @@ export default {
         {
           title: 'Datasets',
           caption: 'Data deliveries',
-          icon: 'memory',
+          icon: 'insights',
           link: '/datasets'
         },
         {
