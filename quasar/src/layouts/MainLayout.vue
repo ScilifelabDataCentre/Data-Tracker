@@ -109,6 +109,17 @@ export default {
     NavEntry
   },
 
+  computed: {
+    currentUser: {
+      get () {
+        return this.$store.state.currentUser.info;
+      },
+      set (val) {
+        this.$store.commit('currentUser/updateInfo', val)
+      }
+    }
+  },
+
   data () {
     return {
       leftDrawerOpen: false,
@@ -174,6 +185,10 @@ export default {
         },
       ]
     }
+  },
+
+  created () {
+    this.$store.dispatch('currentUser/getInfo');
   }
 }
 </script>
