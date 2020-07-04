@@ -12,10 +12,24 @@
         />
 
         <q-toolbar-title>
-	  Data Tracker
+          <q-btn
+            flat
+            dense
+            no-caps
+            no-wrap
+            to="/"
+            >
+            Data Tracker
+          </q-btn>
         </q-toolbar-title>
-
-        <div>Quasar v{{ $q.version }}</div>
+        <q-btn
+          dense
+          flat
+          no-wrap
+          no-caps
+          label="SciLifeLab Data Centre"
+          class="q-ml-sm pull-right"
+          />
       </q-toolbar>
     </q-header>
 
