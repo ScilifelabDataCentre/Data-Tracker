@@ -5,7 +5,7 @@ export function getDataset ({ commit, dispatch }, id) {
     axios
       .get('/api/dataset/' + id + '/')
       .then((response) => {
-        commit('UPDATE_DATASET', response.data.dataset);
+        commit('updateDataset', response.data.dataset);
         resolve(response);
       })
       .catch((err) => {
@@ -20,7 +20,7 @@ export function getDatasets ({ commit, dispatch }) {
     axios
       .get('/api/dataset/')
       .then((response) => {
-        commit('UPDATE_DATASETS', response.data.datasets);
+        commit('updateDatasets', response.data.datasets);
         resolve(response);
       })
       .catch((err) => {
