@@ -1,6 +1,8 @@
 import MainLayout from 'layouts/MainLayout.vue'
 import Index from 'pages/Index.vue'
 import About from 'pages/About.vue'
+import DatasetBase from 'pages/datasets/DatasetBase.vue'
+import DatasetBrowser from 'pages/datasets/DatasetBrowser.vue'
 
 const routes = [
   {
@@ -8,12 +10,18 @@ const routes = [
     component:  MainLayout,
     children: [
       { path: '', component: Index },
-      { path: '/about', component: About }
+      { path: 'about', component: About },
+      {
+        path: 'datasets',
+        component: DatasetBase,
+        children: [
+          { path: '', redirect: 'browser' },
+          { path: 'browser', component: DatasetBrowser },
+        ]
+      }
     ]
   },
 
-  // Always leave this as last one,
-  // but you can also remove it
   {
     path: '*',
     component: () => import('pages/Error404.vue')
