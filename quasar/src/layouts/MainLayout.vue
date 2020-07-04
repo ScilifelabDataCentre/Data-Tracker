@@ -19,7 +19,14 @@
       </q-toolbar>
     </q-header>
 
-    <MainDrawer :drawerOpen="leftDrawerOpen"/>
+    <q-drawer
+      v-model="leftDrawerOpen"
+      show-if-above
+      bordered
+      content-class="bg-grey-1"
+      >
+      <MainDrawerContent />
+    </q-drawer>
     
     <q-page-container>
       <router-view />
@@ -28,13 +35,13 @@
 </template>
 
 <script>
-import MainDrawer from 'components/MainDrawer.vue'
+import MainDrawerContent from 'components/MainDrawerContent.vue'
 
 export default {
   name: 'MainLayout',
 
   components: {
-    MainDrawer
+    MainDrawerContent
   },
 
   data () {

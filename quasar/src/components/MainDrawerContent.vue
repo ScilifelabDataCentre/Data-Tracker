@@ -1,11 +1,5 @@
 <template>
-<q-drawer
-  v-model="drawerOpen"
-  show-if-above
-  bordered
-  content-class="bg-grey-1"
-  >
-  
+<div>
   <q-list>
     <q-item-label
       header
@@ -91,14 +85,14 @@
         />
     </div>
   </q-list>
-</q-drawer>
+</div>
 </template>
 
 <script>
 import NavEntry from 'components/NavEntry.vue'
 
 export default {
-  name: 'MainDrawer',
+  name: 'MainDrawerContent',
 
   components: {
     NavEntry
