@@ -178,12 +178,6 @@ export default {
 
       otherLinks: [
         {
-          title: 'Home',
-          caption: 'Start page',
-          icon: 'home',
-          link: '/'
-        },
-        {
           title: 'About',
           caption: 'Information about the system',
           icon: 'info',

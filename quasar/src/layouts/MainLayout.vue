@@ -18,9 +18,8 @@
             no-caps
             no-wrap
             to="/"
-            >
-            Data Tracker
-          </q-btn>
+            label="Data Tracker"
+            icon="home" />
         </q-toolbar-title>
         <q-btn
           dense
@@ -29,6 +28,7 @@
           no-caps
           label="SciLifeLab Data Centre"
           class="q-ml-sm pull-right"
+	  href="https://www.scilifelab.se/data/"
           />
       </q-toolbar>
     </q-header>
@@ -49,6 +49,8 @@
 </template>
 
 <script>
+import { openURL } from 'quasar'
+
 import MainDrawerContent from 'components/MainDrawerContent.vue'
 
 export default {
@@ -66,6 +68,12 @@ export default {
 
   created () {
     this.$store.dispatch('currentUser/getInfo');
-  }
+  },
+
+  methods: {
+    onClick: function (link) {
+      openURL(link)
+    }
+  },
 }
 </script>
