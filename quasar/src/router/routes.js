@@ -11,14 +11,14 @@ const routes = [
     children: [
       { path: '', component: Index },
       { path: 'about', component: About },
-      {
-        path: 'datasets',
-        component: DatasetBase,
-        children: [
-          { path: '', redirect: 'browser' },
-          { path: 'browser', component: DatasetBrowser },
-        ]
-      }
+    ]
+  },
+  {
+    path: '/datasets',
+    component:  MainLayout,
+    children: [
+      { path: '', redirect: 'browser' },
+      { path: 'browser', component: DatasetBrowser },
     ]
   },
 
