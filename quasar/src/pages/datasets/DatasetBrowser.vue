@@ -23,7 +23,7 @@
       <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4">
         <q-card>
           <q-card-section class="text-center">
-            <div class="text-weight-bold">
+            <div class="text-h6">
               {{ props.row.title }}
             </div>
             <div class="text-caption">
@@ -34,7 +34,8 @@
             <q-btn
               flat
               label="More"
-              :to="props.row.id" />
+	      type="a"
+              :href="props.row._id" />
           </q-card-section>
         </q-card>
       </div>
