@@ -28,6 +28,8 @@
           no-caps
           label="SciLifeLab Data Centre"
           class="q-ml-sm pull-right"
+	  type="a"
+	  target="_blank"
 	  href="https://www.scilifelab.se/data/"
           />
       </q-toolbar>
