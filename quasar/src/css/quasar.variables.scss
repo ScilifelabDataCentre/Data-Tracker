@@ -12,17 +12,6 @@
 // to match your app's branding.
 // Tip: Use the "Theme Builder" on Quasar's documentation website.
 
-$primary   : #045C64;
-$secondary : #26A69A;
-$accent    : #9C27B0;
-
-$dark      : #1D1D1D;
-
-$positive  : #21BA45;
-$negative  : #C10015;
-$info      : #31CCEC;
-$warning   : #F2C037;
-
 $scilifelab-lime: #A7C947;
 $scilifelab-lime75: #BDD775;
 $scilifelab-lime50: #D3E4A3;
@@ -46,3 +35,14 @@ $scilifelab-grape25: #D2C7D4;
 $scilifelab-light-gray: #E5E5E5;
 $scilifelab-medium-gray: #A6A6A6;
 $scilifelab-dark-gray: #3F3F3F;
+
+$primary   : $scilifelab-teal;
+$secondary : #26A69A;
+$accent    : #9C27B0;
+
+$dark      : #1D1D1D;
+
+$positive  : #21BA45;
+$negative  : #C10015;
+$info      : #31CCEC;
+$warning   : #F2C037;
