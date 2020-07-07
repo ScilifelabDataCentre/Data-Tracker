@@ -6,17 +6,20 @@
   <q-page-sticky position="bottom-right" :offset="[24, 24]">
     <q-btn fab icon="edit" color="accent" />
   </q-page-sticky>
-  <q-card>
-    <q-card-section>
-      <div class="text-center">
-        <h1 class="text-h2">{{ dataset.title }}</h1>
-        <div class="text-italic">
+      <div class="text-center q-mb-lg">
+        <h1 class="text-h2 q-mb-xs ">{{ dataset.title }}</h1>
+        <div class="text-subtitle1 text-italic">
           {{ dataset._id }}
         </div>
       </div>
-    </q-card-section>
+  <q-card class="q-my-lg">
     <q-card-section>
       <q-markdown :src="dataset.description" />
+    </q-card-section>
+  </q-card>
+  <q-card class="q-my-lg">
+    <q-card-section>
+      <q-markdown :src="dataset.extra" />
     </q-card-section>
   </q-card>
 </q-page>
