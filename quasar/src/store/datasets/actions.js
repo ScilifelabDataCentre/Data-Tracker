@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+import {getCsrfHeader} from '../helpers.js';
+
 export function getDataset ({ commit, dispatch }, id) {
   return new Promise((resolve, reject) => {
     axios
@@ -25,6 +27,41 @@ export function getDatasets ({ commit, dispatch }) {
       })
       .catch((err) => {
         dispatch('updateNotification', ['Unable to retrieve dataset list', 'warning'])
+        reject(err);
+      });
+  });
+}
+
+export function saveDataset (context, payload) {
+  return new Promise((resolve, reject) => {
+    let datasetUuid = payload.id;
+    delete payload.id;
+    axios
+      .patch('/api/dataset/' + datasetUuid + '/',
+             payload,
+             {
+               headers: getCsrfHeader(),
+             })
+      .then((response) => {
+        resolve(response);
+      })
+      .catch(function (err) {
+        reject(err);
+      });
+  });
+}
+
+export function deleteDataset (context, dataset_id) {
+  return new Promise((resolve, reject) => {
+    axios
+      .delete('/api/dataset/' + dataset_id + '/',
+              {
+                headers: getCsrfHeader(),
+              })
+      .then((response) => {
+        resolve(response);
+      })
+      .catch(function (err) {
         reject(err);
       });
   });

@@ -1,12 +1,11 @@
 <template>
 <q-page padding>
   <q-card>
-    <q-form ref="dataset-edit">
-      <q-card-section>
-        <q-field
-	  v-if="newDataset.id !== '-1'"
-          label="UUID"
-	  stack-label
+    <q-card-section>
+      <q-field
+	v-if="newDataset.id !== '-1'"
+        label="UUID"
+	stack-label
 	  filled
           >
 	  <template v-slot:prepend>
@@ -96,10 +95,10 @@
         </q-list>
       </q-card-section>
       <q-card-section>
-        <q-btn label="Submit" color="positive" class="q-mr-md"/>
-        <q-btn label="Cancel" color="negative"/>
+        <q-btn label="Submit" color="positive" class="q-mr-md" @click="submitDatasetForm"/>
+        <q-btn label="Cancel" color="blue-grey-4" class="q-mr-lg" @click="cancelChanges"/>
+        <q-btn label="Delete" color="negative" class="q-ml-xl" @click="deleteDataset"/>
       </q-card-section>
-    </q-form>
   </q-card>
   <q-inner-loading :showing="loading">
     <q-spinner-gears size="100px" color="primary" />
@@ -175,6 +174,27 @@ export default {
       this.$delete(this.newDataset.extra, keyName);
     },
 
+    submitDatasetForm(event) {
+      event.preventDefault();
+      this.$store.dispatch('datasets/saveDataset', this.newDataset)
+        .then(() => {
+          this.$router.push({'name': 'Dataset About', params: { 'uuid': this.uuid } });
+        });
+    },
+    
+    deleteDataset(event) {
+      event.preventDefault();
+      this.$store.dispatch('datasets/deleteDataset', this.newDataset.id)
+        .then(() => {
+          this.$router.push({ 'name': 'Dataset Browser' });
+        });
+    },
+
+    cancelChanges(event) {
+      event.preventDefault();
+      this.$router.push({'name': 'Dataset About', params: { 'uuid': this.newDataset.id } });
+    },
+    
   },
   
   mounted () {
@@ -185,6 +205,7 @@ export default {
         delete this.newDataset._id;
         delete this.newDataset.related;
         delete this.newDataset.projects;
+        delete this.newDataset.creator;
         this.loading = false;
       })
       .catch(() => this.loading = false);
