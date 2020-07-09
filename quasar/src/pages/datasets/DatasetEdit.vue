@@ -45,7 +45,7 @@
                    id="dataset-description"
                    label="Description"
                    v-model="linkDesc" />
-           <q-btn flat icon="add" color="blue" @click="addLink"/>
+           <q-btn flat icon="add" color="primary" @click="addLink"/>
          </div>
         <q-list dense>
           <q-item v-for="(link, i) in newDataset.links" :key="i">
@@ -74,7 +74,7 @@
                    id="dataset-description"
                    label="User tag name"
                    v-model="tagName" />
-           <q-btn flat icon="add" color="blue" @click="addUserTag"/>
+           <q-btn flat icon="add" color="primary" @click="addUserTag"/>
          </div>
         <q-list dense>
           <q-item v-for="key in Object.keys(newDataset.extra)" :key="key">
@@ -95,7 +95,10 @@
           </q-item>
         </q-list>
       </q-card-section>
-
+      <q-card-section>
+        <q-btn label="Submit" color="positive" class="q-mr-md"/>
+        <q-btn label="Cancel" color="negative"/>
+      </q-card-section>
     </q-form>
   </q-card>
   <q-inner-loading :showing="loading">
