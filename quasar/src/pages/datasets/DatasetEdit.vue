@@ -17,6 +17,7 @@
           </template>
 	</q-field>
       </q-card-section>
+
       <q-card-section>
         <div class="text-h6 q-mt-sm q-mb-xs">General</div>
         <q-input id="dataset-title"
@@ -36,6 +37,7 @@
           </template>
 	</q-input>
       </q-card-section>
+
       <q-card-section>
         <div class="text-h6 q-mt-sm q-mb-xs">Links</div>
         <div class="row flex">
@@ -43,11 +45,10 @@
                    id="dataset-description"
                    label="Description"
                    v-model="linkDesc" />
-           <q-btn icon="add" color="blue" @click="addLink"/>
+           <q-btn flat icon="add" color="blue" @click="addLink"/>
          </div>
         <q-list dense>
-          <q-item v-for="(link, i) in newDataset.links" :key="i"
-                  clickable>
+          <q-item v-for="(link, i) in newDataset.links" :key="i">
             <q-input :label="link.description"
                      v-model="link.url"
                      stack-label>
@@ -56,12 +57,45 @@
               </template>
               <template v-slot:append>
                 <q-btn icon="delete"
-                       flat />
+                       flat
+                       size="sm"
+                       round
+                       @click="deleteLink($event, i)" />
               </template>
             </q-input>
           </q-item>
         </q-list>
       </q-card-section>
+
+      <q-card-section>
+        <div class="text-h6 q-mt-sm q-mb-xs">User Tags</div>
+        <div class="row flex">
+          <q-input class="col-5 q-mr-md"
+                   id="dataset-description"
+                   label="User tag name"
+                   v-model="tagName" />
+           <q-btn flat icon="add" color="blue" @click="addUserTag"/>
+         </div>
+        <q-list dense>
+          <q-item v-for="key in Object.keys(newDataset.extra)" :key="key">
+            <q-input :label="key"
+                     v-model="newDataset.extra[key]"
+                     stack-label>
+              <template v-slot:prepend>
+                <q-icon name="label" />
+              </template>
+              <template v-slot:append>
+                <q-btn icon="delete"
+                       flat
+                       size="sm"
+                       round
+                       @click="deleteUserTag($event, i)" />
+              </template>
+            </q-input>
+          </q-item>
+        </q-list>
+      </q-card-section>
+
     </q-form>
   </q-card>
   <q-inner-loading :showing="loading">
@@ -103,11 +137,10 @@ export default {
         description: '',
         links: [],
         linkDesc: '',
-        linkUrl: '',
         extra: {},
       },
       linkDesc: '',
-      linkUrl: '',
+      tagName: '',
     }
   },
 
@@ -115,15 +148,30 @@ export default {
     addLink(event) {
       event.preventDefault();
       this.newDataset.links.push({'description': this.linkDesc,
-                                  'url': this.linkUrl});
+                                  'url': ''});
       this.linkDesc = '';
-      this.linkUrl = '';
     },
 
     deleteLink(event, position) {
       event.preventDefault();
       this.newDataset.links.splice(position, 1);
     },
+
+    addUserTag(event) {
+      event.preventDefault();
+      if (this.tagName !== '') {
+        if (! Object.keys(this.newDataset.extra).includes(this.tagName)) {
+          this.$set(this.newDataset.extra, this.tagName, '');
+        }
+      }
+      this.tagName = '';
+    },
+
+    deleteUserTag(event, keyName) {
+      event.preventDefault();
+      this.$delete(this.newDataset.extra, keyName);
+    },
+
   },
   
   mounted () {
