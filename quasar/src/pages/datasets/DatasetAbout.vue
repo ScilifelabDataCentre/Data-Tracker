@@ -1,16 +1,5 @@
 <template>
 <q-page padding>
-  <q-inner-loading :showing="loading">
-    <q-spinner-gears size="100px" color="primary" />
-  </q-inner-loading>
-
-  <q-page-sticky position="bottom-right"
-                 :offset="[24, 24]"
-                 v-if="dataset.creator === currentUser.name || 
-                       currentUser.permissions.includes('DATA_MANAGEMENT')">
-    <q-btn fab icon="edit" color="accent" :to="{ 'name': 'Dataset Edit', params: {'uuid': uuid} }" />
-  </q-page-sticky>
-
   <div class="text-center q-mb-lg">
     <h1 class="text-h2 q-mb-xs ">{{ dataset.title }}</h1>
     <div class="text-subtitle1 text-italic">
@@ -113,9 +102,19 @@
           </ul>
         </template>
       </q-field>
-
     </q-card-section>
   </q-card>
+
+  <q-page-sticky position="bottom-right"
+                 :offset="[24, 24]"
+                 v-if="dataset.creator === currentUser.name ||
+                       currentUser.permissions.includes('DATA_MANAGEMENT')">
+    <q-btn fab icon="edit" color="accent" :to="{ 'name': 'Dataset Edit', params: {'uuid': uuid} }" />
+  </q-page-sticky>
+
+  <q-inner-loading :showing="loading">
+    <q-spinner-gears size="100px" color="primary" />
+  </q-inner-loading>
 </q-page>
 </template>
 
