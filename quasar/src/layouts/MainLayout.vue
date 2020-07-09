@@ -11,14 +11,7 @@
           @click="leftDrawerOpen = !leftDrawerOpen"
         />
         <q-toolbar-title>
-          <q-btn
-            flat
-            dense
-            no-caps
-            no-wrap
-            :to="{'name': 'Home'}"
-            label="Data Tracker"
-            icon="home" />
+          Data Tracker
         </q-toolbar-title>
         <q-btn
           dense
