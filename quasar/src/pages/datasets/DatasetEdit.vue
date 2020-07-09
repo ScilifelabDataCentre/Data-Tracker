@@ -1,9 +1,5 @@
 <template>
 <q-page padding>
-  <q-inner-loading :showing="loading">
-    <q-spinner-gears size="100px" color="primary" />
-  </q-inner-loading>
-
   <q-card>
     <q-form ref="dataset-edit">
       <q-card-section>
@@ -22,6 +18,7 @@
 	</q-field>
       </q-card-section>
       <q-card-section>
+        <div class="text-h6 q-mt-sm q-mb-xs">General</div>
         <q-input id="dataset-title"
                  label="Title"
                  v-model="newDataset.title">
@@ -40,9 +37,36 @@
 	</q-input>
       </q-card-section>
       <q-card-section>
+        <div class="text-h6 q-mt-sm q-mb-xs">Links</div>
+        <div class="row flex">
+          <q-input class="col-5 q-mr-md"
+                   id="dataset-description"
+                   label="Description"
+                   v-model="linkDesc" />
+           <q-btn icon="add" color="blue" @click="addLink"/>
+         </div>
+        <q-list dense>
+          <q-item v-for="(link, i) in newDataset.links" :key="i"
+                  clickable>
+            <q-input :label="link.description"
+                     v-model="link.url"
+                     stack-label>
+              <template v-slot:prepend>
+                <q-icon name="link" />
+              </template>
+              <template v-slot:append>
+                <q-btn icon="delete"
+                       flat />
+              </template>
+            </q-input>
+          </q-item>
+        </q-list>
       </q-card-section>
     </q-form>
   </q-card>
+  <q-inner-loading :showing="loading">
+    <q-spinner-gears size="100px" color="primary" />
+  </q-inner-loading>
 </q-page>
 </template>
 
@@ -78,22 +102,41 @@ export default {
         title: '',
         description: '',
         links: [],
+        linkDesc: '',
+        linkUrl: '',
         extra: {},
       },
-
+      linkDesc: '',
+      linkUrl: '',
     }
+  },
+
+  methods: {    
+    addLink(event) {
+      event.preventDefault();
+      this.newDataset.links.push({'description': this.linkDesc,
+                                  'url': this.linkUrl});
+      this.linkDesc = '';
+      this.linkUrl = '';
+    },
+
+    deleteLink(event, position) {
+      event.preventDefault();
+      this.newDataset.links.splice(position, 1);
+    },
   },
   
   mounted () {
     this.$store.dispatch('datasets/getDataset', this.uuid)
-      .then(() => this.loading = false)
+      .then((response) => {
+        this.newDataset = JSON.parse(JSON.stringify(response.data.dataset));
+        this.newDataset.id = this.newDataset._id;
+        delete this.newDataset._id;
+        delete this.newDataset.related;
+        delete this.newDataset.projects;
+        this.loading = false;
+      })
       .catch(() => this.loading = false);
-    this.newDataset = this.origDataset;
-    this.newDataset.id = this.newDataset._id;
-    delete this.newDataset._id;
-    delete this.newDataset.related;
-    delete this.newDataset.projects;
-
   }
 
 }
