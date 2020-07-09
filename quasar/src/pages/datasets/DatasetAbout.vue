@@ -40,7 +40,7 @@
         :label="field"
         stack-label>
         <template v-slot:prepend>
-          <q-icon name="" />
+          <q-icon name="label" />
         </template>
         <template v-slot:control>
           <span>
