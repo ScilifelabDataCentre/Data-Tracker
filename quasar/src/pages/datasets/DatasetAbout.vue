@@ -7,7 +7,7 @@
                  :offset="[24, 24]"
                  v-if="dataset.creator === currentUser.name || 
                        currentUser.permissions.includes('DATA_MANAGEMENT')">
-    <q-btn fab icon="edit" color="accent" />
+    <q-btn fab icon="edit" color="accent" :to="{ 'name': 'Dataset Edit', params: {'uuid': uuid} }" />
   </q-page-sticky>
       <div class="text-center q-mb-lg">
         <h1 class="text-h2 q-mb-xs ">{{ dataset.title }}</h1>
@@ -82,7 +82,13 @@
 <script>
 export default {
   name: 'DatasetAbout',
-  props: ['uuid'],
+
+  props: {
+    uuid: {
+      type: String,
+      required: true
+    }
+  },
 
   computed: {
     dataset: {
