@@ -34,8 +34,7 @@
             <q-btn
               flat
               label="More"
-	      type="a"
-              :href="props.row._id" />
+              :to="{ name: 'Dataset About', params: { 'uuid': props.row._id } }" />
           </q-card-section>
         </q-card>
       </div>
@@ -74,11 +73,6 @@ export default {
           required: true,
           align: 'left',
           sortable: true,
-
-          // style: 'width: 500px',
-          // classes: 'my-special-class',
-          // headerStyle: 'width: 500px',
-          // headerClasses: 'my-special-class'
         },
         { name: 'title',
           label: 'Dataset title',
