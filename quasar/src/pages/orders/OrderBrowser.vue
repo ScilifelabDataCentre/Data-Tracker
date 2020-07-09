@@ -1,5 +1,10 @@
 <template>
 <q-page padding>
+  <q-btn round
+         color="accent"
+         icon="add"
+         :to="{ 'name': 'Order Add' }" />
+
   <q-table
     title="Orders"
     :data="orders"
@@ -12,6 +17,7 @@
     no-data-label="No entries found"
     :no-results-label="filter + ' does not match any entries'"
     >
+
     <template v-slot:top-right>
       <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
         <template v-slot:append>
@@ -19,6 +25,7 @@
         </template>
       </q-input>
     </template>
+
     <template v-slot:item="props">
       <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4">
         <q-card>
@@ -34,7 +41,7 @@
             <q-btn
               flat
               label="More"
-              :to="{ name: 'Dataset About', params: { 'uuid': props.row._id } }" />
+              :to="{ name: 'Order About', params: { 'uuid': props.row._id } }" />
           </q-card-section>
         </q-card>
       </div>
