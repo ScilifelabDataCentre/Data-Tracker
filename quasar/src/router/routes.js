@@ -3,6 +3,10 @@ import MainLayout from 'layouts/MainLayout.vue'
 const Index = () => import(/* webpackChunkName: "base" */ 'pages/Index.vue')
 const About = () => import(/* webpackChunkName: "base" */ 'pages/About.vue')
 
+const CollectionAbout = () => import(/* webpackChunkName: "collection" */ 'pages/collections/CollectionAbout.vue')
+const CollectionBrowser = () => import(/* webpackChunkName: "collection" */ 'pages/collections/CollectionBrowser.vue')
+const CollectionEdit = () => import(/* webpackChunkName: "collection" */ 'pages/collections/CollectionEdit.vue')
+
 const DatasetAbout = () => import(/* webpackChunkName: "dataset" */ 'pages/datasets/DatasetAbout.vue')
 const DatasetBrowser = () => import(/* webpackChunkName: "dataset" */ 'pages/datasets/DatasetBrowser.vue')
 const DatasetEdit = () => import(/* webpackChunkName: "dataset" */ 'pages/datasets/DatasetEdit.vue')
@@ -71,6 +75,36 @@ const routes = [
         component: OrderEdit,
         props: { 'uuid': '' },
         name: 'Order Add'
+      },
+    ]
+  },
+
+  {
+    path: '/collections',
+    component:  MainLayout,
+    children: [
+      {
+        path: '',
+        component: CollectionBrowser,
+        name: 'Collection Browser'
+      },
+      {
+        path: ':uuid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})',
+        component: CollectionAbout,
+        props: true,
+        name: 'Collection About'
+      },
+      {
+        path: ':uuid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/edit',
+        component: CollectionEdit,
+        props: true,
+        name: 'Collection Edit'
+      },
+      {
+        path: 'add',
+        component: CollectionEdit,
+        props: { 'uuid': '' },
+        name: 'Collection Add'
       },
     ]
   },
