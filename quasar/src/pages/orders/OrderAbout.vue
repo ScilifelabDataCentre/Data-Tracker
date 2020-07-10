@@ -63,7 +63,7 @@
                 no-caps
                 dense
                 :label="relOrder.title"
-                :to="{ 'name': 'Order About', 'params': { 'uuid': relOrder._id } }" />
+                :to="{ 'name': 'Dataset About', 'params': { 'uuid': relOrder._id } }" />
             </li>
           </ul>
         </template>
