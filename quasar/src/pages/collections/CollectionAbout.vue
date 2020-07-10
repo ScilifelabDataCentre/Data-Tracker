@@ -65,7 +65,7 @@
 
     <q-card-section>
       <q-field
-        v-if="collection.datasets.length > 0"
+        v-if="collection.publications.length > 0"
         label="Publications"
         stack-label>
         <template v-slot:prepend>
