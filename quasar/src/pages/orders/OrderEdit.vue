@@ -55,25 +55,35 @@
         </q-input>
 
         <div class="text-h6 q-mt-sm q-mb-xs">Datasets</div>
-        <div class="row flex">
-          <q-btn flat icon="add" color="primary" @click="addDataset"/>
-         </div>
+        <div class="text-negative">
+          Note that any changes in this section are performed immediately
+        </div>
+        <q-btn round icon="add" color="positive" @click="addDataset"/>
+        <div class="text-negative" v-if="addDsError !== ''">
+          {{ addDsError }}
+        </div>
+        <div class="text-negative" v-if="deleteDsError !== ''">
+          {{ deleteDsError }}
+        </div>  
+
         <q-list dense>
-          <q-item v-for="(link, i) in newOrder.links" :key="i">
-            <q-input :label="link.description"
-                     v-model="link.url"
+          <q-item v-for="(ds, i) in origOrder.datasets" :key="i">
+            <q-field :label="ds._id"
                      stack-label>
               <template v-slot:prepend>
-                <q-icon name="link" />
+                <q-icon name="insights" />
+              </template>
+              <template v-slot:control>
+                {{ ds.title }}
               </template>
               <template v-slot:append>
                 <q-btn icon="delete"
                        flat
                        size="sm"
                        round
-                       @click="deleteLink($event, i)" />
+                       @click="deleteDataset($event, ds._id)" />
               </template>
-            </q-input>
+            </q-field>
           </q-item>
         </q-list>
       </q-card-section>
@@ -82,7 +92,7 @@
         <div class="text-h6 q-mt-sm q-mb-xs">User Tags</div>
         <div class="row flex">
           <q-input class="col-5 q-mr-md"
-                   id="order-description"
+                   id="add-tag"
                    label="User tag name"
                    v-model="tagName" />
            <q-btn flat icon="add" color="primary" @click="addUserTag"/>
@@ -100,7 +110,7 @@
                        flat
                        size="sm"
                        round
-                       @click="deleteUserTag($event, i)" />
+                       @click="deleteUserTag($event, key)" />
               </template>
             </q-input>
           </q-item>
@@ -149,11 +159,12 @@ export default {
         id: '',
         title: '',
         description: '',
-        datasets: '',
         creator: '',
         receiver: '',
         extra: {}
       },
+      addDsError: '',
+      deleteDsError: '',
       linkDesc: '',
       tagName: '',
     }
@@ -162,17 +173,34 @@ export default {
   methods: {    
     addDataset(event) {
       event.preventDefault();
-      this.$store.dispatch('addDataset', {
+      this.$store.dispatch('orders/addDataset', {
         'data': {
-          'title': this.order.title + ' dataset ' + (this.order.datasets.length + 1)
+          'title': this.origOrder.title + ' dataset ' + (this.origOrder.datasets.length + 1)
         },
         'uuid': this.uuid
       })
         .then(() => {
-          this.$store.dispatch('getOrder', this.uuid);
+          this.$store.dispatch('orders/getOrder', this.uuid);
+          this.addDsError = '';
+        })
+        .catch((error) => {
+          this.addDsError = 'Adding dataset failed (' + error + ')'
         });
     },
 
+    deleteDataset(event, uuid) {
+      event.preventDefault();
+      this.$store.dispatch('datasets/deleteDataset', uuid)
+        .then(() => {
+          this.$store.dispatch('orders/getOrder', this.uuid);
+          this.deleteDsError = '';
+        })
+        .catch((error) => {
+          this.deleteDsError = 'Deleting dataset failed (' + error + ')'
+        });
+
+    },
+    
     addUserTag(event) {
       event.preventDefault();
       if (this.tagName !== '') {
@@ -190,8 +218,7 @@ export default {
 
     submitOrderForm(event) {
       event.preventDefault();
-      this.orderToSubmit = JSON.parse(JSON.stringify(this.Neworder));
-      delete this.orderToSubmit.datasets;
+      this.orderToSubmit = JSON.parse(JSON.stringify(this.newOrder));
       this.$store.dispatch('orders/saveOrder', this.orderToSubmit)
         .then(() => {
           this.$router.push({'name': 'Order About', params: { 'uuid': this.uuid } });
