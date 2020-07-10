@@ -1,5 +1,5 @@
 export function updateCollection (state, payload) {
-  state.collections = payload;
+  state.collection = payload;
 }
 
 export function updateCollections (state, payload) {
