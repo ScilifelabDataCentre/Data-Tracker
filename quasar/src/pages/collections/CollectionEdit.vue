@@ -45,40 +45,34 @@
             <q-icon name="contacts" />
           </template>
         </q-input>
+      </q-card-section>
 
-        <div class="text-h6 q-mt-sm q-mb-xs">Datasets</div>
-        <div class="row flex">
-          <q-select outlined v-model="model"
-                    :options="availableDatasets"
-                    :dense="dense"
-                    :options-dense="denseOpts"
-                    @change="addDataset">
-            <template v-slot:prepend>
-              <q-icon name="insights" />
-            </template>
-          </q-select>
-        </div>
-
-        <q-list dense>
-          <q-item v-for="(ds, i) in newCollection.datasets" :key="i">
-            <q-field :label="ds._id"
-                     stack-label>
-              <template v-slot:prepend>
-                <q-icon name="insights" />
-              </template>
-              <template v-slot:control>
-                {{ ds.title }}
-              </template>
+      <q-card-section>
+        <q-table
+          title="Datasets"
+          :data="datasetList"
+          :columns="columns"
+          row-key="_id"
+          :pagination.sync="pagination"
+          no-data-label="No entries found"
+          :no-results-label="datasetFilter + ' does not match any entries'"
+          :loading="loadingDatasets"
+          selection="multiple"
+          :selected.sync="newCollection.datasets"
+          :filter="datasetFilter"
+          >
+          <template v-slot:top-right>
+            <q-toggle v-model="showOnlySelectedDatasets"
+                      label="Show only selected"
+                      left-label>
+            </q-toggle>
+            <q-input rounded outlined dense debounce="300" v-model="datasetFilter" placeholder="Search">
               <template v-slot:append>
-                <q-btn icon="delete"
-                       flat
-                       size="sm"
-                       round
-                       @click="deleteDataset($event, i)" />
+                <q-icon name="search" />
               </template>
-            </q-field>
-          </q-item>
-        </q-list>
+            </q-input>
+          </template>
+        </q-table>
 
         <div class="text-h6 q-mt-sm q-mb-xs">Publications</div>
         <q-btn round icon="add" color="positive" @click="addPublication"/>
@@ -155,6 +149,15 @@ export default {
     }
   },
 
+  watch: {
+    'showOnlySelectedDatasets' () {
+      if (this.showOnlySelectedDatasets)
+        this.datasetList = this.newCollection.datasets;
+      else
+        this.datasetList = this.availableDatasets;
+    }
+  },
+
   computed: {
     origCollection: {
       get () {
@@ -175,38 +178,59 @@ export default {
         id: '',
         title: '',
         description: '',
-        creator: '',
-        receiver: '',
+        contact: '',
+        publications: '',
+        datasets: '',
         extra: {},
       },
+      loadingDatasets: true,
       availableDatasets: [],
-      newDataset: '',
+      datasetList: [],
+      showOnlySelectedDatasets: false,
+
       newPublication: '',
-      linkDesc: '',
       tagName: '',
+
+      pagination: {
+        rowsPerPage: 10
+      },
+      selected: [],
+      datasetFilter: '',
+      columns: [
+        {
+          name: 'id',
+          label: 'Identifier (UUID)',
+          field: '_id',
+          required: true,
+          align: 'left',
+          sortable: true,
+        },
+        {
+          name: 'title',
+          label: 'Dataset title',
+          field: 'title',
+          required: true,
+          sortable: true
+        }
+      ]
+
     }
   },
 
-  methods: {    
-    addDataset(event, i) {
-      event.preventDefault();
-      this.newProject.publications.push(this.availableDatasets[i]);
-      this.publication = '';
-    },
-      
-    deleteDataset(event, uuid) {
-      event.preventDefault();
-      this.$store.dispatch('datasets/deleteDataset', uuid)
-        .then(() => {
-          this.$store.dispatch('collections/getCollection', this.uuid);
-          this.deleteDsError = '';
-        })
-        .catch((error) => {
-          this.deleteDsError = 'Deleting dataset failed (' + error + ')'
-        });      
+  methods: {
+    dsFilter (val, update, abort) {
+      update(() => {
+        this.loadingDatasets = true;
+        const needle = val.toLowerCase()
+        this.filteredDatasets = this.availableDatasets.filter(ds => {
+          return (ds.title.toLowerCase().indexOf(needle) > -1 ||
+            ds._id.indexOf(needle) > -1);
+        });
+        this.loadingDatasets = false;
+      })
     },
 
-      addPublication(event) {
+    addPublication(event) {
       event.preventDefault();
       this.newProject.publications.push(this.newPublication);
       this.publication = '';
@@ -256,7 +280,10 @@ export default {
       else
         this.$router.push({ 'name': 'Collection Browser' });
     },
-    
+
+    getSelectedString () {
+      return this.selected.length === 0 ? '' : `${this.selected.length} record${this.selected.length > 1 ? 's' : ''} selected of ${this.data.length}`
+    }
   },
   
   mounted () {
@@ -279,7 +306,7 @@ export default {
         };
       });
     
-    this.$store.dispatch('getCurrentUser', this.uuid)
+    this.$store.dispatch('currentUser/getInfo', this.uuid)
       .then(() => {
         let sortFunc = (a, b) => {
           let aTitle = a.title.toUpperCase();
@@ -293,34 +320,25 @@ export default {
           return 0;
         };
         if (this.currentUser.permissions.includes('DATA_MANAGEMENT')) {
-          this.$store.dispatch('getDatasets')
+          this.$store.dispatch('datasets/getDatasets')
             .then((response) => {
-              this.availableDatasets = response.data.datasets;
+              this.availableDatasets = JSON.parse(JSON.stringify(response.data.datasets));
               this.availableDatasets.sort(sortFunc);
+              Object.freeze(this.availableDatasets);
+              this.datasetList = this.availableDatasets;
+              this.loadingDatasets = false;
             });
         }
         else {
-          this.$store.dispatch('getCurrentUserDatasets')
+          this.$store.dispatch('currentUser/getDatasets')
             .then((response) => {
               this.availableDatasets = response.data.datasets;
               this.availableDatasets.sort(sortFunc);
+              this.datasetList = this.availableDatasets;
+              this.loadingDatasets = false;
             });
         }
       });
-    if (this.user.permissions.includes('DATA_MANAGEMENT')) {
-      this.$store.dispatch('getDatasets')
-        .then((response) => {
-          this.availableDatasets = response.data.datasets;
-          this.availableDatasets.sort(sortFunc);
-        });
-    }
-    else {
-      this.$store.dispatch('getCurrentUserDatasets')
-        .then((response) => {
-          this.availableDatasets = response.data.datasets;
-          this.availableDatasets.sort(sortFunc);
-        });
-    }
   }
 }
 </script>
