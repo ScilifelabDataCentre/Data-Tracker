@@ -90,7 +90,7 @@
                        flat
                        size="sm"
                        round
-                       @click="deleteDataset($event, ds._id)" />
+                       @click="deletePublication($event, i)" />
               </template>
             </q-input>
           </q-item>
@@ -235,13 +235,13 @@ export default {
 
     addPublication(event) {
       event.preventDefault();
-      this.newProject.publications.push(this.newPublication);
+      this.newCollection.publications.push(this.newPublication);
       this.publication = '';
     },
 
     deletePublication(event, position) {
       event.preventDefault();
-      this.newProject.publications.splice(position, 1);
+      this.newCollection.publications.splice(position, 1);
     },
 
     addUserTag(event) {
