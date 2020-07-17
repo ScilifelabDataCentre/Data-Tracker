@@ -13,7 +13,7 @@
     :no-results-label="filter + ' does not match any entries'"
     >
     <template v-slot:top-right>
-      <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
+      <q-input rounded outlined dense debounce="300" v-model="filter" placeholder="Search">
         <template v-slot:append>
           <q-icon name="search" />
         </template>
@@ -74,7 +74,8 @@ export default {
           align: 'left',
           sortable: true,
         },
-        { name: 'title',
+        {
+          name: 'title',
           label: 'Dataset title',
           field: 'title',
           required: true,
