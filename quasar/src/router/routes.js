@@ -123,7 +123,6 @@ const routes = [
       {
         path: 'user',
         component: BaseContainer,
-        name: 'Admin User Manager',
         meta: {
           'accessReq': ['userManagement'],
         },
