@@ -63,7 +63,7 @@
           >
           <template v-slot:top-right>
             <q-toggle v-model="showOnlySelectedDatasets"
-                      label="Show only selected"
+                      label="Only selected"
                       left-label>
             </q-toggle>
             <q-input rounded outlined dense debounce="300" v-model="datasetFilter" placeholder="Search">
@@ -104,8 +104,11 @@
           <q-input class="col-5 q-mr-md"
                    id="add-tag"
                    label="User tag name"
-                   v-model="tagName" />
-           <q-btn flat icon="add" color="primary" @click="addUserTag"/>
+                   v-model="tagName">
+            <template v-slot:append>
+              <q-btn round color="positive" icon="add" @click="addUserTag"/>
+            </template>
+          </q-input>
          </div>
         <q-list dense>
           <q-item v-for="key in Object.keys(newCollection.extra)" :key="key">
