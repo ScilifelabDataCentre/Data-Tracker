@@ -1,3 +1,5 @@
+import axios from 'axios'
+
 export function getUsers ({ commit }) {
   return new Promise((resolve, reject) => {
     axios
