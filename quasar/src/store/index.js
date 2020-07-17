@@ -1,10 +1,11 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
+import adminUser from './adminUser'
+import collections from './collections'
 import currentUser from './currentUser'
 import datasets from './datasets'
 import orders from './orders'
-import collections from './collections'
 
 Vue.use(Vuex)
 
@@ -20,6 +21,7 @@ Vue.use(Vuex)
 export default function (/* { ssrContext } */) {
   const Store = new Vuex.Store({
     modules: {
+      adminUser,
       collections,
       currentUser,
       datasets,
