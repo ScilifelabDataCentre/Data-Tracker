@@ -15,6 +15,8 @@ const OrderAbout = () => import(/* webpackChunkName: "order" */ 'pages/orders/Or
 const OrderBrowser = () => import(/* webpackChunkName: "order" */ 'pages/orders/OrderBrowser.vue')
 const OrderEdit = () => import(/* webpackChunkName: "order" */ 'pages/orders/OrderEdit.vue')
 
+const UserManager = () => import(/* webpackChunkName: "admin" */ 'pages/admin/UserManager.vue')
+
 const routes = [
   {
     path: '/',
@@ -52,6 +54,9 @@ const routes = [
   {
     path: '/orders',
     component:  MainLayout,
+    meta: {
+      'accessReq': ['ordersSelf'],
+    },
     children: [
       {
         path: '',
@@ -105,6 +110,33 @@ const routes = [
         component: CollectionEdit,
         props: { 'uuid': '' },
         name: 'Collection Add'
+      },
+    ]
+  },
+
+  {
+    path: '/adminuser',
+    component: MainLayout,
+    meta: {
+      'accessReq': ['userManagement'],
+    },
+    children: [
+      {
+        path: '',
+        component: UserManager,
+        name: 'Admin User Manager'
+      },
+      {
+        path: 'add',
+        component: UserManager,
+        props: { 'uuid': '' },
+        name: 'Admin User Add'
+      },
+      {
+        path: ':uuid/edit',
+        component: UserManager,
+        props: true,
+        name: 'Admin User Edit'
       },
     ]
   },

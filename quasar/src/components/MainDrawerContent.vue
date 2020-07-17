@@ -126,14 +126,14 @@ export default {
         title: 'Orders',
         caption: 'Order management',
         icon: 'assignment',
-        link: '/orders'
+        link: { 'name': 'Order Browser'}
       },
 
       adminUserLink: {
         title: 'Users',
         caption: 'User administration',
         icon: 'people',
-        link: '/admin/users/'
+        link: { 'name': 'Admin User Manager'}
       },
 
       dataLinks: [
@@ -141,13 +141,13 @@ export default {
           title: 'Datasets',
           caption: 'Data deliveries',
           icon: 'insights',
-          link: '/datasets'
+          link:  { 'name': 'Dataset Browser'}
         },
         {
           title: 'Collections',
           caption: 'Collections of datasets',
           icon: 'local_library',
-          link: '/collections'
+          link:  { 'name': 'Collection Browser'}
         }
       ],
       
@@ -181,7 +181,7 @@ export default {
           title: 'About',
           caption: 'Information about the system',
           icon: 'info',
-          link: '/about'
+          link:  { 'name': 'About'}
         },
       ]
     }
