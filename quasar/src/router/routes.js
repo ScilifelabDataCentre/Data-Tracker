@@ -3,6 +3,8 @@ import MainLayout from 'layouts/MainLayout.vue'
 const Index = () => import(/* webpackChunkName: "base" */ 'pages/Index.vue')
 const About = () => import(/* webpackChunkName: "base" */ 'pages/About.vue')
 
+const BaseContainer = () => import(/* webpackChunkName: "base" */ 'pages/BaseContainer.vue')
+
 const CollectionAbout = () => import(/* webpackChunkName: "collection" */ 'pages/collections/CollectionAbout.vue')
 const CollectionBrowser = () => import(/* webpackChunkName: "collection" */ 'pages/collections/CollectionBrowser.vue')
 const CollectionEdit = () => import(/* webpackChunkName: "collection" */ 'pages/collections/CollectionEdit.vue')
@@ -115,28 +117,35 @@ const routes = [
   },
 
   {
-    path: '/adminuser',
+    path: '/admin',
     component: MainLayout,
-    meta: {
-      'accessReq': ['userManagement'],
-    },
     children: [
       {
-        path: '',
-        component: UserManager,
-        name: 'Admin User Manager'
-      },
-      {
-        path: 'add',
-        component: UserManager,
-        props: { 'uuid': '' },
-        name: 'Admin User Add'
-      },
-      {
-        path: ':uuid/edit',
-        component: UserManager,
-        props: true,
-        name: 'Admin User Edit'
+        path: 'user',
+        component: BaseContainer,
+        name: 'Admin User Manager',
+        meta: {
+          'accessReq': ['userManagement'],
+        },
+        children: [
+          {
+            path: '',
+            component: UserManager,
+            name: 'Admin User Manager',
+          },
+          {
+            path: 'add',
+            component: UserManager,
+            props: { 'uuid': '' },
+            name: 'Admin User Add'
+          },
+          {
+            path: ':uuid/edit',
+            component: UserManager,
+            props: true,
+            name: 'Admin User Edit'
+          },
+        ]
       },
     ]
   },
