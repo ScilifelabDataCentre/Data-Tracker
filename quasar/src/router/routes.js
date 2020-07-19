@@ -3,6 +3,8 @@ import MainLayout from 'layouts/MainLayout.vue'
 const Index = () => import(/* webpackChunkName: "base" */ 'pages/Index.vue')
 const About = () => import(/* webpackChunkName: "base" */ 'pages/About.vue')
 
+const Login = () => import(/* webpackChunkName: "user" */ 'pages/Login.vue')
+
 const BaseContainer = () => import(/* webpackChunkName: "base" */ 'pages/BaseContainer.vue')
 
 const CollectionAbout = () => import(/* webpackChunkName: "collection" */ 'pages/collections/CollectionAbout.vue')
@@ -26,6 +28,7 @@ const routes = [
     children: [
       { path: '', component: Index, name: 'Home'},
       { path: 'about', component: About, name: 'About' },
+      { path: 'login', component: Login, name: 'Login' },
     ]
   },
 
