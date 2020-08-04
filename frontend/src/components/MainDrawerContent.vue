@@ -124,7 +124,7 @@ export default {
     return {
       orderLink: {
         title: 'Orders',
-        caption: 'Order management',
+        caption: 'Data orders',
         icon: 'assignment',
         link: { 'name': 'Order Browser'}
       },
@@ -169,10 +169,10 @@ export default {
 
       loginLinks: [
         {
-          title: 'Log In',
-          caption: 'Log in',
+          title: 'Login',
+          caption: 'Log in using OpenID or API Key',
           icon: 'login',
-          link: '/login'
+          link: { 'name': 'Login'}
         },
       ],
 
