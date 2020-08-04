@@ -123,7 +123,7 @@ def gen_orders(db, nr_orders: int = 300):
         order = structure.order()
         changes = {'authors': [random.choice(users)['_id'] for _ in range(random.randint(0, 4))],
                    'generators': [random.choice(facilities)['_id'] for _ in range(random.randint(0, 4))],
-                   'organisation': random.choice(organisations),
+                   'organisation': random.choice(organisations)['_id'],
                    'editors': [random.choice(users+facilities)['_id'] for _ in range(random.randint(1, 5))],
                    'description': make_description(),
                    'receivers': [random.choice(facilities)['_id'] for _ in range(random.randint(0, 2))],
