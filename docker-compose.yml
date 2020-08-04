@@ -27,7 +27,7 @@ services:
       - 127.0.0.1:8080:8080
     volumes:
       - type: bind
-        source: ./quasar/src
+        source: ./frontend/src
         target: /code/src
   proxy:
     build:

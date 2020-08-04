@@ -2,10 +2,10 @@ FROM node:alpine
 
 RUN yarn global add @quasar/cli
 
-COPY ./quasar/package.json /package.json
+COPY ./frontend/package.json /package.json
 RUN yarn install
 
-ADD ./quasar  /code/
+ADD ./frontend  /code/
 WORKDIR /code
 
 RUN rm -rf /code/node_modules

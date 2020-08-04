@@ -1,29 +1,26 @@
-# frontend
+# Data Tracker (frontend-quasar)
 
-## Project setup
-```
-yarn install
-```
+A system for tracking datasets
 
-### Compiles and hot-reloads for development
-```
-yarn run serve
+## Install the dependencies
+```bash
+yarn
 ```
 
-### Compiles and minifies for production
-```
-yarn run build
-```
-
-### Run your tests
-```
-yarn run test
+### Start the app in development mode (hot-code reloading, error reporting, etc.)
+```bash
+quasar dev
 ```
 
-### Lints and fixes files
-```
+### Lint the files
+```bash
 yarn run lint
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+### Build the app for production
+```bash
+quasar build
+```
+
+### Customize the configuration
+See [Configuring quasar.conf.js](https://quasar.dev/quasar-cli/quasar-conf-js).
