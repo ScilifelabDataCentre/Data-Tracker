@@ -72,8 +72,8 @@
     </q-card-section>
   </q-card>
 
-  <q-page-sticky position="bottom-right"
-                 :offset="[24, 24]">
+  <q-page-sticky position="top-right"
+		 :offset="[18, 18]">
     <q-btn fab
            icon="edit"
            color="accent"
