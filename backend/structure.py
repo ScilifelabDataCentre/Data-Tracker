@@ -29,12 +29,16 @@ def order():
         dict: The data structure for an order.
     """
     return {'_id': utils.new_uuid(),
-            'creator': '',
-            'datasets': [],
+            'title': '',
             'description': '',
-            'extra': {},
-            'receiver': '',
-            'title': ''}
+            'authors': [],
+            'generators': [],
+            'organisation': '',
+            'editors': [],
+            'receivers': [],
+            'datasets': [],
+            'tags_standard': [],
+            'tags_user': []}
 
 
 def project():

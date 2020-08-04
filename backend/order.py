@@ -45,18 +45,17 @@ def list_orders():
     if user.has_permission('DATA_MANAGEMENT'):
         orders = list(flask.g.db['orders'].find(projection={'_id': 1,
                                                             'title': 1,
-                                                            'description': 1,
-                                                            'creator': 1,
-                                                            'receiver': 1}))
+                                                            'generators': 1,
+                                                            'authors': 1,
+                                                            'organisation': 1}))
     else:
         orders = list(flask.g.db['orders']
-                      .find({'$or': [{'creator': flask.g.current_user['_id']},
-                                     {'creator': flask.g.current_user['email']}]},
+                      .find({'editors': flask.g.current_user['_id']},
                             projection={'_id': 1,
                                         'title': 1,
-                                        'description': 1,
-                                        'creator': 1,
-                                        'receiver': 1}))
+                                        'generators': 1,
+                                        'authors': 1,
+                                        'organisation': 1}))
 
     return utils.response_json({'orders': orders})
 

@@ -26,9 +26,10 @@ def make_description():
        str: a random description
 
     """
-    desc = random.choice((lorem.sentence,
-                          lorem.paragraph,
-                          lorem.text))()
+    desc = '# Title\n' + random.choice((lorem.sentence,
+                                        lorem.paragraph,
+                                        lorem.text))()
+    desc = desc[0] + '## Subtitle\n'.join(desc[1:].split('\n'))
     return desc
 
 
@@ -92,19 +93,41 @@ def gen_facilities(db, nr_facilities: int = 30):
     return uuids
 
 
+def gen_organisations(db, nr_organisations: int = 15):
+    uuids = []
+    for i in range(1, nr_organisations+1):
+        user = structure.user()
+        apikey = utils.gen_api_key()
+        changes = {'affiliation': 'Org/Uni ' + random.choice(string.ascii_uppercase),
+                   'api_key': utils.gen_api_key_hash(apikey.key, apikey.salt),
+                   'api_salt': apikey.salt,
+                   'auth_ids': [f'organisation{i}::local'],
+                   'email': f'organisation{i}@domain{i}.se',
+                   'name': f'Organisation {i}',
+                   'permissions': ['ORDERS_SELF']}
+        user.update(changes)
+        uuids.append(db['users'].insert_one(user).inserted_id)
+        make_log(db, action='add', data=user, data_type='user', comment='Generated', user='system')
+    return uuids
+
+
 def gen_orders(db, nr_orders: int = 300):
     uuids = []
     facility_re = re.compile('facility[0-9]*::local')
+    organisation_re = re.compile('organisation[0-9]*::local')
     user_re = re.compile('.*::elixir')
     facilities = tuple(db['users'].find({'auth_ids': facility_re}))
+    organisations = tuple(db['users'].find({'auth_ids': organisation_re}))
     users = tuple(db['users'].find({'auth_ids': user_re}))
     for i in range(1, nr_orders+1):
-        receiver_type = random.choice(('email', '_id'))
         order = structure.order()
-        changes = {'creator': random.choice(facilities)['_id'],
+        changes = {'authors': [random.choice(users)['_id'] for _ in range(random.randint(0, 4))],
+                   'generators': [random.choice(facilities)['_id'] for _ in range(random.randint(0, 4))],
+                   'organisation': random.choice(organisations),
+                   'editors': [random.choice(users+facilities)['_id'] for _ in range(random.randint(1, 5))],
                    'description': make_description(),
-                   'receiver': random.choice(users)[receiver_type],
-                   'title': f'Order {i} Title'}
+                   'receivers': [random.choice(facilities)['_id'] for _ in range(random.randint(0, 2))],
+                   'title': f'Order {i} Title {lorem.sentence()[:-1]}'}
         order.update(changes)
         uuids.append(db['orders'].insert_one(order).inserted_id)
         make_log(db, action='add', data=order, data_type='order', comment='Generated', user='system')
@@ -180,6 +203,7 @@ if __name__ == '__main__':
     DB = DBSERVER.get_database(CONF['mongo']['db'],
                                codec_options=(codec_options))
     gen_facilities(DB)
+    gen_organisations(DB)
     gen_users(DB)
     gen_orders(DB)
     gen_datasets(DB)
