@@ -28,7 +28,10 @@
       <q-toolbar inset>
         <q-breadcrumbs active-color="white" style="font-size: 16px">
           <q-breadcrumbs-el icon="home" :to="{ 'name': 'Home' }"/>
-          <q-breadcrumbs-el v-for="(part, i) in breadcrumbs" :key="part" :label="part" :to="'/' + breadcrumbs.slice(0, i+1).join('/')"/>
+          <q-breadcrumbs-el v-for="(part, i) in breadcrumbs"
+			    :key="part"
+			    :label="part"
+			    :to="'/' + breadcrumbs.slice(0, i+1).join('/')"/>
         </q-breadcrumbs>
       </q-toolbar>
     </q-header>
