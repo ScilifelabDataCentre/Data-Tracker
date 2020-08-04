@@ -53,7 +53,9 @@
             <q-icon name="person" />
           </template>
         </q-input>
+      </q-card-section>
 
+      <q-card-section>
         <div class="text-h6 q-mt-sm q-mb-xs">Datasets</div>
         <div class="text-negative">
           Note that any changes in this section are performed immediately
