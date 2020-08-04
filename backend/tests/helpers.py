@@ -28,7 +28,6 @@ USERS = {'no-login': None,
          'owners': 'owners::testers',
          'users': 'users::testers',
          'data': 'data::testers',
-         'doi': 'doi::testers',
          'root': 'root::testers'}
 
 Response = collections.namedtuple('Response',

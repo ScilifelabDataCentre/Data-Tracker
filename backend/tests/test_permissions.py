@@ -77,18 +77,6 @@ def test_request_permission_data_management():
             assert not response.data
 
 
-def test_request_permission_doi_reviewer():
-    """Request target with no login requirement."""
-    responses = helpers.make_request_all_roles('/api/developer/hello/DOI_REVIEWER', ret_json=True)
-    for response in responses:
-        if response.role in ('doi', 'root'):
-            assert response.code == 200
-            assert response.data == {'test': "success"}
-        else:
-            assert response.code == 403
-            assert not response.data
-
-
 def test_csrf():
     """Perform POST, PUT and DELETE requests to confirm that CSRF works correctly."""
     

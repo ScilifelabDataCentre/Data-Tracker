@@ -26,8 +26,7 @@ blueprint = flask.Blueprint('user', __name__)  # pylint: disable=invalid-name
 PERMISSIONS = {'ORDERS_SELF': ('ORDERS_SELF',),
                'OWNERS_READ': ('OWNERS_READ',),
                'USER_MANAGEMENT': ('USER_MANAGEMENT',),
-               'DATA_MANAGEMENT': ('ORDERS_SELF', 'OWNERS_READ', 'DATA_MANAGEMENT'),
-               'DOI_REVIEWER': ('DOI_REVIEWER',)}
+               'DATA_MANAGEMENT': ('ORDERS_SELF', 'OWNERS_READ', 'DATA_MANAGEMENT')}
 
 
 # Decorators
