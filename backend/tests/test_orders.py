@@ -983,10 +983,7 @@ def test_list_all_orders(use_db):
             assert response.code == 200
             assert len(response.data['orders']) == nr_orders
             assert set(response.data['orders'][0].keys()) == {'title',
-                                                              '_id',
-                                                              'description',
-                                                              'creator',
-                                                              'receiver'}
+                                                              '_id'}
         elif response.role == 'no-login':
             assert response.code == 401
             assert not response.data
