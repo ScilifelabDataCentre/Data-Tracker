@@ -122,7 +122,7 @@ def get_order(identifier):
                                         {'_id': 1,
                                          'title': 1}))
 
-    return utils.response_json({'order_data': order_data})
+    return utils.response_json({'order': order_data})
 
 
 @blueprint.route('/<identifier>/log/', methods=['GET'])
