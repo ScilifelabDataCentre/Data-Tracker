@@ -15,26 +15,87 @@
 
   <q-card>
     <q-card-section>
-      <q-field label="Creator" stack-label>
-        <template v-slot:prepend>
-          <q-icon name="person" />
-        </template>
-        <template v-slot:control>
-          {{ order.creator.name }}
-        </template>
-      </q-field>
+      <q-list dense>
+        <ListHeader title="Authors"
+                    explanation="The ones who provided the sample, e.g. a researcher" />
+        <UserEntry v-for="author in order.authors"
+                   :key="author._id"
+                   :entry="author" />
 
-      <q-field label="Receiver" stack-label>
-        <template v-slot:prepend>
-          <q-icon name="person" />
-        </template>
-        <template v-slot:control>
-          {{ order.receiver }}
-        </template>
-      </q-field>
+        <q-item-label header>
+          <span>
+            Generators
+            <q-tooltip>
+              The ones who generated the data, e.g. a facility
+            </q-tooltip>
+          </span>
+        </q-item-label>
+        <UserEntry v-for="generator in order.generators"
+                   :key="generator._id"
+                   :entry="generator" />
 
+        <ListHeader title="Organisation"
+                    explanation="The data owner, e.g. a university" />
+        <q-item>
+          <q-item-section avatar>
+            <q-btn v-if="order.organisation.email.length > 0"
+                   flat
+                   round
+                   dense
+                   icon="email"
+                   type="a"
+                   :href="'mailto:' + order.organisation.email" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>
+              {{ order.organisation.name }}
+            </q-item-label>
+            <q-item-label caption>
+              {{ order.organisation.email }}
+            </q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <ListHeader title="Editors"
+                    explanation="Users that may edit this order" />
+        <UserEntry v-for="editor in order.editors"
+                   :key="editor._id"
+                   :entry="editor" />
+
+        <ListHeader title="Receivers"
+                    explanation="Users that may connect datasets from this order to collections" />
+        <UserEntry v-for="receiver in order.receivers"
+                   :key="receiver._id"
+                   :entry="receiver" />
+      </q-list>
+    </q-card-section>
+
+    <q-card-section>
+      <q-list dense>
+        <ListHeader title="Datasets"
+                    explanation="Datasets generated from this order" />
+        <q-item v-for="dataset in order.datasets" :key="dataset._id">
+          <q-item-section avatar>
+            <q-btn 
+              flat
+              dense
+              round
+              icon="link"
+              :to="{ 'name': 'Dataset About', 'params': { 'uuid': dataset._id } }" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>
+              {{ dataset.title }}
+            </q-item-label>
+            <q-item-label caption>
+              {{ dataset._id }}
+            </q-item-label>
+          </q-item-section>
+        </q-item>
+      </q-list>
+      
       <q-field
-        v-for="field in Object.keys(order.extra)" :key="field"
+        v-for="field in Object.keys(order.tagsUser)" :key="field"
         :label="field"
         stack-label>
         <template v-slot:prepend>
@@ -42,33 +103,10 @@
         </template>
         <template v-slot:control>
           <span>
-            {{ order.extra[field] }}
+            {{ order.userTags[field] }}
           </span>
         </template>
       </q-field>
-
-      <q-field
-        v-if="order.datasets.length > 0"
-        label="Datasets"
-        stack-label>
-        <template v-slot:prepend>
-          <q-icon name="insights" />
-        </template>
-
-        <template v-slot:control>
-          <ul class="">
-            <li v-for="relOrder in order.datasets" :key="relOrder._id">
-              <q-btn 
-                flat
-                no-caps
-                dense
-                :label="relOrder.title"
-                :to="{ 'name': 'Dataset About', 'params': { 'uuid': relOrder._id } }" />
-            </li>
-          </ul>
-        </template>
-      </q-field>
-
     </q-card-section>
   </q-card>
 
@@ -87,10 +125,18 @@
 </template>
 
 <script>
+import UserEntry from 'components/UserEntry.vue'
+import ListHeader from 'components/ListHeader.vue'
+
 export default {
   name: 'OrderAbout',
 
-    props: {
+  components: {
+    UserEntry,
+    ListHeader
+  },
+  
+  props: {
     uuid: {
       type: String,
       required: true
