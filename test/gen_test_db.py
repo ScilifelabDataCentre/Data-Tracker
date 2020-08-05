@@ -26,10 +26,10 @@ def make_description():
        str: a random description
 
     """
-    desc = '# Title\n' + random.choice((lorem.sentence,
-                                        lorem.paragraph,
-                                        lorem.text))()
-    desc = desc[0] + '## Subtitle\n'.join(desc[1:].split('\n'))
+    desc = random.choice((lorem.sentence,
+                          lorem.paragraph,
+                          lorem.text))()
+    desc = '# Title\n\n' + '## Subtitle\n\n'.join(desc.split('\n'))
     return desc
 
 
@@ -85,6 +85,7 @@ def gen_facilities(db, nr_facilities: int = 30):
                    'api_salt': apikey.salt,
                    'auth_ids': [f'facility{i}::local'],
                    'email': f'facility{i}@domain{i}.se',
+                   'email_public': f'pub_facility{i}@domain{i}.se',
                    'name': f'Facility {i}',
                    'permissions': ['ORDERS_SELF']}
         user.update(changes)
@@ -103,6 +104,7 @@ def gen_organisations(db, nr_organisations: int = 15):
                    'api_salt': apikey.salt,
                    'auth_ids': [f'organisation{i}::local'],
                    'email': f'organisation{i}@domain{i}.se',
+                   'email_public': f'pub_organisation{i}@domain{i}.se',
                    'name': f'Organisation {i}',
                    'permissions': ['ORDERS_SELF']}
         user.update(changes)
@@ -172,6 +174,7 @@ def gen_users(db, nr_users: int = 100):
                      'api_key': utils.gen_api_key_hash(apikey['key'], apikey['salt']),
                      'api_salt': apikey['salt'],
                      'email': f'{"".join(user["name"].split())}@example.com',
+                     'email_public': f'pub_{"".join(user["name"].split())}@example.com',
                      'auth_ids': [f'{user["name"]}::testers']})
         db['users'].insert_one(user)
         make_log(db, action='add', data=user, data_type='user', comment='Generated', user='system')
@@ -184,6 +187,7 @@ def gen_users(db, nr_users: int = 100):
                    'api_salt': apikey.salt,
                    'auth_ids': [f'hash{i}::elixir'],
                    'email': f'user{i}@place{i}.se',
+                   'email_public': f'pub_user{i}@place{i}.se',
                    'name': f'First Last {i}',
                    'permissions': list(set(random.choice(perm_keys)
                                            for _ in range(random.randint(0,2))))}
