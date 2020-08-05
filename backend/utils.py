@@ -350,3 +350,14 @@ def check_email_uuid(user_identifier: str) -> Union[str, uuid.UUID]:
     if user_entry:
         return user_entry['_id']
     return ''
+
+
+def user_uuid_data(user_id: Union[str, uuid.UUID]) -> dict:
+    if isinstance(user_id, str):
+        user_uuid = str_to_uuid(user_id)
+    else:
+        user_uuid = user_id
+    data = flask.g.db['users'].find_one({'_id': user_uuid})
+    return {'name': data['name'],
+            'email': data['email_public'],
+            '_id': user_uuid}

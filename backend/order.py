@@ -99,30 +99,30 @@ def get_order(identifier):
         uuid = utils.str_to_uuid(identifier)
     except ValueError:
         flask.abort(status=404)
-    order = flask.g.db['orders'].find_one({'_id': uuid})
-    if not order:
+    order_data = flask.g.db['orders'].find_one({'_id': uuid})
+    if not order_data:
         flask.abort(status=404)
     if not (user.has_permission('DATA_MANAGEMENT') or
-            order['creator'] == flask.session['user_id']):
+            flask.session['user_id'] in order_data['editors']):
         flask.abort(status=403)
 
-    order_creator = flask.g.db['users'].find_one({'_id': order['creator']})
-    order['creator'] = {'name': order['creator'], 'identifier': order['creator']}
-    if order_creator:
-        order['creator']['name'] = order_creator['name']
-        order['creator']['identifier'] = order_creator['email']
-
-    order_receiver = flask.g.db['users'].find_one({'_id': order['receiver']})
-    if order_receiver:
-        order['receiver'] = order_receiver['email']
+    order_data['authors'] = [utils.user_uuid_data(user_uuid)
+                             for user_uuid in order_data['authors']]
+    order_data['generators'] = [utils.user_uuid_data(user_uuid)
+                                for user_uuid in order_data['generators']]
+    order_data['editors'] = [utils.user_uuid_data(user_uuid)
+                             for user_uuid in order_data['editors']]
+    order_data['receivers'] = [utils.user_uuid_data(user_uuid)
+                               for user_uuid in order_data['receivers']]
+    order_data['organisation'] = utils.user_uuid_data(order_data['organisation'])
 
     # convert dataset list into {title, _id}
-    order['datasets'] = list(flask.g.db['datasets']
-                             .find({'_id': {'$in': order['datasets']}},
-                                   {'_id': 1,
-                                    'title': 1}))
+    order_data['datasets'] = list(flask.g.db['datasets']
+                                  .find({'_id': {'$in': order_data['datasets']}},
+                                        {'_id': 1,
+                                         'title': 1}))
 
-    return utils.response_json({'order': order})
+    return utils.response_json({'order_data': order_data})
 
 
 @blueprint.route('/<identifier>/log/', methods=['GET'])
