@@ -4,8 +4,10 @@ import uuid
 
 import requests
 
+import utils
+
 from helpers import make_request, as_user, make_request_all_roles,\
-    USERS, random_string, TEST_LABEL, use_db
+    USERS, random_string, TEST_LABEL, use_db, USER_RE
 
 # avoid pylint errors because of fixtures
 # pylint: disable = redefined-outer-name, unused-import
@@ -23,39 +25,15 @@ def test_get_order_permissions(use_db):
     session = requests.Session()
 
     db = use_db
-    orders = list(db['orders'].aggregate([{'$match': {'creator': {'$type' : "binData"}}},
+    orders = list(db['orders'].aggregate([{'$match': {'auth_ids': USER_RE}},
                                           {'$sample': {'size': 2}}]))
     for order in orders:
-        # to simplify comparison
-        order['_id'] = str(order['_id'])
-        owner = db['users'].find_one({'_id': order['creator']})
-        if isinstance(order['receiver'], uuid.UUID):
-            order['receiver'] = db['users'].find_one({'_id': order['receiver']})['email']
-        if isinstance(order['creator'], uuid.UUID):
-            order['creator'] = owner['email']
-        for i, ds in enumerate(order['datasets']):
-            order['datasets'][i] = next(db['datasets'].aggregate([{'$match': {'_id': ds}},
-                                                                  {'$project': {'_id': 1,
-                                                                                'title': 1}}]))
-            order['datasets'][i]['_id'] = str(order['datasets'][i]['_id'])
-
+        owner = db['users'].find_one({'_id': order['editors'][0]})
         responses = make_request_all_roles(f'/api/order/{order["_id"]}/', ret_json=True)
         for response in responses:
             if response.role in ('data', 'root'):
                 assert response.code == 200
                 data = response.data['order']
-                for field in order:
-                    if field == 'datasets':
-                        assert len(order[field]) == len(data[field])
-                        for ds in order[field]:
-                            assert ds in data[field]
-                    elif field == '_id':
-                        continue
-                    elif field == 'creator':
-                        assert data[field]['identifier'] == order[field]
-                        assert data[field]['name'] == owner['name']
-                    else:
-                        assert order[field] == data[field]
             elif response.role == 'no-login':
                 assert response.code == 401
                 assert not response.data
@@ -67,18 +45,6 @@ def test_get_order_permissions(use_db):
         response = make_request(session, f'/api/order/{order["_id"]}/')
         assert response.code == 200
         data = response.data['order']
-        for field in order:
-            if field == 'datasets':
-                assert len(order[field]) == len(data[field])
-                for ds in order[field]:
-                    assert ds in data[field]
-            elif field == '_id':
-                continue
-            elif field == 'creator':
-                assert data[field]['identifier'] == order[field]
-                assert data[field]['name'] == owner['name']
-            else:
-                assert order[field] == data[field]
 
 
 def test_get_order(use_db):
