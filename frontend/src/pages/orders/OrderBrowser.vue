@@ -1,12 +1,8 @@
 <template>
 <q-page padding>
-  <q-btn round
-         color="accent"
-         icon="add"
-         :to="{ 'name': 'Order Add' }" />
+  <h2>Orders</h2>
 
   <q-table
-    title="Orders"
     :data="orders"
     :columns="columns"
     row-key="id"
@@ -17,6 +13,13 @@
     no-data-label="No entries found"
     :no-results-label="filter + ' does not match any entries'"
     >
+
+    <template v-slot:top-left>
+      <q-btn round
+             color="accent"
+             icon="add"
+             :to="{ 'name': 'Order Add' }" />
+    </template>
 
     <template v-slot:top-right>
       <q-input rounded outlined dense debounce="300" v-model="filter" placeholder="Search">
