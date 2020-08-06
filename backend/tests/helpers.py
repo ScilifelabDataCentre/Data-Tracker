@@ -35,7 +35,9 @@ Response = collections.namedtuple('Response',
                                   defaults=[None, None, None])
 
 FACILITY_RE = re.compile('facility[0-9]*::local')
+ORGANISATION_RE = re.compile('organisation[0-9]*::local')
 USER_RE = re.compile('.*::elixir')
+
 
 def db_connection():
     """Get a connection to the db as defined in the app config."""
@@ -107,8 +109,8 @@ def add_dataset():
     order_indata.update(TEST_LABEL)
     orders_user = db['users'].find_one({'auth_id': USERS['orders']})
     base_user = db['users'].find_one({'auth_id': USERS['base']})
-    order_indata['creator'] = orders_user['_id']
-    order_indata['receiver'] = base_user['_id']
+    order_indata['authors'] = [orders_user['_id']]
+    order_indata['receivers'] = [base_user['_id']]
     
     dataset_indata = structure.dataset()
     dataset_indata.update({'links': [{'description': 'Test description', 'url': 'http://test_url'}],
