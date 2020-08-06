@@ -54,38 +54,39 @@ def test_get_order(use_db):
     Request the order and confirm that it contains the correct data.
     """
     session = requests.Session()
+    as_user(session, USERS['data'])
 
     db = use_db
     orders = list(db['orders'].aggregate([{'$sample': {'size': 3}}]))
     for order in orders:
         # to simplify comparison
         order['_id'] = str(order['_id'])
-        owner = db['users'].find_one({'_id': order['creator']})
-        if isinstance(order['receiver'], uuid.UUID):
-            order['receiver'] = db['users'].find_one({'_id': order['receiver']})['email']
-        if isinstance(order['creator'], uuid.UUID):
-            order['creator'] = owner['email']
+        # user entries
+        for key in ('authors', 'receivers', 'generators', 'editors'):
+            order[key] = [utils.user_uuid_data(str(entry), db) for entry in order[key]]
+        order['organisation'] = utils.user_uuid_data(order['organisation'], db)
+
         for i, ds in enumerate(order['datasets']):
             order['datasets'][i] = next(db['datasets'].aggregate([{'$match': {'_id': ds}},
                                                                   {'$project': {'_id': 1,
                                                                                 'title': 1}}]))
             order['datasets'][i]['_id'] = str(order['datasets'][i]['_id'])
 
-        as_user(session, 'data@testers')
+
         response = make_request(session, f'/api/order/{order["_id"]}/')
         assert response.code == 200
         assert response.code == 200
         data = response.data['order']
+        assert len(order) == len(data)
         for field in order:
             if field == 'datasets':
                 assert len(order[field]) == len(data[field])
                 for ds in order[field]:
                     assert ds in data[field]
-            elif field == '_id':
-                continue
-            elif field == 'creator':
-                assert data[field]['identifier'] == order[field]
-                assert data[field]['name'] == owner['name']
+            elif field == 'tags_standard':
+                assert order[field] == data['tagsStandard']
+            elif field == 'tags_user':
+                assert order[field] == data['tagsUser']
             else:
                 assert order[field] == data[field]
 
