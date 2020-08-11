@@ -31,6 +31,7 @@ oauth = OAuth(app)
 for oidc_name in app.config.get('oidc_names'):
     oauth.register(oidc_name, client_kwargs={'scope': 'openid profile email'})
 
+
 @app.before_request
 def prepare():
     """Open the database connection and get the current user."""
