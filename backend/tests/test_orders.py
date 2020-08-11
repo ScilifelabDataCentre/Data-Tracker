@@ -128,7 +128,7 @@ def test_get_order_logs_permissions(use_db):
     """
     db = use_db
     order_data = db['orders'].aggregate([{'$sample': {'size': 1}}]).next()
-    user_data = db['users'].find_one({'_id': order_data['creator']})
+    user_data = db['users'].find_one({'_id': {'$in': order_data['editors']}})
     responses = make_request_all_roles(f'/api/order/{order_data["_id"]}/log/',
                                        ret_json=True)
     for response in responses:
@@ -144,7 +144,7 @@ def test_get_order_logs_permissions(use_db):
 
     session = requests.Session()
 
-    as_user(session, user_data['auth_id'])
+    as_user(session, user_data['auth_ids'][0])
     response = make_request(session,
                              f'/api/order/{order_data["_id"]}/log/',
                              ret_json=True)
@@ -212,8 +212,8 @@ def test_list_user_orders_permissions(use_db):
                 assert response.code == 403
                 assert not response.data
 
-        user_orders = list(db['orders'].find({'$or': [{'receiver': user['_id']},
-                                                      {'creator': user['_id']}]}))
+        user_orders = list(db['orders'].find({'$or': [{'receivers': user['_id']},
+                                                      {'editors': user['_id']}]}))
         responses = make_request_all_roles(f'/api/order/user/{user["_id"]}/', ret_json=True)
         for response in responses:
             if response.role in ('data', 'root'):
@@ -230,7 +230,7 @@ def test_list_user_orders_permissions(use_db):
                 assert response.code == 403
                 assert not response.data
 
-        as_user(session, user['auth_id'])
+        as_user(session, user['auth_ids'][0])
         response = make_request(session, f'/api/order/user/')
         if user_orders:
             assert response.code == 200
@@ -254,11 +254,11 @@ def test_list_user_orders(use_db):
                                    {'$sample': {'size': 2}}])
 
     for user in users:
-        user_orders = list(db['orders'].find({'$or': [{'receiver': user['_id']},
-                                                      {'creator': user['_id']}]}))
+        user_orders = list(db['orders'].find({'$or': [{'receivers': user['_id']},
+                                                      {'editors': user['_id']}]}))
         order_uuids = [str(order['_id']) for order in user_orders]
 
-        as_user(session, user['auth_id'])
+        as_user(session, user['auth_ids'][0])
         response = make_request(session, f'/api/order/user/')
         if user_orders:
             assert response.code == 200

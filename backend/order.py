@@ -77,8 +77,11 @@ def list_orders_user(user_id: str):
             return flask.abort(status=404)
     else:  # current user
         user_uuid = flask.session['user_id']
-    orders = list(flask.g.db['orders'].find({'$or': [{'receiver': user_uuid},
-                                                     {'creator': user_uuid}]}))
+    orders = list(flask.g.db['orders'].find({'$or': [{'receivers': user_uuid},
+                                                     {'editors': user_uuid}]},
+                                            projection={'_id': 1,
+                                                        'title': 1}))
+
     return utils.response_json({'orders': orders})
 
 
@@ -106,21 +109,7 @@ def get_order(identifier):
             flask.session['user_id'] in order_data['editors']):
         flask.abort(status=403)
 
-    order_data['authors'] = [utils.user_uuid_data(user_uuid)
-                             for user_uuid in order_data['authors']]
-    order_data['generators'] = [utils.user_uuid_data(user_uuid)
-                                for user_uuid in order_data['generators']]
-    order_data['editors'] = [utils.user_uuid_data(user_uuid)
-                             for user_uuid in order_data['editors']]
-    order_data['receivers'] = [utils.user_uuid_data(user_uuid)
-                               for user_uuid in order_data['receivers']]
-    order_data['organisation'] = utils.user_uuid_data(order_data['organisation'])
-
-    # convert dataset list into {title, _id}
-    order_data['datasets'] = list(flask.g.db['datasets']
-                                  .find({'_id': {'$in': order_data['datasets']}},
-                                        {'_id': 1,
-                                         'title': 1}))
+    prepare_order(order_data, flask.g.db)
 
     return utils.response_json({'order': order_data})
 
@@ -146,11 +135,8 @@ def get_order_logs(identifier):
         flask.abort(status=404)
 
     if not user.has_permission('DATA_MANAGEMENT'):
-        user_entries = (flask.g.current_user['_id'], flask.g.current_user['email'])
         order_data = flask.g.db['orders'].find_one({'_id': order_uuid})
-        if not order_data:
-            flask.abort(403)
-        if order_data['creator'] not in user_entries:
+        if not order_data or flask.g.current_user['_id'] not in order_data['editors']:
             flask.abort(403)
 
     order_logs = list(flask.g.db['logs'].find({'data_type': 'order', 'data._id': order_uuid}))
@@ -365,3 +351,28 @@ def update_order(identifier: str):  # pylint: disable=too-many-branches
             utils.make_log('order', 'edit', 'Order updated', order)
 
     return flask.Response(status=200)
+
+
+def prepare_order(order_data: dict, db):
+    """
+    Prepare an order by e.g. converting user uuids to names etc.
+
+    Changes are done in-place.
+
+    Args:
+        order_data (dict): The order entry from the db.
+        db: The mongo database to use.
+    """
+    order_data['authors'] = [utils.user_uuid_data(user_uuid, db)
+                             for user_uuid in order_data['authors']]
+    order_data['generators'] = [utils.user_uuid_data(user_uuid, db)
+                                for user_uuid in order_data['generators']]
+    order_data['editors'] = [utils.user_uuid_data(user_uuid, db)
+                             for user_uuid in order_data['editors']]
+    order_data['receivers'] = [utils.user_uuid_data(user_uuid, db)
+                               for user_uuid in order_data['receivers']]
+    order_data['organisation'] = utils.user_uuid_data(order_data['organisation'], db)
+
+    # convert dataset list into {title, _id}
+    order_data['datasets'] = list(db['datasets'].find({'_id': {'$in': order_data['datasets']}},
+                                                      {'_id': 1, 'title': 1}))
