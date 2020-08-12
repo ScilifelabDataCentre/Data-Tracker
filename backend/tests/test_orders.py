@@ -872,10 +872,10 @@ def test_delete_order(use_db):
 
     db = use_db
 
-    orders_user = db['users'].find_one({'auth_id': USERS['orders']})
+    orders_user = db['users'].find_one({'auth_ids': USERS['orders']})
 
     # must be updated if TEST_LABEL is modified
-    orders = list(db['orders'].find({'extra.testing': 'yes'}))
+    orders = list(db['orders'].find({'tags_user.testing': 'true'}))
     i = 0
     while i < len(orders):
         for role in USERS:
@@ -884,7 +884,7 @@ def test_delete_order(use_db):
                                     f'/api/order/{orders[i]["_id"]}/',
                                     method='DELETE')
             if role in ('orders', 'data', 'root'):
-                if role != 'orders' or orders[i]['creator'] == orders_user['_id']:
+                if role != 'orders' or orders_user['_id'] in orders[i]['editors']:
                     assert response.code == 200
                     assert not response.data
                     assert not db['orders'].find_one({'_id': orders[i]['_id']})
@@ -913,7 +913,7 @@ def test_delete_order(use_db):
     response = make_request(session,
                             f'/api/order/',
                             data={'title': 'tmp'},
-                            method='POST')
+                            method='PUT')
     assert response.code == 200
     response = make_request(session,
                             f'/api/order/{response.data["_id"]}/',

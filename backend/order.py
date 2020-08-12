@@ -279,7 +279,7 @@ def delete_order(identifier: str):
     if not order:
         flask.abort(status=404)
     if not user.has_permission('DATA_MANAGEMENT') and \
-       order['creator'] != flask.g.current_user['_id']:
+       flask.g.current_user['_id'] not in order['editors']:
         flask.abort(status=403)
 
     for dataset_uuid in order['datasets']:
