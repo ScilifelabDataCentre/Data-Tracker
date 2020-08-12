@@ -109,7 +109,7 @@ def get_order(identifier):
             flask.session['user_id'] in order_data['editors']):
         flask.abort(status=403)
 
-    prepare_order(order_data, flask.g.db)
+    prepare_order_response(order_data, flask.g.db)
 
     return utils.response_json({'order': order_data})
 
@@ -150,13 +150,28 @@ def get_order_logs(identifier):
                                 'logs': order_logs})
 
 
-@blueprint.route('/', methods=['POST'])
-def add_order():  # pylint: disable=too-many-branches
+@blueprint.route('/base/', methods=['GET'])
+def get_empty_order():
+    """
+    Provide the basic data structure for an empty order.
+
+    Returns:
+        flask.Response: Json structure of an empty order.
+    """
+    # create new order
+    order = structure.order()
+    order['_id'] = ''
+
+    return utils.response_json({'order': order})
+
+
+@blueprint.route('/', methods=['PUT'])
+def add_order():
     """
     Add an order.
 
     Returns:
-        flask.Response: Json structure with the ``_id`` of the order.
+        flask.Response: Json structure with ``_id`` of the added order.
     """
     # create new order
     order = structure.order()
@@ -167,21 +182,8 @@ def add_order():  # pylint: disable=too-many-branches
         flask.abort(status=400)
 
     validation = utils.basic_check_indata(indata, order, ['_id'])
-    if not validation[0]:
-        flask.abort(status=validation[1])
-    # creator
-    user_ids = (flask.g.current_user['_id'], flask.g.current_user['email'])
-    if indata.get('creator'):
-        if indata['creator'] not in user_ids and not user.has_permission('DATA_MANAGEMENT'):
-            flask.abort(status=403)
-        if new_identifier := utils.check_email_uuid(indata['creator']):
-            indata['creator'] = new_identifier
-    else:
-        indata['creator'] = flask.g.current_user['_id']
-    # receiver
-    if 'receiver' in indata:
-        if new_identifier := utils.check_email_uuid(indata['receiver']):
-            indata['receiver'] = new_identifier
+    if not validation['result']:
+        flask.abort(status=validation['status'])
 
     order.update(indata)
 
@@ -195,7 +197,7 @@ def add_order():  # pylint: disable=too-many-branches
     return utils.response_json({'_id': result.inserted_id})
 
 
-@blueprint.route('/<identifier>/dataset/', methods=['POST'])
+@blueprint.route('/<identifier>/dataset/', methods=['PUT'])
 def add_dataset_post(identifier):  # pylint: disable=too-many-branches
     """
     Add a dataset to the given order.
@@ -353,7 +355,7 @@ def update_order(identifier: str):  # pylint: disable=too-many-branches
     return flask.Response(status=200)
 
 
-def prepare_order(order_data: dict, db):
+def prepare_order_response(order_data: dict, mongodb):
     """
     Prepare an order by e.g. converting user uuids to names etc.
 
@@ -361,18 +363,18 @@ def prepare_order(order_data: dict, db):
 
     Args:
         order_data (dict): The order entry from the db.
-        db: The mongo database to use.
+        mongodb: The mongo database to use.
     """
-    order_data['authors'] = [utils.user_uuid_data(user_uuid, db)
+    order_data['authors'] = [utils.user_uuid_data(user_uuid, mongodb)
                              for user_uuid in order_data['authors']]
-    order_data['generators'] = [utils.user_uuid_data(user_uuid, db)
+    order_data['generators'] = [utils.user_uuid_data(user_uuid, mongodb)
                                 for user_uuid in order_data['generators']]
-    order_data['editors'] = [utils.user_uuid_data(user_uuid, db)
+    order_data['editors'] = [utils.user_uuid_data(user_uuid, mongodb)
                              for user_uuid in order_data['editors']]
-    order_data['receivers'] = [utils.user_uuid_data(user_uuid, db)
+    order_data['receivers'] = [utils.user_uuid_data(user_uuid, mongodb)
                                for user_uuid in order_data['receivers']]
-    order_data['organisation'] = utils.user_uuid_data(order_data['organisation'], db)
+    order_data['organisation'] = utils.user_uuid_data(order_data['organisation'], mongodb)
 
     # convert dataset list into {title, _id}
-    order_data['datasets'] = list(db['datasets'].find({'_id': {'$in': order_data['datasets']}},
-                                                      {'_id': 1, 'title': 1}))
+    order_data['datasets'] = list(mongodb['datasets'].find({'_id': {'$in': order_data['datasets']}},
+                                                           {'_id': 1, 'title': 1}))
