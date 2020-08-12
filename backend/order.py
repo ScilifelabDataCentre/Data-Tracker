@@ -174,31 +174,40 @@ def add_order():
         flask.Response: Json structure with ``_id`` of the added order.
     """
     # create new order
-    order = structure.order()
+    new_order = structure.order()
     try:
         indata = flask.json.loads(flask.request.data)
     except json.decoder.JSONDecodeError:
         logging.debug('Bad json')
         flask.abort(status=400)
 
-    validation = utils.basic_check_indata(indata, order, ['_id'])
+    validation = utils.basic_check_indata(indata, new_order, ['_id', 'datasets'])
     if not validation.result:
         flask.abort(status=validation.status)
 
-    order.update(indata)
+    for field in ('editors', 'authors', 'receivers', 'generators'):
+        if field in indata:
+            indata[field] = [utils.str_to_uuid(entry) for entry in indata[field]]
+    if 'organisation' in indata:
+        indata['organisation'] = utils.str_to_uuid(indata['organisation'])
+
+    new_order.update(indata)
+
+    if flask.g.current_user['_id'] not in new_order['editors']:
+        new_order['editors'].append(flask.g.current_user['_id'])
 
     # add to db
-    result = flask.g.db['orders'].insert_one(order)
+    result = flask.g.db['orders'].insert_one(new_order)
     if not result.acknowledged:
-        logging.error('Order insert failed: %s', order)
+        logging.error('Order insert failed: %s', new_order)
     else:
-        utils.make_log('order', 'add', 'Order added', order)
+        utils.make_log('order', 'add', 'Order added', new_order)
 
     return utils.response_json({'_id': result.inserted_id})
 
 
 @blueprint.route('/<identifier>/dataset/', methods=['PUT'])
-def add_dataset_post(identifier):  # pylint: disable=too-many-branches
+def add_dataset(identifier):  # pylint: disable=too-many-branches
     """
     Add a dataset to the given order.
 

@@ -358,12 +358,11 @@ def test_add_order(use_db):
     db = use_db
 
     indata = {'description': 'Test description',
-              'receiver': 'new_email@example.com',
               'title': 'Test title'}
     indata.update(TEST_LABEL)
 
     responses = make_request_all_roles(f'/api/order/',
-                                       method='POST',
+                                       method='PUT',
                                        data=indata,
                                        ret_json=True)
     for response in responses:
@@ -372,11 +371,10 @@ def test_add_order(use_db):
             assert '_id' in response.data
             assert len(response.data['_id']) == 36
             order = db['orders'].find_one({'_id': uuid.UUID(response.data['_id'])})
-            curr_user = db['users'].find_one({'auth_id': USERS[response.role]})
+            curr_user = db['users'].find_one({'auth_ids': USERS[response.role]})
             assert order['description'] == indata['description']
-            assert order['receiver'] == indata['receiver']
             assert order['title'] == indata['title']
-            assert order['creator'] == curr_user['_id']
+            assert curr_user['_id'] in order['editors']
         elif response.role == 'no-login':
             assert response.code == 401
             assert not response.data
@@ -384,27 +382,39 @@ def test_add_order(use_db):
             assert response.code == 403
             assert not response.data
 
-    orders_user = db['users'].find_one({'auth_id': USERS['orders']})
+    orders_user = db['users'].find_one({'auth_ids': USERS['orders']})
     indata = {'description': 'Test description',
-              'creator': str(orders_user['_id']),
-              'receiver': 'new_email@example.com',
+              'authors': [str(orders_user['_id'])],
+              'editors': [str(orders_user['_id'])],
+              'generators': [str(orders_user['_id'])],
+              'organisation': str(orders_user['_id']),
+              'receivers': [str(orders_user['_id'])],
+              'tags_standard': {'collection': 'testing'},
               'title': 'Test title'}
     indata.update(TEST_LABEL)
 
     responses = make_request_all_roles(f'/api/order/',
-                                       method='POST',
+                                       method='PUT',
                                        data=indata,
                                        ret_json=True)
     for response in responses:
-        if response.role in ('data', 'root'):
+        if response.role in ('orders', 'data', 'root'):
             assert response.code == 200
             assert '_id' in response.data
             assert len(response.data['_id']) == 36
             order = db['orders'].find_one({'_id': uuid.UUID(response.data['_id'])})
-            assert order['description'] == indata['description']
-            assert order['receiver'] == indata['receiver']
-            assert order['title'] == indata['title']
-            assert order['creator'] == orders_user['_id']
+
+            user_list = [orders_user['_id']]
+            for field in ('description', 'title', 'tags_standard', 'tags_user'):
+                assert order[field] == indata[field]
+            for field in ('authors', 'receivers', 'generators'):
+                assert order[field] == user_list
+            curr_user = db['users'].find_one({'auth_ids': USERS[response.role]})
+
+            assert set(order['editors']) == set([uuid.UUID(entry) for entry in indata[field]] +
+                                                [curr_user['_id']])
+            assert order['organisation'] == uuid.UUID(indata['organisation'])
+            
         elif response.role == 'no-login':
             assert response.code == 401
             assert not response.data
