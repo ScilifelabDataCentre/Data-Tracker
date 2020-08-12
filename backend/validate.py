@@ -125,29 +125,6 @@ def validate_email(data) -> bool:
     return True
 
 
-def validate_extra(data) -> bool:
-    """
-    Validate input for the ``extra`` field.
-
-    It must be a dict.
-
-    Args:
-        data: The data to be validated.
-
-    Returns:
-        bool: Validation passed.
-
-    Raises:
-        ValueError: Validation failed.
-    """
-    if not isinstance(data, dict):
-        raise ValueError(f'Must be dict ({data})')
-    for key in data:
-        if not isinstance(key, str) or not isinstance(data[key], str):
-            raise ValueError(f'Keys and values must be strings ({key}, {data[key]})')
-    return True
-
-
 def validate_links(data: list) -> bool:
     """
     Validate input for the ``links`` field.
@@ -261,6 +238,52 @@ def validate_string(data: str) -> bool:
     return True
 
 
+def validate_tags_std(data: dict) -> bool:
+    """
+    Validate input for the ``tags_standard`` field.
+
+    It must be a dict.
+
+    Args:
+        data (dict): The data to be validated.
+
+    Returns:
+        bool: Validation passed.
+
+    Raises:
+        ValueError: Validation failed.
+    """
+    if not isinstance(data, dict):
+        raise ValueError(f'Not a  dict ({data})')
+    for key in data:
+        if not isinstance(key, str) or not isinstance(data[key], str):
+            raise ValueError(f'Keys and values must be strings ({key}, {data[key]})')
+    return True
+
+
+def validate_tags_user(data: dict) -> bool:
+    """
+    Validate input for the ``tags_user`` field.
+
+    It must be a dict.
+
+    Args:
+        data (dict): The data to be validated.
+
+    Returns:
+        bool: Validation passed.
+
+    Raises:
+        ValueError: Validation failed.
+    """
+    if not isinstance(data, dict):
+        raise ValueError(f'Not a  dict ({data})')
+    for key in data:
+        if not isinstance(key, str) or not isinstance(data[key], str):
+            raise ValueError(f'Keys and values must be strings ({key}, {data[key]})')
+    return True
+
+
 def validate_title(data: str) -> bool:
     """
     Validate input for the ``title`` field.
@@ -298,14 +321,14 @@ def validate_url(data: str) -> bool:
     """
     if not isinstance(data, str):
         raise ValueError('Must be a string')
-    if not data.startswith('http://') and not data.startswith('http://'):
-        raise ValueError('URLs must start with `http(s)://`')
+    if not data.startswith('http://') and not data.startswith('https://'):
+        raise ValueError('URLs must start with http(s)://')
     return True
 
 
 def validate_user(data: Union[str, list]) -> bool:
     """
-    Validate input for the ``user`` field.
+    Validate input for a field containg user uuid(s).
 
     For compatibility, the input may be UUIDs as either string (single user) or
     a list (single or multiple users).
@@ -327,9 +350,6 @@ def validate_user(data: Union[str, list]) -> bool:
         user_uuids = data
     else:
         raise ValueError(f'Bad data type (must be str/list): {data}')
-    # empty is ok
-    if not data:
-        return True
 
     for u_uuid in user_uuids:
         try:
@@ -344,20 +364,23 @@ def validate_user(data: Union[str, list]) -> bool:
 VALIDATION_MAPPER = {'affiliation': validate_string,
                      'api_key': validate_string,
                      'auth_ids': validate_list_of_strings,
+                     'authors': validate_user,
                      'contact': validate_string,
-                     'creator': validate_creator,
                      'description': validate_string,
                      'dmp': validate_string,
                      'datasets': validate_datasets,
+                     'editors': validate_user,
                      'email': validate_email,
                      'email_public': validate_email,
-                     'extra': validate_extra,
+                     'generators': validate_user,
                      'links': validate_links,
                      'name': validate_string,
                      'orcid': validate_string,
-                     'owners': validate_user,
+                     'organisation': validate_user,
                      'permissions': validate_permissions,
                      'publications': validate_publications,
-                     'receiver': validate_user,
-                     'url': validate_url,
-                     'title': validate_title}
+                     'receivers': validate_user,
+                     'tags_standard': validate_tags_std,
+                     'tags_user': validate_tags_user,
+                     'title': validate_title,
+                     'url': validate_url}
