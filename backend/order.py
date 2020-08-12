@@ -182,8 +182,8 @@ def add_order():
         flask.abort(status=400)
 
     validation = utils.basic_check_indata(indata, order, ['_id'])
-    if not validation['result']:
-        flask.abort(status=validation['status'])
+    if not validation.result:
+        flask.abort(status=validation.status)
 
     order.update(indata)
 

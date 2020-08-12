@@ -4,6 +4,7 @@ import uuid
 
 import requests
 
+import structure
 import utils
 
 from helpers import make_request, as_user, make_request_all_roles,\
@@ -89,6 +90,25 @@ def test_get_order(use_db):
                 assert order[field] == data['tagsUser']
             else:
                 assert order[field] == data[field]
+
+
+
+def test_get_order_structure():
+    """Request the order structure and confirm that it matches the official one"""
+    session = requests.Session()
+    as_user(session, USERS['data'])
+
+    reference = structure.order()
+    reference['_id'] = ''
+    reference['tagsStandard'] = reference['tags_standard']
+    del reference['tags_standard']
+    reference['tagsUser'] = reference['tags_user']
+    del reference['tags_user']
+
+    response = make_request(session, f'/api/order/base/')
+    assert response.code == 200
+    data = response.data['order']
+    assert data == reference
 
 
 def test_get_order_bad():
@@ -313,32 +333,11 @@ def test_add_order_permissions(use_db):
     indata = {'title': 'Test title'}
     indata.update(TEST_LABEL)
     responses = make_request_all_roles(f'/api/order/',
-                                       method='POST',
+                                       method='PUT',
                                        data=indata,
                                        ret_json=True)
     for response in responses:
         if response.role in ('orders', 'data', 'root'):
-            assert response.code == 200
-            assert '_id' in response.data
-            assert len(response.data['_id']) == 36
-        elif response.role == 'no-login':
-            assert response.code == 401
-            assert not response.data
-        else:
-            assert response.code == 403
-            assert not response.data
-
-    db = use_db
-    user_creator = db['users'].find_one({'auth_id': USERS['base']})
-    indata = {'creator': user_creator['email'],
-              'title': 'test title'}
-    indata.update(TEST_LABEL)
-    responses = make_request_all_roles(f'/api/order/',
-                                       method='POST',
-                                       data=indata,
-                                       ret_json=True)
-    for response in responses:
-        if response.role in ('data', 'root'):
             assert response.code == 200
             assert '_id' in response.data
             assert len(response.data['_id']) == 36
