@@ -414,7 +414,6 @@ def test_add_order(use_db):
             assert set(order['editors']) == set([uuid.UUID(entry) for entry in indata[field]] +
                                                 [curr_user['_id']])
             assert order['organisation'] == uuid.UUID(indata['organisation'])
-            
         elif response.role == 'no-login':
             assert response.code == 401
             assert not response.data
@@ -432,12 +431,11 @@ def test_add_order_log(use_db):
     db = use_db
 
     indata = {'description': 'Test description',
-              'receiver': 'new_email@example.com',
               'title': 'Test title'}
     indata.update(TEST_LABEL)
 
     responses = make_request_all_roles(f'/api/order/',
-                                       method='POST',
+                                       method='PUT',
                                        data=indata,
                                        ret_json=True)
     for response in responses:
@@ -466,12 +464,12 @@ def test_add_order_bad():
     Bad requests.
     """
     indata = {'description': 'Test description',
-              'receiver': 'bad_email@asd',
+              'receivers': ['bad_email@asd'],
               'title': 'Test title'}
     indata.update(TEST_LABEL)
 
     responses = make_request_all_roles(f'/api/order/',
-                                       method='POST',
+                                       method='PUT',
                                        data=indata,
                                        ret_json=True)
     for response in responses:
@@ -485,12 +483,12 @@ def test_add_order_bad():
             assert not response.data
 
     indata = {'description': 'Test description',
-              'creator': str(uuid.uuid4()),
+              'authors': [str(uuid.uuid4())],
               'title': 'Test title'}
     indata.update(TEST_LABEL)
 
     responses = make_request_all_roles(f'/api/order/',
-                                       method='POST',
+                                       method='PUT',
                                        data=indata,
                                        ret_json=True)
     for response in responses:
@@ -510,7 +508,7 @@ def test_add_order_bad():
     indata.update(TEST_LABEL)
     response = make_request(session,
                              f'/api/order/',
-                             method='POST',
+                             method='PUT',
                              data=indata,
                              ret_json=True)
     assert response.code == 403
@@ -522,7 +520,7 @@ def test_add_order_bad():
     indata.update(TEST_LABEL)
     response = make_request(session,
                              f'/api/order/',
-                             method='POST',
+                             method='PUT',
                              data=indata,
                              ret_json=True)
     assert response.code == 400
