@@ -20,7 +20,7 @@ CURR_DIR = os.path.realpath(__file__)
 SETTINGS = json.loads(open(f'{os.path.dirname(CURR_DIR)}/settings_tests.json').read())
 BASE_URL = f'{SETTINGS["host"]}:{SETTINGS["port"]}'
 
-TEST_LABEL = {'extra': {'testing': 'yes'}}
+TEST_LABEL = {'tags_user': {'testing': 'true'}}
 
 USERS = {'no-login': None,
          'base': 'base::testers',
@@ -110,18 +110,19 @@ def add_dataset():
     orders_user = db['users'].find_one({'auth_id': USERS['orders']})
     base_user = db['users'].find_one({'auth_id': USERS['base']})
     order_indata['authors'] = [orders_user['_id']]
+    order_indata['generators'] = [orders_user['_id']]
+    order_indata['organisation'] = orders_user['_id']
     order_indata['receivers'] = [base_user['_id']]
     
     dataset_indata = structure.dataset()
-    dataset_indata.update({'links': [{'description': 'Test description', 'url': 'http://test_url'}],
-                           'description': 'Added by fixture.',
+    dataset_indata.update({'description': 'Added by fixture.',
                            'title': 'Test title from fixture'})
     dataset_indata.update(TEST_LABEL)
 
     project_indata = structure.project()
     project_indata.update({'description': 'Added by fixture.',
                            'title': 'Test title from fixture',
-                           'owners': [base_user['_id']]})
+                           'editors': [base_user['_id']]})
     project_indata.update(TEST_LABEL)
 
     db['datasets'].insert_one(dataset_indata)

@@ -535,12 +535,12 @@ def test_add_dataset_permissions(use_db):
     session = requests.Session()
 
     db = use_db
-    orders = list(db['orders'].aggregate([{'$sample': {'size': 2}}]))
+    orders = db['orders'].aggregate([{'$sample': {'size': 2}}])
     indata = {'title': 'Test title'}
     indata.update(TEST_LABEL)
     for order in orders:
         responses = make_request_all_roles(f'/api/order/{order["_id"]}/dataset/',
-                                           method='POST',
+                                           method='PUT',
                                            data=indata,
                                            ret_json=True)
         for response in responses:
@@ -554,12 +554,13 @@ def test_add_dataset_permissions(use_db):
             else:
                 assert response.code == 403
                 assert not response.data
-        # as order creator
-        owner = db['users'].find_one({'_id': order['creator']})
-        as_user(session, owner['auth_id'])
+
+        # as order editor
+        owner = db['users'].find_one({'_id': order['editors'][0]})
+        as_user(session, owner['auth_ids'][0])
         response = make_request(session,
                                 f'/api/order/{order["_id"]}/dataset/',
-                                method='POST',
+                                method='PUT',
                                 data=indata)
         assert response.code == 200
         assert '_id' in response.data

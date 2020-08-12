@@ -216,14 +216,14 @@ def add_dataset(identifier):  # pylint: disable=too-many-branches
     """
     # permissions
     try:
-        muuid = utils.str_to_uuid(identifier)
+        order_uuid = utils.str_to_uuid(identifier)
     except ValueError:
         flask.abort(status=404)
-    order = flask.g.db['orders'].find_one({'_id': muuid})
+    order = flask.g.db['orders'].find_one({'_id': order_uuid})
     if not order:
         flask.abort(status=404)
-    if not (user.has_permission('DATA_MANAGEMENT') or
-            order['creator'] == flask.g.current_user['_id']):
+    if not (user.has_permission('DATA_MANAGEMENT') or \
+            flask.g.current_user['_id'] in order['editors']):
         return flask.abort(status=403)
 
     # create new dataset
@@ -234,8 +234,8 @@ def add_dataset(identifier):  # pylint: disable=too-many-branches
         flask.abort(status=400)
 
     validation = utils.basic_check_indata(indata, dataset, ['_id'])
-    if not validation[0]:
-        flask.abort(status=validation[1])
+    if not validation.result:
+        flask.abort(status=validation.status)
     dataset.update(indata)
 
     # add to db
@@ -245,15 +245,15 @@ def add_dataset(identifier):  # pylint: disable=too-many-branches
     else:
         utils.make_log('dataset',
                        'add',
-                       f'Dataset added for order {muuid}',
+                       f'Dataset added for order {order_uuid}',
                        dataset)
 
-        result_o = flask.g.db['orders'].update_one({'_id': muuid},
+        result_o = flask.g.db['orders'].update_one({'_id': order_uuid},
                                                    {'$push': {'datasets': dataset['_id']}})
         if not result_o.acknowledged:
-            logging.error('Order insert failed: ADD dataset %s', dataset['_id'])
+            logging.error('Order %s insert failed: ADD dataset %s', order_uuid, dataset['_id'])
         else:
-            order = flask.g.db['orders'].find_one({'_id': muuid})
+            order = flask.g.db['orders'].find_one({'_id': order_uuid})
 
             utils.make_log('order',
                            'update',
