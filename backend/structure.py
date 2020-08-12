@@ -18,7 +18,8 @@ def dataset():
             'description': '',
             'extra': {},
             'links': [],
-            'title': ''}
+            'title': '',
+            'tags_user': []}
 
 
 def order():
