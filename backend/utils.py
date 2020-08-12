@@ -17,6 +17,8 @@ import structure
 import validate
 
 
+ValidationResult = namedtuple('ValidationResult', ['result', 'status'])
+
 def basic_check_indata(indata: dict,
                        reference_data: dict,
                        prohibited: Union[tuple, list]) -> tuple:
@@ -24,6 +26,7 @@ def basic_check_indata(indata: dict,
     Perform basic checks of indata.
 
     * All fields are allowed in the entity type
+    * If title is a field for the entity, it may not be empty
     * All fields are of the correct type
     * All prohibited fields are unchanged (if update)
 
@@ -44,18 +47,18 @@ def basic_check_indata(indata: dict,
        not reference_data['title'] and \
        not indata.get('title'):
         logging.debug('Title empty')
-        return (False, 400)
+        return ValidationResult(result=False, status=400)
 
     for key in indata:
         if key in prohibited and indata[key] != reference_data[key]:
             logging.debug('Prohibited key (%s) with new value', key)
-            return (False, 403)
+            return ValidationResult(result=False, status=403)
         if key not in reference_data:
             logging.debug('Bad key (%s)', key)
-            return (False, 400)
+            return ValidationResult(result=False, status=400)
         if not validate.validate_field(key, indata[key]):
-            return (False, 400)
-    return (True, 200)
+            return ValidationResult(result=False, status=400)
+    return ValidationResult(result=True, status=200)
 
 
 # csrf
@@ -352,12 +355,24 @@ def check_email_uuid(user_identifier: str) -> Union[str, uuid.UUID]:
     return ''
 
 
-def user_uuid_data(user_id: Union[str, uuid.UUID]) -> dict:
+def user_uuid_data(user_id: Union[str, uuid.UUID], mongodb: pymongo.database.Database) -> dict:
+    """
+    Retrieve some extra information about a user using a uuid as input.
+
+    Note that ``_id``` will be returned as ``str``, not ``uuid.UUID``.
+
+    Args:
+        user_id (str or uuid.UUID): UUID of the user.
+        mongodb (pymongo.database.Database): The Mongo database to use for the query
+
+    Returns:
+        dict: The resulting data structure.
+    """
     if isinstance(user_id, str):
         user_uuid = str_to_uuid(user_id)
     else:
         user_uuid = user_id
-    data = flask.g.db['users'].find_one({'_id': user_uuid})
-    return {'name': data['name'],
-            'email': data['email_public'],
-            '_id': user_uuid}
+    data = mongodb['users'].find_one({'_id': user_uuid})
+    return {'_id': str(user_uuid),
+            'name': data['name'],
+            'email': data['email_public']}
