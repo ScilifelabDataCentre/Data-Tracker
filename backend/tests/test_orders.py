@@ -567,7 +567,7 @@ def test_add_dataset_permissions(use_db):
         assert len(response.data['_id']) == 36
 
 
-def test_add_dataset_all_fields(use_db):
+def test_add_dataset(use_db):
     """
     Add a dataset using POST dataset.
 
@@ -586,7 +586,7 @@ def test_add_dataset_all_fields(use_db):
 
     response = make_request(session,
                             f'/api/order/{order["_id"]}/dataset/',
-                            method='POST',
+                            method='PUT',
                             data=indata,
                             ret_json=True)
     assert response.code == 200
@@ -596,7 +596,9 @@ def test_add_dataset_all_fields(use_db):
     db_ds = db['datasets'].find_one({'_id': uuid.UUID(response.data['_id'])})
     db_o = db['orders'].find_one({'_id': order['_id']})
     db_ds['_id'] = str(db_ds['_id'])
-    db_o['datasets'] = [str(uuid) for uuid in db_o['datasets']]
+    db_o['datasets'] = [str(ds_uuid) for ds_uuid in db_o['datasets']]
+    for field in indata:
+        assert db_ds[field] == indata[field]
     assert db_ds == indata
     assert response.data['_id'] in db_o['datasets']
 
@@ -620,7 +622,7 @@ def test_add_dataset_log(use_db):
 
     response = make_request(session,
                             f'/api/order/{order["_id"]}/dataset/',
-                            method='POST',
+                            method='PUT',
                             data=indata,
                             ret_json=True)
 
@@ -630,6 +632,59 @@ def test_add_dataset_log(use_db):
                                          'data._id': uuid.UUID(response.data['_id'])}))
     assert len(ds_logs_post) == 1
     assert ds_logs_post[0]['action']
+
+
+def test_add_dataset_bad_fields(use_db):
+    """Attempt to add datasets with e.g. forbidden fields."""
+    db = use_db
+    order = next(db['orders'].aggregate([{'$sample': {'size': 1}}]))
+    session = requests.Session()
+    as_user(session, USERS['data'])
+
+    indata = {'_id': 'asd',
+              'title': 'test title'}
+    response = make_request(session,
+                            f'/api/order/{order["_id"]}/dataset/',
+                            method='PUT',
+                            data=indata)
+    assert response.code == 403
+    assert not response.data
+
+    indata = {'timestamp': 'asd',
+              'title': 'test title'}
+    response = make_request(session,
+                            f'/api/order/{order["_id"]}/dataset/',
+                            method='PUT',
+                            data=indata)
+    assert response.code == 400
+    assert not response.data
+
+    indata = {'extra': [{'asd': 123}],
+              'title': 'test title'}
+    response = make_request(session,
+                            f'/api/order/{order["_id"]}/dataset/',
+                            method='PUT',
+                            data=indata)
+    assert response.code == 400
+    assert not response.data
+
+    indata = {'links': [{'asd': 123}],
+              'title': 'test title'}
+    response = make_request(session,
+                            f'/api/order/{order["_id"]}/dataset/',
+                            method='PUT',
+                            data=indata)
+    assert response.code == 400
+    assert not response.data
+
+    indata = {'links': 'Some text',
+              'title': 'test title'}
+    response = make_request(session,
+                            f'/api/order/{order["_id"]}/dataset/',
+                            method='PUT',
+                            data=indata)
+    assert response.code == 400
+    assert not response.data
 
 
 def test_update_order_permissions(use_db):
@@ -805,59 +860,6 @@ def test_update_order_bad(use_db):
             else:
                 assert response.code == 403
                 assert not response.data
-
-
-def test_add_dataset_bad_fields(use_db):
-    """Attempt to add datasets with e.g. forbidden fields."""
-    db = use_db
-    order = next(db['orders'].aggregate([{'$sample': {'size': 1}}]))
-    session = requests.Session()
-    as_user(session, USERS['data'])
-
-    indata = {'_id': 'asd',
-              'title': 'test title'}
-    response = make_request(session,
-                            f'/api/order/{order["_id"]}/dataset/',
-                            method='POST',
-                            data=indata)
-    assert response.code == 403
-    assert not response.data
-
-    indata = {'timestamp': 'asd',
-              'title': 'test title'}
-    response = make_request(session,
-                            f'/api/order/{order["_id"]}/dataset/',
-                            method='POST',
-                            data=indata)
-    assert response.code == 400
-    assert not response.data
-
-    indata = {'extra': [{'asd': 123}],
-              'title': 'test title'}
-    response = make_request(session,
-                            f'/api/order/{order["_id"]}/dataset/',
-                            method='POST',
-                            data=indata)
-    assert response.code == 400
-    assert not response.data
-
-    indata = {'links': [{'asd': 123}],
-              'title': 'test title'}
-    response = make_request(session,
-                            f'/api/order/{order["_id"]}/dataset/',
-                            method='POST',
-                            data=indata)
-    assert response.code == 400
-    assert not response.data
-
-    indata = {'links': 'Some text',
-              'title': 'test title'}
-    response = make_request(session,
-                            f'/api/order/{order["_id"]}/dataset/',
-                            method='POST',
-                            data=indata)
-    assert response.code == 400
-    assert not response.data
 
 
 def test_delete_order(use_db):
