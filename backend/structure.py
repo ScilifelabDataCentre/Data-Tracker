@@ -16,7 +16,6 @@ def dataset():
     """
     return {'_id': utils.new_uuid(),
             'description': '',
-            'extra': {},
             'links': [],
             'title': '',
             'tags_user': []}
