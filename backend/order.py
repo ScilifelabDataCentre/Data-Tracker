@@ -319,7 +319,7 @@ def update_order(identifier: str):  # pylint: disable=too-many-branches
     if not order:
         return flask.abort(status=404)
     if not (user.has_permission('DATA_MANAGEMENT') or
-            order['creator'] == flask.session['user_id']):
+            flask.g.current_user['_id'] in order['editors']):
         return flask.abort(status=403)
 
     try:
@@ -327,24 +327,14 @@ def update_order(identifier: str):  # pylint: disable=too-many-branches
     except json.decoder.JSONDecodeError:
         flask.abort(status=400)
     validation = utils.basic_check_indata(indata, order, ['_id', 'datasets'])
-    if not validation[0]:
-        flask.abort(status=validation[1])
+    if not validation.result:
+        flask.abort(status=validation.status)
 
-    # creator
-    if indata.get('creator'):
-        new_identifier = utils.check_email_uuid(indata['creator']) or indata['creator']
-        if order['creator'] not in (new_identifier, indata['creator']):
-            if not user.has_permission('DATA_MANAGEMENT'):
-                flask.abort(status=403)
-        indata['creator'] = new_identifier
-    else:
-        indata['creator'] = flask.g.current_user['_id']
-    # receiver
-    if indata.get('receiver'):
-        if new_identifier := utils.check_email_uuid(indata['receiver']):
-            indata['receiver'] = new_identifier
-        else:
-            flask.abort(400)
+    for field in ('editors', 'authors', 'receivers', 'generators'):
+        if field in indata:
+            indata[field] = [utils.str_to_uuid(entry) for entry in indata[field]]
+    if 'organisation' in indata:
+        indata['organisation'] = utils.str_to_uuid(indata['organisation'])
 
     is_different = False
     for field in indata:
