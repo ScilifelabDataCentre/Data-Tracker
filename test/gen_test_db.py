@@ -120,7 +120,7 @@ def gen_orders(db, nr_orders: int = 300):
     user_re = re.compile('.*::elixir')
     facilities = tuple(db['users'].find({'auth_ids': facility_re}))
     organisations = tuple(db['users'].find({'auth_ids': organisation_re}))
-    users = tuple(db['users'].find({'auth_ids': user_re}))
+    users = tuple(db['users'].find({'$and': [{'auth_ids': user_re}, {'permissions': 'ORDERS_SELF'}]}))
     for i in range(1, nr_orders+1):
         order = structure.order()
         changes = {'authors': [random.choice(users)['_id'] for _ in range(random.randint(0, 4))],
