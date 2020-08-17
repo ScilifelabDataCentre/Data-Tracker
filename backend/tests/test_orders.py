@@ -697,9 +697,9 @@ def test_update_order_permissions(use_db):
 
     db = use_db
 
-    orders_user = db['users'].find_one({'auth_id': USERS['orders']})
+    orders_user = db['users'].find_one({'auth_ids': USERS['orders']})
 
-    orders = list(db['orders'].aggregate([{'$match': {'creator': orders_user['_id']}},
+    orders = list(db['orders'].aggregate([{'$match': {'editors': orders_user['_id']}},
                                           {'$sample': {'size': 3}}]))
 
     for order in orders:
