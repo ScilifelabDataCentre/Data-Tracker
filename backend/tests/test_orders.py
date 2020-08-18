@@ -735,10 +735,12 @@ def test_update_order(use_db):
 
     db = use_db
 
-    orders_user = db['users'].find_one({'auth_id': USERS['orders']})
+    orders_user = db['users'].find_one({'auth_ids': USERS['orders']})
 
-    orders = list(db['orders'].aggregate([{'$match': {'creator': orders_user['_id']}},
+    orders = list(db['orders'].aggregate([{'$match': {'editors': orders_user['_id']}},
                                           {'$sample': {'size': 2}}]))
+
+    assert len(orders) > 0
 
     for order in orders:
         for role in USERS:
@@ -779,6 +781,8 @@ def test_update_order(use_db):
                 assert response.code == 403
                 assert not response.data
 
+    assert false
+
 
 def test_update_order_bad(use_db):
     """
@@ -788,15 +792,16 @@ def test_update_order_bad(use_db):
     """
     db = use_db
 
-    orders_user = db['users'].find_one({'auth_id': USERS['orders']})
-    orders = list(db['orders'].aggregate([{'$match': {'creator': orders_user['_id']}},
+    orders_user = db['users'].find_one({'auth_ids': USERS['orders']})
+    orders = list(db['orders'].aggregate([{'$match': {'editors': orders_user['_id']}},
                                           {'$sample': {'size': 2}}]))
+
+    assert len(orders) > 0
 
     for order in orders:
         indata = {'description': 'Test description',
-                  'receiver': 'bad_email@asd',
+                  'receivers': 'bad_email@asd',
                   'title': 'Test title'}
-
         responses = make_request_all_roles(f'/api/order/{order["_id"]}/',
                                            method='PATCH',
                                            data=indata,
@@ -812,9 +817,25 @@ def test_update_order_bad(use_db):
                 assert not response.data
 
         indata = {'description': 'Test description',
-                  'creator': str(uuid.uuid4()),
+                  'editors': orders_user,
                   'title': 'Test title'}
+        responses = make_request_all_roles(f'/api/order/{order["_id"]}/',
+                                           method='PATCH',
+                                           data=indata,
+                                           ret_json=True)
+        for response in responses:
+            if response.role in ('data', 'root'):
+                assert response.code == 400
+            elif response.role == 'no-login':
+                assert response.code == 401
+                assert not response.data
+            else:
+                assert response.code == 403
+                assert not response.data
 
+        indata = {'description': 'Test description',
+                  'editors': [str(uuid.uuid4())],
+                  'title': 'Test title'}
         responses = make_request_all_roles(f'/api/order/{order["_id"]}/',
                                            method='PATCH',
                                            data=indata,
