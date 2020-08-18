@@ -326,9 +326,36 @@ def validate_url(data: str) -> bool:
     return True
 
 
-def validate_user(data: Union[str, list]) -> bool:
+def validate_user(data: str) -> bool:
     """
-    Validate input for a field containg user uuid(s).
+    Validate input for a field containing a single user uuid string.
+
+    All users must exist in the database.
+
+    Args:
+        data (str): The data to be validated.
+
+    Returns:
+        bool: Validation passed.
+
+    Raises:
+        ValueError: Validation failed.
+    """
+    if not isinstance(data, str):
+        raise ValueError(f'Bad data type (must be str): {data}')
+
+    try:
+        user_uuid = uuid.UUID(data)
+    except ValueError:
+        raise ValueError(f'Not a valid uuid ({data})')
+    if not flask.g.db['users'].find_one({'_id': user_uuid}):
+        raise ValueError(f'Uuid not in db ({data})')
+    return True
+
+
+def validate_user_list(data: Union[str, list]) -> bool:
+    """
+    Validate input for a field containing a list of user uuid(s).
 
     For compatibility, the input may be UUIDs as either string (single user) or
     a list (single or multiple users).
@@ -344,14 +371,10 @@ def validate_user(data: Union[str, list]) -> bool:
     Raises:
         ValueError: Validation failed.
     """
-    if isinstance(data, str):
-        user_uuids = [data]
-    elif isinstance(data, list):
-        user_uuids = data
-    else:
-        raise ValueError(f'Bad data type (must be str/list): {data}')
+    if not isinstance(data, list):
+        raise ValueError(f'Bad data type (must be list): {data}')
 
-    for u_uuid in user_uuids:
+    for u_uuid in data:
         try:
             user_uuid = uuid.UUID(u_uuid)
         except ValueError:
@@ -364,22 +387,22 @@ def validate_user(data: Union[str, list]) -> bool:
 VALIDATION_MAPPER = {'affiliation': validate_string,
                      'api_key': validate_string,
                      'auth_ids': validate_list_of_strings,
-                     'authors': validate_user,
+                     'authors': validate_user_list,
                      'contact': validate_string,
                      'description': validate_string,
                      'dmp': validate_string,
                      'datasets': validate_datasets,
-                     'editors': validate_user,
+                     'editors': validate_user_list,
                      'email': validate_email,
                      'email_public': validate_email,
-                     'generators': validate_user,
+                     'generators': validate_user_list,
                      'links': validate_links,
                      'name': validate_string,
                      'orcid': validate_string,
                      'organisation': validate_user,
                      'permissions': validate_permissions,
                      'publications': validate_publications,
-                     'receivers': validate_user,
+                     'receivers': validate_user_list,
                      'tags_standard': validate_tags_std,
                      'tags_user': validate_tags_user,
                      'title': validate_title,
