@@ -221,7 +221,7 @@ def build_dataset_info(identifier: str):
         identifier (str): The uuid of the dataset.
 
     Returns:
-        dict: The dataset.
+        dict: The prepared dataset entry.
     """
     try:
         dataset_uuid = utils.str_to_uuid(identifier)
@@ -234,11 +234,14 @@ def build_dataset_info(identifier: str):
     dataset['related'] = list(flask.g.db['datasets'].find({'_id': {'$in': order['datasets']}},
                                                           {'title': 1}))
     dataset['related'].remove({'_id': dataset['_id'], 'title': dataset['title']})
-    dataset['projects'] = list(flask.g.db['projects'].find({'datasets': dataset_uuid},
+    dataset['collections'] = list(flask.g.db['projects'].find({'datasets': dataset_uuid},
                                                            {'title': 1}))
-    creator = flask.g.db['users'].find_one({'_id': order['creator']})
-    if creator:
-        dataset['creator'] = creator['name']
-    else:
-        dataset['creator'] = order['creator']
+    for field in ('generators', 'authors', 'receivers'):
+        order[field] = [{'_id': entry['_id'],
+                         'name': entry['name']}
+                        for entry
+                        in flask.g.db['users'].find({'_id': {'$in': order[field]}})]
+    org_entry = flask.g.db['users'].find_one({'_id': order['organisation']})
+    order['organisation'] = {'_id': org_entry['_id'], 'name': org_entry['name']}
+
     return dataset
