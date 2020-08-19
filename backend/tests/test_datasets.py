@@ -206,7 +206,7 @@ def test_update_permissions(use_db, dataset_for_tests):
     indata = {'title': 'Updated title'}
     responses = make_request_all_roles(f'/api/dataset/{ds_uuid}/', method='PATCH', data=indata)
     for response in responses:
-        if response.role in ('base', 'orders', 'data', 'root'):
+        if response.role in ('orders', 'data', 'root'):
             assert response.code == 200
         elif response.role == 'no-login':
             assert response.code == 401

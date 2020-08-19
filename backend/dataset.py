@@ -22,8 +22,8 @@ def list_datasets():
 @user.login_required
 def list_user_data():
     """List all datasets belonging to current user."""
-    user_orders = list(flask.g.db['orders'].find({'$or': [{'receiver': flask.session['user_id']},
-                                                          {'creator': flask.session['user_id']}]},
+    user_orders = list(flask.g.db['orders'].find({'$or': [{'receivers': flask.session['user_id']},
+                                                          {'editors': flask.session['user_id']}]},
                                                  {'datasets': 1}))
     uuids = list(ds for entry in user_orders for ds in entry['datasets'])
     user_datasets = list(flask.g.db['datasets'].find({'_id': {'$in': uuids}}))
@@ -90,7 +90,7 @@ def delete_dataset(identifier: str):
     # permission check
     order = flask.g.db['orders'].find_one({'datasets': ds_uuid})
     if not user.has_permission('DATA_MANAGEMENT') and \
-       order['creator'] != flask.g.current_user['_id']:
+       flask.g.current_user['_id'] not in order['editors']:
         flask.abort(status=403)
 
     result = flask.g.db['datasets'].delete_one({'_id': ds_uuid})
@@ -143,8 +143,7 @@ def update_dataset(identifier):
     # permissions
     order = flask.g.db['orders'].find_one({'datasets': ds_uuid})
     if not user.has_permission('DATA_MANAGEMENT') and \
-       order['creator'] != flask.g.current_user['_id'] and \
-       order['receiver'] != flask.g.current_user['_id']:
+       flask.g.current_user['_id'] not in order['editors']:
         flask.abort(status=403)
 
     try:
