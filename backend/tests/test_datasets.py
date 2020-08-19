@@ -23,8 +23,8 @@ def test_list_user_datasets(use_db):
     users = db['users'].aggregate([{'$sample': {'size': 5}},
                                    {'$match': {'auth_ids': USER_RE}}])
     for user in users:
-        user_orders = list(db['orders'].find({'$or': [{'receiver': user['_id']},
-                                                      {'creator': user['_id']}],
+        user_orders = list(db['orders'].find({'$or': [{'editors': user['_id']},
+                                                      {'receivers': user['_id']}],
                                               'datasets': {'$not': {'$size': 0} }},
                                              {'datasets': 1}))
         user_datasets = list(itertools.chain.from_iterable(order['datasets']
@@ -314,16 +314,17 @@ def test_update_bad(dataset_for_tests):
     assert not response.data
 
 
-def test_list_datasets():
+def test_list_datasets(use_db):
     """
     Request a list of all datasets.
 
     Should also test e.g. pagination once implemented.
     """
+    db = use_db
     responses = make_request_all_roles('/api/dataset/', ret_json=True)
     for response in responses:
         assert response.code == 200
-        assert len(response.data['datasets']) == 500
+        assert len(response.data['datasets']) == db['datasets'].count_documents({})
 
 
 def test_get_dataset_logs_permissions(use_db):
