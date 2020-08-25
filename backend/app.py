@@ -35,8 +35,8 @@ for oidc_name in app.config.get('oidc_names'):
 @app.before_request
 def prepare():
     """Open the database connection and get the current user."""
-    flask.g.dbserver = utils.get_dbclient(flask.current_app.config)
-    flask.g.db = utils.get_db(flask.g.dbserver, flask.current_app.config)
+    flask.g.dbclient = utils.get_dbclient(flask.current_app.config)
+    flask.g.db = utils.get_db(flask.g.dbclient, flask.current_app.config)
     if apikey := flask.request.headers.get('X-API-Key'):
         if not (apiuser := flask.request.headers.get('X-API-User')):  # pylint: disable=superfluous-parens
             flask.abort(status=400)
