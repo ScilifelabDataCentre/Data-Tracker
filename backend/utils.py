@@ -266,7 +266,12 @@ def make_timestamp():
     return datetime.datetime.now()
 
 
-def make_log(data_type: str, action: str, comment: str, data: dict = None, no_user: bool = False):
+def make_log(data_type: str,
+             action: str,
+             comment: str,
+             data: dict = None,
+             no_user: bool = False,
+             dbsession=None):  # pylint: disable=too-many-arguments
     """
     Log a change in the system.
 
@@ -282,6 +287,8 @@ def make_log(data_type: str, action: str, comment: str, data: dict = None, no_us
             (e.g. "Dataset added via addDataset").
         data_type (str): The collection name.
         data (dict): The new data for the entry.
+        no_user (bool): Whether the entry should be accredited to "system".
+        dbsession: The MongoDB session used.
 
     Returns:
         bool: Whether the log insertion successed.
@@ -297,7 +304,7 @@ def make_log(data_type: str, action: str, comment: str, data: dict = None, no_us
                 'data_type': data_type,
                 'data': data,
                 'user': active_user})
-    result = flask.g.db['logs'].insert_one(log)
+    result = flask.g.db['logs'].insert_one(log, session=dbsession)
     if not result.acknowledged:
         logging.error(f'Log failed: A:{action} C:{comment} D:{data} ' +
                       f'DT: {data_type} U: {flask.g.current_user["_id"]}')
