@@ -75,7 +75,7 @@ def delete_dataset(identifier: str):
     """
     Delete a dataset.
 
-    Can be deleted only by creator or user with DATA_MANAGEMENT permissions.
+    Can be deleted only by editors or user with DATA_MANAGEMENT permissions.
 
     Args:
         identifier (str): The dataset uuid.
@@ -87,35 +87,55 @@ def delete_dataset(identifier: str):
     dataset = flask.g.db['datasets'].find_one({'_id': ds_uuid})
     if not dataset:
         flask.abort(status=404)
+
     # permission check
     order = flask.g.db['orders'].find_one({'datasets': ds_uuid})
     if not user.has_permission('DATA_MANAGEMENT') and \
        flask.g.current_user['_id'] not in order['editors']:
         flask.abort(status=403)
 
-    result = flask.g.db['datasets'].delete_one({'_id': ds_uuid})
-    if not result.acknowledged:
-        logging.error(f'Failed to delete dataset {ds_uuid}')
-        return flask.Response(status=500)
-    utils.make_log('dataset', 'delete', 'Deleted dataset', data={'_id': ds_uuid})
+    def callback(dbsession):
+        """
+        Make sure that the entry deletion is atomic.
 
-    for entry in flask.g.db['orders'].find({'datasets': ds_uuid}):
-        result = flask.g.db['orders'].update_one({'_id': entry['_id']},
-                                                 {'$pull': {'datasets': ds_uuid}})
-        if not result.acknowledged:
-            logging.error(f'Failed to delete dataset {ds_uuid} in order {entry["_id"]}')
-            return flask.Response(status=500)
-        new_data = flask.g.db['orders'].find_one({'_id': entry['_id']})
-        utils.make_log('order', 'edit', f'Deleted dataset {ds_uuid}', new_data)
+        Args:
+            session: The MongoDB session.
+        """
+        # delete entry
+        result = flask.g.db['datasets'].delete_one({'_id': ds_uuid},
+                                                   session=dbsession)
+        utils.make_log('dataset',
+                       'delete',
+                       'Deleted dataset',
+                       data={'_id': ds_uuid},
+                       dbsession=session)
 
-    for entry in flask.g.db['projects'].find({'datasets': ds_uuid}):
-        flask.g.db['projects'].update_one({'_id': entry['_id']},
-                                          {'$pull': {'datasets': ds_uuid}})
-        if not result.acknowledged:
-            logging.error(f'Failed to delete dataset {ds_uuid} in project {entry["_id"]}')
-            return flask.Response(status=500)
-        new_data = flask.g.db['projects'].find_one({'_id': entry['_id']})
-        utils.make_log('project', 'edit', f'Deleted dataset {ds_uuid}', new_data)
+        # delete references in orders
+        for entry in flask.g.db['orders'].find({'datasets': ds_uuid}):
+            result = flask.g.db['orders'].update_one({'_id': entry['_id']},
+                                                     {'$pull': {'datasets': ds_uuid}},
+                                                     session=dbsession)
+            new_data = flask.g.db['orders'].find_one({'_id': entry['_id']})
+            utils.make_log('order',
+                           'edit',
+                           f'Deleted dataset {ds_uuid}',
+                           new_data,
+                           session=dbsession)
+
+        # delete references in collections
+        for entry in flask.g.db['projects'].find({'datasets': ds_uuid}):
+            flask.g.db['projects'].update_one({'_id': entry['_id']},
+                                              {'$pull': {'datasets': ds_uuid}},
+                                              session=dbsession)
+            new_data = flask.g.db['projects'].find_one({'_id': entry['_id']})
+            utils.make_log('project',
+                           'edit',
+                           f'Deleted dataset {ds_uuid}',
+                           new_data,
+                           session=dbsession)
+
+    with flask.g.dbclient.get_session as session:
+        session.with_transaction(callback)
 
     return flask.Response(status=200)
 
