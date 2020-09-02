@@ -54,11 +54,7 @@ def gen_datasets(db, nr_datasets: int = 500):
     for i in range(1, nr_datasets+1):
         dataset = structure.dataset()
         changes = {'title': f'Dataset {i} Title',
-                   'description': make_description(),
-                   'links': [{'description': f'Download location {j}',
-                              'url': (f'https://data_source{i}/' +
-                                      f'{random.choice(string.ascii_uppercase)}')}
-                                 for j in range(1, random.randint(0, 6))]}
+                   'description': make_description()}
         # add extra field
         if random.random() > 0.7:
             tag = random.choice(EXTRA_KEYS)
@@ -87,7 +83,8 @@ def gen_facilities(db, nr_facilities: int = 30):
                    'email': f'facility{i}@domain{i}.se',
                    'email_public': f'pub_facility{i}@domain{i}.se',
                    'name': f'Facility {i}',
-                   'permissions': ['ORDERS_SELF']}
+                   'permissions': ['ORDERS_SELF'],
+                   'url': f'https://www.example.com/facility{i}'}
         user.update(changes)
         uuids.append(db['users'].insert_one(user).inserted_id)
         make_log(db, action='add', data=user, data_type='user', comment='Generated', user='system')
@@ -106,7 +103,8 @@ def gen_organisations(db, nr_organisations: int = 15):
                    'email': f'organisation{i}@domain{i}.se',
                    'email_public': f'pub_organisation{i}@domain{i}.se',
                    'name': f'Organisation {i}',
-                   'permissions': ['ORDERS_SELF']}
+                   'permissions': ['ORDERS_SELF'],
+                   'url': f'https://www.example.com/org{i}'}
         user.update(changes)
         uuids.append(db['users'].insert_one(user).inserted_id)
         make_log(db, action='add', data=user, data_type='user', comment='Generated', user='system')
@@ -175,7 +173,8 @@ def gen_users(db, nr_users: int = 100):
                      'api_salt': apikey['salt'],
                      'email': f'{"".join(user["name"].split())}@example.com',
                      'email_public': f'pub_{"".join(user["name"].split())}@example.com',
-                     'auth_ids': [f'{user["name"]}::testers']})
+                     'auth_ids': [f'{user["name"]}::testers'],
+                     'url': 'https://www.example.com/specuser'})
         db['users'].insert_one(user)
         make_log(db, action='add', data=user, data_type='user', comment='Generated', user='system')
 
@@ -190,7 +189,8 @@ def gen_users(db, nr_users: int = 100):
                    'email_public': f'pub_user{i}@place{i}.se',
                    'name': f'First Last {i}',
                    'permissions': list(set(random.choice(perm_keys)
-                                           for _ in range(random.randint(0,2))))}
+                                           for _ in range(random.randint(0,2)))),
+                   'url': f'https://www.example.com/user{i}'}
         user.update(changes)
         uuids.append(db['users'].insert_one(user).inserted_id)
         make_log(db, action='add', data=user, data_type='user', comment='Generated', user='system')
