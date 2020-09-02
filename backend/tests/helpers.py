@@ -110,6 +110,7 @@ def add_dataset():
     orders_user = db['users'].find_one({'auth_ids': USERS['orders']})
     base_user = db['users'].find_one({'auth_ids': USERS['base']})
     order_indata['authors'] = [orders_user['_id']]
+    order_indata['editors'] = [orders_user['_id']]
     order_indata['generators'] = [orders_user['_id']]
     order_indata['organisation'] = orders_user['_id']
     order_indata['receivers'] = [base_user['_id']]
