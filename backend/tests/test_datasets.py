@@ -193,7 +193,7 @@ def test_delete_bad():
         assert not response.data
 
 
-def test_update_permissions(use_db, dataset_for_tests):
+def test_dataset_update_permissions(use_db, dataset_for_tests):
     """
     Test the permissions for the request.
 
@@ -201,8 +201,6 @@ def test_update_permissions(use_db, dataset_for_tests):
     """
     db = use_db
     ds_uuid = dataset_for_tests
-    print(db['datasets'].find_one({'_id': ds_uuid}))
-    print(db['orders'].find_one({'datasets': ds_uuid}))
     indata = {'title': 'Updated title'}
     responses = make_request_all_roles(f'/api/dataset/{ds_uuid}/', method='PATCH', data=indata)
     for response in responses:
@@ -215,7 +213,7 @@ def test_update_permissions(use_db, dataset_for_tests):
         assert not response.data
 
 
-def test_update_empty(dataset_for_tests):
+def test_dataset_update_empty(dataset_for_tests):
     """
     Confirm response 400 to an empty update request
 
@@ -225,7 +223,7 @@ def test_update_empty(dataset_for_tests):
     indata = {}
     responses = make_request_all_roles(f'/api/dataset/{ds_uuid}/', method='PATCH', data=indata)
     for response in responses:
-        if response.role in ('base', 'orders', 'data', 'root'):
+        if response.role in ('orders', 'data', 'root'):
             assert response.code == 200
         elif response.role == 'no-login':
             assert response.code == 401
@@ -234,7 +232,7 @@ def test_update_empty(dataset_for_tests):
         assert not response.data
 
 
-def test_update(use_db, dataset_for_tests):
+def test_dataset_update(use_db, dataset_for_tests):
     """
     Update a dataset multiple times. Confirm that the update is done correctly.
 
@@ -242,8 +240,7 @@ def test_update(use_db, dataset_for_tests):
     """
     ds_uuid = dataset_for_tests
     db = use_db
-    indata = {'links': [{'description': 'Test description from update', 'url': 'http://test_url'}],
-              'description': 'Test description - updated',
+    indata = {'description': 'Test description - updated',
               'title': 'Test title - updated'}
     indata.update(TEST_LABEL)
 
@@ -262,7 +259,7 @@ def test_update(use_db, dataset_for_tests):
                                 'data_type': 'dataset'})
 
 
-def test_update_bad(dataset_for_tests):
+def test_dataset_update_bad(dataset_for_tests):
     """
     Confirm that bad requests will be rejected.
 
@@ -336,8 +333,7 @@ def test_get_dataset_logs_permissions(use_db):
     db = use_db
     dataset_data = db['datasets'].aggregate([{'$sample': {'size': 1}}]).next()
     order_data = db['orders'].find_one({'datasets': dataset_data['_id']})
-    user_data = db['users'].find_one({'$or': [{'_id': order_data['creator']},
-                                              {'email': order_data['receiver']}]})
+    user_data = db['users'].find_one({'$or': [{'_id': {'$in': order_data['editors']}}]})
     responses = make_request_all_roles(f'/api/dataset/{dataset_data["_id"]}/log/',
                                        ret_json=True)
     for response in responses:
@@ -353,7 +349,7 @@ def test_get_dataset_logs_permissions(use_db):
 
     session = requests.Session()
 
-    as_user(session, user_data['auth_id'])
+    as_user(session, user_data['auth_ids'][0])
     response = make_request(session,
                              f'/api/dataset/{dataset_data["_id"]}/log/',
                              ret_json=True)
