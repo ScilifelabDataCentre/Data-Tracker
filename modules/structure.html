@@ -4,7 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>structure &#8212; Data Tracker  documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -55,9 +55,10 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">utils</span><span class="o">.</span><span class="n">new_uuid</span><span class="p">(),</span>
             <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;extra&#39;</span><span class="p">:</span> <span class="p">{},</span>
-            <span class="s1">&#39;links&#39;</span><span class="p">:</span> <span class="p">[],</span>
-            <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">}</span></div>
+            <span class="s1">&#39;cross_references&#39;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;tags_standard&#39;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s1">&#39;tags_user&#39;</span><span class="p">:</span> <span class="p">[]}</span></div>
 
 
 <div class="viewcode-block" id="order"><a class="viewcode-back" href="../code.structure.html#structure.order">[docs]</a><span class="k">def</span> <span class="nf">order</span><span class="p">():</span>
@@ -68,15 +69,19 @@
 <span class="sd">        dict: The data structure for an order.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">utils</span><span class="o">.</span><span class="n">new_uuid</span><span class="p">(),</span>
-            <span class="s1">&#39;creator&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;datasets&#39;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
             <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;extra&#39;</span><span class="p">:</span> <span class="p">{},</span>
-            <span class="s1">&#39;receiver&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">}</span></div>
+            <span class="s1">&#39;authors&#39;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s1">&#39;generators&#39;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s1">&#39;organisation&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;editors&#39;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s1">&#39;receivers&#39;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s1">&#39;datasets&#39;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s1">&#39;tags_standard&#39;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s1">&#39;tags_user&#39;</span><span class="p">:</span> <span class="p">[]}</span></div>
 
 
-<div class="viewcode-block" id="project"><a class="viewcode-back" href="../code.structure.html#structure.project">[docs]</a><span class="k">def</span> <span class="nf">project</span><span class="p">():</span>
+<div class="viewcode-block" id="collection"><a class="viewcode-back" href="../code.structure.html#structure.collection">[docs]</a><span class="k">def</span> <span class="nf">collection</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Provide a basic data structure for a project document.</span>
 
@@ -105,10 +110,13 @@
             <span class="s1">&#39;affiliation&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
             <span class="s1">&#39;api_key&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
             <span class="s1">&#39;api_salt&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;auth_id&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;auth_ids&#39;</span><span class="p">:</span> <span class="p">[],</span>
             <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;email_public&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
             <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;permissions&#39;</span><span class="p">:</span> <span class="p">[]}</span></div>
+            <span class="s1">&#39;orcid&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;permissions&#39;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">}</span></div>
 
 
 <div class="viewcode-block" id="log"><a class="viewcode-back" href="../code.structure.html#structure.log">[docs]</a><span class="k">def</span> <span class="nf">log</span><span class="p">():</span>
@@ -166,7 +174,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2019-2020, SciLifeLab Data Centre.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.0.
     </div>
   </body>
 </html>

@@ -4,7 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>order.py &#8212; Data Tracker  documentation</title>
     <link rel="stylesheet" href="static/nature.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script src="static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="project.py" href="code.project.html" />
+    <link rel="next" title="collection.py" href="code.collection.html" />
     <link rel="prev" title="developer.py" href="code.developer.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -28,7 +28,7 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="code.project.html" title="project.py"
+          <a href="code.collection.html" title="collection.py"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="code.developer.html" title="developer.py"
@@ -54,8 +54,8 @@
 <li><p>If you have permission <code class="docutils literal notranslate"><span class="pre">DATA_MANAGER</span></code> you have CRUD access to any orders.</p></li>
 </ul>
 <dl class="py function">
-<dt id="order.add_dataset_post">
-<code class="sig-prename descclassname">order.</code><code class="sig-name descname">add_dataset_post</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">identifier</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/order.html#add_dataset_post"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#order.add_dataset_post" title="Permalink to this definition">¶</a></dt>
+<dt id="order.add_dataset">
+<code class="sig-prename descclassname">order.</code><code class="sig-name descname">add_dataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">identifier</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/order.html#add_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#order.add_dataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a dataset to the given order.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -70,7 +70,7 @@
 <dd><p>Add an order.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>Json structure with the <code class="docutils literal notranslate"><span class="pre">_id</span></code> of the order.</p>
+<dd class="field-odd"><p>Json structure with <code class="docutils literal notranslate"><span class="pre">_id</span></code> of the added order.</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p>flask.Response</p>
@@ -85,6 +85,20 @@
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>Status code</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>flask.Response</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="order.get_empty_order">
+<code class="sig-prename descclassname">order.</code><code class="sig-name descname">get_empty_order</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/order.html#get_empty_order"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#order.get_empty_order" title="Permalink to this definition">¶</a></dt>
+<dd><p>Provide the basic data structure for an empty order.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Json structure of an empty order.</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p>flask.Response</p>
@@ -171,6 +185,21 @@
 </dd></dl>
 
 <dl class="py function">
+<dt id="order.prepare_order_response">
+<code class="sig-prename descclassname">order.</code><code class="sig-name descname">prepare_order_response</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">order_data</span><span class="p">:</span> <span class="n">dict</span></em>, <em class="sig-param"><span class="n">mongodb</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/order.html#prepare_order_response"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#order.prepare_order_response" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepare an order by e.g. converting user uuids to names etc.</p>
+<p>Changes are done in-place.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>order_data</strong> (<em>dict</em>) – The order entry from the db.</p></li>
+<li><p><strong>mongodb</strong> – The mongo database to use.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="order.update_order">
 <code class="sig-prename descclassname">order.</code><code class="sig-name descname">update_order</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">identifier</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/order.html#update_order"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#order.update_order" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update an existing order.</p>
@@ -203,8 +232,8 @@
   <p class="topless"><a href="code.developer.html"
                         title="previous chapter">developer.py</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="code.project.html"
-                        title="next chapter">project.py</a></p>
+  <p class="topless"><a href="code.collection.html"
+                        title="next chapter">collection.py</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -236,7 +265,7 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="code.project.html" title="project.py"
+          <a href="code.collection.html" title="collection.py"
              >next</a> |</li>
         <li class="right" >
           <a href="code.developer.html" title="developer.py"
@@ -249,7 +278,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2019-2020, SciLifeLab Data Centre.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.0.
     </div>
   </body>
 </html>

@@ -4,7 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Index &#8212; Data Tracker  documentation</title>
     <link rel="stylesheet" href="static/nature.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
@@ -63,11 +63,11 @@
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="code.order.html#order.add_dataset_post">add_dataset_post() (in module order)</a>
+      <li><a href="code.order.html#order.add_dataset">add_dataset() (in module order)</a>
 </li>
       <li><a href="code.order.html#order.add_order">add_order() (in module order)</a>
 </li>
-      <li><a href="code.project.html#project.add_project">add_project() (in module project)</a>
+      <li><a href="code.collection.html#collection.add_project">add_project() (in module collection)</a>
 </li>
       <li><a href="code.user.html#user.add_user">add_user() (in module user)</a>
 </li>
@@ -107,14 +107,23 @@
       <li><a href="code.utils.html#utils.check_email_uuid">check_email_uuid() (in module utils)</a>
 </li>
       <li>
+    collection
+
+      <ul>
+        <li><a href="code.collection.html#module-collection">module</a>
+</li>
+      </ul></li>
+      <li><a href="code.structure.html#structure.collection">collection() (in module structure)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
     config
 
       <ul>
         <li><a href="code.config.html#module-config">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code.utils.html#utils.convert_keys_to_camel">convert_keys_to_camel() (in module utils)</a>
 </li>
       <li><a href="code.developer.html#developer.csrf_test">csrf_test() (in module developer)</a>
@@ -140,7 +149,7 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="code.project.html#project.delete_project">delete_project() (in module project)</a>
+      <li><a href="code.collection.html#collection.delete_project">delete_project() (in module collection)</a>
 </li>
       <li><a href="code.user.html#user.delete_user">delete_user() (in module user)</a>
 </li>
@@ -207,17 +216,19 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="code.order.html#order.get_empty_order">get_empty_order() (in module order)</a>
+</li>
       <li><a href="code.order.html#order.get_order">get_order() (in module order)</a>
 </li>
       <li><a href="code.order.html#order.get_order_logs">get_order_logs() (in module order)</a>
 </li>
       <li><a href="code.user.html#user.get_permission_info">get_permission_info() (in module user)</a>
 </li>
-      <li><a href="code.project.html#project.get_project">get_project() (in module project)</a>
+      <li><a href="code.collection.html#collection.get_project">get_project() (in module collection)</a>
 </li>
-      <li><a href="code.project.html#project.get_project_log">get_project_log() (in module project)</a>
+      <li><a href="code.collection.html#collection.get_project_log">get_project_log() (in module collection)</a>
 </li>
-      <li><a href="code.project.html#project.get_random">get_random() (in module project)</a>
+      <li><a href="code.collection.html#collection.get_random">get_random() (in module collection)</a>
 </li>
       <li><a href="code.dataset.html#dataset.get_random_ds">get_random_ds() (in module dataset)</a>
 </li>
@@ -275,7 +286,7 @@
 </li>
       <li><a href="code.order.html#order.list_orders_user">list_orders_user() (in module order)</a>
 </li>
-      <li><a href="code.project.html#project.list_project">list_project() (in module project)</a>
+      <li><a href="code.collection.html#collection.list_project">list_project() (in module collection)</a>
 </li>
       <li><a href="code.developer.html#developer.list_session">list_session() (in module developer)</a>
 </li>
@@ -283,7 +294,7 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="code.project.html#project.list_user_projects">list_user_projects() (in module project)</a>
+      <li><a href="code.collection.html#collection.list_user_projects">list_user_projects() (in module collection)</a>
 </li>
       <li><a href="code.user.html#user.list_users">list_users() (in module user)</a>
 </li>
@@ -315,6 +326,8 @@
       <ul>
         <li><a href="code.app.html#module-app">app</a>
 </li>
+        <li><a href="code.collection.html#module-collection">collection</a>
+</li>
         <li><a href="code.config.html#module-config">config</a>
 </li>
         <li><a href="code.dataset.html#module-dataset">dataset</a>
@@ -322,8 +335,6 @@
         <li><a href="code.developer.html#module-developer">developer</a>
 </li>
         <li><a href="code.order.html#module-order">order</a>
-</li>
-        <li><a href="code.project.html#module-project">project</a>
 </li>
         <li><a href="code.structure.html#module-structure">structure</a>
 </li>
@@ -381,14 +392,7 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li>
-    project
-
-      <ul>
-        <li><a href="code.project.html#module-project">module</a>
-</li>
-      </ul></li>
-      <li><a href="code.structure.html#structure.project">project() (in module structure)</a>
+      <li><a href="code.order.html#order.prepare_order_response">prepare_order_response() (in module order)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -402,18 +406,22 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code.utils.html#utils.response_json">response_json() (in module utils)</a>
 </li>
+      <li><a href="code.utils.html#utils.ValidationResult.result">result (utils.ValidationResult attribute)</a>
+</li>
   </ul></td>
 </tr></table>
 
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="code.developer.html#developer.stop_server">stop_server() (in module developer)</a>
+      <li><a href="code.utils.html#utils.ValidationResult.status">status (utils.ValidationResult attribute)</a>
 </li>
-      <li><a href="code.utils.html#utils.str_to_uuid">str_to_uuid() (in module utils)</a>
+      <li><a href="code.developer.html#developer.stop_server">stop_server() (in module developer)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="code.utils.html#utils.str_to_uuid">str_to_uuid() (in module utils)</a>
+</li>
       <li>
     structure
 
@@ -433,7 +441,7 @@
 </li>
       <li><a href="code.order.html#order.update_order">update_order() (in module order)</a>
 </li>
-      <li><a href="code.project.html#project.update_project">update_project() (in module project)</a>
+      <li><a href="code.collection.html#collection.update_project">update_project() (in module collection)</a>
 </li>
       <li><a href="code.user.html#user.update_user_info">update_user_info() (in module user)</a>
 </li>
@@ -447,6 +455,8 @@
 </li>
       </ul></li>
       <li><a href="code.structure.html#structure.user">user() (in module structure)</a>
+</li>
+      <li><a href="code.utils.html#utils.user_uuid_data">user_uuid_data() (in module utils)</a>
 </li>
       <li>
     utils
@@ -474,23 +484,33 @@
 </li>
       <li><a href="code.validate.html#validate.validate_email">validate_email() (in module validate)</a>
 </li>
-      <li><a href="code.validate.html#validate.validate_extra">validate_extra() (in module validate)</a>
-</li>
       <li><a href="code.validate.html#validate.validate_field">validate_field() (in module validate)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code.validate.html#validate.validate_links">validate_links() (in module validate)</a>
+</li>
+      <li><a href="code.validate.html#validate.validate_list_of_strings">validate_list_of_strings() (in module validate)</a>
 </li>
       <li><a href="code.validate.html#validate.validate_permissions">validate_permissions() (in module validate)</a>
 </li>
       <li><a href="code.validate.html#validate.validate_publications">validate_publications() (in module validate)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code.validate.html#validate.validate_string">validate_string() (in module validate)</a>
+</li>
+      <li><a href="code.validate.html#validate.validate_tags_std">validate_tags_std() (in module validate)</a>
+</li>
+      <li><a href="code.validate.html#validate.validate_tags_user">validate_tags_user() (in module validate)</a>
 </li>
       <li><a href="code.validate.html#validate.validate_title">validate_title() (in module validate)</a>
 </li>
+      <li><a href="code.validate.html#validate.validate_url">validate_url() (in module validate)</a>
+</li>
       <li><a href="code.validate.html#validate.validate_user">validate_user() (in module validate)</a>
+</li>
+      <li><a href="code.validate.html#validate.validate_user_list">validate_user_list() (in module validate)</a>
+</li>
+      <li><a href="code.utils.html#utils.ValidationResult">ValidationResult (class in utils)</a>
 </li>
       <li><a href="code.utils.html#utils.verify_api_key">verify_api_key() (in module utils)</a>
 </li>
@@ -539,7 +559,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2019-2020, SciLifeLab Data Centre.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.0.
     </div>
   </body>
 </html>

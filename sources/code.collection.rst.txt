@@ -1,7 +1,7 @@
-project.py
-==========
+collection.py
+=============
 
-.. automodule:: project
+.. automodule:: collection
    :members:
    :undoc-members:
    :show-inheritance:
