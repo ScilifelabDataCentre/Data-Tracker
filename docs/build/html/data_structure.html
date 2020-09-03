@@ -4,7 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Data Structure &#8212; Data Tracker  documentation</title>
     <link rel="stylesheet" href="static/nature.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
@@ -49,7 +49,7 @@
 <ul class="simple">
 <li><p>Order</p></li>
 <li><p>Dataset</p></li>
-<li><p>Project</p></li>
+<li><p>Collection</p></li>
 <li><p>User</p></li>
 <li><p>Log</p></li>
 </ul>
@@ -87,60 +87,73 @@
 <h3>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h3>
 <table class="docutils align-default">
 <colgroup>
+<col style="width: 14%" />
+<col style="width: 48%" />
 <col style="width: 17%" />
-<col style="width: 61%" />
-<col style="width: 22%" />
+<col style="width: 21%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Field</p></th>
 <th class="head"><p>Description</p></th>
 <th class="head"><p>Default</p></th>
+<th class="head"><p>Public</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>_id</p></td>
 <td><p>UUID of the Entry</p></td>
 <td><p>Set by system</p></td>
+<td><p>Hidden</p></td>
 </tr>
 <tr class="row-odd"><td><p>title</p></td>
 <td><p>Title of the Entry</p></td>
 <td><p>Must be non-empty</p></td>
+<td><p>Hidden</p></td>
 </tr>
 <tr class="row-even"><td><p>description</p></td>
 <td><p>Description in markdown</p></td>
 <td><p>Empty</p></td>
+<td><p>Hidden</p></td>
 </tr>
 <tr class="row-odd"><td><p>generators</p></td>
 <td><p>List of users who generated data</p></td>
 <td><p>Entry creator</p></td>
+<td><p>Visible (via dataset)</p></td>
 </tr>
 <tr class="row-even"><td><p>authors</p></td>
 <td><p>List of users responsible for e.g. samples (e.g PI)</p></td>
 <td><p>Entry creator</p></td>
+<td><p>Visible (via dataset)</p></td>
 </tr>
 <tr class="row-odd"><td><p>organisation</p></td>
 <td><p>User who is data controller</p></td>
 <td><p>Entry creator</p></td>
+<td><p>Visible (via dataset)</p></td>
 </tr>
 <tr class="row-even"><td><p>editors</p></td>
 <td><p>List of users who can edit the order and datasets</p></td>
 <td><p>Entry creator</p></td>
+<td><p>Hidden</p></td>
 </tr>
 <tr class="row-odd"><td><p>receivers</p></td>
 <td><p>List of users who received data from facility</p></td>
 <td><p>Empty</p></td>
+<td><p>Hidden</p></td>
 </tr>
 <tr class="row-even"><td><p>datasets</p></td>
 <td><p>List of associated datasets</p></td>
 <td><p>Empty</p></td>
+<td><p>Visible (via dataset)</p></td>
 </tr>
 <tr class="row-odd"><td><p>tags_standard</p></td>
 <td><p>Tags defined in the system</p></td>
 <td><p>Empty</p></td>
+<td><p>Hidden</p></td>
 </tr>
 <tr class="row-even"><td><p>tags_user</p></td>
 <td><p>Tags defined by the users</p></td>
 <td><p>Empty</p></td>
+<td><p>Hidden</p></td>
 </tr>
 </tbody>
 </table>
@@ -259,40 +272,48 @@
 <h3>Summary<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 25%" />
-<col style="width: 48%" />
-<col style="width: 27%" />
+<col style="width: 23%" />
+<col style="width: 43%" />
+<col style="width: 24%" />
+<col style="width: 11%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Field</p></th>
 <th class="head"><p>Description</p></th>
 <th class="head"><p>Default</p></th>
+<th class="head"><p>Public</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>_id</p></td>
 <td><p>UUID of the Entry</p></td>
 <td><p>Set by system</p></td>
+<td><p>Visible</p></td>
 </tr>
 <tr class="row-odd"><td><p>title</p></td>
 <td><p>Title of the Entry</p></td>
 <td><p>Must be non-empty</p></td>
+<td><p>Visible</p></td>
 </tr>
 <tr class="row-even"><td><p>description</p></td>
 <td><p>Description in markdown</p></td>
 <td><p>Empty</p></td>
+<td><p>Visible</p></td>
 </tr>
 <tr class="row-odd"><td><p>tags_standard</p></td>
 <td><p>Tags defined in the system</p></td>
 <td><p>Empty</p></td>
+<td><p>Visible</p></td>
 </tr>
 <tr class="row-even"><td><p>tags_user</p></td>
 <td><p>Tags defined by the users</p></td>
 <td><p>Empty</p></td>
+<td><p>Visible</p></td>
 </tr>
 <tr class="row-odd"><td><p>cross_references</p></td>
 <td><p>External identifiers, links etc.</p></td>
 <td><p>Empty</p></td>
+<td><p>Visible</p></td>
 </tr>
 </tbody>
 </table>
@@ -384,44 +405,58 @@
 <h3>Summary<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <table class="docutils align-default">
 <colgroup>
+<col style="width: 19%" />
+<col style="width: 53%" />
 <col style="width: 20%" />
-<col style="width: 58%" />
-<col style="width: 22%" />
+<col style="width: 9%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Field</p></th>
 <th class="head"><p>Description</p></th>
 <th class="head"><p>Default</p></th>
+<th class="head"><p>Public</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>_id</p></td>
 <td><p>UUID of the Entry</p></td>
 <td><p>Set by system</p></td>
+<td><p>Visible</p></td>
 </tr>
 <tr class="row-odd"><td><p>title</p></td>
 <td><p>Title of the Entry</p></td>
 <td><p>Must be non-empty</p></td>
+<td><p>Visible</p></td>
 </tr>
-<tr class="row-even"><td><p>description</p></td>
+<tr class="row-even"><td><p>datasets</p></td>
+<td><p>The associated datasets</p></td>
+<td><p>Empty</p></td>
+<td><p>Visible</p></td>
+</tr>
+<tr class="row-odd"><td><p>description</p></td>
 <td><p>Description in markdown</p></td>
 <td><p>Empty</p></td>
+<td><p>Visible</p></td>
 </tr>
-<tr class="row-odd"><td><p>tags_standard</p></td>
+<tr class="row-even"><td><p>tags_standard</p></td>
 <td><p>Tags defined in the system</p></td>
 <td><p>Empty</p></td>
+<td><p>Visible</p></td>
 </tr>
-<tr class="row-even"><td><p>tags_user</p></td>
+<tr class="row-odd"><td><p>tags_user</p></td>
 <td><p>Tags defined by the users</p></td>
 <td><p>Empty</p></td>
+<td><p>Visible</p></td>
 </tr>
-<tr class="row-odd"><td><p>cross_references</p></td>
+<tr class="row-even"><td><p>cross_references</p></td>
 <td><p>External identifiers, links etc.</p></td>
 <td><p>Empty</p></td>
+<td><p>Visible</p></td>
 </tr>
-<tr class="row-even"><td><p>editors</p></td>
+<tr class="row-odd"><td><p>editors</p></td>
 <td><p>List of users who can edit the order and datasets</p></td>
 <td><p>Entry creator</p></td>
+<td><p>Hidden</p></td>
 </tr>
 </tbody>
 </table>
@@ -489,7 +524,7 @@
 <li><p>Including facilities, organisations …</p></li>
 </ul>
 </li>
-<li><p>Login via e.g. Elixir AAI.</p>
+<li><p>Login via e.g. Elixir AAI or API key.</p>
 <ul>
 <li><p>On first login, the user will be added to db.</p></li>
 </ul>
@@ -506,48 +541,73 @@
 <h3>Summary<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 19%" />
-<col style="width: 54%" />
-<col style="width: 28%" />
+<col style="width: 18%" />
+<col style="width: 47%" />
+<col style="width: 24%" />
+<col style="width: 11%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Field</p></th>
 <th class="head"><p>Description</p></th>
 <th class="head"><p>Default</p></th>
+<th class="head"><p>Public</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>_id</p></td>
 <td><p>UUID of the Entry</p></td>
 <td><p>Set by system</p></td>
+<td><p>Hidden</p></td>
 </tr>
-<tr class="row-odd"><td><p>email</p></td>
-<td><p>Email address for the user</p></td>
-<td><p>Must be non-empty</p></td>
+<tr class="row-odd"><td><p>affiliation</p></td>
+<td><p>User affiliation (e.g. university)</p></td>
+<td><p>Empty</p></td>
+<td><p>Visible</p></td>
+</tr>
+<tr class="row-even"><td><p>api_key</p></td>
+<td><p>Hash for the API key</p></td>
+<td><p>Empty</p></td>
+<td><p>Hidden</p></td>
+</tr>
+<tr class="row-odd"><td><p>api_salt</p></td>
+<td><p>Salt for API api_key</p></td>
+<td><p>Empty</p></td>
+<td><p>Hidden</p></td>
 </tr>
 <tr class="row-even"><td><p>auth_ids</p></td>
 <td><p>List of identfiers from e.g. Elixir</p></td>
 <td><p>Empty</p></td>
+<td><p>Hidden</p></td>
 </tr>
-<tr class="row-odd"><td><p>api_key</p></td>
-<td><p>Hash for the API key</p></td>
-<td><p>Empty</p></td>
+<tr class="row-odd"><td><p>email</p></td>
+<td><p>Email address for the user</p></td>
+<td><p>Must be non-empty</p></td>
+<td><p>Hidden</p></td>
 </tr>
-<tr class="row-even"><td><p>api_salt</p></td>
-<td><p>Salt for API api_key</p></td>
+<tr class="row-even"><td><p>email_public</p></td>
+<td><p>Email address to show publicly</p></td>
 <td><p>Empty</p></td>
+<td><p>Visible</p></td>
 </tr>
 <tr class="row-odd"><td><p>name</p></td>
 <td><p>Name of the user</p></td>
 <td><p>Must be non-empty</p></td>
+<td><p>Visible</p></td>
 </tr>
 <tr class="row-even"><td><p>orcid</p></td>
 <td><p>ORCID of the user</p></td>
 <td><p>Empty</p></td>
+<td><p>Visible</p></td>
 </tr>
 <tr class="row-odd"><td><p>permissions</p></td>
 <td><p>List of permissions for the user</p></td>
 <td><p>Empty</p></td>
+<td><p>Hidden</p></td>
+</tr>
+<tr class="row-even"><td><p>url</p></td>
+<td><p>URL to e.g. homepage</p></td>
+<td><p>Empty</p></td>
+<td><p>Visible</p></td>
 </tr>
 </tbody>
 </table>
@@ -561,50 +621,65 @@
 <li><p>Set by the system upon entry creation, never modified.</p></li>
 </ul>
 </dd>
+<dt class="field-even">affiliation</dt>
+<dd class="field-even"><ul class="simple">
+<li><p>Affiliation of the user.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">api_key</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p>Hash for the API key for authorization to API or login.</p></li>
+</ul>
+</dd>
+<dt class="field-even">api_salt</dt>
+<dd class="field-even"><ul class="simple">
+<li><p>Salt for the API key.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">auth_ids</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p>List of identifiers used by e.g. Elixir AAI.</p></li>
+<li><p>Saved as strings.</p></li>
+<li><p>The general form is <code class="docutils literal notranslate"><span class="pre">email&#64;location.suffix::source</span></code>, but the style may vary between sources.</p></li>
+<li><p>Any of the auth_id can be used with the API key.</p></li>
+</ul>
+</dd>
 <dt class="field-even">email</dt>
 <dd class="field-even"><ul class="simple">
 <li><p>Email address for the user.</p></li>
 <li><p><strong>Default:</strong> Must be set</p></li>
 </ul>
 </dd>
-<dt class="field-odd">auth_ids</dt>
+<dt class="field-odd">email_public</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p>List of identifiers used by e.g. Elixir AAI.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">{'local':</span> <span class="pre">'id&#64;local'}</span></code> can be used with the API key</p></li>
-</ul>
-</dd>
-<dt class="field-even">api_key</dt>
-<dd class="field-even"><ul class="simple">
-<li><p>Hash for the API key for authorization to API or login.</p></li>
-</ul>
-</dd>
-<dt class="field-odd">api_salt</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p>Salt for the API key.</p></li>
+<li><p>Email to show to public on e.g. generated datasets.</p></li>
+<li><p><strong>Default:</strong> Empty.</p></li>
 </ul>
 </dd>
 <dt class="field-even">name</dt>
 <dd class="field-even"><ul class="simple">
-<li><p>Name of the user</p>
+<li><p>Name of the user.</p>
 <ul>
 <li><p>Could also be name of e.g. facility or university.</p></li>
 </ul>
 </li>
 </ul>
 </dd>
-<dt class="field-odd">affiliation</dt>
+<dt class="field-odd">orcid</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p>Affiliation of the user.</p></li>
-</ul>
-</dd>
-<dt class="field-even">orcid</dt>
-<dd class="field-even"><ul class="simple">
 <li><p>ORCID of the user.</p></li>
 </ul>
 </dd>
-<dt class="field-odd">permissions</dt>
-<dd class="field-odd"><ul class="simple">
+<dt class="field-even">permissions</dt>
+<dd class="field-even"><ul class="simple">
 <li><p>A list of the extra permissions the user has (see <a class="reference internal" href="implementation.html#permissions-section"><span class="std std-ref">Permissions</span></a>).</p></li>
+</ul>
+</dd>
+<dt class="field-odd">url</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p>Url to e.g. a homepage</p></li>
+<li><p>If set, it must start with <code class="docutils literal notranslate"><span class="pre">http://</span></code> or <code class="docutils literal notranslate"><span class="pre">https://</span></code>.</p></li>
+<li><p><strong>Default:</strong> Empty</p></li>
 </ul>
 </dd>
 </dl>
@@ -614,6 +689,7 @@
 <h2>Log<a class="headerlink" href="#log" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Whenever an entry (<code class="docutils literal notranslate"><span class="pre">order</span></code>, <code class="docutils literal notranslate"><span class="pre">dataset</span></code>, <code class="docutils literal notranslate"><span class="pre">project</span></code>, or <code class="docutils literal notranslate"><span class="pre">user</span></code>) is changed, a log should be written.</p></li>
+<li><p>Only visible to entry owners and admins.</p></li>
 <li><p>All logs are in the same collection.</p></li>
 <li><p>The log needs parsing to show changes between different versions of an entry.</p></li>
 <li><p>A full cope of the new entry is saved.</p>
@@ -714,7 +790,10 @@
 </ul>
 </dd>
 <dt class="field-odd">user</dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">_id</span></code> of the user that performed the action.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">_id</span></code> of the user that performed the action.</p></li>
+<li><p>Can be set to <code class="docutils literal notranslate"><span class="pre">system</span></code> for automated actions (e.g. creating a user after OIDC login)</p></li>
+</ul>
 </dd>
 </dl>
 </div>
@@ -814,7 +893,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2019-2020, SciLifeLab Data Centre.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.0.
     </div>
   </body>
 </html>

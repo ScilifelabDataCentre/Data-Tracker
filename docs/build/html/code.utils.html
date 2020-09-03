@@ -4,7 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>utils.py &#8212; Data Tracker  documentation</title>
     <link rel="stylesheet" href="static/nature.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
@@ -48,12 +48,31 @@
   <div class="section" id="module-utils">
 <span id="utils-py"></span><h1>utils.py<a class="headerlink" href="#module-utils" title="Permalink to this headline">¶</a></h1>
 <p>General helper functions.</p>
+<dl class="py class">
+<dt id="utils.ValidationResult">
+<em class="property">class </em><code class="sig-prename descclassname">utils.</code><code class="sig-name descname">ValidationResult</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">result</span></em>, <em class="sig-param"><span class="n">status</span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.ValidationResult" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<dl class="py attribute">
+<dt id="utils.ValidationResult.result">
+<code class="sig-name descname">result</code><a class="headerlink" href="#utils.ValidationResult.result" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="utils.ValidationResult.status">
+<code class="sig-name descname">status</code><a class="headerlink" href="#utils.ValidationResult.status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="py function">
 <dt id="utils.basic_check_indata">
 <code class="sig-prename descclassname">utils.</code><code class="sig-name descname">basic_check_indata</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">indata</span><span class="p">:</span> <span class="n">dict</span></em>, <em class="sig-param"><span class="n">reference_data</span><span class="p">:</span> <span class="n">dict</span></em>, <em class="sig-param"><span class="n">prohibited</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>tuple<span class="p">, </span>list<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; tuple<a class="reference internal" href="modules/utils.html#basic_check_indata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.basic_check_indata" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform basic checks of indata.</p>
 <ul class="simple">
 <li><p>All fields are allowed in the entity type</p></li>
+<li><p>If title is a field for the entity, it may not be empty</p></li>
 <li><p>All fields are of the correct type</p></li>
 <li><p>All prohibited fields are unchanged (if update)</p></li>
 </ul>
@@ -229,7 +248,7 @@ the changed fields in <code class="docutils literal notranslate"><span class="pr
 
 <dl class="py function">
 <dt id="utils.make_log">
-<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">make_log</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data_type</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">action</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">comment</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">data</span><span class="p">:</span> <span class="n">dict</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">no_user</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#make_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.make_log" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">make_log</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data_type</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">action</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">comment</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">data</span><span class="p">:</span> <span class="n">dict</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">no_user</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">dbsession</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#make_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.make_log" title="Permalink to this definition">¶</a></dt>
 <dd><p>Log a change in the system.</p>
 <p>Saves a complete copy of the new object.</p>
 <div class="admonition warning">
@@ -245,6 +264,8 @@ e.g. <code class="docutils literal notranslate"><span class="pre">data</span></c
 (e.g. “Dataset added via addDataset”).</p></li>
 <li><p><strong>data_type</strong> (<em>str</em>) – The collection name.</p></li>
 <li><p><strong>data</strong> (<em>dict</em>) – The new data for the entry.</p></li>
+<li><p><strong>no_user</strong> (<em>bool</em>) – Whether the entry should be accredited to “system”.</p></li>
+<li><p><strong>dbsession</strong> – The MongoDB session used.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -315,6 +336,27 @@ e.g. <code class="docutils literal notranslate"><span class="pre">data</span></c
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>uuid.UUID</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="utils.user_uuid_data">
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">user_uuid_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user_id</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>str<span class="p">, </span>uuid.UUID<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">mongodb</span><span class="p">:</span> <span class="n">pymongo.database.Database</span></em><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="modules/utils.html#user_uuid_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.user_uuid_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve some extra information about a user using a uuid as input.</p>
+<p>Note that <code class="docutils literal notranslate"><span class="pre">_id`</span></code> will be returned as <code class="docutils literal notranslate"><span class="pre">str</span></code>, not <code class="docutils literal notranslate"><span class="pre">uuid.UUID</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>user_id</strong> (<em>str</em><em> or </em><em>uuid.UUID</em>) – UUID of the user.</p></li>
+<li><p><strong>mongodb</strong> (<em>pymongo.database.Database</em>) – The Mongo database to use for the query</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The resulting data structure.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
 </dd></dl>
@@ -403,7 +445,7 @@ e.g. <code class="docutils literal notranslate"><span class="pre">data</span></c
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2019-2020, SciLifeLab Data Centre.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.0.
     </div>
   </body>
 </html>
