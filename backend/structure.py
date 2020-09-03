@@ -42,7 +42,7 @@ def order():
             'tags_user': []}
 
 
-def project():
+def collection():
     """
     Provide a basic data structure for a project document.
 
