@@ -9,7 +9,7 @@ Code reference
    code.dataset
    code.developer
    code.order
-   code.project
+   code.collection
    code.structure
    code.user
    code.utils

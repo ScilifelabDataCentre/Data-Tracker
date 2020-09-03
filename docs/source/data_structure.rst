@@ -351,7 +351,7 @@ Fields
     * A list of the extra permissions the user has (see :ref:`permissions_section`).
 :url:
     * Url to e.g. a homepage
-    * If set, it must start with ``http://` or ``https://`.
+    * If set, it must start with ``http://`` or ``https://``.
     * **Default:** Empty
 
 
