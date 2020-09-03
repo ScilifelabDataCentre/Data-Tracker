@@ -50,13 +50,12 @@ def collection():
         dict: The data structure for a project.
     """
     return {'_id': utils.new_uuid(),
-            'contact': '',
             'datasets': [],
             'description': '',
-            'dmp': '',
-            'extra': {},
-            'owners': [],
-            'publications': [],
+            'tags_standard': {},
+            'tags_user': {},
+            'cross_references': []
+            'editors': [],
             'title': ''}
 
 

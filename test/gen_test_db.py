@@ -139,15 +139,11 @@ def gen_collections(db, nr_collections: int = 500):
     users = tuple(db['users'].find({'affiliation': {'$ne': 'Test University'}}))
     for i in range(1, nr_collections+1):
         collection = structure.collection()
-        changes = {'contact': f'email{i}@entity{i}.se',
-                   'description': make_description(),
+        changes = {'description': make_description(),
                    'datasets': [random.choice(datasets)['_id']
                                 for _ in range(random.randint(0, 5))],
-                   'dmp': f'http://dmp-url{i}',
-                   'owners': list(set(random.choice(users)[random.choice(('email', '_id'))]
-                                      for _ in range(random.randint(1,3)))),
-                   'publications': [f'Title {j}, doi:doi{j}'
-                                    for j in range(random.randint(0, 5))],
+                   'editors': list(set(random.choice(users)[random.choice(('email', '_id'))]
+                                       for _ in range(random.randint(1,3)))),
                    'title': f'Collection {i} Title'}
         collection.update(changes)
         db['collections'].insert_one(collection)
