@@ -572,8 +572,7 @@ def test_add_dataset(use_db):
 
     Set values in all available fields.
     """
-    indata = {'links': [{'description': 'Test description', 'url': 'http://test_url'}],
-              'title': 'Test title',
+    indata = {'title': 'Test title',
               'description': 'Test description'}
     indata.update(TEST_LABEL)
 
