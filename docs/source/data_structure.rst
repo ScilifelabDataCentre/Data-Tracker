@@ -6,7 +6,7 @@ The Data Tracker is based on a few main components:
 
 * Order
 * Dataset
-* Project
+* Collection
 * User
 * Log
 
@@ -222,6 +222,8 @@ Summary
 | _id              | UUID of the Entry                                 | Set by system     | Visible |
 +------------------+---------------------------------------------------+-------------------+---------+
 | title            | Title of the Entry                                | Must be non-empty | Visible |
++------------------+---------------------------------------------------+-------------------+---------+
+| datasets         | The associated datasets                           | Empty             | Visible |
 +------------------+---------------------------------------------------+-------------------+---------+
 | description      | Description in markdown                           | Empty             | Visible |
 +------------------+---------------------------------------------------+-------------------+---------+
