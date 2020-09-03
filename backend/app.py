@@ -9,7 +9,7 @@ import config
 import dataset
 import developer
 import order
-import project
+import collection
 import user
 import utils
 
@@ -23,7 +23,7 @@ if app.config['dev_mode']['api']:
 
 app.register_blueprint(dataset.blueprint, url_prefix='/api/dataset')
 app.register_blueprint(order.blueprint, url_prefix='/api/order')
-app.register_blueprint(project.blueprint, url_prefix='/api/project')
+app.register_blueprint(collection.blueprint, url_prefix='/api/collection')
 app.register_blueprint(user.blueprint, url_prefix='/api/user')
 
 
@@ -68,7 +68,7 @@ def finalize(response):
 @app.route('/api/')
 def api_base():
     """List entities."""
-    return flask.jsonify({'entities': ['dataset', 'order', 'project', 'user', 'login']})
+    return flask.jsonify({'entities': ['dataset', 'order', 'collection', 'user', 'login']})
 
 
 @app.route('/api/login/')
