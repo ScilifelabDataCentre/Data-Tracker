@@ -120,18 +120,18 @@ def add_dataset():
                            'title': 'Test title from fixture'})
     dataset_indata.update(TEST_LABEL)
 
-    project_indata = structure.project()
-    project_indata.update({'description': 'Added by fixture.',
+    collection_indata = structure.collection()
+    collection_indata.update({'description': 'Added by fixture.',
                            'title': 'Test title from fixture',
                            'editors': [base_user['_id']]})
-    project_indata.update(TEST_LABEL)
+    collection_indata.update(TEST_LABEL)
 
     db['datasets'].insert_one(dataset_indata)
     order_indata['datasets'].append(dataset_indata['_id'])
-    project_indata['datasets'].append(dataset_indata['_id'])
+    collection_indata['datasets'].append(dataset_indata['_id'])
     db['orders'].insert_one(order_indata)
-    db['projects'].insert_one(project_indata)
-    return (order_indata['_id'], dataset_indata['_id'], project_indata['_id'])
+    db['collections'].insert_one(collection_indata)
+    return (order_indata['_id'], dataset_indata['_id'], collection_indata['_id'])
 
 
 def delete_dataset(order_uuid, dataset_uuid, project_uuid):
@@ -203,27 +203,27 @@ def make_request_all_roles(url: str, method: str = 'GET', data=None,
 
 
 @pytest.fixture
-def project_for_tests():
+def collection_for_tests():
     """
-    Add a new project that can be modified in tests and then removed.
+    Add a new collection that can be modified in tests and then removed.
 
-    Yields the uuid of the added project.
+    Yields the uuid of the added collection.
     """
     # prepare
     db = db_connection()
     session = requests.Session()
     as_user(session, USERS['data'])
-    project_indata = structure.project()
+    collection_indata = structure.collection()
     base_user = db['users'].find_one({'auth_id': USERS['base']})
-    project_indata.update({'description': 'Added by fixture.',
+    collection_indata.update({'description': 'Added by fixture.',
                            'title': 'Test title from fixture',
                            'owners': [base_user['_id']]})
-    project_indata.update(TEST_LABEL)
-    db['projects'].insert_one(project_indata)
+    collection_indata.update(TEST_LABEL)
+    db['collections'].insert_one(collection_indata)
 
-    yield project_indata['_id']
+    yield collection_indata['_id']
 
-    db['projects'].delete_one({'_id': project_indata['_id']})
+    db['collections'].delete_one({'_id': collection_indata['_id']})
 
 
 def random_string(min_length: int = 1, max_length: int = 150):
