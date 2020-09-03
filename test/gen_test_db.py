@@ -134,11 +134,11 @@ def gen_orders(db, nr_orders: int = 300):
     return uuids
 
 
-def gen_projects(db, nr_projects: int = 500):
+def gen_collections(db, nr_collections: int = 500):
     datasets = tuple(db['datasets'].find())
     users = tuple(db['users'].find({'affiliation': {'$ne': 'Test University'}}))
-    for i in range(1, nr_projects+1):
-        project = structure.project()
+    for i in range(1, nr_collections+1):
+        collection = structure.collection()
         changes = {'contact': f'email{i}@entity{i}.se',
                    'description': make_description(),
                    'datasets': [random.choice(datasets)['_id']
@@ -148,10 +148,10 @@ def gen_projects(db, nr_projects: int = 500):
                                       for _ in range(random.randint(1,3)))),
                    'publications': [f'Title {j}, doi:doi{j}'
                                     for j in range(random.randint(0, 5))],
-                   'title': f'Project {i} Title'}
-        project.update(changes)
-        db['projects'].insert_one(project)
-        make_log(db, action='add', data=project, data_type='project', comment='Generated', user='system')
+                   'title': f'Collection {i} Title'}
+        collection.update(changes)
+        db['collections'].insert_one(collection)
+        make_log(db, action='add', data=collection, data_type='collection', comment='Generated', user='system')
 
 
 def gen_users(db, nr_users: int = 100):
@@ -211,4 +211,4 @@ if __name__ == '__main__':
     gen_users(DB)
     gen_orders(DB)
     gen_datasets(DB)
-    gen_projects(DB)
+    gen_collections(DB)
