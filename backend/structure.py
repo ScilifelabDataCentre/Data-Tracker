@@ -54,7 +54,7 @@ def collection():
             'description': '',
             'tags_standard': {},
             'tags_user': {},
-            'cross_references': []
+            'cross_references': [],
             'editors': [],
             'title': ''}
 
