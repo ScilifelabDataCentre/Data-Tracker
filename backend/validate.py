@@ -1,7 +1,7 @@
 """
 Validators for indata.
 
-Indata can be sent to ``validate_indata``, which will use the corresponding
+Indata can be sent to ``validate_field``, which will use the corresponding
 functions to check each field.
 """
 import logging
@@ -308,7 +308,7 @@ def validate_url(data: str) -> bool:
     """
     Validate input for a url intended for browsers.
 
-    It must start with ``http(s)://`
+    It must start with ``http(s)://``.
 
     Args:
         data (str): The data to be validated.
