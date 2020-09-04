@@ -101,17 +101,17 @@ def test_api_key_auth():
     """Request target with login requirment using an API key"""
     response = requests.get(helpers.BASE_URL + '/api/developer/loginhello',
                             headers={'X-API-Key': '0',
-                                     'X-API-User': 'base@testers'})
+                                     'X-API-User': 'base::testers'})
     assert response.status_code == 200
     assert json.loads(response.text) == {'test': 'success'}
     response = requests.get(helpers.BASE_URL + '/api/developer/loginhello',
                             headers={'X-API-Key': '0',
-                                     'X-API-User': 'root@testers'})
+                                     'X-API-User': 'root::testers'})
     assert response.status_code == 401
     assert not response.text
     response = requests.get(helpers.BASE_URL + '/api/developer/loginhello',
                             headers={'X-API-Key': 'asd',
-                                     'X-API-User': 'root@testers'})
+                                     'X-API-User': 'root::testers'})
     assert response.status_code == 401
     assert not response.text
     response = requests.get(helpers.BASE_URL + '/api/developer/loginhello',
