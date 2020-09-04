@@ -3,6 +3,8 @@ import json
 import uuid
 import requests
 
+import utils
+
 from helpers import make_request, as_user, make_request_all_roles,\
     USERS, random_string, use_db, TEST_LABEL, collection_for_tests, add_dataset, delete_dataset
 # pylint: disable=redefined-outer-name
@@ -49,50 +51,41 @@ def test_get_collection(use_db):
     session = requests.Session()
     for _ in range(3):
         collection = list(db['collections'].aggregate([{'$sample': {'size': 1}}]))[0]
-        owner_emails = [db['users'].find_one({'$or': [{'_id': identifier},
-                                                      {'email': identifier}]})['email']
-                        for identifier in collection['owners']]
         collection['_id'] = str(collection['_id'])
-        proj_owner = db['users'].find_one({'_id': collection['owners'][0]})
-        if not proj_owner:
-            proj_owner = db['users'].find_one({'email': collection['owners'][0]})
-        if not proj_owner:
-            print('Unknown user for owner')
-            assert False
-        collection['owners'] = [str(entry) for entry in collection['owners']]
-
+        proj_owner = db['users'].find_one({'_id': {'$in': collection['editors']}})
+        collection['editors'] = [str(entry) for entry in collection['editors']]
         collection['datasets'] = [str(entry) for entry in collection['datasets']]
+        collection = utils.convert_keys_to_camel(collection)
+        as_user(session, USERS['base'])
         response = make_request(session, f'/api/collection/{collection["_id"]}')
         assert response.code == 200
+        print(response.data['collection'])
         for field in collection:
             if field == 'datasets':
                 for i, ds_uuid in enumerate(collection[field]):
                     assert ds_uuid == response.data['collection'][field][i]['_id']
-            elif field != 'owners':
-                assert collection[field] == response.data['collection'][field]
+            elif field == 'editors':
+                continue
             else:
-                if field in response.data['collection']:
-                    assert response.data['collection'][field] == owner_emails
-        as_user(session, proj_owner['auth_id'])
+                assert collection[field] == response.data['collection'][field]
+            
+        as_user(session, proj_owner['auth_ids'][0])
         response = make_request(session, f'/api/collection/{collection["_id"]}')
         assert response.code == 200
         for field in collection:
-            if field == 'datasets':
+            if field in ('datasets', 'editors'):
                 for i, ds_uuid in enumerate(collection[field]):
                     assert ds_uuid == response.data['collection'][field][i]['_id']
-            elif field == 'owners':
-                assert response.data['collection'][field] == owner_emails
             else:
                 assert collection[field] == response.data['collection'][field]
+
         as_user(session, USERS['root'])
         response = make_request(session, f'/api/collection/{collection["_id"]}')
         assert response.code == 200
         for field in collection:
-            if field == 'datasets':
+            if field in ('datasets', 'editors'):
                 for i, ds_uuid in enumerate(collection[field]):
                     assert ds_uuid == response.data['collection'][field][i]['_id']
-            elif field == 'owners':
-                assert response.data['collection'][field] == owner_emails
             else:
                 assert collection[field] == response.data['collection'][field]
 
@@ -639,16 +632,17 @@ def test_delete_collection_bad():
     assert not response.data
 
 
-def test_list_collections():
+def test_list_collections(use_db):
     """
     Request a list of all collections.
 
     Should also test e.g. pagination once implemented.
     """
+    db = use_db
     responses = make_request_all_roles('/api/collection/', ret_json=True)
     for response in responses:
         assert response.code == 200
-        assert len(response.data['collections']) == 500
+        assert len(response.data['collections']) == db['collections'].count_documents({})
 
 
 def test_get_collection_logs_permissions(use_db):
@@ -659,8 +653,7 @@ def test_get_collection_logs_permissions(use_db):
     """
     db = use_db
     collection_data = db['collections'].aggregate([{'$sample': {'size': 1}}]).next()
-    user_data = db['users'].find_one({'$or': [{'_id': collection_data['owners'][0]},
-                                              {'email': collection_data['owners'][0]}]})
+    user_data = db['users'].find_one({'_id': {'$in': collection_data['editors']}})
     responses = make_request_all_roles(f'/api/collection/{collection_data["_id"]}/log/',
                                        ret_json=True)
     for response in responses:
@@ -676,7 +669,7 @@ def test_get_collection_logs_permissions(use_db):
 
     session = requests.Session()
 
-    as_user(session, user_data['auth_id'])
+    as_user(session, user_data['auth_ids'][0])
     response = make_request(session,
                              f'/api/collection/{collection_data["_id"]}/log/',
                              ret_json=True)
