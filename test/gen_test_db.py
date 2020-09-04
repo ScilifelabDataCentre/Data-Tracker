@@ -142,7 +142,7 @@ def gen_collections(db, nr_collections: int = 500):
         changes = {'description': make_description(),
                    'datasets': [random.choice(datasets)['_id']
                                 for _ in range(random.randint(0, 5))],
-                   'editors': list(set(random.choice(users)[random.choice(('email', '_id'))]
+                   'editors': list(set(random.choice(users)['_id']
                                        for _ in range(random.randint(1,3)))),
                    'title': f'Collection {i} Title'}
         collection.update(changes)
@@ -180,7 +180,7 @@ def gen_users(db, nr_users: int = 100):
         changes = {'affiliation': 'University ' + random.choice(string.ascii_uppercase),
                    'api_key': utils.gen_api_key_hash(apikey.key, apikey.salt),
                    'api_salt': apikey.salt,
-                   'auth_ids': [f'hash{i}::elixir'],
+                   'auth_ids': [f'user{i}::local'],
                    'email': f'user{i}@place{i}.se',
                    'email_public': f'pub_user{i}@place{i}.se',
                    'name': f'First Last {i}',
