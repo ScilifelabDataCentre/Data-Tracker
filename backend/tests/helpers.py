@@ -214,10 +214,10 @@ def collection_for_tests():
     session = requests.Session()
     as_user(session, USERS['data'])
     collection_indata = structure.collection()
-    base_user = db['users'].find_one({'auth_id': USERS['base']})
+    base_user = db['users'].find_one({'auth_ids': USERS['base']})
     collection_indata.update({'description': 'Added by fixture.',
-                           'title': 'Test title from fixture',
-                           'owners': [base_user['_id']]})
+                              'title': 'Test title from fixture',
+                              'editors': [base_user['_id']]})
     collection_indata.update(TEST_LABEL)
     db['collections'].insert_one(collection_indata)
 
