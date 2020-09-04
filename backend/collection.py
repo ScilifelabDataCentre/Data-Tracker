@@ -163,7 +163,7 @@ def delete_collection(identifier: str):
 
     # permission check
     if not user.has_permission('DATA_MANAGEMENT') and \
-       flask.g.current_user['_id'] not in collection['owners']:
+       flask.g.current_user['_id'] not in collection['editors']:
         flask.abort(status=403)
 
     result = flask.g.db['collections'].delete_one({'_id': ds_uuid})
@@ -202,8 +202,8 @@ def update_collection(identifier):  # pylint: disable=too-many-branches
 
     # permission check
     if not user.has_permission('DATA_MANAGEMENT') and \
-       flask.g.current_user['_id'] not in collection['owners'] and\
-       flask.g.current_user['email'] not in collection['owners']:
+       flask.g.current_user['_id'] not in collection['editors'] and\
+       flask.g.current_user['email'] not in collection['editors']:
         logging.debug('Unauthorized update attempt (collection %s, user %s)',
                       collection_uuid,
                       flask.g.current_user['_id'])
