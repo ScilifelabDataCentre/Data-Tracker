@@ -8,18 +8,18 @@ from helpers import make_request, as_user, make_request_all_roles, USERS, use_db
 # pylint: disable=redefined-outer-name
 
 
-def test_list_users():
+def test_list_users(use_db):
     """
     Retrieve list of users.
 
-    Assert that admin is required.
+    Assert that USER_MANAGEMENT is required.
     """
     responses = make_request_all_roles('/api/user/',
                                        ret_json=True)
     for response in responses:
         if response.role in ('users', 'root'):
             assert response.code == 200
-            assert len(response.data['users']) == 137
+            assert len(response.data['users']) == use_db['users'].count_documents({})
         elif response.role == 'no-login':
             assert response.code == 401
             assert not response.data
@@ -47,7 +47,7 @@ def test_update_current_user(use_db):
     indata = {}
     for user in USERS:
         as_user(session, USERS[user])
-        user_info = db['users'].find_one({'auth_id': USERS[user]})
+        user_info = db['users'].find_one({'auth_ids': USERS[user]})
         response = make_request(session,
                                 '/api/user/me/',
                                 ret_json=True,
@@ -58,7 +58,7 @@ def test_update_current_user(use_db):
         else:
             assert response.code == 401
         assert not response.data
-        new_user_info = db['users'].find_one({'auth_id': USERS[user]})
+        new_user_info = db['users'].find_one({'auth_ids': USERS[user]})
         assert user_info == new_user_info
 
     indata = {'affiliation': 'Updated University',
@@ -66,7 +66,7 @@ def test_update_current_user(use_db):
     session = requests.Session()
     for user in USERS:
         as_user(session, USERS[user])
-        user_info = db['users'].find_one({'auth_id': USERS[user]})
+        user_info = db['users'].find_one({'auth_ids': USERS[user]})
         response = make_request(session,
                                 '/api/user/me/',
                                 ret_json=True,
@@ -75,7 +75,7 @@ def test_update_current_user(use_db):
         if user != 'no-login':
             assert response.code == 200
             assert not response.data
-            new_user_info = db['users'].find_one({'auth_id': USERS[user]})
+            new_user_info = db['users'].find_one({'auth_ids': USERS[user]})
             for key in new_user_info:
                 if key in indata.keys():
                     assert new_user_info[key] == indata[key]
@@ -114,7 +114,7 @@ def test_update_current_user_bad():
             assert response.code == 403
         assert not response.data
 
-    indata = {'auth_id': uuid.uuid4().hex}
+    indata = {'auth_ids': [uuid.uuid4().hex]}
     responses = make_request_all_roles('/api/user/me/',
                                        ret_json=True,
                                        method='PATCH',
@@ -155,7 +155,7 @@ def test_update_user(use_db):
     """Update the info for a user."""
     db = use_db
 
-    user_info = db['users'].find_one({'auth_id': USERS['base']})
+    user_info = db['users'].find_one({'auth_ids': USERS['base']})
     
     indata = {}
     responses = make_request_all_roles(f'/api/user/{user_info["_id"]}/',
@@ -186,7 +186,7 @@ def test_update_user(use_db):
         if user_type in ('users', 'root'):
             assert response.code == 200
             assert not response.data
-            new_user_info = db['users'].find_one({'auth_id': user_info['auth_id']})
+            new_user_info = db['users'].find_one({'auth_ids': user_info['auth_ids']})
             for key in indata:
                 assert new_user_info[key] == indata[key]
             db['users'].update_one(new_user_info, {'$set': user_info})
@@ -205,7 +205,7 @@ def test_update_user_bad(use_db):
     Bad requests.
     """
     db = use_db
-    user_info = db['users'].find_one({'auth_id': USERS['base']})
+    user_info = db['users'].find_one({'auth_ids': USERS['base']})
 
     session = requests.Session()
     indata = {'_id': str(uuid.uuid4())}
@@ -280,17 +280,17 @@ def test_add_user(use_db):
     """Add a user."""
     db = use_db
 
-    indata = {'auth_id': 'user@added'}
+    indata = {'auth_ids': 'user@added'}
     responses = make_request_all_roles(f'/api/user/',
                                        ret_json=True,
-                                       method='POST',
+                                       method='PUT',
                                        data=indata)
     for response in responses:
         if response.role in ('users', 'root'):
             assert response.code == 200
             assert '_id' in response.data
             new_user_info = db['users'].find_one({'_id': uuid.UUID(response.data['_id'])})
-            assert indata['auth_id'] == new_user_info['auth_id']
+            assert indata['auth_ids'] == new_user_info['auth_ids']
         elif response.role == 'no-login':
             assert response.code == 401
             assert not response.data
@@ -299,7 +299,7 @@ def test_add_user(use_db):
             assert not response.data
 
     indata = {'affiliation': 'Added University',
-              'auth_id': 'user2@added',
+              'auth_ids': 'user2@added',
               'name': 'Added name',
               'email': 'user2@added.se',
               'permissions': ['ORDERS_SELF']}
@@ -308,7 +308,7 @@ def test_add_user(use_db):
     response = make_request(session,
                             f'/api/user/',
                             ret_json=True,
-                            method='POST',
+                            method='PUT',
                             data=indata)
     assert response.code == 200
     assert '_id' in response.data
@@ -322,7 +322,7 @@ def test_delete_user(use_db):
     db = use_db
 
     re_users = re.compile('@added')
-    users = list(db['users'].find({'auth_id': re_users}, {'_id': 1}))
+    users = list(db['users'].find({'auth_ids': re_users}, {'_id': 1}))
 
     session = requests.Session()
     i = 0
@@ -354,7 +354,7 @@ def test_key_reset(use_db):
     """Test generation of new API keys"""
     db = use_db
 
-    mod_user = {'auth_id': '--facility 18--'}
+    mod_user = {'auth_ids': '--facility 18--'}
     mod_user_info = db.users.find_one(mod_user)
 
     session = requests.Session()
@@ -362,7 +362,7 @@ def test_key_reset(use_db):
         as_user(session, USERS[userid])
         response = make_request(session,
                                 '/api/user/me/apikey/',
-                                method='POST')
+                                method='PUT')
         if userid == 'no-login':
             assert response.code == 401
             assert not response.data
@@ -377,12 +377,12 @@ def test_key_reset(use_db):
                                 method='POST')
         assert response.code == 200
         assert not response.data
-        db.users.update_one({'auth_id': userid}, {'$set': {'api_salt': 'abc',
-                                                           'api_key': str(i-1)}})
+        db.users.update_one({'auth_ids': userid}, {'$set': {'api_salt': 'abc',
+                                                            'api_key': str(i-1)}})
 
         response = make_request(session,
                                 f'/api/user/{mod_user_info["_id"]}/apikey/',
-                                method='POST')
+                                method='PUT')
         if userid not in ('users', 'root'):
             assert response.code == 403
             assert not response.data
@@ -391,9 +391,9 @@ def test_key_reset(use_db):
             new_key = response.data['key']
             response = make_request(session,
                                     '/api/login/apikey/',
-                                    data = {'api-user': mod_user['auth_id'],
+                                    data = {'api-user': mod_user['auth_ids'],
                                             'api-key': new_key},
-                                    method='POST')
+                                    method='PUT')
             assert response.code == 200
             assert not response.data
 
@@ -405,7 +405,7 @@ def test_get_user_logs_permissions(use_db):
     Assert that USER_MANAGEMENT or actual user is required.
     """
     db = use_db
-    user_uuid = db['users'].find_one({'auth_id': USERS['base']}, {'_id': 1})['_id']
+    user_uuid = db['users'].find_one({'auth_ids': USERS['base']}, {'_id': 1})['_id']
     responses = make_request_all_roles(f'/api/user/{user_uuid}/log/',
                                        ret_json=True)
     for response in responses:
@@ -464,7 +464,7 @@ def test_get_user_actions_access(use_db):
     Assert that USER_MANAGEMENT or actual user is required.
     """
     db = use_db
-    user_uuid = db['users'].find_one({'auth_id': USERS['base']}, {'_id': 1})['_id']
+    user_uuid = db['users'].find_one({'auth_ids': USERS['base']}, {'_id': 1})['_id']
     responses = make_request_all_roles(f'/api/user/{user_uuid}/actions/',
                                        ret_json=True)
     for response in responses:
