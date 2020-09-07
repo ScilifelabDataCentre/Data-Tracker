@@ -132,8 +132,8 @@ def test_add_collection_permissions(use_db):
             assert '_id' in response.data
             assert len(response.data['_id']) == 36
 
-    user_info = db['users'].find_one({'auth_id': USERS['base']})
-    indata.update({'owners': [str(user_info['_id'])]})
+    user_info = db['users'].find_one({'auth_ids': USERS['base']})
+    indata.update({'editors': [str(user_info['_id'])]})
 
     responses = make_request_all_roles(f'/api/collection/',
                                        method='POST',
@@ -150,12 +150,12 @@ def test_add_collection_permissions(use_db):
 
     dataset_info = next(db['datasets'].aggregate([{'$sample': {'size': 1}}]))
     order_info = db['orders'].find_one({'datasets': dataset_info['_id']})
-    user_info = db['users'].find_one({'_id': order_info['creator']})
-    indata.update({'owners': [str(user_info['_id'])],
+    user_info = db['users'].find_one({'_id': {'$in': order_info['editors']}})
+    indata.update({'editors': [str(user_info['_id'])],
                    'datasets': [str(dataset_info['_id'])]})
 
     session = requests.Session()
-    as_user(session, user_info['auth_id'])
+    as_user(session, user_info['auth_ids'][0])
     response = make_request(session,
                             f'/api/collection/',
                             method='POST',
@@ -195,15 +195,12 @@ def test_add_collection(use_db):
     dataset_info = next(db['datasets'].aggregate([{'$sample': {'size': 1}}]))
     order_info = db['orders'].find_one({'datasets': dataset_info['_id']})
     session = requests.Session()
-    user_info = db['users'].find_one({'_id': order_info['creator']})
+    user_info = db['users'].find_one({'_id': {'$in': order_info['editors']}})
 
-    as_user(session, user_info['auth_id'])
+    as_user(session, user_info['auth_ids'][0])
     
     indata = {'description': 'Test description',
-              'contact': 'user@example.com',
-              'dmp': 'https://dmp_url_test',
-              'owners': [str(user_info['_id'])],
-              'publications': ['A test publication title, doi://a_test_doi_value'],
+              'editors': [str(user_info['_id'])],
               'title': 'Test title',
               'datasets': [str(dataset_info['_id'])]}
     indata.update(TEST_LABEL)
@@ -218,10 +215,8 @@ def test_add_collection(use_db):
     assert len(response.data['_id']) == 36
     collection = db['collections'].find_one({'_id': uuid.UUID(response.data['_id'])})
     assert collection['description'] == indata['description']
-    assert str(collection['owners'][0]) == indata['owners'][0]
+    assert str(collection['editors'][0]) == indata['editors'][0]
     assert collection['title'] == indata['title']
-    assert collection['dmp'] == indata['dmp']
-    assert collection['publications'] == indata['publications']
     assert str(collection['datasets'][0]) == indata['datasets'][0]
 
     # log
@@ -242,14 +237,12 @@ def test_add_collection(use_db):
     assert len(response.data['_id']) == 36
     collection = db['collections'].find_one({'_id': uuid.UUID(response.data['_id'])})
     assert collection['description'] == indata['description']
-    assert str(collection['owners'][0]) == indata['owners'][0]
+    assert str(collection['editors'][0]) == indata['editors'][0]
     assert collection['title'] == indata['title']
-    assert collection['dmp'] == indata['dmp']
-    assert collection['publications'] == indata['publications']
     assert str(collection['datasets'][0]) == indata['datasets'][0]
 
-    data_user = db['users'].find_one({'auth_id': USERS['data']})
-    
+    data_user = db['users'].find_one({'auth_ids': USERS['data']})
+
     # log
     assert db['logs'].find_one({'data._id': uuid.UUID(response.data['_id']),
                                 'data_type': 'collection',
