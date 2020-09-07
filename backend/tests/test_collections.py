@@ -391,13 +391,10 @@ def test_update_collection(use_db):
 
     uuids = add_dataset()
     collection_info = db['collections'].find_one({'_id': uuids[2]})
-    user_info = db['users'].find_one({'auth_id': USERS['base']})
+    user_info = db['users'].find_one({'auth_ids': USERS['base']})
     
     indata = {'description': 'Test description updated',
-              'contact': 'user_updated@example.com',
-              'dmp': 'https://dmp_updated_url_test',
-              'owners': [str(collection_info['owners'][0])],
-              'publications': ['Updated publication title, doi://updated_doi_value'],
+              'editors': [str(collection_info['editors'][0])],
               'title': 'Test title updated',
               'datasets': [str(uuids[1])]}
     indata.update(TEST_LABEL)
@@ -413,10 +410,8 @@ def test_update_collection(use_db):
     assert response.code == 200
     collection = db['collections'].find_one({'_id': collection_info['_id']})
     assert collection['description'] == indata['description']
-    assert str(collection['owners'][0]) == indata['owners'][0]
+    assert str(collection['editors'][0]) == indata['editors'][0]
     assert collection['title'] == indata['title']
-    assert collection['dmp'] == indata['dmp']
-    assert collection['publications'] == indata['publications']
     assert str(collection['datasets'][0]) == indata['datasets'][0]
 
     # log
@@ -426,13 +421,10 @@ def test_update_collection(use_db):
                                 'action': 'edit'})
     
     as_user(session, USERS['data'])
-    user_info = db['users'].find_one({'auth_id': USERS['data']})
+    user_info = db['users'].find_one({'auth_ids': USERS['data']})
 
     indata = {'description': 'Test description updated2',
-              'contact': 'user_updated@example.com2',
-              'dmp': 'https://dmp_updated_url_test2',
-              'owners': [str(user_info['_id'])],
-              'publications': ['Updated publication title2, doi://updated_doi_value'],
+              'editors': [str(user_info['_id'])],
               'title': 'Test title updated',
               'datasets': [str(uuids[1]), str(uuids[1])]}
     indata.update(TEST_LABEL)
@@ -445,13 +437,11 @@ def test_update_collection(use_db):
     assert response.code == 200
     collection = db['collections'].find_one({'_id': collection_info['_id']})
     assert collection['description'] == indata['description']
-    assert str(collection['owners'][0]) == indata['owners'][0]
+    assert str(collection['editors'][0]) == indata['editors'][0]
     assert collection['title'] == indata['title']
-    assert collection['dmp'] == indata['dmp']
-    assert collection['publications'] == indata['publications']
     assert str(collection['datasets'][0]) == indata['datasets'][0]
 
-    data_user = db['users'].find_one({'auth_id': USERS['data']})
+    data_user = db['users'].find_one({'auth_ids': USERS['data']})
     
     # log
     assert db['logs'].find_one({'data._id': collection_info['_id'],
