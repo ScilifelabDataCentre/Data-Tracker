@@ -359,7 +359,7 @@ Fields
 Log
 ===
 
-* Whenever an entry (``order``, ``dataset``, ``project``, or ``user``) is changed, a log should be written.
+* Whenever an entry (``order``, ``dataset``, ``collection``, or ``user``) is changed, a log should be written.
 * Only visible to entry owners and admins.
 * All logs are in the same collection.
 * The log needs parsing to show changes between different versions of an entry.
