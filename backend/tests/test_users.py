@@ -34,9 +34,9 @@ def test_list_info():
                                        ret_json=True)
     for response in responses:
         assert response.code == 200
-        assert len(response.data['user']) == 5
+        assert len(response.data['user']) == 7
         if response.role != 'no-login':
-            assert response.data['user']['name'] == f'{response.role.capitalize()} Test'
+            assert response.data['user']['name'] == f'{response.role.capitalize()}'
 
 
 def test_update_current_user(use_db):
@@ -165,7 +165,7 @@ def test_update_user(use_db):
     for response in responses:
         if response.role in ('users', 'root'):
             assert response.code == 200
-            new_user_info = db['users'].find_one({'auth_id': user_info['auth_id']})
+            new_user_info = db['users'].find_one({'auth_ids': {'$in': user_info['auth_ids']}})
             assert user_info == new_user_info
         elif response.role == 'no-login':
             assert response.code == 401
@@ -280,7 +280,7 @@ def test_add_user(use_db):
     """Add a user."""
     db = use_db
 
-    indata = {'auth_ids': 'user@added'}
+    indata = {'auth_ids': ['user@added']}
     responses = make_request_all_roles(f'/api/user/',
                                        ret_json=True,
                                        method='PUT',
@@ -299,7 +299,7 @@ def test_add_user(use_db):
             assert not response.data
 
     indata = {'affiliation': 'Added University',
-              'auth_ids': 'user2@added',
+              'auth_ids': ['user2@added'],
               'name': 'Added name',
               'email': 'user2@added.se',
               'permissions': ['ORDERS_SELF']}
@@ -354,7 +354,7 @@ def test_key_reset(use_db):
     """Test generation of new API keys"""
     db = use_db
 
-    mod_user = {'auth_ids': '--facility 18--'}
+    mod_user = {'auth_ids': 'facility18::local'}
     mod_user_info = db.users.find_one(mod_user)
 
     session = requests.Session()
@@ -393,7 +393,7 @@ def test_key_reset(use_db):
                                     '/api/login/apikey/',
                                     data = {'api-user': mod_user['auth_ids'],
                                             'api-key': new_key},
-                                    method='PUT')
+                                    method='POST')
             assert response.code == 200
             assert not response.data
 
