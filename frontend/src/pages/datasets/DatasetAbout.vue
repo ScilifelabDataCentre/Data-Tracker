@@ -15,53 +15,82 @@
 
   <q-card>
     <q-card-section>
-      <q-field label="Creator" stack-label>
+      <q-field v-if="dataset.hasOwnProperty('editors')" label="Editors" stack-label>
         <template v-slot:prepend>
           <q-icon name="person" />
         </template>
         <template v-slot:control>
-          {{ dataset.creator }}
+          <ul>
+            <li v-for="entry in dataset.editors" :key="entry._id">
+              {{ entry.name }}
+            </li>
+          </ul>
         </template>
       </q-field>
-
+      <q-field v-if="dataset.authors.length > 0" label="Authors" stack-label>
+        <template v-slot:prepend>
+          <q-icon name="person" />
+        </template>
+        <template v-slot:control>
+          <ul>
+            <li v-for="entry in dataset.authors" :key="entry._id">
+              {{ entry.name }}
+            </li>
+          </ul>
+        </template>
+      </q-field>
+      <q-field v-if="dataset.generators.length > 0" label="Generators" stack-label>
+        <template v-slot:prepend>
+          <q-icon name="person" />
+        </template>
+        <template v-slot:control>
+          <ul>
+            <li v-for="entry in dataset.generators" :key="entry._id">
+              {{ entry.name }}
+            </li>
+          </ul>
+        </template>
+      </q-field>
+      <q-field v-if="dataset.organisation.name.length > 0" label="Organisation" stack-label>
+        <template v-slot:prepend>
+          <q-icon name="person" />
+        </template>
+        <template v-slot:control>
+          {{ dataset.organisation.name }}
+        </template>
+      </q-field>
+    </q-card-section>
+    <q-card-section>
       <q-field
-        v-for="field in Object.keys(dataset.extra)" :key="field"
-        :label="field"
+        v-for="entry in dataset.tagsStandard" :key="entry.key"
+        :label="entry.key"
         stack-label>
         <template v-slot:prepend>
           <q-icon name="label" />
         </template>
         <template v-slot:control>
           <span>
-            {{ dataset.extra[field] }}
+            {{ entry.value }}
           </span>
         </template>
       </q-field>
 
       <q-field
-        v-if="dataset.links.length > 0"
-        label="Links"
+        v-for="entry in dataset.tagsUser" :key="entry.key"
+        :label="entry.key"
         stack-label>
         <template v-slot:prepend>
-          <q-icon name="link" />
+          <q-icon name="label" />
         </template>
         <template v-slot:control>
-          <ul class="">
-            <li v-for="(location, i) in dataset.links" :key="i">
-              <q-btn
-                flat
-                no-caps
-                dense
-                :label="location.description"
-                type="a"
-                :href="location.url" />
-            </li>
-          </ul>
+          <span>
+            {{ entry.value }}
+          </span>
         </template>
       </q-field>
 
       <q-field
-        v-if="dataset.projects.length > 0"
+        v-if="dataset.collections.length > 0"
         label="Collections"
         stack-label>
         <template v-slot:prepend>
