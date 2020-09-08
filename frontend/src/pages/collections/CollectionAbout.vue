@@ -15,25 +15,31 @@
 
   <q-card>
     <q-card-section>
-      <q-field label="Contact" stack-label>
-        <template v-slot:prepend>
-          <q-icon name="contacts" />
-        </template>
-        <template v-slot:control>
-          {{ collection.contact }}
-        </template>
-      </q-field>
 
       <q-field
-        v-for="field in Object.keys(collection.extra)" :key="field"
-        :label="field"
+        v-for="entry in collection.tagsStandard" :key="entry.key"
+        :label="entry.key"
         stack-label>
         <template v-slot:prepend>
           <q-icon name="label" />
         </template>
         <template v-slot:control>
           <span>
-            {{ collection.extra[field] }}
+            {{ entry.value }}
+          </span>
+        </template>
+      </q-field>
+
+      <q-field
+        v-for="entry in collection.tagsUser" :key="entry.key"
+        :label="entry.key"
+        stack-label>
+        <template v-slot:prepend>
+          <q-icon name="label" />
+        </template>
+        <template v-slot:control>
+          <span>
+            {{ entry.value }}
           </span>
         </template>
       </q-field>
@@ -64,22 +70,6 @@
     </q-card-section>
 
     <q-card-section>
-      <q-field
-        v-if="collection.publications.length > 0"
-        label="Publications"
-        stack-label>
-        <template v-slot:prepend>
-          <q-icon name="article" />
-        </template>
-
-        <template v-slot:control>
-          <ul class="">
-            <li v-for="(publication, i) in collection.publications" :key="i">
-              {{ publication }}
-            </li>
-          </ul>
-        </template>
-      </q-field>
     </q-card-section>
   </q-card>
 
