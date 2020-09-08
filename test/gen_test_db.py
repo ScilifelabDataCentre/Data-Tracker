@@ -29,7 +29,7 @@ def make_description():
     desc = random.choice((lorem.sentence,
                           lorem.paragraph,
                           lorem.text))()
-    desc = '# Title\n\n' + '## Subtitle\n\n'.join(desc.split('\n'))
+    desc = '# Title\n' + '\n## Subtitle\n\n'.join(desc.split('\n\n'))
     return desc
 
 
@@ -58,7 +58,7 @@ def gen_datasets(db, nr_datasets: int = 500):
         # add extra field
         if random.random() > 0.7:
             tag = random.choice(EXTRA_KEYS)
-            changes['extra'] = {tag: random.choice(EXTRA_FIELDS[tag])}
+            changes['tags_user'] = [{'key': tag, 'value': random.choice(EXTRA_FIELDS[tag])}]
         dataset.update(changes)
         uuids.append(db['datasets'].insert_one(dataset).inserted_id)
         make_log(db, action='add', data=dataset, data_type='dataset', comment='Generated', user='system')
