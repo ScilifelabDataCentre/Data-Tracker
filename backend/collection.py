@@ -83,7 +83,6 @@ def get_collection(identifier):
                                                        {'title': 1})
                           for dataset in result['datasets']]
 
-
     return utils.response_json({'collection': result})
 
 

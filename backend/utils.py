@@ -19,6 +19,7 @@ import validate
 
 ValidationResult = namedtuple('ValidationResult', ['result', 'status'])
 
+
 def basic_check_indata(indata: dict,
                        reference_data: dict,
                        prohibited: Union[tuple, list]) -> tuple:
@@ -264,6 +265,7 @@ def make_timestamp():
         datetime.datetime: The current time.
     """
     return datetime.datetime.now()
+
 
 # pylint: disable=too-many-arguments
 def make_log(data_type: str,

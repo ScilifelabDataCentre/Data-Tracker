@@ -222,7 +222,7 @@ def add_dataset(identifier):  # pylint: disable=too-many-branches
     order = flask.g.db['orders'].find_one({'_id': order_uuid})
     if not order:
         flask.abort(status=404)
-    if not (user.has_permission('DATA_MANAGEMENT') or \
+    if not (user.has_permission('DATA_MANAGEMENT') or
             flask.g.current_user['_id'] in order['editors']):
         return flask.abort(status=403)
 

@@ -240,5 +240,4 @@ def build_dataset_info(identifier: str):
     dataset['organisation'] = flask.g.db['users'].find_one({'_id': order['organisation']},
                                                            {'name': 1})
 
-
     return dataset
