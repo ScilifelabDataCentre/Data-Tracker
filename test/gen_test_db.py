@@ -154,12 +154,12 @@ def gen_users(db, nr_users: int = 100):
     uuids = []
     perm_keys = tuple(PERMISSIONS.keys())
     # non-random users with specific rights
-    special_users = [{'name': 'base', 'permissions': []},
-                     {'name': 'orders', 'permissions': ['ORDERS_SELF']},
-                     {'name': 'owners', 'permissions': ['OWNERS_READ']},
-                     {'name': 'users', 'permissions': ['USER_MANAGEMENT']},
-                     {'name': 'data', 'permissions': ['DATA_MANAGEMENT']},
-                     {'name': 'root', 'permissions': list(perm_keys)}]
+    special_users = [{'name': 'Base', 'permissions': []},
+                     {'name': 'Orders', 'permissions': ['ORDERS_SELF']},
+                     {'name': 'Owners', 'permissions': ['OWNERS_READ']},
+                     {'name': 'Users', 'permissions': ['USER_MANAGEMENT']},
+                     {'name': 'Data', 'permissions': ['DATA_MANAGEMENT']},
+                     {'name': 'Root', 'permissions': list(perm_keys)}]
     for i, suser in enumerate(special_users):
         user = structure.user()
         user.update(suser)
@@ -169,7 +169,7 @@ def gen_users(db, nr_users: int = 100):
                      'api_salt': apikey['salt'],
                      'email': f'{"".join(user["name"].split())}@example.com',
                      'email_public': f'pub_{"".join(user["name"].split())}@example.com',
-                     'auth_ids': [f'{user["name"]}::testers'],
+                     'auth_ids': [f'{user["name"].lower()}::testers'],
                      'url': 'https://www.example.com/specuser'})
         db['users'].insert_one(user)
         make_log(db, action='add', data=user, data_type='user', comment='Generated', user='system')
