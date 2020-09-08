@@ -597,7 +597,6 @@ def test_add_dataset(use_db):
     db_o['datasets'] = [str(ds_uuid) for ds_uuid in db_o['datasets']]
     for field in indata:
         assert db_ds[field] == indata[field]
-    assert db_ds == indata
     assert response.data['_id'] in db_o['datasets']
 
 
