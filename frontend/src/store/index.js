@@ -1,52 +1,37 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
+import Vue from 'vue'
+import Vuex from 'vuex'
 
-import admin from './modules/admin';
-import dataset from './modules/dataset';
-import order from './modules/order';
-import project from './modules/project';
-import user from './modules/user';
+import adminUser from './adminUser'
+import collections from './collections'
+import currentUser from './currentUser'
+import datasets from './datasets'
+import orders from './orders'
 
-Vue.use(Vuex);
+Vue.use(Vuex)
 
-const state = {
-  notification: {'message': '',
-                 'type': 'normal'},
+/*
+ * If not building with SSR mode, you can
+ * directly export the Store instantiation;
+ *
+ * The function below can be async too; either use
+ * async/await or return a Promise which resolves
+ * with the Store instance.
+ */
+
+export default function (/* { ssrContext } */) {
+  const Store = new Vuex.Store({
+    modules: {
+      adminUser,
+      collections,
+      currentUser,
+      datasets,
+      orders,
+    },
+
+    // enable strict mode (adds overhead!)
+    // for dev mode only
+    strict: process.env.DEV
+  })
+
+  return Store
 }
-
-const mutations = {
-  UPDATE_NOTIFICATION (state, payload) {
-    state.notification = payload;
-  },
-}
-
-const actions = {
-  updateNotification({ commit }, notification) {
-    return new Promise((resolve) => {
-      commit('UPDATE_NOTIFICATION', {'message': notification[0],
-                                     'type': notification[1]});
-      setTimeout(() => commit('UPDATE_NOTIFICATION', {'message': "",
-                                                      'type': ""}),
-                 3000);
-      resolve();
-    });
-  },
-}
-
-const getters = {
-  notification: state => state.notification,
-}
-
-export default new Vuex.Store({
-  state,
-  mutations,
-  actions,
-  getters,
-  modules: {
-    admin,
-    dataset,
-    order,
-    project,
-    user,
-  }
-})

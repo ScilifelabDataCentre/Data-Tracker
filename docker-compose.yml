@@ -23,12 +23,12 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile-frontend
-    depends_on:
-      - backend
+    ports:
+      - 127.0.0.1:8080:8080
     volumes:
       - type: bind
-        source: .
-        target: /code
+        source: ./frontend/src
+        target: /code/src
   proxy:
     build:
       context: ./

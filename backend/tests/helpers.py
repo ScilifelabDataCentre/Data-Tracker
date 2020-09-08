@@ -5,6 +5,7 @@ import datetime
 import json
 import os
 import random
+import re
 import string
 
 import pytest
@@ -19,20 +20,23 @@ CURR_DIR = os.path.realpath(__file__)
 SETTINGS = json.loads(open(f'{os.path.dirname(CURR_DIR)}/settings_tests.json').read())
 BASE_URL = f'{SETTINGS["host"]}:{SETTINGS["port"]}'
 
-TEST_LABEL = {'extra': {'testing': 'yes'}}
+TEST_LABEL = {'tags_user': {'testing': 'true'}}
 
 USERS = {'no-login': None,
-         'base': 'base@testers',
-         'orders': 'orders@testers',
-         'owners': 'owners@testers',
-         'users': 'users@testers',
-         'data': 'data@testers',
-         'doi': 'doi@testers',
-         'root': 'root@testers'}
+         'base': 'base::testers',
+         'orders': 'orders::testers',
+         'owners': 'owners::testers',
+         'users': 'users::testers',
+         'data': 'data::testers',
+         'root': 'root::testers'}
 
 Response = collections.namedtuple('Response',
                                   ['data', 'code', 'role'],
                                   defaults=[None, None, None])
+
+FACILITY_RE = re.compile('facility[0-9]*::local')
+ORGANISATION_RE = re.compile('organisation[0-9]*::local')
+USER_RE = re.compile('.*::elixir')
 
 
 def db_connection():
@@ -103,29 +107,31 @@ def add_dataset():
     order_indata.update({'description': 'Added by fixture.',
                          'title': 'Test title from fixture'})
     order_indata.update(TEST_LABEL)
-    orders_user = db['users'].find_one({'auth_id': USERS['orders']})
-    base_user = db['users'].find_one({'auth_id': USERS['base']})
-    order_indata['creator'] = orders_user['_id']
-    order_indata['receiver'] = base_user['_id']
+    orders_user = db['users'].find_one({'auth_ids': USERS['orders']})
+    base_user = db['users'].find_one({'auth_ids': USERS['base']})
+    order_indata['authors'] = [orders_user['_id']]
+    order_indata['editors'] = [orders_user['_id']]
+    order_indata['generators'] = [orders_user['_id']]
+    order_indata['organisation'] = orders_user['_id']
+    order_indata['receivers'] = [base_user['_id']]
     
     dataset_indata = structure.dataset()
-    dataset_indata.update({'links': [{'description': 'Test description', 'url': 'http://test_url'}],
-                           'description': 'Added by fixture.',
+    dataset_indata.update({'description': 'Added by fixture.',
                            'title': 'Test title from fixture'})
     dataset_indata.update(TEST_LABEL)
 
-    project_indata = structure.project()
-    project_indata.update({'description': 'Added by fixture.',
+    collection_indata = structure.collection()
+    collection_indata.update({'description': 'Added by fixture.',
                            'title': 'Test title from fixture',
-                           'owners': [base_user['_id']]})
-    project_indata.update(TEST_LABEL)
+                           'editors': [base_user['_id']]})
+    collection_indata.update(TEST_LABEL)
 
     db['datasets'].insert_one(dataset_indata)
     order_indata['datasets'].append(dataset_indata['_id'])
-    project_indata['datasets'].append(dataset_indata['_id'])
+    collection_indata['datasets'].append(dataset_indata['_id'])
     db['orders'].insert_one(order_indata)
-    db['projects'].insert_one(project_indata)
-    return (order_indata['_id'], dataset_indata['_id'], project_indata['_id'])
+    db['collections'].insert_one(collection_indata)
+    return (order_indata['_id'], dataset_indata['_id'], collection_indata['_id'])
 
 
 def delete_dataset(order_uuid, dataset_uuid, project_uuid):
@@ -168,7 +174,11 @@ def make_request(session, url: str, data: dict = None, method='GET', ret_json: b
         raise ValueError(f'Unsupported http method ({method})')
 
     if response.text and ret_json:
-        data = json.loads(response.text)
+        try:
+            data = json.loads(response.text)
+        except json.decoder.JSONDecodeError:
+            print(response.text)
+            exit
     elif response.text:
         data = response.text
     else:
@@ -197,27 +207,27 @@ def make_request_all_roles(url: str, method: str = 'GET', data=None,
 
 
 @pytest.fixture
-def project_for_tests():
+def collection_for_tests():
     """
-    Add a new project that can be modified in tests and then removed.
+    Add a new collection that can be modified in tests and then removed.
 
-    Yields the uuid of the added project.
+    Yields the uuid of the added collection.
     """
     # prepare
     db = db_connection()
     session = requests.Session()
     as_user(session, USERS['data'])
-    project_indata = structure.project()
-    base_user = db['users'].find_one({'auth_id': USERS['base']})
-    project_indata.update({'description': 'Added by fixture.',
-                           'title': 'Test title from fixture',
-                           'owners': [base_user['_id']]})
-    project_indata.update(TEST_LABEL)
-    db['projects'].insert_one(project_indata)
+    collection_indata = structure.collection()
+    base_user = db['users'].find_one({'auth_ids': USERS['base']})
+    collection_indata.update({'description': 'Added by fixture.',
+                              'title': 'Test title from fixture',
+                              'editors': [base_user['_id']]})
+    collection_indata.update(TEST_LABEL)
+    db['collections'].insert_one(collection_indata)
 
-    yield project_indata['_id']
+    yield collection_indata['_id']
 
-    db['projects'].delete_one({'_id': project_indata['_id']})
+    db['collections'].delete_one({'_id': collection_indata['_id']})
 
 
 def random_string(min_length: int = 1, max_length: int = 150):

@@ -17,6 +17,9 @@ import structure
 import validate
 
 
+ValidationResult = namedtuple('ValidationResult', ['result', 'status'])
+
+
 def basic_check_indata(indata: dict,
                        reference_data: dict,
                        prohibited: Union[tuple, list]) -> tuple:
@@ -24,6 +27,7 @@ def basic_check_indata(indata: dict,
     Perform basic checks of indata.
 
     * All fields are allowed in the entity type
+    * If title is a field for the entity, it may not be empty
     * All fields are of the correct type
     * All prohibited fields are unchanged (if update)
 
@@ -44,18 +48,18 @@ def basic_check_indata(indata: dict,
        not reference_data['title'] and \
        not indata.get('title'):
         logging.debug('Title empty')
-        return (False, 400)
+        return ValidationResult(result=False, status=400)
 
     for key in indata:
         if key in prohibited and indata[key] != reference_data[key]:
             logging.debug('Prohibited key (%s) with new value', key)
-            return (False, 403)
+            return ValidationResult(result=False, status=403)
         if key not in reference_data:
             logging.debug('Bad key (%s)', key)
-            return (False, 400)
+            return ValidationResult(result=False, status=400)
         if not validate.validate_field(key, indata[key]):
-            return (False, 400)
-    return (True, 200)
+            return ValidationResult(result=False, status=400)
+    return ValidationResult(result=True, status=200)
 
 
 # csrf
@@ -119,7 +123,7 @@ def verify_api_key(username: str, api_key: str):
         username (str): The username to check.
         api_key (str): The received API key (hex).
     """
-    user_info = flask.g.db['users'].find_one({'auth_id': username})
+    user_info = flask.g.db['users'].find_one({'auth_ids': username})
     if not user_info:
         logging.warning('API key verification failed (bad username)')
         flask.abort(status=401)
@@ -263,7 +267,13 @@ def make_timestamp():
     return datetime.datetime.now()
 
 
-def make_log(data_type: str, action: str, comment: str, data: dict = None, no_user: bool = False):
+# pylint: disable=too-many-arguments
+def make_log(data_type: str,
+             action: str,
+             comment: str,
+             data: dict = None,
+             no_user: bool = False,
+             dbsession=None):
     """
     Log a change in the system.
 
@@ -279,6 +289,8 @@ def make_log(data_type: str, action: str, comment: str, data: dict = None, no_us
             (e.g. "Dataset added via addDataset").
         data_type (str): The collection name.
         data (dict): The new data for the entry.
+        no_user (bool): Whether the entry should be accredited to "system".
+        dbsession: The MongoDB session used.
 
     Returns:
         bool: Whether the log insertion successed.
@@ -294,7 +306,7 @@ def make_log(data_type: str, action: str, comment: str, data: dict = None, no_us
                 'data_type': data_type,
                 'data': data,
                 'user': active_user})
-    result = flask.g.db['logs'].insert_one(log)
+    result = flask.g.db['logs'].insert_one(log, session=dbsession)
     if not result.acknowledged:
         logging.error(f'Log failed: A:{action} C:{comment} D:{data} ' +
                       f'DT: {data_type} U: {flask.g.current_user["_id"]}')
@@ -350,3 +362,26 @@ def check_email_uuid(user_identifier: str) -> Union[str, uuid.UUID]:
     if user_entry:
         return user_entry['_id']
     return ''
+
+
+def user_uuid_data(user_id: Union[str, uuid.UUID], mongodb: pymongo.database.Database) -> dict:
+    """
+    Retrieve some extra information about a user using a uuid as input.
+
+    Note that ``_id``` will be returned as ``str``, not ``uuid.UUID``.
+
+    Args:
+        user_id (str or uuid.UUID): UUID of the user.
+        mongodb (pymongo.database.Database): The Mongo database to use for the query
+
+    Returns:
+        dict: The resulting data structure.
+    """
+    if isinstance(user_id, str):
+        user_uuid = str_to_uuid(user_id)
+    else:
+        user_uuid = user_id
+    data = mongodb['users'].find_one({'_id': user_uuid})
+    return {'_id': str(user_uuid),
+            'name': data['name'],
+            'email': data['email_public']}

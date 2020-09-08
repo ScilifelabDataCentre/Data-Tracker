@@ -77,18 +77,6 @@ def test_request_permission_data_management():
             assert not response.data
 
 
-def test_request_permission_doi_reviewer():
-    """Request target with no login requirement."""
-    responses = helpers.make_request_all_roles('/api/developer/hello/DOI_REVIEWER', ret_json=True)
-    for response in responses:
-        if response.role in ('doi', 'root'):
-            assert response.code == 200
-            assert response.data == {'test': "success"}
-        else:
-            assert response.code == 403
-            assert not response.data
-
-
 def test_csrf():
     """Perform POST, PUT and DELETE requests to confirm that CSRF works correctly."""
     
@@ -113,17 +101,17 @@ def test_api_key_auth():
     """Request target with login requirment using an API key"""
     response = requests.get(helpers.BASE_URL + '/api/developer/loginhello',
                             headers={'X-API-Key': '0',
-                                     'X-API-User': 'base@testers'})
+                                     'X-API-User': 'base::testers'})
     assert response.status_code == 200
     assert json.loads(response.text) == {'test': 'success'}
     response = requests.get(helpers.BASE_URL + '/api/developer/loginhello',
                             headers={'X-API-Key': '0',
-                                     'X-API-User': 'root@testers'})
+                                     'X-API-User': 'root::testers'})
     assert response.status_code == 401
     assert not response.text
     response = requests.get(helpers.BASE_URL + '/api/developer/loginhello',
                             headers={'X-API-Key': 'asd',
-                                     'X-API-User': 'root@testers'})
+                                     'X-API-User': 'root::testers'})
     assert response.status_code == 401
     assert not response.text
     response = requests.get(helpers.BASE_URL + '/api/developer/loginhello',

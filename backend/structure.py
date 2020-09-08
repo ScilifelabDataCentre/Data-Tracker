@@ -16,9 +16,10 @@ def dataset():
     """
     return {'_id': utils.new_uuid(),
             'description': '',
-            'extra': {},
-            'links': [],
-            'title': ''}
+            'cross_references': [],
+            'title': '',
+            'tags_standard': [],
+            'tags_user': []}
 
 
 def order():
@@ -29,15 +30,19 @@ def order():
         dict: The data structure for an order.
     """
     return {'_id': utils.new_uuid(),
-            'creator': '',
-            'datasets': [],
+            'title': '',
             'description': '',
-            'extra': {},
-            'receiver': '',
-            'title': ''}
+            'authors': [],
+            'generators': [],
+            'organisation': '',
+            'editors': [],
+            'receivers': [],
+            'datasets': [],
+            'tags_standard': [],
+            'tags_user': []}
 
 
-def project():
+def collection():
     """
     Provide a basic data structure for a project document.
 
@@ -45,13 +50,12 @@ def project():
         dict: The data structure for a project.
     """
     return {'_id': utils.new_uuid(),
-            'contact': '',
             'datasets': [],
             'description': '',
-            'dmp': '',
-            'extra': {},
-            'owners': [],
-            'publications': [],
+            'tags_standard': {},
+            'tags_user': {},
+            'cross_references': [],
+            'editors': [],
             'title': ''}
 
 
@@ -66,10 +70,13 @@ def user():
             'affiliation': '',
             'api_key': '',
             'api_salt': '',
-            'auth_id': '',
+            'auth_ids': [],
             'email': '',
+            'email_public': '',
             'name': '',
-            'permissions': []}
+            'orcid': '',
+            'permissions': [],
+            'url': ''}
 
 
 def log():

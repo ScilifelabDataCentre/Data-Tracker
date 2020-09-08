@@ -29,6 +29,7 @@ def make_description():
     desc = random.choice((lorem.sentence,
                           lorem.paragraph,
                           lorem.text))()
+    desc = '# Title\n' + '\n## Subtitle\n\n'.join(desc.split('\n\n'))
     return desc
 
 
@@ -53,23 +54,19 @@ def gen_datasets(db, nr_datasets: int = 500):
     for i in range(1, nr_datasets+1):
         dataset = structure.dataset()
         changes = {'title': f'Dataset {i} Title',
-                   'description': make_description(),
-                   'links': [{'description': f'Download location {j}',
-                              'url': (f'https://data_source{i}/' +
-                                      f'{random.choice(string.ascii_uppercase)}')}
-                                 for j in range(1, random.randint(0, 6))]}
+                   'description': make_description()}
         # add extra field
         if random.random() > 0.7:
             tag = random.choice(EXTRA_KEYS)
-            changes['extra'] = {tag: random.choice(EXTRA_FIELDS[tag])}
+            changes['tags_user'] = [{'key': tag, 'value': random.choice(EXTRA_FIELDS[tag])}]
         dataset.update(changes)
         uuids.append(db['datasets'].insert_one(dataset).inserted_id)
-        make_log(db, action='add', data=dataset, data_type='dataset',comment='Generated', user='system')
+        make_log(db, action='add', data=dataset, data_type='dataset', comment='Generated', user='system')
         order_uuid = random.choice(orders)
         db['orders'].update_one({'_id': order_uuid},
                                 {'$push': {'datasets': uuids[-1]}})
         order = db['orders'].find_one({'_id': order_uuid})
-        make_log(db, action='update', data=order, data_type='order',comment='Generated - add ds', user='system')
+        make_log(db, action='update', data=order, data_type='order', comment='Generated - add ds', user='system')
 
     return uuids
 
@@ -82,10 +79,32 @@ def gen_facilities(db, nr_facilities: int = 30):
         changes = {'affiliation': 'University ' + random.choice(string.ascii_uppercase),
                    'api_key': utils.gen_api_key_hash(apikey.key, apikey.salt),
                    'api_salt': apikey.salt,
-                   'auth_id': f'--facility {i}--',
+                   'auth_ids': [f'facility{i}::local'],
                    'email': f'facility{i}@domain{i}.se',
+                   'email_public': f'pub_facility{i}@domain{i}.se',
                    'name': f'Facility {i}',
-                   'permissions': ['ORDERS_SELF']}
+                   'permissions': ['ORDERS_SELF'],
+                   'url': f'https://www.example.com/facility{i}'}
+        user.update(changes)
+        uuids.append(db['users'].insert_one(user).inserted_id)
+        make_log(db, action='add', data=user, data_type='user', comment='Generated', user='system')
+    return uuids
+
+
+def gen_organisations(db, nr_organisations: int = 15):
+    uuids = []
+    for i in range(1, nr_organisations+1):
+        user = structure.user()
+        apikey = utils.gen_api_key()
+        changes = {'affiliation': 'Org/Uni ' + random.choice(string.ascii_uppercase),
+                   'api_key': utils.gen_api_key_hash(apikey.key, apikey.salt),
+                   'api_salt': apikey.salt,
+                   'auth_ids': [f'organisation{i}::local'],
+                   'email': f'organisation{i}@domain{i}.se',
+                   'email_public': f'pub_organisation{i}@domain{i}.se',
+                   'name': f'Organisation {i}',
+                   'permissions': ['ORDERS_SELF'],
+                   'url': f'https://www.example.com/org{i}'}
         user.update(changes)
         uuids.append(db['users'].insert_one(user).inserted_id)
         make_log(db, action='add', data=user, data_type='user', comment='Generated', user='system')
@@ -94,55 +113,53 @@ def gen_facilities(db, nr_facilities: int = 30):
 
 def gen_orders(db, nr_orders: int = 300):
     uuids = []
-    facility_re = re.compile('--facility [0-9]*--')
-    facilities = tuple(db['users'].find({'auth_id': facility_re}))
-    users = tuple(db['users'].find({'$and': [{'auth_id': {'$not': facility_re}},
-                                             {'affiliation': {'$ne': 'Test University'}}]}))
+    facility_re = re.compile('facility[0-9]*::local')
+    organisation_re = re.compile('organisation[0-9]*::local')
+    user_re = re.compile('.*::local')
+    facilities = tuple(db['users'].find({'auth_ids': facility_re}))
+    organisations = tuple(db['users'].find({'auth_ids': organisation_re}))
+    users = tuple(db['users'].find({'$and': [{'auth_ids': user_re}, {'permissions': 'ORDERS_SELF'}]}))
     for i in range(1, nr_orders+1):
-        receiver_type = random.choice(('email', '_id'))
         order = structure.order()
-        changes = {'creator': random.choice(facilities)['_id'],
+        changes = {'authors': [random.choice(users)['_id'] for _ in range(random.randint(0, 4))],
+                   'generators': [random.choice(facilities)['_id'] for _ in range(random.randint(0, 4))],
+                   'organisation': random.choice(organisations)['_id'],
+                   'editors': [random.choice(users+facilities)['_id'] for _ in range(random.randint(1, 5))],
                    'description': make_description(),
-                   'receiver': random.choice(users)[receiver_type],
-                   'title': f'Order {i} Title'}
+                   'receivers': [random.choice(facilities)['_id'] for _ in range(random.randint(0, 2))],
+                   'title': f'Order {i} Title {lorem.sentence()[:-1]}'}
         order.update(changes)
         uuids.append(db['orders'].insert_one(order).inserted_id)
-        make_log(db, action='add', data=order, data_type='order',comment='Generated', user='system')
+        make_log(db, action='add', data=order, data_type='order', comment='Generated', user='system')
     return uuids
 
 
-def gen_projects(db, nr_projects: int = 500):
+def gen_collections(db, nr_collections: int = 500):
     datasets = tuple(db['datasets'].find())
     users = tuple(db['users'].find({'affiliation': {'$ne': 'Test University'}}))
-    for i in range(1, nr_projects+1):
-        project = structure.project()
-        changes = {'contact': f'email{i}@entity{i}.se',
-                   'description': make_description(),
+    for i in range(1, nr_collections+1):
+        collection = structure.collection()
+        changes = {'description': make_description(),
                    'datasets': [random.choice(datasets)['_id']
                                 for _ in range(random.randint(0, 5))],
-                   'dmp': f'http://dmp-url{i}',
-                   'owners': list(set(random.choice(users)[random.choice(('email', '_id'))]
-                                      for _ in range(random.randint(1,3)))),
-                   'publications': [f'Title {j}, doi:doi{j}'
-                                    for j in range(random.randint(0, 5))],
-                   'title': f'Project {i} Title'}
-        project.update(changes)
-        db['projects'].insert_one(project)
-        make_log(db, action='add', data=project, data_type='project',comment='Generated', user='system')
+                   'editors': list(set(random.choice(users)['_id']
+                                       for _ in range(random.randint(1,3)))),
+                   'title': f'Collection {i} Title'}
+        collection.update(changes)
+        db['collections'].insert_one(collection)
+        make_log(db, action='add', data=collection, data_type='collection', comment='Generated', user='system')
 
 
 def gen_users(db, nr_users: int = 100):
     uuids = []
     perm_keys = tuple(PERMISSIONS.keys())
     # non-random users with specific rights
-    special_users = [{'name': 'Base Test', 'permissions': [], 'auth_id' : 'base@testers'},
-                     {'name': 'Orders Test', 'permissions': ['ORDERS_SELF'], 'auth_id' : 'orders@testers'},
-                     {'name': 'Owners Test', 'permissions': ['OWNERS_READ'], 'auth_id' : 'owners@testers'},
-                     {'name': 'Users Test', 'permissions': ['USER_MANAGEMENT'], 'auth_id' : 'users@testers'},
-                     {'name': 'Data Test', 'permissions': ['DATA_MANAGEMENT'], 'auth_id' : 'data@testers'},
-                     {'name': 'Doi Test', 'permissions': ['DOI_REVIEWER'], 'auth_id' : 'doi@testers'},
-                     {'name': 'Root Test', 'permissions': list(perm_keys), 'auth_id' : 'root@testers'}]
-
+    special_users = [{'name': 'Base', 'permissions': []},
+                     {'name': 'Orders', 'permissions': ['ORDERS_SELF']},
+                     {'name': 'Owners', 'permissions': ['OWNERS_READ']},
+                     {'name': 'Users', 'permissions': ['USER_MANAGEMENT']},
+                     {'name': 'Data', 'permissions': ['DATA_MANAGEMENT']},
+                     {'name': 'Root', 'permissions': list(perm_keys)}]
     for i, suser in enumerate(special_users):
         user = structure.user()
         user.update(suser)
@@ -150,9 +167,12 @@ def gen_users(db, nr_users: int = 100):
         user.update({'affiliation' : 'Test University',
                      'api_key': utils.gen_api_key_hash(apikey['key'], apikey['salt']),
                      'api_salt': apikey['salt'],
-                     'email': f'{"".join(user["name"].split())}@example.com'})
+                     'email': f'{"".join(user["name"].split())}@example.com',
+                     'email_public': f'pub_{"".join(user["name"].split())}@example.com',
+                     'auth_ids': [f'{user["name"].lower()}::testers'],
+                     'url': 'https://www.example.com/specuser'})
         db['users'].insert_one(user)
-        make_log(db, action='add', data=user, data_type='user',comment='Generated', user='system')
+        make_log(db, action='add', data=user, data_type='user', comment='Generated', user='system')
 
     for i in range(1, nr_users+1):
         user = structure.user()
@@ -160,14 +180,16 @@ def gen_users(db, nr_users: int = 100):
         changes = {'affiliation': 'University ' + random.choice(string.ascii_uppercase),
                    'api_key': utils.gen_api_key_hash(apikey.key, apikey.salt),
                    'api_salt': apikey.salt,
-                   'auth_id': f'hash{i}@elixir',
+                   'auth_ids': [f'user{i}::local'],
                    'email': f'user{i}@place{i}.se',
+                   'email_public': f'pub_user{i}@place{i}.se',
                    'name': f'First Last {i}',
                    'permissions': list(set(random.choice(perm_keys)
-                                           for _ in range(random.randint(0,2))))}
+                                           for _ in range(random.randint(0,2)))),
+                   'url': f'https://www.example.com/user{i}'}
         user.update(changes)
         uuids.append(db['users'].insert_one(user).inserted_id)
-        make_log(db, action='add', data=user, data_type='user',comment='Generated', user='system')
+        make_log(db, action='add', data=user, data_type='user', comment='Generated', user='system')
     return uuids
 
 
@@ -181,9 +203,8 @@ if __name__ == '__main__':
     DB = DBSERVER.get_database(CONF['mongo']['db'],
                                codec_options=(codec_options))
     gen_facilities(DB)
+    gen_organisations(DB)
     gen_users(DB)
     gen_orders(DB)
     gen_datasets(DB)
-    gen_projects(DB)
-    root_user = DB['users'].find_one({'name': 'Root Test'})
-    DB['logs'].update_many({}, {'$set': {'user': root_user['_id']}})
+    gen_collections(DB)

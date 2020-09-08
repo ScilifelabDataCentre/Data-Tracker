@@ -14,7 +14,7 @@ def login(identifier: str):
     Log in without password.
 
     Args:
-        identifer (str): User ``auth_id`` or ``api_key``.
+        identifer (str): User ``auth_id``.
     """
     res = user.do_login(auth_id=identifier)
     if res:

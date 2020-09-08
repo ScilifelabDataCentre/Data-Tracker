@@ -9,7 +9,7 @@ import requests
 
 from helpers import make_request, as_user, make_request_all_roles,\
     dataset_for_tests, USERS, random_string, parse_time, TEST_LABEL, use_db,\
-    add_dataset, delete_dataset
+    add_dataset, delete_dataset, USER_RE
 
 
 def test_list_user_datasets(use_db):
@@ -20,20 +20,18 @@ def test_list_user_datasets(use_db):
     """
     session = requests.Session()
     db = use_db
-    users = db['users'].aggregate([{'$sample': {'size': 5}}])
+    users = db['users'].aggregate([{'$sample': {'size': 5}},
+                                   {'$match': {'auth_ids': USER_RE}}])
     for user in users:
-        user_orders = list(db['orders'].find({'$or': [{'receiver': user['_id']},
-                                                      {'creator': user['_id']}],
+        user_orders = list(db['orders'].find({'$or': [{'editors': user['_id']},
+                                                      {'receivers': user['_id']}],
                                               'datasets': {'$not': {'$size': 0} }},
                                              {'datasets': 1}))
         user_datasets = list(itertools.chain.from_iterable(order['datasets']
                                                            for order in user_orders))
         user_datasets = [str(uuid) for uuid in user_datasets]
 
-        if user['auth_id'] != '--facility--':
-            as_user(session, user['auth_id'])
-        else:
-            as_user(session, user['api_key'])
+        as_user(session, user['auth_ids'][0])
         response = make_request(session, f'/api/dataset/user/')
         assert response.code == 200
         assert len(user_datasets) == len(response.data['datasets'])
@@ -127,22 +125,22 @@ def test_delete_dataset(use_db):
     orders_user = db['users'].find_one({'auth_id': USERS['data']})
 
     # must be updated if TEST_LABEL is modified
-    datasets = list(db['datasets'].find({'extra.testing': 'yes'}))
+    datasets = list(db['datasets'].find({'tags_user': {'testing': 'true'}}))
     i = 0
     while i < len(datasets):
         for role in USERS:
             as_user(session, USERS[role])
             order = db['orders'].find_one({'datasets': datasets[i]['_id']})
-            projects = list(db['projects'].find({'datasets': datasets[i]['_id']}))
+            collections = list(db['collections'].find({'datasets': datasets[i]['_id']}))
             response = make_request(session,
                                     f'/api/dataset/{datasets[i]["_id"]}/',
                                     method='DELETE')
-            current_user = db['users'].find_one({'auth_id': USERS[role]})
+            current_user = db['users'].find_one({'auth_ids': USERS[role]})
             if role == 'no-login':
                 assert response.code == 401
                 assert not response.data
             # only data managers or owners may delete datasets
-            elif role in ('data', 'root') or order['creator'] == current_user['_id']:
+            elif role in ('data', 'root') or current_user['_id'] in order['editors']:
                 assert response.code == 200
                 assert not response.data
                 # confirm that dataset does not exist in db and that a log has been created
@@ -150,24 +148,26 @@ def test_delete_dataset(use_db):
                 assert db['logs'].find_one({'data._id': datasets[i]['_id'],
                                             'action': 'delete',
                                             'data_type': 'dataset'})
-                # confirm that no references to the dataset exist in orders or project
+                # confirm that no references to the dataset exist in orders or collection
                 assert not list(db['orders'].find({'datasets': datasets[i]['_id']}))
-                assert not list(db['projects'].find({'datasets': datasets[i]['_id']}))
+                assert not list(db['collections'].find({'datasets': datasets[i]['_id']}))
                 # confirm that the removal of the references are logged.
                 assert db['logs'].find_one({'data._id': order['_id'],
                                             'action': 'edit',
                                             'data_type': 'order',
                                             'comment': f'Deleted dataset {datasets[i]["_id"]}'})
                 p_logs = list(db['logs'].find({'action': 'edit',
-                                               'data_type': 'project',
+                                               'data_type': 'collection',
                                                'comment': f'Deleted dataset {datasets[i]["_id"]}'}))
-                assert len(p_logs) == len(projects)
+                assert len(p_logs) == len(collections)
                 i += 1
                 if i >= len(datasets):
                     break
             else:
                 assert response.code == 403
                 assert not response.data
+
+    assert i > 0
     for uuid_group in uuids:
         delete_dataset(*uuid_group)
 
@@ -195,7 +195,7 @@ def test_delete_bad():
         assert not response.data
 
 
-def test_update_permissions(use_db, dataset_for_tests):
+def test_dataset_update_permissions(use_db, dataset_for_tests):
     """
     Test the permissions for the request.
 
@@ -203,12 +203,10 @@ def test_update_permissions(use_db, dataset_for_tests):
     """
     db = use_db
     ds_uuid = dataset_for_tests
-    print(db['datasets'].find_one({'_id': ds_uuid}))
-    print(db['orders'].find_one({'datasets': ds_uuid}))
     indata = {'title': 'Updated title'}
     responses = make_request_all_roles(f'/api/dataset/{ds_uuid}/', method='PATCH', data=indata)
     for response in responses:
-        if response.role in ('base', 'orders', 'data', 'root'):
+        if response.role in ('orders', 'data', 'root'):
             assert response.code == 200
         elif response.role == 'no-login':
             assert response.code == 401
@@ -217,7 +215,7 @@ def test_update_permissions(use_db, dataset_for_tests):
         assert not response.data
 
 
-def test_update_empty(dataset_for_tests):
+def test_dataset_update_empty(dataset_for_tests):
     """
     Confirm response 400 to an empty update request
 
@@ -227,7 +225,7 @@ def test_update_empty(dataset_for_tests):
     indata = {}
     responses = make_request_all_roles(f'/api/dataset/{ds_uuid}/', method='PATCH', data=indata)
     for response in responses:
-        if response.role in ('base', 'orders', 'data', 'root'):
+        if response.role in ('orders', 'data', 'root'):
             assert response.code == 200
         elif response.role == 'no-login':
             assert response.code == 401
@@ -236,7 +234,7 @@ def test_update_empty(dataset_for_tests):
         assert not response.data
 
 
-def test_update(use_db, dataset_for_tests):
+def test_dataset_update(use_db, dataset_for_tests):
     """
     Update a dataset multiple times. Confirm that the update is done correctly.
 
@@ -244,8 +242,7 @@ def test_update(use_db, dataset_for_tests):
     """
     ds_uuid = dataset_for_tests
     db = use_db
-    indata = {'links': [{'description': 'Test description from update', 'url': 'http://test_url'}],
-              'description': 'Test description - updated',
+    indata = {'description': 'Test description - updated',
               'title': 'Test title - updated'}
     indata.update(TEST_LABEL)
 
@@ -264,7 +261,7 @@ def test_update(use_db, dataset_for_tests):
                                 'data_type': 'dataset'})
 
 
-def test_update_bad(dataset_for_tests):
+def test_dataset_update_bad(dataset_for_tests):
     """
     Confirm that bad requests will be rejected.
 
@@ -316,29 +313,29 @@ def test_update_bad(dataset_for_tests):
     assert not response.data
 
 
-def test_list_datasets():
+def test_list_datasets(use_db):
     """
     Request a list of all datasets.
 
     Should also test e.g. pagination once implemented.
     """
+    db = use_db
     responses = make_request_all_roles('/api/dataset/', ret_json=True)
     for response in responses:
         assert response.code == 200
-        assert len(response.data['datasets']) == 500
+        assert len(response.data['datasets']) == db['datasets'].count_documents({})
 
 
 def test_get_dataset_logs_permissions(use_db):
     """
     Get dataset logs.
 
-    Assert that DATA_MANAGEMENT or user in creator or receivers is required.
+    Assert that DATA_MANAGEMENT or user in editors is required.
     """
     db = use_db
     dataset_data = db['datasets'].aggregate([{'$sample': {'size': 1}}]).next()
     order_data = db['orders'].find_one({'datasets': dataset_data['_id']})
-    user_data = db['users'].find_one({'$or': [{'_id': order_data['creator']},
-                                              {'email': order_data['receiver']}]})
+    user_data = db['users'].find_one({'$or': [{'_id': {'$in': order_data['editors']}}]})
     responses = make_request_all_roles(f'/api/dataset/{dataset_data["_id"]}/log/',
                                        ret_json=True)
     for response in responses:
@@ -354,7 +351,7 @@ def test_get_dataset_logs_permissions(use_db):
 
     session = requests.Session()
 
-    as_user(session, user_data['auth_id'])
+    as_user(session, user_data['auth_ids'][0])
     response = make_request(session,
                              f'/api/dataset/{dataset_data["_id"]}/log/',
                              ret_json=True)

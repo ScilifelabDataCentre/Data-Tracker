@@ -1,11 +1,11 @@
 """
 Validators for indata.
 
-Indata can be sent to ``validate_indata``, which will use the corresponding
+Indata can be sent to ``validate_field``, which will use the corresponding
 functions to check each field.
 """
-from typing import Any, Union
 import logging
+from typing import Any, Union
 import uuid
 
 import flask
@@ -96,8 +96,8 @@ def validate_datasets(data: list) -> bool:
             raise ValueError(f'Must be str ({ds_entry})')
         try:
             ds_uuid = uuid.UUID(ds_entry)
-        except ValueError:
-            raise ValueError(f'Not a valid uuid ({data})')
+        except ValueError as err:
+            raise ValueError(f'Not a valid uuid ({data})') from err
         if not flask.g.db['datasets'].find_one({'_id': ds_uuid}):
             raise ValueError(f'Uuid not in db ({data})')
         return True
@@ -122,29 +122,6 @@ def validate_email(data) -> bool:
         raise ValueError(f'Not a string ({data})')
     if not utils.is_email(data):
         raise ValueError(f'Not a valid email address ({data})')
-    return True
-
-
-def validate_extra(data) -> bool:
-    """
-    Validate input for the ``extra`` field.
-
-    It must be a dict.
-
-    Args:
-        data: The data to be validated.
-
-    Returns:
-        bool: Validation passed.
-
-    Raises:
-        ValueError: Validation failed.
-    """
-    if not isinstance(data, dict):
-        raise ValueError(f'Must be dict ({data})')
-    for key in data:
-        if not isinstance(key, str) or not isinstance(data[key], str):
-            raise ValueError(f'Keys and values must be strings ({key}, {data[key]})')
     return True
 
 
@@ -173,6 +150,27 @@ def validate_links(data: list) -> bool:
                 raise ValueError('Bad key in dict')
             if not isinstance(entry[key], str):
                 raise ValueError('Values must be type str')
+    return True
+
+
+def validate_list_of_strings(data: list) -> bool:
+    """
+    Validate that input is a list of strings.
+
+    Args:
+        data (list): The data to be validated.
+
+    Returns:
+        bool: Validation passed.
+
+    Raises:
+        ValueError: Validation failed.
+    """
+    if not isinstance(data, list):
+        raise ValueError(f'Not a list ({data})')
+    for entry in data:
+        if not isinstance(entry, str):
+            raise ValueError(f'Not a string ({entry})')
     return True
 
 
@@ -227,7 +225,7 @@ def validate_string(data: str) -> bool:
     Validate input for field that must have a ``str`` value.
 
     Args:
-        data: The data to be validated.
+        data (str): The data to be validated.
 
     Returns:
         bool: Validation passed.
@@ -240,6 +238,52 @@ def validate_string(data: str) -> bool:
     return True
 
 
+def validate_tags_std(data: dict) -> bool:
+    """
+    Validate input for the ``tags_standard`` field.
+
+    It must be a dict.
+
+    Args:
+        data (dict): The data to be validated.
+
+    Returns:
+        bool: Validation passed.
+
+    Raises:
+        ValueError: Validation failed.
+    """
+    if not isinstance(data, dict):
+        raise ValueError(f'Not a  dict ({data})')
+    for key in data:
+        if not isinstance(key, str) or not isinstance(data[key], str):
+            raise ValueError(f'Keys and values must be strings ({key}, {data[key]})')
+    return True
+
+
+def validate_tags_user(data: dict) -> bool:
+    """
+    Validate input for the ``tags_user`` field.
+
+    It must be a dict.
+
+    Args:
+        data (dict): The data to be validated.
+
+    Returns:
+        bool: Validation passed.
+
+    Raises:
+        ValueError: Validation failed.
+    """
+    if not isinstance(data, dict):
+        raise ValueError(f'Not a  dict ({data})')
+    for key in data:
+        if not isinstance(key, str) or not isinstance(data[key], str):
+            raise ValueError(f'Keys and values must be strings ({key}, {data[key]})')
+    return True
+
+
 def validate_title(data: str) -> bool:
     """
     Validate input for the ``title`` field.
@@ -247,7 +291,7 @@ def validate_title(data: str) -> bool:
     It must be a non-empty string.
 
     Args:
-        data: The data to be validated.
+        data (str): The data to be validated.
 
     Returns:
         bool: Validation passed.
@@ -260,12 +304,63 @@ def validate_title(data: str) -> bool:
     return True
 
 
-def validate_user(data: Union[str, list]) -> bool:
+def validate_url(data: str) -> bool:
     """
-    Validate input for the ``user`` field.
+    Validate input for a url intended for browsers.
 
-    It must be a non-empty string.
-    If uuid, confirms that uuid is present in db.
+    It must start with ``http(s)://``.
+
+    Args:
+        data (str): The data to be validated.
+
+    Returns:
+        bool: Validation passed.
+
+    Raises:
+        ValueError: Validation failed.
+    """
+    if not isinstance(data, str):
+        raise ValueError('Must be a string')
+    if not data.startswith('http://') and not data.startswith('https://'):
+        raise ValueError('URLs must start with http(s)://')
+    return True
+
+
+def validate_user(data: str) -> bool:
+    """
+    Validate input for a field containing a single user uuid string.
+
+    All users must exist in the database.
+
+    Args:
+        data (str): The data to be validated.
+
+    Returns:
+        bool: Validation passed.
+
+    Raises:
+        ValueError: Validation failed.
+    """
+    if not isinstance(data, str):
+        raise ValueError(f'Bad data type (must be str): {data}')
+
+    try:
+        user_uuid = uuid.UUID(data)
+    except ValueError as err:
+        raise ValueError(f'Not a valid uuid ({data})') from err
+    if not flask.g.db['users'].find_one({'_id': user_uuid}):
+        raise ValueError(f'Uuid not in db ({data})')
+    return True
+
+
+def validate_user_list(data: Union[str, list]) -> bool:
+    """
+    Validate input for a field containing a list of user uuid(s).
+
+    For compatibility, the input may be UUIDs as either string (single user) or
+    a list (single or multiple users).
+
+    All users must exist in the database.
 
     Args:
         data (Union[str, list]): The data to be validated.
@@ -276,42 +371,39 @@ def validate_user(data: Union[str, list]) -> bool:
     Raises:
         ValueError: Validation failed.
     """
-    if isinstance(data, str):
-        user_uuids = [data]
-    elif isinstance(data, list):
-        user_uuids = data
-    else:
-        raise ValueError(f'Bad data type ({data})')
-    # empty is ok
-    if not data:
-        return True
-    # Non-registered user (email instead of uuid)
-    for u_uuid in user_uuids:
-        if utils.is_email(u_uuid):
-            return True
+    if not isinstance(data, list):
+        raise ValueError(f'Bad data type (must be list): {data}')
+
+    for u_uuid in data:
         try:
             user_uuid = uuid.UUID(u_uuid)
-        except ValueError:
-            raise ValueError(f'Not a valid uuid ({data})')
+        except ValueError as err:
+            raise ValueError(f'Not a valid uuid ({data})') from err
         if not flask.g.db['users'].find_one({'_id': user_uuid}):
             raise ValueError(f'Uuid not in db ({data})')
-        return True
+    return True
 
 
 VALIDATION_MAPPER = {'affiliation': validate_string,
                      'api_key': validate_string,
-                     'auth_id': validate_string,
+                     'auth_ids': validate_list_of_strings,
+                     'authors': validate_user_list,
                      'contact': validate_string,
                      'description': validate_string,
                      'dmp': validate_string,
-                     'name': validate_string,
-                     'creator': validate_creator,
-                     'receiver': validate_user,
                      'datasets': validate_datasets,
+                     'editors': validate_user_list,
                      'email': validate_email,
-                     'extra': validate_extra,
+                     'email_public': validate_email,
+                     'generators': validate_user_list,
                      'links': validate_links,
-                     'owners': validate_user,
+                     'name': validate_string,
+                     'orcid': validate_string,
+                     'organisation': validate_user,
                      'permissions': validate_permissions,
                      'publications': validate_publications,
-                     'title': validate_title}
+                     'receivers': validate_user_list,
+                     'tags_standard': validate_tags_std,
+                     'tags_user': validate_tags_user,
+                     'title': validate_title,
+                     'url': validate_url}

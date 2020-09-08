@@ -26,8 +26,7 @@ blueprint = flask.Blueprint('user', __name__)  # pylint: disable=invalid-name
 PERMISSIONS = {'ORDERS_SELF': ('ORDERS_SELF',),
                'OWNERS_READ': ('OWNERS_READ',),
                'USER_MANAGEMENT': ('USER_MANAGEMENT',),
-               'DATA_MANAGEMENT': ('ORDERS_SELF', 'OWNERS_READ', 'DATA_MANAGEMENT'),
-               'DOI_REVIEWER': ('DOI_REVIEWER',)}
+               'DATA_MANAGEMENT': ('ORDERS_SELF', 'OWNERS_READ', 'DATA_MANAGEMENT')}
 
 
 # Decorators
@@ -77,10 +76,12 @@ def get_current_user_info():
     """
     data = flask.g.current_user
     outstructure = {'affiliation': '',
-                    'auth_id': '',
+                    'auth_ids': [],
                     'email': '',
+                    'email_public': '',
                     'name': '',
-                    'permissions': ''}
+                    'permissions': '',
+                    'url': ''}
     if data:
         for field in outstructure:
             if field in data:
@@ -89,8 +90,8 @@ def get_current_user_info():
 
 
 # requests
-@blueprint.route('/me/apikey/', methods=['POST'])
-@blueprint.route('/<identifier>/apikey/', methods=['POST'])
+@blueprint.route('/me/apikey/', methods=['PUT'])
+@blueprint.route('/<identifier>/apikey/', methods=['PUT'])
 @login_required
 def gen_new_api_key(identifier: str = None):
     """
@@ -156,9 +157,9 @@ def get_user_data(identifier: str):
     return utils.response_json({'user': user_info})
 
 
-@blueprint.route('/', methods=['POST'])
+@blueprint.route('/', methods=['PUT'])
 @login_required
-def add_user_post():
+def add_user():
     """
     Add a user.
 
@@ -179,14 +180,14 @@ def add_user_post():
     if not validation[0]:
         flask.abort(status=validation[1])
 
-    if 'auth_id' not in indata:
+    if 'auth_ids' not in indata:
         flask.abort(status=400)
 
     new_user.update(indata)
 
     result = flask.g.db['users'].insert_one(new_user)
     if not result.acknowledged:
-        logging.error('User Addition failed: %s', new_user['auth_id'])
+        logging.error('User Addition failed: %s', new_user['email'])
         flask.Response(status=500)
     else:
         utils.make_log('user', 'add', 'User added by admin', new_user)
@@ -245,7 +246,7 @@ def update_current_user_info():
     validation = utils.basic_check_indata(indata, user_data, ('_id',
                                                               'api_key',
                                                               'api_salt',
-                                                              'auth_id',
+                                                              'auth_ids',
                                                               'email',
                                                               'permissions'))
     if not validation[0]:
@@ -393,25 +394,43 @@ def get_user_actions(identifier: str = None):
 
 
 # helper functions
-def add_user(user_info: dict):
+def add_new_user(user_info: dict):
     """
     Add a new user to the database from first oidc login.
+
+    First check if user with the same email exists.
+    If so, add the auth_id to the user.
 
     Args:
         user_info (dict): Information about the user
     """
-    new_user = structure.user()
+    email_user = flask.g.db['users'].find_one({'email': user_info['email']})
+    if email_user:
+        email_user['auth_ids'].append(user_info['auth_id'])
+        result = flask.g.db['users'].update_one({'email': user_info['email']},
+                                                {'$set': {'auth_ids': email_user['auth_ids']}})
+        if not result.acknowledged:
+            logging.error('Failed to add new auth_id to user with email %s', user_info['email'])
+            flask.Response(status=500)
+        else:
+            utils.make_log('user',
+                           'edit',
+                           'Edit entry to auth_ids to user from OAuth',
+                           email_user,
+                           no_user=True)
 
-    new_user['email'] = user_info['email']
-    new_user['name'] = user_info['name']
-    new_user['auth_id'] = user_info['auth_id']
-
-    result = flask.g.db['users'].insert_one(new_user)
-    if not result.acknowledged:
-        logging.error('Failed to add user with email', user_info['email'])
-        flask.Response(status=500)
     else:
-        utils.make_log('user', 'add', 'Creating new user from OAuth', new_user, no_user=True)
+        new_user = structure.user()
+        new_user['email'] = user_info['email']
+        new_user['name'] = user_info['name']
+        new_user['auth_ids'] = [user_info['auth_id']]
+
+        result = flask.g.db['users'].insert_one(new_user)
+        if not result.acknowledged:
+            logging.error('Failed to add user with email %s via oidc', user_info['email'])
+            flask.Response(status=500)
+        else:
+            utils.make_log('user', 'add', 'Creating new user from OAuth', new_user, no_user=True)
 
 
 def do_login(auth_id: str):
@@ -423,7 +442,7 @@ def do_login(auth_id: str):
 
     Returns bool: Whether the login succeeded.
     """
-    user = flask.g.db['users'].find_one({'auth_id': auth_id})
+    user = flask.g.db['users'].find_one({'auth_ids': auth_id})
 
     if not user:
         return False
@@ -440,21 +459,21 @@ def get_current_user():
     Returns:
         dict: The current user.
     """
-    return get_user(user_id=flask.session.get('user_id'))
+    return get_user(user_uuid=flask.session.get('user_id'))
 
 
-def get_user(user_id=None):
+def get_user(user_uuid=None):
     """
     Get information about the user.
 
     Args:
-        user_id (str): The identifier (auth_id) of the user.
+        user_uuid (str): The identifier (uuid) of the user.
 
     Returns:
         dict: The current user.
     """
-    if user_id:
-        user = flask.g.db['users'].find_one({'_id': user_id})
+    if user_uuid:
+        user = flask.g.db['users'].find_one({'_id': user_uuid})
         if user:
             return user
     return None

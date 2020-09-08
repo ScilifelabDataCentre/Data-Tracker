@@ -14,7 +14,6 @@ blueprint = flask.Blueprint('dataset', __name__)  # pylint: disable=invalid-name
 def list_datasets():
     """Provide a simplified list of all available datasets."""
     results = list(flask.g.db['datasets'].find(projection={'title': 1,
-                                                           'description': 1,
                                                            '_id': 1}))
     return utils.response_json({'datasets': results})
 
@@ -23,8 +22,8 @@ def list_datasets():
 @user.login_required
 def list_user_data():
     """List all datasets belonging to current user."""
-    user_orders = list(flask.g.db['orders'].find({'$or': [{'receiver': flask.session['user_id']},
-                                                          {'creator': flask.session['user_id']}]},
+    user_orders = list(flask.g.db['orders'].find({'$or': [{'receivers': flask.session['user_id']},
+                                                          {'editors': flask.session['user_id']}]},
                                                  {'datasets': 1}))
     uuids = list(ds for entry in user_orders for ds in entry['datasets'])
     user_datasets = list(flask.g.db['datasets'].find({'_id': {'$in': uuids}}))
@@ -76,7 +75,7 @@ def delete_dataset(identifier: str):
     """
     Delete a dataset.
 
-    Can be deleted only by creator or user with DATA_MANAGEMENT permissions.
+    Can be deleted only by editors or user with DATA_MANAGEMENT permissions.
 
     Args:
         identifier (str): The dataset uuid.
@@ -88,10 +87,11 @@ def delete_dataset(identifier: str):
     dataset = flask.g.db['datasets'].find_one({'_id': ds_uuid})
     if not dataset:
         flask.abort(status=404)
+
     # permission check
     order = flask.g.db['orders'].find_one({'datasets': ds_uuid})
     if not user.has_permission('DATA_MANAGEMENT') and \
-       order['creator'] != flask.g.current_user['_id']:
+       flask.g.current_user['_id'] not in order['editors']:
         flask.abort(status=403)
 
     result = flask.g.db['datasets'].delete_one({'_id': ds_uuid})
@@ -109,14 +109,14 @@ def delete_dataset(identifier: str):
         new_data = flask.g.db['orders'].find_one({'_id': entry['_id']})
         utils.make_log('order', 'edit', f'Deleted dataset {ds_uuid}', new_data)
 
-    for entry in flask.g.db['projects'].find({'datasets': ds_uuid}):
-        flask.g.db['projects'].update_one({'_id': entry['_id']},
-                                          {'$pull': {'datasets': ds_uuid}})
+    for entry in flask.g.db['collections'].find({'datasets': ds_uuid}):
+        flask.g.db['collections'].update_one({'_id': entry['_id']},
+                                             {'$pull': {'datasets': ds_uuid}})
         if not result.acknowledged:
             logging.error(f'Failed to delete dataset {ds_uuid} in project {entry["_id"]}')
             return flask.Response(status=500)
-        new_data = flask.g.db['projects'].find_one({'_id': entry['_id']})
-        utils.make_log('project', 'edit', f'Deleted dataset {ds_uuid}', new_data)
+        new_data = flask.g.db['collections'].find_one({'_id': entry['_id']})
+        utils.make_log('collection', 'edit', f'Deleted dataset {ds_uuid}', new_data)
 
     return flask.Response(status=200)
 
@@ -144,8 +144,7 @@ def update_dataset(identifier):
     # permissions
     order = flask.g.db['orders'].find_one({'datasets': ds_uuid})
     if not user.has_permission('DATA_MANAGEMENT') and \
-       order['creator'] != flask.g.current_user['_id'] and \
-       order['receiver'] != flask.g.current_user['_id']:
+       flask.g.current_user['_id'] not in order['editors']:
         flask.abort(status=403)
 
     try:
@@ -194,12 +193,10 @@ def get_dataset_log(identifier: str = None):
         flask.abort(status=404)
 
     if not user.has_permission('DATA_MANAGEMENT'):
-        user_entries = (flask.g.current_user['_id'], flask.g.current_user['email'])
         order_data = flask.g.db['orders'].find_one({'datasets': dataset_uuid})
         if not order_data:
             flask.abort(403)
-        if order_data['receiver'] not in user_entries and \
-           order_data['creator'] not in user_entries:
+        if flask.g.current_user['_id'] not in order_data['editors']:
             flask.abort(403)
 
     dataset_logs = list(flask.g.db['logs'].find({'data_type': 'dataset', 'data._id': dataset_uuid}))
@@ -222,7 +219,7 @@ def build_dataset_info(identifier: str):
         identifier (str): The uuid of the dataset.
 
     Returns:
-        dict: The dataset.
+        dict: The prepared dataset entry.
     """
     try:
         dataset_uuid = utils.str_to_uuid(identifier)
@@ -235,11 +232,12 @@ def build_dataset_info(identifier: str):
     dataset['related'] = list(flask.g.db['datasets'].find({'_id': {'$in': order['datasets']}},
                                                           {'title': 1}))
     dataset['related'].remove({'_id': dataset['_id'], 'title': dataset['title']})
-    dataset['projects'] = list(flask.g.db['projects'].find({'datasets': dataset_uuid},
-                                                           {'title': 1}))
-    creator = flask.g.db['users'].find_one({'_id': order['creator']})
-    if creator:
-        dataset['creator'] = creator['name']
-    else:
-        dataset['creator'] = order['creator']
+    dataset['collections'] = list(flask.g.db['projects'].find({'datasets': dataset_uuid},
+                                                              {'title': 1}))
+    for field in ('generators', 'authors', 'receivers'):
+        dataset[field] = list(flask.g.db['users'].find({'_id': {'$in': order[field]}},
+                                                       {'name': 1}))
+    dataset['organisation'] = flask.g.db['users'].find_one({'_id': order['organisation']},
+                                                           {'name': 1})
+
     return dataset

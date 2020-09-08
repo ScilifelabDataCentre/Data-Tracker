@@ -9,7 +9,7 @@ import config
 import dataset
 import developer
 import order
-import project
+import collection
 import user
 import utils
 
@@ -23,7 +23,7 @@ if app.config['dev_mode']['api']:
 
 app.register_blueprint(dataset.blueprint, url_prefix='/api/dataset')
 app.register_blueprint(order.blueprint, url_prefix='/api/order')
-app.register_blueprint(project.blueprint, url_prefix='/api/project')
+app.register_blueprint(collection.blueprint, url_prefix='/api/collection')
 app.register_blueprint(user.blueprint, url_prefix='/api/user')
 
 
@@ -31,16 +31,17 @@ oauth = OAuth(app)
 for oidc_name in app.config.get('oidc_names'):
     oauth.register(oidc_name, client_kwargs={'scope': 'openid profile email'})
 
+
 @app.before_request
 def prepare():
     """Open the database connection and get the current user."""
-    flask.g.dbserver = utils.get_dbclient(flask.current_app.config)
-    flask.g.db = utils.get_db(flask.g.dbserver, flask.current_app.config)
+    flask.g.dbclient = utils.get_dbclient(flask.current_app.config)
+    flask.g.db = utils.get_db(flask.g.dbclient, flask.current_app.config)
     if apikey := flask.request.headers.get('X-API-Key'):
         if not (apiuser := flask.request.headers.get('X-API-User')):  # pylint: disable=superfluous-parens
             flask.abort(status=400)
         utils.verify_api_key(apiuser, apikey)
-        flask.g.current_user = flask.g.db['users'].find_one({'auth_id': apiuser})
+        flask.g.current_user = flask.g.db['users'].find_one({'auth_ids': apiuser})
         flask.g.permissions = flask.g.current_user['permissions']
     else:
         if flask.request.method != 'GET':
@@ -67,7 +68,7 @@ def finalize(response):
 @app.route('/api/')
 def api_base():
     """List entities."""
-    return flask.jsonify({'entities': ['dataset', 'order', 'project', 'user', 'login']})
+    return flask.jsonify({'entities': ['dataset', 'order', 'collection', 'user', 'login']})
 
 
 @app.route('/api/login/')
@@ -113,7 +114,7 @@ def oidc_authorize(auth_name):
     else:
         user_info['auth_id'] = token['sub']
     if not user.do_login(user_info['auth_id']):
-        user.add_user(user_info)
+        user.add_new_user(user_info)
         user.do_login(user_info['auth_id'])
 
     return flask.redirect('/')

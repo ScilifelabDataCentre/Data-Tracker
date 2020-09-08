@@ -20,7 +20,7 @@ Order
     **POST** Add a new order.
 
 
-.. function:: /order/<identifier>
+.. function:: /order/<identifier>/
 
     **GET** Get information about the order with uuid ``identifier``.
 
@@ -29,7 +29,7 @@ Order
     **PATCH** Update the order with uuid ``identifier``.
 
 
-.. function:: /order/<identifier>/dataset
+.. function:: /order/<identifier>/dataset/
 
     **POST** Add a new dataset belonging to order with uuid ``identifier``.
 
@@ -39,7 +39,7 @@ Order
     **GET** Get a list of orders created or received by current user.
     
 
-.. function:: /order/<identifier>/log
+.. function:: /order/<identifier>/log/
 
     **GET** Get a list of changes done to the order with uuid ``identifier``.
 
@@ -71,33 +71,33 @@ Dataset
     **GET** Get a list of changes done to the dataset with uuid ``identifier``.
 
 
-Project
+Collection
 =======
 
-.. function:: /project/
+.. function:: /collection/
 
-    **GET** Get a list of all projects. Can be limited by parameters.
+    **GET** Get a list of all collections. Can be limited by parameters.
 
-    **POST** Add a new project.
-
-
-.. function:: /project/user/[username>/]
-
-    **GET** Get a list of projects created or received by current user.
+    **POST** Add a new collection.
 
 
-.. function:: /project/<identifier>/
+.. function:: /collection/user/[username>/]
 
-    **GET** Get information about the project with uuid ``identifier``.
-
-    **DELETE** Delete the project with uuid ``identifier``.
-
-    **PATCH** Update the project with uuid ``identifier``.
+    **GET** Get a list of collections created or received by current user.
 
 
-.. function:: /project/<identifier>/log/
+.. function:: /collection/<identifier>/
 
-    **GET** Get a list of changes done to the project with uuid ``identifier``.
+    **GET** Get information about the collection with uuid ``identifier``.
+
+    **DELETE** Delete the collection with uuid ``identifier``.
+
+    **PATCH** Update the collection with uuid ``identifier``.
+
+
+.. function:: /collection/<identifier>/log/
+
+    **GET** Get a list of changes done to the collection with uuid ``identifier``.
 
 
 User
