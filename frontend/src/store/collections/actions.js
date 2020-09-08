@@ -5,9 +5,9 @@ import {getCsrfHeader} from '../helpers.js';
 export function getCollection ({ commit, dispatch }, id) {
   return new Promise((resolve, reject) => {
     axios
-      .get('/api/project/' + id + '/')
+      .get('/api/collection/' + id + '/')
       .then((response) => {
-        commit('updateCollection', response.data.project);
+        commit('updateCollection', response.data.collection);
         resolve(response);
       })
       .catch((err) => {
@@ -20,9 +20,9 @@ export function getCollection ({ commit, dispatch }, id) {
 export function getCollections ({ commit, dispatch }) {
   return new Promise((resolve, reject) => {
     axios
-      .get('/api/project/')
+      .get('/api/collection/')
       .then((response) => {
-        commit('updateCollections', response.data.projects);
+        commit('updateCollections', response.data.collections);
         resolve(response);
       })
       .catch((err) => {
@@ -35,7 +35,7 @@ export function getCollections ({ commit, dispatch }) {
 export function deleteCollection (context, payload) {
   return new Promise((resolve, reject) => {
     axios
-      .delete('/api/project/' + payload + '/',
+      .delete('/api/collection/' + payload + '/',
               {
                 headers: getCsrfHeader(),
               })
@@ -50,11 +50,11 @@ export function deleteCollection (context, payload) {
 
 export function saveCollection (context, payload) {
   return new Promise((resolve, reject) => {
-    let projectUuid = payload.id;
+    let collectionUuid = payload.id;
     delete payload.id
-    if (projectUuid === '-1') {
+    if (collectionUuid === '-1') {
       axios
-        .post('/api/project/',
+        .post('/api/collection/',
               payload,
               {
                 headers: getCsrfHeader(),
@@ -68,7 +68,7 @@ export function saveCollection (context, payload) {
     }
     else {
       axios
-        .patch('/api/project/' + projectUuid + '/',
+        .patch('/api/collection/' + collectionUuid + '/',
                payload,
                {
                  headers: getCsrfHeader(),
