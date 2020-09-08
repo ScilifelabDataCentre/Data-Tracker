@@ -125,22 +125,22 @@ def test_delete_dataset(use_db):
     orders_user = db['users'].find_one({'auth_id': USERS['data']})
 
     # must be updated if TEST_LABEL is modified
-    datasets = list(db['datasets'].find({'extra.testing': 'yes'}))
+    datasets = list(db['datasets'].find({'tags_user': {'testing': 'true'}}))
     i = 0
     while i < len(datasets):
         for role in USERS:
             as_user(session, USERS[role])
             order = db['orders'].find_one({'datasets': datasets[i]['_id']})
-            projects = list(db['projects'].find({'datasets': datasets[i]['_id']}))
+            collections = list(db['collections'].find({'datasets': datasets[i]['_id']}))
             response = make_request(session,
                                     f'/api/dataset/{datasets[i]["_id"]}/',
                                     method='DELETE')
-            current_user = db['users'].find_one({'auth_id': USERS[role]})
+            current_user = db['users'].find_one({'auth_ids': USERS[role]})
             if role == 'no-login':
                 assert response.code == 401
                 assert not response.data
             # only data managers or owners may delete datasets
-            elif role in ('data', 'root') or order['creator'] == current_user['_id']:
+            elif role in ('data', 'root') or current_user['_id'] in order['editors']:
                 assert response.code == 200
                 assert not response.data
                 # confirm that dataset does not exist in db and that a log has been created
@@ -148,24 +148,26 @@ def test_delete_dataset(use_db):
                 assert db['logs'].find_one({'data._id': datasets[i]['_id'],
                                             'action': 'delete',
                                             'data_type': 'dataset'})
-                # confirm that no references to the dataset exist in orders or project
+                # confirm that no references to the dataset exist in orders or collection
                 assert not list(db['orders'].find({'datasets': datasets[i]['_id']}))
-                assert not list(db['projects'].find({'datasets': datasets[i]['_id']}))
+                assert not list(db['collections'].find({'datasets': datasets[i]['_id']}))
                 # confirm that the removal of the references are logged.
                 assert db['logs'].find_one({'data._id': order['_id'],
                                             'action': 'edit',
                                             'data_type': 'order',
                                             'comment': f'Deleted dataset {datasets[i]["_id"]}'})
                 p_logs = list(db['logs'].find({'action': 'edit',
-                                               'data_type': 'project',
+                                               'data_type': 'collection',
                                                'comment': f'Deleted dataset {datasets[i]["_id"]}'}))
-                assert len(p_logs) == len(projects)
+                assert len(p_logs) == len(collections)
                 i += 1
                 if i >= len(datasets):
                     break
             else:
                 assert response.code == 403
                 assert not response.data
+
+    assert i > 0
     for uuid_group in uuids:
         delete_dataset(*uuid_group)
 
@@ -328,7 +330,7 @@ def test_get_dataset_logs_permissions(use_db):
     """
     Get dataset logs.
 
-    Assert that DATA_MANAGEMENT or user in creator or receivers is required.
+    Assert that DATA_MANAGEMENT or user in editors is required.
     """
     db = use_db
     dataset_data = db['datasets'].aggregate([{'$sample': {'size': 1}}]).next()
