@@ -394,7 +394,7 @@ def get_user_actions(identifier: str = None):
 
 
 # helper functions
-def add_user(user_info: dict):
+def add_new_user(user_info: dict):
     """
     Add a new user to the database from first oidc login.
 

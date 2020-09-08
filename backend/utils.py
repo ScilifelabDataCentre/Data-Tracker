@@ -265,13 +265,13 @@ def make_timestamp():
     """
     return datetime.datetime.now()
 
-
+# pylint: disable=too-many-arguments
 def make_log(data_type: str,
              action: str,
              comment: str,
              data: dict = None,
              no_user: bool = False,
-             dbsession=None):  # pylint: disable=too-many-arguments
+             dbsession=None):
     """
     Log a change in the system.
 

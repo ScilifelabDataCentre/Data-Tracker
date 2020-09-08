@@ -114,7 +114,7 @@ def oidc_authorize(auth_name):
     else:
         user_info['auth_id'] = token['sub']
     if not user.do_login(user_info['auth_id']):
-        user.add_user(user_info)
+        user.add_new_user(user_info)
         user.do_login(user_info['auth_id'])
 
     return flask.redirect('/')

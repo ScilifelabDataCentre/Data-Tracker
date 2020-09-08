@@ -294,7 +294,8 @@ def get_collection_log(identifier: str = None):
         if flask.g.current_user['_id'] not in collection_data['editors']:
             flask.abort(403)
 
-    collection_logs = list(flask.g.db['logs'].find({'data_type': 'collection', 'data._id': collection_uuid}))
+    collection_logs = list(flask.g.db['logs'].find({'data_type': 'collection',
+                                                    'data._id': collection_uuid}))
 
     for log in collection_logs:
         del log['data_type']
