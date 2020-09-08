@@ -238,7 +238,7 @@ def build_dataset_info(identifier: str):
         dataset[field] = list(flask.g.db['users'].find({'_id': {'$in': order[field]}},
                                                        {'name': 1}))
     dataset['organisation'] = flask.g.db['users'].find_one({'_id': order['organisation']},
-                                                          {'name': 1})
+                                                           {'name': 1})
 
 
     return dataset
