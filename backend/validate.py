@@ -96,8 +96,8 @@ def validate_datasets(data: list) -> bool:
             raise ValueError(f'Must be str ({ds_entry})')
         try:
             ds_uuid = uuid.UUID(ds_entry)
-        except ValueError:
-            raise ValueError(f'Not a valid uuid ({data})')
+        except ValueError as err:
+            raise ValueError(f'Not a valid uuid ({data})') from err
         if not flask.g.db['datasets'].find_one({'_id': ds_uuid}):
             raise ValueError(f'Uuid not in db ({data})')
         return True
@@ -346,8 +346,8 @@ def validate_user(data: str) -> bool:
 
     try:
         user_uuid = uuid.UUID(data)
-    except ValueError:
-        raise ValueError(f'Not a valid uuid ({data})')
+    except ValueError as err:
+        raise ValueError(f'Not a valid uuid ({data})') from err
     if not flask.g.db['users'].find_one({'_id': user_uuid}):
         raise ValueError(f'Uuid not in db ({data})')
     return True
@@ -377,8 +377,8 @@ def validate_user_list(data: Union[str, list]) -> bool:
     for u_uuid in data:
         try:
             user_uuid = uuid.UUID(u_uuid)
-        except ValueError:
-            raise ValueError(f'Not a valid uuid ({data})')
+        except ValueError as err:
+            raise ValueError(f'Not a valid uuid ({data})') from err
         if not flask.g.db['users'].find_one({'_id': user_uuid}):
             raise ValueError(f'Uuid not in db ({data})')
     return True
