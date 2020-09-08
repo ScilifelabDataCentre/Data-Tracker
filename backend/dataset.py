@@ -235,11 +235,10 @@ def build_dataset_info(identifier: str):
     dataset['collections'] = list(flask.g.db['projects'].find({'datasets': dataset_uuid},
                                                               {'title': 1}))
     for field in ('generators', 'authors', 'receivers'):
-        order[field] = [{'_id': entry['_id'],
-                         'name': entry['name']}
-                        for entry
-                        in flask.g.db['users'].find({'_id': {'$in': order[field]}})]
-    org_entry = flask.g.db['users'].find_one({'_id': order['organisation']})
-    order['organisation'] = {'_id': org_entry['_id'], 'name': org_entry['name']}
+        dataset[field] = list(flask.g.db['users'].find({'_id': {'$in': order[field]}},
+                                                       {'name': 1}))
+    dataset['organisation'] = flask.g.db['users'].find_one({'_id': order['organisation']},
+                                                          {'name': 1})
+
 
     return dataset
