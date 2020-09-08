@@ -174,7 +174,11 @@ def make_request(session, url: str, data: dict = None, method='GET', ret_json: b
         raise ValueError(f'Unsupported http method ({method})')
 
     if response.text and ret_json:
-        data = json.loads(response.text)
+        try:
+            data = json.loads(response.text)
+        except json.decoder.JSONDecodeError:
+            print(response.text)
+            exit
     elif response.text:
         data = response.text
     else:
