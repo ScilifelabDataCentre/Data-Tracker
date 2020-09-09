@@ -72,7 +72,7 @@ Dataset
 
 
 Collection
-=======
+==========
 
 .. function:: /collection/
 
