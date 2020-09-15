@@ -18,8 +18,8 @@ def dataset():
             'description': '',
             'cross_references': [],
             'title': '',
-            'tags_standard': [],
-            'tags_user': []}
+            'tags_standard': {},
+            'tags_user': {}}
 
 
 def order():
@@ -38,8 +38,8 @@ def order():
             'editors': [],
             'receivers': [],
             'datasets': [],
-            'tags_standard': [],
-            'tags_user': []}
+            'tags_standard': {},
+            'tags_user': {}}
 
 
 def collection():
