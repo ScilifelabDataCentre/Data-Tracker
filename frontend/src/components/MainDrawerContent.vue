@@ -179,10 +179,16 @@ export default {
       otherLinks: [
         {
           title: 'About',
-          caption: 'Information about the system',
+          caption: 'About the Data Tracker',
           icon: 'info',
           link:  { 'name': 'About'}
         },
+        {
+          title: 'User guide',
+          caption: 'How to use the Data Tracker',
+          icon: 'info',
+          link:  { 'name': 'User Guide'}
+        }
       ]
     }
   },

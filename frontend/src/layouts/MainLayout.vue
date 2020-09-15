@@ -2,36 +2,36 @@
   <q-layout view="lHh Lpr lFf">
     <q-header elevated>
       <q-toolbar>
-        <q-btn
-          flat
-          dense
-          round
-          icon="menu"
-          aria-label="Menu"
-          @click="leftDrawerOpen = !leftDrawerOpen"
-        />
+        <q-btn flat
+               dense
+               round
+               icon="menu"
+               aria-label="Menu"
+               @click="leftDrawerOpen = !leftDrawerOpen" />
         <q-toolbar-title>
           Data Tracker
         </q-toolbar-title>
-        <q-btn
-          dense
-          flat
-          no-wrap
-          no-caps
-          label="SciLifeLab Data Centre"
-          class="q-ml-sm pull-right"
-	  type="a"
-	  target="_blank"
-	  href="https://www.scilifelab.se/data/"
-          />
+        <q-btn dense
+               flat
+               no-wrap
+               no-caps
+               class="q-ml-sm pull-right"
+               type="a"
+               target="_blank"
+               href="https://www.scilifelab.se/data/">
+          <q-avatar size="2em">
+            <img :src="require('../assets/scilifelab_symbol_white.svg')"
+                 alt="Data Centre logo"/>
+          </q-avatar>
+        </q-btn>
       </q-toolbar>
       <q-toolbar inset>
         <q-breadcrumbs active-color="white" style="font-size: 16px">
           <q-breadcrumbs-el icon="home" :to="{ 'name': 'Home' }"/>
           <q-breadcrumbs-el v-for="(part, i) in breadcrumbs"
-			    :key="part"
-			    :label="part"
-			    :to="'/' + breadcrumbs.slice(0, i+1).join('/')"/>
+                            :key="part"
+                            :label="part"
+                            :to="'/' + breadcrumbs.slice(0, i+1).join('/')"/>
         </q-breadcrumbs>
       </q-toolbar>
     </q-header>
