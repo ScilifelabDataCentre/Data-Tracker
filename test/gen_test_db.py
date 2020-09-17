@@ -58,7 +58,7 @@ def gen_datasets(db, nr_datasets: int = 500):
         # add extra field
         if random.random() > 0.7:
             tag = random.choice(EXTRA_KEYS)
-            changes['tags_user'] = [{'key': tag, 'value': random.choice(EXTRA_FIELDS[tag])}]
+            changes['tags_user'] = {'key': tag, 'value': random.choice(EXTRA_FIELDS[tag])}
         dataset.update(changes)
         uuids.append(db['datasets'].insert_one(dataset).inserted_id)
         make_log(db, action='add', data=dataset, data_type='dataset', comment='Generated', user='system')
@@ -126,7 +126,6 @@ def gen_orders(db, nr_orders: int = 300):
                    'organisation': random.choice(organisations)['_id'],
                    'editors': [random.choice(users+facilities)['_id'] for _ in range(random.randint(1, 5))],
                    'description': make_description(),
-                   'receivers': [random.choice(facilities)['_id'] for _ in range(random.randint(0, 2))],
                    'title': f'Order {i} Title {lorem.sentence()[:-1]}'}
         order.update(changes)
         uuids.append(db['orders'].insert_one(order).inserted_id)
@@ -168,7 +167,7 @@ def gen_users(db, nr_users: int = 100):
                      'api_key': utils.gen_api_key_hash(apikey['key'], apikey['salt']),
                      'api_salt': apikey['salt'],
                      'email': f'{"".join(user["name"].split())}@example.com',
-                     'email_public': f'pub_{"".join(user["name"].split())}@example.com',
+                     'contact': f'pub_{"".join(user["name"].split())}@example.com',
                      'auth_ids': [f'{user["name"].lower()}::testers'],
                      'url': 'https://www.example.com/specuser'})
         db['users'].insert_one(user)
@@ -182,7 +181,7 @@ def gen_users(db, nr_users: int = 100):
                    'api_salt': apikey.salt,
                    'auth_ids': [f'user{i}::local'],
                    'email': f'user{i}@place{i}.se',
-                   'email_public': f'pub_user{i}@place{i}.se',
+                   'contact': f'pub_user{i}@place{i}.se',
                    'name': f'First Last {i}',
                    'permissions': list(set(random.choice(perm_keys)
                                            for _ in range(random.randint(0,2)))),

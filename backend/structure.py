@@ -36,7 +36,6 @@ def order():
             'generators': [],
             'organisation': '',
             'editors': [],
-            'receivers': [],
             'datasets': [],
             'tags_standard': {},
             'tags_user': {}}
@@ -72,7 +71,7 @@ def user():
             'api_salt': '',
             'auth_ids': [],
             'email': '',
-            'email_public': '',
+            'contact': '',
             'name': '',
             'orcid': '',
             'permissions': [],
