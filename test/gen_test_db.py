@@ -83,7 +83,7 @@ def gen_facilities(db, nr_facilities: int = 30):
                    'email': f'facility{i}@domain{i}.se',
                    'email_public': f'pub_facility{i}@domain{i}.se',
                    'name': f'Facility {i}',
-                   'permissions': ['ORDERS_SELF'],
+                   'permissions': ['ORDERS'],
                    'url': f'https://www.example.com/facility{i}'}
         user.update(changes)
         uuids.append(db['users'].insert_one(user).inserted_id)
@@ -103,7 +103,7 @@ def gen_organisations(db, nr_organisations: int = 15):
                    'email': f'organisation{i}@domain{i}.se',
                    'email_public': f'pub_organisation{i}@domain{i}.se',
                    'name': f'Organisation {i}',
-                   'permissions': ['ORDERS_SELF'],
+                   'permissions': ['ORDERS'],
                    'url': f'https://www.example.com/org{i}'}
         user.update(changes)
         uuids.append(db['users'].insert_one(user).inserted_id)
@@ -118,7 +118,7 @@ def gen_orders(db, nr_orders: int = 300):
     user_re = re.compile('.*::local')
     facilities = tuple(db['users'].find({'auth_ids': facility_re}))
     organisations = tuple(db['users'].find({'auth_ids': organisation_re}))
-    users = tuple(db['users'].find({'$and': [{'auth_ids': user_re}, {'permissions': 'ORDERS_SELF'}]}))
+    users = tuple(db['users'].find({'$and': [{'auth_ids': user_re}, {'permissions': 'ORDERS'}]}))
     for i in range(1, nr_orders+1):
         order = structure.order()
         changes = {'authors': [random.choice(users)['_id'] for _ in range(random.randint(0, 4))],
@@ -154,7 +154,7 @@ def gen_users(db, nr_users: int = 100):
     perm_keys = tuple(PERMISSIONS.keys())
     # non-random users with specific rights
     special_users = [{'name': 'Base', 'permissions': []},
-                     {'name': 'Orders', 'permissions': ['ORDERS_SELF']},
+                     {'name': 'Orders', 'permissions': ['ORDERS']},
                      {'name': 'Owners', 'permissions': ['OWNERS_READ']},
                      {'name': 'Users', 'permissions': ['USER_MANAGEMENT']},
                      {'name': 'Data', 'permissions': ['DATA_MANAGEMENT']},

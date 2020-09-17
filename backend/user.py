@@ -23,10 +23,10 @@ import utils
 
 blueprint = flask.Blueprint('user', __name__)  # pylint: disable=invalid-name
 
-PERMISSIONS = {'ORDERS_SELF': ('ORDERS_SELF',),
+PERMISSIONS = {'ORDERS': ('ORDERS',),
                'OWNERS_READ': ('OWNERS_READ',),
                'USER_MANAGEMENT': ('USER_MANAGEMENT',),
-               'DATA_MANAGEMENT': ('ORDERS_SELF', 'OWNERS_READ', 'DATA_MANAGEMENT')}
+               'DATA_MANAGEMENT': ('ORDERS', 'OWNERS_READ', 'DATA_MANAGEMENT')}
 
 
 # Decorators
