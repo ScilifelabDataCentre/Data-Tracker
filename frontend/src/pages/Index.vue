@@ -14,17 +14,6 @@
           <div class="text-h5 text-weight-bold">Datasets</div>
         </q-card-section>
 	<q-card-section class="q-pt-none">
-          <div class="text-subtitle1">
-            {{ dsCount }} datasets available
-          </div>
-          <div class="text-subtitle1" v-if="randomDataset._id.length > 0">
-            Random dataset:
-            <router-link :to="'/datasets/' + 'randomDataset._id'">
-              {{ randomDataset.title }}
-            </router-link>
-          </div>
-        </q-card-section>
-	<q-card-section class="q-pt-none">
 	  <q-btn
             flat
             dense
@@ -39,11 +28,6 @@
           <q-icon size="150px" name="local_library" style="color: #045C64;" />
 
           <div class="text-h5 text-weight-bold">Collections</div>
-        </q-card-section>
-	<q-card-section class="q-pt-none">
-          <div class="text-subtitle1">
-            {{ collCount }} collections available
-          </div>
         </q-card-section>
 	<q-card-section class="q-pt-none">
 	  <q-btn
@@ -65,16 +49,6 @@ export default {
 
   data () {
     return {
-      collCount: 0,
-      dsCount: 0,
-      randomCollection: {
-        title: 'Not loaded',
-        _id: '',
-      },
-      randomDataset: {
-        title: 'Not loaded',
-        _id: '',
-      }        
     }
   }
 }
