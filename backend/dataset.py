@@ -234,10 +234,13 @@ def build_dataset_info(identifier: str):
     dataset['related'].remove({'_id': dataset['_id'], 'title': dataset['title']})
     dataset['collections'] = list(flask.g.db['projects'].find({'datasets': dataset_uuid},
                                                               {'title': 1}))
-    for field in ('generators', 'authors', 'receivers'):
-        dataset[field] = list(flask.g.db['users'].find({'_id': {'$in': order[field]}},
-                                                       {'name': 1}))
-    dataset['organisation'] = flask.g.db['users'].find_one({'_id': order['organisation']},
-                                                           {'name': 1})
+    for field in ('editors', 'generators', 'authors'):
+        if field == 'editors' and\
+           flask.g.db.current_user and\
+           flask.g.db.current_user['id'] not in order[field]:
+            continue
+        dataset[field] = utils.user_uuid_data(order[field], flask.g.db)
 
+    dataset['organisation'] = utils.user_uuid_data(order[field], flask.g.db)
+    dataset['organisation'] = dataset['organisation'][0] if dataset['organisation'] else ''
     return dataset
