@@ -236,8 +236,8 @@ def build_dataset_info(identifier: str):
                                                               {'title': 1}))
     for field in ('editors', 'generators', 'authors'):
         if field == 'editors' and\
-           flask.g.db.current_user and\
-           flask.g.db.current_user['id'] not in order[field]:
+           (not user.has_permission('DATA_MANAGEMENT') and\
+            flask.g.db.current_user['id'] not in order[field]):
             continue
         dataset[field] = utils.user_uuid_data(order[field], flask.g.db)
 
