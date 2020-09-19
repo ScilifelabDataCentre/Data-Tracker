@@ -20,23 +20,19 @@
           <q-icon name="person" />
         </template>
         <template v-slot:control>
-          <ul>
-            <li v-for="entry in dataset.editors" :key="entry._id">
-              {{ entry.name }}
-            </li>
-          </ul>
+          <q-list>
+            <user-info v-for="entry in dataset.editors" :key="entry._id" v-bind="entry" />
+          </q-list>
         </template>
       </q-field>
       <q-field v-if="dataset.authors.length > 0" label="Authors" stack-label>
         <template v-slot:prepend>
           <q-icon name="person" />
         </template>
-        <template v-slot:control>
-          <ul>
-            <li v-for="entry in dataset.authors" :key="entry._id">
-              {{ entry.name }}
-            </li>
-          </ul>
+        <template v-slot:control> 
+          <q-list>
+            <user-info v-for="entry in dataset.authors" :key="entry._id" v-bind="entry" />
+          </q-list>
         </template>
       </q-field>
       <q-field v-if="dataset.generators.length > 0" label="Generators" stack-label>
@@ -44,11 +40,9 @@
           <q-icon name="person" />
         </template>
         <template v-slot:control>
-          <ul>
-            <li v-for="entry in dataset.generators" :key="entry._id">
-              {{ entry.name }}
-            </li>
-          </ul>
+          <q-list>
+            <user-info v-for="entry in dataset.generators" :key="entry._id" v-bind="entry" />
+          </q-list>
         </template>
       </q-field>
       <q-field v-if="dataset.organisation.name.length > 0" label="Organisation" stack-label>
@@ -56,7 +50,9 @@
           <q-icon name="person" />
         </template>
         <template v-slot:control>
-          {{ dataset.organisation.name }}
+          <q-list>
+            <user-info v-bind="dataset.organisation" />
+          </q-list>
         </template>
       </q-field>
     </q-card-section>
@@ -148,9 +144,13 @@
 </template>
 
 <script>
+import UserInfo from 'components/UserInfo.vue'
+
 export default {
   name: 'DatasetAbout',
 
+ components: {'user-info': UserInfo},
+  
   props: {
     uuid: {
       type: String,
