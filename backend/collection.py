@@ -76,7 +76,7 @@ def get_collection(identifier):
         logging.debug('Not allowed to access editors field %s', flask.g.current_user)
         del result['editors']
     else:
-        result['editors'] = [utils.user_uuid_data(entry, flask.g.db) for entry in result['editors']]
+        result['editors'] = utils.user_uuid_data(result['editors'], flask.g.db)
 
     # return {_id, _title} for datasets
     result['datasets'] = [flask.g.db.datasets.find_one({'_id': dataset},
@@ -125,8 +125,7 @@ def add_collection():  # pylint: disable=too-many-branches
             if not user.has_permission('DATA_MANAGEMENT') and\
                flask.g.current_user['_id'] not in order_info['editors'] and\
                flask.g.current_user['_id'] not in order_info['authors'] and\
-               flask.g.current_user['_id'] not in order_info['generators'] and\
-               flask.g.current_user['_id'] not in order_info['receivers']:
+               flask.g.current_user['_id'] not in order_info['generators']:
                 flask.abort(status=400)
 
     collection.update(indata)
@@ -232,8 +231,7 @@ def update_collection(identifier):  # pylint: disable=too-many-branches
             if not order_info:
                 flask.abort(status=400)
             if not user.has_permission('DATA_MANAGEMENT') and\
-               order_info['creator'] != flask.g.current_user['_id'] and\
-               order_info['receiver'] != flask.g.current_user['_id']:
+               flask.g.current_user['_id'] not in order_info['editors']:
                 flask.abort(status=400)
 
     is_different = False
