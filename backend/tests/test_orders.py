@@ -62,7 +62,7 @@ def test_get_order(mdb):
         # to simplify comparison
         order['_id'] = str(order['_id'])
         # user entries
-        for key in ('authors', 'receivers', 'generators', 'editors'):
+        for key in ('authors', 'generators', 'editors'):
             order[key] = [utils.user_uuid_data(str(entry), db) for entry in order[key]]
         order['organisation'] = utils.user_uuid_data(order['organisation'], db)
 
@@ -231,8 +231,7 @@ def test_list_user_orders_permissions(mdb):
                 assert response.code == 403
                 assert not response.data
 
-        user_orders = list(db['orders'].find({'$or': [{'receivers': user['_id']},
-                                                      {'editors': user['_id']}]}))
+        user_orders = list(db['orders'].find({'editors': user['_id']}))
         responses = make_request_all_roles(f'/api/order/user/{user["_id"]}/', ret_json=True)
         for response in responses:
             if response.role in ('data', 'root'):
@@ -273,8 +272,7 @@ def test_list_user_orders(mdb):
                                    {'$sample': {'size': 2}}])
 
     for user in users:
-        user_orders = list(db['orders'].find({'$or': [{'receivers': user['_id']},
-                                                      {'editors': user['_id']}]}))
+        user_orders = list(db['orders'].find({'editors': user['_id']}))
         order_uuids = [str(order['_id']) for order in user_orders]
 
         as_user(session, user['auth_ids'][0])
@@ -387,7 +385,6 @@ def test_add_order(mdb):
               'editors': [str(orders_user['_id'])],
               'generators': [str(orders_user['_id'])],
               'organisation': str(orders_user['_id']),
-              'receivers': [str(orders_user['_id'])],
               'tags_standard': {'collection': 'testing'},
               'title': 'Test title'}
     indata.update(TEST_LABEL)
@@ -406,7 +403,7 @@ def test_add_order(mdb):
             user_list = [orders_user['_id']]
             for field in ('description', 'title', 'tags_standard', 'tags_user'):
                 assert order[field] == indata[field]
-            for field in ('authors', 'receivers', 'generators'):
+            for field in ('authors', 'generators'):
                 assert order[field] == user_list
             curr_user = db['users'].find_one({'auth_ids': USERS[response.role]})
 
@@ -463,7 +460,7 @@ def test_add_order_bad():
     Bad requests.
     """
     indata = {'description': 'Test description',
-              'receivers': ['bad_email@asd'],
+              'organisation': 'url@bad.se',
               'title': 'Test title'}
     indata.update(TEST_LABEL)
 
@@ -512,17 +509,6 @@ def test_add_order_bad():
                             ret_json=True)
     assert response.code == 403
     assert not response.data
-
-    indata = {'datasets': [],
-              'receiver': 'bad_email@asd',
-              'title': 'Test title'}
-    indata.update(TEST_LABEL)
-    response = make_request(session,
-                            '/api/order/',
-                            method='PUT',
-                            data=indata,
-                            ret_json=True)
-    assert response.code == 400
 
 
 def test_add_dataset_permissions(mdb):
@@ -743,7 +729,6 @@ def test_update_order_data(mdb):
     for order in orders:
         indata = {'title': 'Test title - updated by orders user',
                   'description': 'Test description - updated by orders user',
-                  'receivers': [str(orders_user['_id'])],
                   'tags_user': {'updated': 'yes'}}
         indata['tags_user'].update(TEST_LABEL['tags_user'])
 
@@ -758,7 +743,6 @@ def test_update_order_data(mdb):
         new_order = db['orders'].find_one({'_id': order['_id']})
         new_order['_id'] = str(new_order['_id'])
         new_order['authors'] = [str(entry) for entry in new_order['authors']]
-        new_order['receivers'] = [str(entry) for entry in new_order['receivers']]
         new_order['generators'] = [str(entry) for entry in new_order['generators']]
         new_order['organisation'] = str(new_order['organisation'])
         new_order['datasets'] = [str(ds_uuid) for ds_uuid in new_order['datasets']]
@@ -786,7 +770,7 @@ def test_update_order_bad(mdb):
 
     for order in orders:
         indata = {'description': 'Test description',
-                  'receivers': 'bad_email@asd',
+                  'authors': str(uuid.uuid4()),
                   'title': 'Test title'}
         responses = make_request_all_roles(f'/api/order/{order["_id"]}/',
                                            method='PATCH',
