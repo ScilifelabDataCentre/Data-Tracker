@@ -81,7 +81,7 @@ def gen_facilities(db, nr_facilities: int = 30):
                    'api_salt': apikey.salt,
                    'auth_ids': [f'facility{i}::local'],
                    'email': f'facility{i}@domain{i}.se',
-                   'email_public': f'pub_facility{i}@domain{i}.se',
+                   'contact': f'pub_facility{i}@domain{i}.se',
                    'name': f'Facility {i}',
                    'permissions': ['ORDERS'],
                    'url': f'https://www.example.com/facility{i}'}
@@ -101,7 +101,7 @@ def gen_organisations(db, nr_organisations: int = 15):
                    'api_salt': apikey.salt,
                    'auth_ids': [f'organisation{i}::local'],
                    'email': f'organisation{i}@domain{i}.se',
-                   'email_public': f'pub_organisation{i}@domain{i}.se',
+                   'contact': f'pub_organisation{i}@domain{i}.se',
                    'name': f'Organisation {i}',
                    'permissions': ['ORDERS'],
                    'url': f'https://www.example.com/org{i}'}
@@ -168,6 +168,7 @@ def gen_users(db, nr_users: int = 100):
                      'api_salt': apikey['salt'],
                      'email': f'{"".join(user["name"].split())}@example.com',
                      'contact': f'pub_{"".join(user["name"].split())}@example.com',
+                     'orcid': f'1111-1111-1111-111{i}',
                      'auth_ids': [f'{user["name"].lower()}::testers'],
                      'url': 'https://www.example.com/specuser'})
         db['users'].insert_one(user)
@@ -182,6 +183,7 @@ def gen_users(db, nr_users: int = 100):
                    'auth_ids': [f'user{i}::local'],
                    'email': f'user{i}@place{i}.se',
                    'contact': f'pub_user{i}@place{i}.se',
+                   'orcid': '-'.join(f'{random.randint(0,10000):04}' for _ in range(4)),
                    'name': f'First Last {i}',
                    'permissions': list(set(random.choice(perm_keys)
                                            for _ in range(random.randint(0,2)))),
