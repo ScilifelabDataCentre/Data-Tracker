@@ -44,7 +44,7 @@
           <q-icon name="person" />
         </template>
         <template v-slot:control>
-          <user-info :entries="dataset.organisation" />
+          <user-info :entries="[dataset.organisation]" />
         </template>
       </q-field>
     </q-card-section>

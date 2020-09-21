@@ -16,11 +16,11 @@
   <q-card>
     <q-card-section>
       <q-list dense>
-        <ListHeader title="Authors"
+        <list-header title="Authors"
                     explanation="The ones who provided the sample, e.g. a researcher" />
-        <UserEntry v-for="author in order.authors"
-                   :key="author._id"
-                   :entry="author" />
+        <user-entry v-for="author in order.authors"
+                    :key="author._id"
+                    v-bind="author" />
 
         <q-item-label header>
           <span>
@@ -30,58 +30,36 @@
             </q-tooltip>
           </span>
         </q-item-label>
-        <UserEntry v-for="generator in order.generators"
-                   :key="generator._id"
-                   :entry="generator" />
+        <user-entry v-for="generator in order.generators"
+                    :key="generator._id"
+                    v-bind="generator" />
 
-        <ListHeader title="Organisation"
+        <list-header title="Organisation"
                     explanation="The data owner, e.g. a university" />
-        <q-item>
-          <q-item-section avatar>
-            <q-btn v-if="order.organisation.email.length > 0"
-                   flat
-                   round
-                   dense
-                   icon="email"
-                   type="a"
-                   :href="'mailto:' + order.organisation.email" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>
-              {{ order.organisation.name }}
-            </q-item-label>
-            <q-item-label caption>
-              {{ order.organisation.email }}
-            </q-item-label>
-          </q-item-section>
-        </q-item>
+        <user-entry v-for="entry in order.editors"
+                    :key="entry._id"
+                    v-bind="entry" />
+        <user-entry v-bind="order.organisation" />
 
-        <ListHeader title="Editors"
+        <list-header title="Editors"
                     explanation="Users that may edit this order" />
-        <UserEntry v-for="editor in order.editors"
-                   :key="editor._id"
-                   :entry="editor" />
-
-        <ListHeader title="Receivers"
-                    explanation="Users that may connect datasets from this order to collections" />
-        <UserEntry v-for="receiver in order.receivers"
-                   :key="receiver._id"
-                   :entry="receiver" />
+        <user-entry v-for="entry in order.editors"
+                    :key="entry._id"
+                    v-bind="entry" />
       </q-list>
     </q-card-section>
 
     <q-card-section>
       <q-list dense>
-        <ListHeader title="Datasets"
-                    explanation="Datasets generated from this order" />
+        <list-header title="Datasets"
+                     explanation="Datasets generated from this order" />
         <q-item v-for="dataset in order.datasets" :key="dataset._id">
           <q-item-section avatar>
-            <q-btn 
-              flat
-              dense
-              round
-              icon="link"
-              :to="{ 'name': 'Dataset About', 'params': { 'uuid': dataset._id } }" />
+            <q-btn flat
+                   dense
+                   round
+                   icon="link"
+                   :to="{ 'name': 'Dataset About', 'params': { 'uuid': dataset._id } }" />
           </q-item-section>
           <q-item-section>
             <q-item-label>
@@ -132,8 +110,8 @@ export default {
   name: 'OrderAbout',
 
   components: {
-    UserEntry,
-    ListHeader
+    'user-entry': UserEntry,
+    'list-header': ListHeader
   },
   
   props: {
