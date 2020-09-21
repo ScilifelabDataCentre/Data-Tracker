@@ -44,36 +44,6 @@ def validate_field(field_key: str, field_value: Any) -> bool:
     return True
 
 
-def validate_creator(data: str) -> bool:
-    """
-    Validate input for the ``creator`` field.
-
-    It must be a non-empty string.
-    If uuid, confirms that uuid is present in db.
-
-    Args:
-        data (str): The data to be validated.
-
-    Returns:
-        bool: Validation passed.
-
-    Raises:
-        ValueError: Validation failed.
-    """
-    if not isinstance(data, str):
-        raise ValueError(f'Bad data type ({data})')
-
-    # If it is a uuid, make sure it matches a user
-    try:
-        user_uuid = uuid.UUID(data)
-    except ValueError:
-        return True
-    else:
-        if not flask.g.db['users'].find_one({'_id': user_uuid}):
-            raise ValueError(f'Uuid not in db ({data})')
-    return True
-
-
 def validate_datasets(data: list) -> bool:
     """
     Validate input for the ``datasets`` field.
@@ -125,34 +95,6 @@ def validate_email(data) -> bool:
     return True
 
 
-def validate_links(data: list) -> bool:
-    """
-    Validate input for the ``links`` field.
-
-    It must have the form ``[{'url': value, 'description': value}, ...]``.
-
-    Args:
-        data: The data to be validated.
-
-    Returns:
-        bool: Validation passed.
-
-    Raises:
-        ValueError: Validation failed.
-    """
-    if not isinstance(data, list):
-        raise ValueError('Must be a list')
-    for entry in data:
-        if not isinstance(entry, dict):
-            raise ValueError('Must be a list of dicts')
-        for key in entry:
-            if key not in ('url', 'description'):
-                raise ValueError('Bad key in dict')
-            if not isinstance(entry[key], str):
-                raise ValueError('Values must be type str')
-    return True
-
-
 def validate_list_of_strings(data: list) -> bool:
     """
     Validate that input is a list of strings.
@@ -194,29 +136,6 @@ def validate_permissions(data: list) -> bool:
     for entry in data:
         if entry not in PERMISSIONS:
             raise ValueError(f'Bad entry ({entry})')
-    return True
-
-
-def validate_publications(data: list) -> bool:
-    """
-    Validate input for the ``publications`` field.
-
-    It must have the form ``['publication text', ...]``.
-
-    Args:
-        data (list): The data to be validated.
-
-    Returns:
-        bool: Validation passed.
-
-    Raises:
-        ValueError: Validation failed.
-    """
-    if not isinstance(data, list):
-        raise ValueError('Must be a list')
-    for entry in data:
-        if not isinstance(entry, str):
-            raise ValueError('Must be a list of strings')
     return True
 
 
