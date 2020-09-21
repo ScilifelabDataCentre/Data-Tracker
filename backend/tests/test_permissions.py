@@ -30,8 +30,8 @@ def test_request_login_required():
 
 
 def test_request_permission_orders_self():
-    """Request requiring ORDERS_SELF permissions."""
-    responses = helpers.make_request_all_roles('/api/developer/hello/ORDERS_SELF', ret_json=True)
+    """Request requiring ORDERS permissions."""
+    responses = helpers.make_request_all_roles('/api/developer/hello/ORDERS', ret_json=True)
     for response in responses:
         if response.role in ('orders', 'data', 'root'):
             assert response.code == 200
