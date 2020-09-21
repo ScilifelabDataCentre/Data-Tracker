@@ -1,14 +1,13 @@
 """Tests for dataset requests."""
-import json
 import re
 import requests
 import uuid
 
-from helpers import make_request, as_user, make_request_all_roles, USERS, use_db, random_string
+from helpers import make_request, as_user, make_request_all_roles, USERS, mdb, random_string
 # pylint: disable=redefined-outer-name
 
 
-def test_list_users(use_db):
+def test_list_users(mdb):
     """
     Retrieve list of users.
 
@@ -17,9 +16,9 @@ def test_list_users(use_db):
     responses = make_request_all_roles('/api/user/',
                                        ret_json=True)
     for response in responses:
-        if response.role in ('users', 'root'):
+        if response.role in ('users', 'root', 'orders'):
             assert response.code == 200
-            assert len(response.data['users']) == use_db['users'].count_documents({})
+            assert len(response.data['users']) == mdb['users'].count_documents({})
         elif response.role == 'no-login':
             assert response.code == 401
             assert not response.data
@@ -34,20 +33,19 @@ def test_list_info():
                                        ret_json=True)
     for response in responses:
         assert response.code == 200
-        assert len(response.data['user']) == 7
+        assert len(response.data['user']) == 8
         if response.role != 'no-login':
             assert response.data['user']['name'] == f'{response.role.capitalize()}'
 
 
-def test_update_current_user(use_db):
+def test_update_current_user(mdb):
     """Update the info about the current user."""
-    db = use_db
     session = requests.Session()
 
     indata = {}
     for user in USERS:
         as_user(session, USERS[user])
-        user_info = db['users'].find_one({'auth_ids': USERS[user]})
+        user_info = mdb['users'].find_one({'auth_ids': USERS[user]})
         response = make_request(session,
                                 '/api/user/me/',
                                 ret_json=True,
@@ -58,7 +56,7 @@ def test_update_current_user(use_db):
         else:
             assert response.code == 401
         assert not response.data
-        new_user_info = db['users'].find_one({'auth_ids': USERS[user]})
+        new_user_info = mdb['users'].find_one({'auth_ids': USERS[user]})
         assert user_info == new_user_info
 
     indata = {'affiliation': 'Updated University',
@@ -66,7 +64,7 @@ def test_update_current_user(use_db):
     session = requests.Session()
     for user in USERS:
         as_user(session, USERS[user])
-        user_info = db['users'].find_one({'auth_ids': USERS[user]})
+        user_info = mdb['users'].find_one({'auth_ids': USERS[user]})
         response = make_request(session,
                                 '/api/user/me/',
                                 ret_json=True,
@@ -75,13 +73,12 @@ def test_update_current_user(use_db):
         if user != 'no-login':
             assert response.code == 200
             assert not response.data
-            new_user_info = db['users'].find_one({'auth_ids': USERS[user]})
+            new_user_info = mdb['users'].find_one({'auth_ids': USERS[user]})
             for key in new_user_info:
                 if key in indata.keys():
                     assert new_user_info[key] == indata[key]
                 else:
-                    user_info[key] == new_user_info[key]
-                    db['users'].update_one(new_user_info, {'$set': user_info})
+                    mdb['users'].update_one(new_user_info, {'$set': user_info})
         else:
             assert response.code == 401
             assert not response.data
@@ -89,7 +86,6 @@ def test_update_current_user(use_db):
 
 def test_update_current_user_bad():
     """Update the info about the current user."""
-    session = requests.Session()
     indata = {'_id': str(uuid.uuid4())}
     responses = make_request_all_roles('/api/user/me/',
                                        ret_json=True,
@@ -151,12 +147,10 @@ def test_update_current_user_bad():
         assert not response.data
 
 
-def test_update_user(use_db):
+def test_update_user(mdb):
     """Update the info for a user."""
-    db = use_db
+    user_info = mdb['users'].find_one({'auth_ids': USERS['base']})
 
-    user_info = db['users'].find_one({'auth_ids': USERS['base']})
-    
     indata = {}
     responses = make_request_all_roles(f'/api/user/{user_info["_id"]}/',
                                        ret_json=True,
@@ -165,7 +159,7 @@ def test_update_user(use_db):
     for response in responses:
         if response.role in ('users', 'root'):
             assert response.code == 200
-            new_user_info = db['users'].find_one({'auth_ids': {'$in': user_info['auth_ids']}})
+            new_user_info = mdb['users'].find_one({'auth_ids': {'$in': user_info['auth_ids']}})
             assert user_info == new_user_info
         elif response.role == 'no-login':
             assert response.code == 401
@@ -186,10 +180,10 @@ def test_update_user(use_db):
         if user_type in ('users', 'root'):
             assert response.code == 200
             assert not response.data
-            new_user_info = db['users'].find_one({'auth_ids': user_info['auth_ids']})
+            new_user_info = mdb['users'].find_one({'auth_ids': user_info['auth_ids']})
             for key in indata:
                 assert new_user_info[key] == indata[key]
-            db['users'].update_one(new_user_info, {'$set': user_info})
+            mdb['users'].update_one(new_user_info, {'$set': user_info})
         elif user_type == 'no-login':
             assert response.code == 401
             assert not response.data
@@ -198,16 +192,14 @@ def test_update_user(use_db):
             assert not response.data
 
 
-def test_update_user_bad(use_db):
+def test_update_user_bad(mdb):
     """
     Update the info for a user.
 
     Bad requests.
     """
-    db = use_db
-    user_info = db['users'].find_one({'auth_ids': USERS['base']})
+    user_info = mdb['users'].find_one({'auth_ids': USERS['base']})
 
-    session = requests.Session()
     indata = {'_id': str(uuid.uuid4())}
     responses = make_request_all_roles(f'/api/user/{user_info["_id"]}/',
                                        ret_json=True,
@@ -276,20 +268,18 @@ def test_update_user_bad(use_db):
 
 
 
-def test_add_user(use_db):
+def test_add_user(mdb):
     """Add a user."""
-    db = use_db
-
-    indata = {'auth_ids': ['user@added']}
-    responses = make_request_all_roles(f'/api/user/',
+    indata = {'auth_ids': ['user::added']}
+    responses = make_request_all_roles('/api/user/',
                                        ret_json=True,
                                        method='PUT',
                                        data=indata)
     for response in responses:
-        if response.role in ('users', 'root'):
+        if response.role in ('users', 'root', 'orders'):
             assert response.code == 200
             assert '_id' in response.data
-            new_user_info = db['users'].find_one({'_id': uuid.UUID(response.data['_id'])})
+            new_user_info = mdb['users'].find_one({'_id': uuid.UUID(response.data['_id'])})
             assert indata['auth_ids'] == new_user_info['auth_ids']
         elif response.role == 'no-login':
             assert response.code == 401
@@ -299,30 +289,28 @@ def test_add_user(use_db):
             assert not response.data
 
     indata = {'affiliation': 'Added University',
-              'auth_ids': ['user2@added'],
+              'auth_ids': ['user2::added'],
               'name': 'Added name',
               'email': 'user2@added.se',
-              'permissions': ['ORDERS_SELF']}
+              'permissions': ['ORDERS']}
     session = requests.session()
     as_user(session, USERS['root'])
     response = make_request(session,
-                            f'/api/user/',
+                            '/api/user/',
                             ret_json=True,
                             method='PUT',
                             data=indata)
     assert response.code == 200
     assert '_id' in response.data
-    new_user_info = db['users'].find_one({'_id': uuid.UUID(response.data['_id'])})
+    new_user_info = mdb['users'].find_one({'_id': uuid.UUID(response.data['_id'])})
     for key in indata:
         assert new_user_info[key] == indata[key]
 
 
-def test_delete_user(use_db):
+def test_delete_user(mdb):
     """Test deleting users (added when testing to add users)"""
-    db = use_db
-
-    re_users = re.compile('@added')
-    users = list(db['users'].find({'auth_ids': re_users}, {'_id': 1}))
+    re_users = re.compile('::added')
+    users = list(mdb['users'].find({'auth_ids': re_users}, {'_id': 1}))
 
     session = requests.Session()
     i = 0
@@ -335,8 +323,8 @@ def test_delete_user(use_db):
             if role in ('users', 'root'):
                 assert response.code == 200
                 assert not response.data
-                assert not db['users'].find_one({'_id': users[i]['_id']})
-                assert db['logs'].find_one({'data._id': users[i]['_id'],
+                assert not mdb['users'].find_one({'_id': users[i]['_id']})
+                assert mdb['logs'].find_one({'data._id': users[i]['_id'],
                                             'action': 'delete',
                                             'data_type': 'user'})
                 i += 1
@@ -350,12 +338,10 @@ def test_delete_user(use_db):
                 assert not response.data
 
 
-def test_key_reset(use_db):
+def test_key_reset(mdb):
     """Test generation of new API keys"""
-    db = use_db
-
     mod_user = {'auth_ids': 'facility18::local'}
-    mod_user_info = db.users.find_one(mod_user)
+    mod_user_info = mdb.users.find_one(mod_user)
 
     session = requests.Session()
     for i, userid in enumerate(USERS):
@@ -377,7 +363,7 @@ def test_key_reset(use_db):
                                 method='POST')
         assert response.code == 200
         assert not response.data
-        db.users.update_one({'auth_ids': userid}, {'$set': {'api_salt': 'abc',
+        mdb.users.update_one({'auth_ids': userid}, {'$set': {'api_salt': 'abc',
                                                             'api_key': str(i-1)}})
 
         response = make_request(session,
@@ -398,14 +384,13 @@ def test_key_reset(use_db):
             assert not response.data
 
 
-def test_get_user_logs_permissions(use_db):
+def test_get_user_logs_permissions(mdb):
     """
     Get user logs.
 
     Assert that USER_MANAGEMENT or actual user is required.
     """
-    db = use_db
-    user_uuid = db['users'].find_one({'auth_ids': USERS['base']}, {'_id': 1})['_id']
+    user_uuid = mdb['users'].find_one({'auth_ids': USERS['base']}, {'_id': 1})['_id']
     responses = make_request_all_roles(f'/api/user/{user_uuid}/log/',
                                        ret_json=True)
     for response in responses:
@@ -420,17 +405,16 @@ def test_get_user_logs_permissions(use_db):
             assert not response.data
 
 
-def test_get_user_logs(use_db):
+def test_get_user_logs(mdb):
     """
     Request the logs for multiple users.
 
     Confirm that the logs contain only the intended fields.
     """
     session = requests.session()
-    db = use_db
-    users = db['users'].aggregate([{'$sample': {'size': 2}}])
+    users = mdb['users'].aggregate([{'$sample': {'size': 2}}])
     for user in users:
-        logs = list(db['logs'].find({'data_type': 'user', 'data._id': user['_id']}))
+        logs = list(mdb['logs'].find({'data_type': 'user', 'data._id': user['_id']}))
         as_user(session, USERS['users'])
         response = make_request(session, f'/api/user/{user["_id"]}/log/', ret_json=True)
         assert response.data['dataType'] == 'user'
@@ -439,14 +423,13 @@ def test_get_user_logs(use_db):
         assert response.code == 200
 
 
-def test_get_current_user_logs(use_db):
+def test_get_current_user_logs():
     """
     Get current user logs.
 
     Should return logs for all logged in users.
     """
-    db = use_db
-    responses = make_request_all_roles(f'/api/user/me/log/',
+    responses = make_request_all_roles('/api/user/me/log/',
                                        ret_json=True)
     for response in responses:
         if response.role == 'no-login':
@@ -457,14 +440,13 @@ def test_get_current_user_logs(use_db):
             assert 'logs' in response.data
 
 
-def test_get_user_actions_access(use_db):
+def test_get_user_actions_access(mdb):
     """
     Get user logs.
 
     Assert that USER_MANAGEMENT or actual user is required.
     """
-    db = use_db
-    user_uuid = db['users'].find_one({'auth_ids': USERS['base']}, {'_id': 1})['_id']
+    user_uuid = mdb['users'].find_one({'auth_ids': USERS['base']}, {'_id': 1})['_id']
     responses = make_request_all_roles(f'/api/user/{user_uuid}/actions/',
                                        ret_json=True)
     for response in responses:
@@ -479,14 +461,13 @@ def test_get_user_actions_access(use_db):
             assert not response.data
 
 
-def test_get_current_user_actions(use_db):
+def test_get_current_user_actions():
     """
     Get current user logs.
 
     Should return logs for all logged in users.
     """
-    db = use_db
-    responses = make_request_all_roles(f'/api/user/me/actions/',
+    responses = make_request_all_roles('/api/user/me/actions/',
                                        ret_json=True)
     for response in responses:
         if response.role == 'no-login':

@@ -23,9 +23,11 @@ import utils
 
 blueprint = flask.Blueprint('user', __name__)  # pylint: disable=invalid-name
 
-PERMISSIONS = {'ORDERS': ('ORDERS',),
+PERMISSIONS = {'ORDERS': ('ORDERS', 'USER_ADD', 'USER_SEARCH'),
                'OWNERS_READ': ('OWNERS_READ',),
-               'USER_MANAGEMENT': ('USER_MANAGEMENT',),
+               'USER_ADD': ('USER_ADD',),
+               'USER_SEARCH': ('USER_SEARCH',),
+               'USER_MANAGEMENT': ('USER_MANAGEMENT', 'USER_ADD', 'USER_SEARCH'),
                'DATA_MANAGEMENT': ('ORDERS', 'OWNERS_READ', 'DATA_MANAGEMENT')}
 
 
@@ -59,7 +61,7 @@ def list_users():
 
     Admin access should be required.
     """
-    if not has_permission('USER_MANAGEMENT'):
+    if not has_permission('USER_SEARCH'):
         flask.abort(403)
     result = tuple(flask.g.db['users'].find())
     return utils.response_json({'users': result})
@@ -78,8 +80,9 @@ def get_current_user_info():
     outstructure = {'affiliation': '',
                     'auth_ids': [],
                     'email': '',
-                    'email_public': '',
+                    'contact': '',
                     'name': '',
+                    'orcid': '',
                     'permissions': '',
                     'url': ''}
     if data:
@@ -166,7 +169,7 @@ def add_user():
     Returns:
         flask.Response: Information about the user as json.
     """
-    if not has_permission('USER_MANAGEMENT'):
+    if not has_permission('USER_ADD'):
         flask.abort(403)
 
     new_user = structure.user()
