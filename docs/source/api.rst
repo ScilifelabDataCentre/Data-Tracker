@@ -9,7 +9,7 @@ Order
 
     .. note::
 
-        Only for users with ``ORDERS_SELF`` or ``USER_MANAGEMENT``.
+        Only for users with ``ORDERS`` or ``USER_MANAGEMENT``.
 
 
 .. function:: /order/
