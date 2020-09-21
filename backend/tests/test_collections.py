@@ -56,7 +56,6 @@ def test_get_collection(mdb):
         as_user(session, USERS['base'])
         response = make_request(session, f'/api/collection/{collection["_id"]}')
         assert response.code == 200
-        print(response.data['collection'])
         for field in collection:
             if field == 'datasets':
                 for i, ds_uuid in enumerate(collection[field]):
@@ -69,10 +68,13 @@ def test_get_collection(mdb):
         as_user(session, proj_owner['auth_ids'][0])
         response = make_request(session, f'/api/collection/{collection["_id"]}')
         assert response.code == 200
+        print(collection)
         for field in collection:
             if field in ('datasets', 'editors'):
+                entries = [entry['_id'] for entry in response.data['collection'][field]]
+                assert len(collection[field]) == len(entries)
                 for i, ds_uuid in enumerate(collection[field]):
-                    assert ds_uuid == response.data['collection'][field][i]['_id']
+                    assert ds_uuid in entries
             else:
                 assert collection[field] == response.data['collection'][field]
 
@@ -81,8 +83,10 @@ def test_get_collection(mdb):
         assert response.code == 200
         for field in collection:
             if field in ('datasets', 'editors'):
+                entries = [entry['_id'] for entry in response.data['collection'][field]]
+                assert len(collection[field]) == len(entries)
                 for i, ds_uuid in enumerate(collection[field]):
-                    assert ds_uuid == response.data['collection'][field][i]['_id']
+                    assert ds_uuid in entries
             else:
                 assert collection[field] == response.data['collection'][field]
 
