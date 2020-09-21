@@ -62,10 +62,12 @@
 
 <span class="n">blueprint</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">Blueprint</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">)</span>  <span class="c1"># pylint: disable=invalid-name</span>
 
-<span class="n">PERMISSIONS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;ORDERS_SELF&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;ORDERS_SELF&#39;</span><span class="p">,),</span>
+<span class="n">PERMISSIONS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;ORDERS&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;ORDERS&#39;</span><span class="p">,</span> <span class="s1">&#39;USER_ADD&#39;</span><span class="p">,</span> <span class="s1">&#39;USER_SEARCH&#39;</span><span class="p">),</span>
                <span class="s1">&#39;OWNERS_READ&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;OWNERS_READ&#39;</span><span class="p">,),</span>
-               <span class="s1">&#39;USER_MANAGEMENT&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;USER_MANAGEMENT&#39;</span><span class="p">,),</span>
-               <span class="s1">&#39;DATA_MANAGEMENT&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;ORDERS_SELF&#39;</span><span class="p">,</span> <span class="s1">&#39;OWNERS_READ&#39;</span><span class="p">,</span> <span class="s1">&#39;DATA_MANAGEMENT&#39;</span><span class="p">)}</span>
+               <span class="s1">&#39;USER_ADD&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;USER_ADD&#39;</span><span class="p">,),</span>
+               <span class="s1">&#39;USER_SEARCH&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;USER_SEARCH&#39;</span><span class="p">,),</span>
+               <span class="s1">&#39;USER_MANAGEMENT&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;USER_MANAGEMENT&#39;</span><span class="p">,</span> <span class="s1">&#39;USER_ADD&#39;</span><span class="p">,</span> <span class="s1">&#39;USER_SEARCH&#39;</span><span class="p">),</span>
+               <span class="s1">&#39;DATA_MANAGEMENT&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;ORDERS&#39;</span><span class="p">,</span> <span class="s1">&#39;OWNERS_READ&#39;</span><span class="p">,</span> <span class="s1">&#39;DATA_MANAGEMENT&#39;</span><span class="p">)}</span>
 
 
 <span class="c1"># Decorators</span>
@@ -98,7 +100,7 @@
 
 <span class="sd">    Admin access should be required.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">has_permission</span><span class="p">(</span><span class="s1">&#39;USER_MANAGEMENT&#39;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">has_permission</span><span class="p">(</span><span class="s1">&#39;USER_SEARCH&#39;</span><span class="p">):</span>
         <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="mi">403</span><span class="p">)</span>
     <span class="n">result</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;users&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">())</span>
     <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">response_json</span><span class="p">({</span><span class="s1">&#39;users&#39;</span><span class="p">:</span> <span class="n">result</span><span class="p">})</span></div>
@@ -117,8 +119,9 @@
     <span class="n">outstructure</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;affiliation&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
                     <span class="s1">&#39;auth_ids&#39;</span><span class="p">:</span> <span class="p">[],</span>
                     <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-                    <span class="s1">&#39;email_public&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;contact&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
                     <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;orcid&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
                     <span class="s1">&#39;permissions&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
                     <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">}</span>
     <span class="k">if</span> <span class="n">data</span><span class="p">:</span>
@@ -129,8 +132,8 @@
 
 
 <span class="c1"># requests</span>
-<div class="viewcode-block" id="gen_new_api_key"><a class="viewcode-back" href="../code.user.html#user.gen_new_api_key">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/me/apikey/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>
-<span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;identifier&gt;/apikey/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<div class="viewcode-block" id="gen_new_api_key"><a class="viewcode-back" href="../code.user.html#user.gen_new_api_key">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/me/apikey/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;PUT&#39;</span><span class="p">])</span>
+<span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;identifier&gt;/apikey/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;PUT&#39;</span><span class="p">])</span>
 <span class="nd">@login_required</span>
 <span class="k">def</span> <span class="nf">gen_new_api_key</span><span class="p">(</span><span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -196,16 +199,16 @@
     <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">response_json</span><span class="p">({</span><span class="s1">&#39;user&#39;</span><span class="p">:</span> <span class="n">user_info</span><span class="p">})</span></div>
 
 
-<div class="viewcode-block" id="add_user_post"><a class="viewcode-back" href="../code.user.html#user.add_user_post">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<div class="viewcode-block" id="add_user"><a class="viewcode-back" href="../code.user.html#user.add_user">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;PUT&#39;</span><span class="p">])</span>
 <span class="nd">@login_required</span>
-<span class="k">def</span> <span class="nf">add_user_post</span><span class="p">():</span>
+<span class="k">def</span> <span class="nf">add_user</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Add a user.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        flask.Response: Information about the user as json.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">has_permission</span><span class="p">(</span><span class="s1">&#39;USER_MANAGEMENT&#39;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">has_permission</span><span class="p">(</span><span class="s1">&#39;USER_ADD&#39;</span><span class="p">):</span>
         <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="mi">403</span><span class="p">)</span>
 
     <span class="n">new_user</span> <span class="o">=</span> <span class="n">structure</span><span class="o">.</span><span class="n">user</span><span class="p">()</span>
@@ -433,7 +436,7 @@
 
 
 <span class="c1"># helper functions</span>
-<div class="viewcode-block" id="add_user"><a class="viewcode-back" href="../code.user.html#user.add_user">[docs]</a><span class="k">def</span> <span class="nf">add_user</span><span class="p">(</span><span class="n">user_info</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<div class="viewcode-block" id="add_new_user"><a class="viewcode-back" href="../code.user.html#user.add_new_user">[docs]</a><span class="k">def</span> <span class="nf">add_new_user</span><span class="p">(</span><span class="n">user_info</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Add a new user to the database from first oidc login.</span>
 

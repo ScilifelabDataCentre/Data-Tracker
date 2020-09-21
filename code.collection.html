@@ -47,14 +47,14 @@
             
   <div class="section" id="module-collection">
 <span id="collection-py"></span><h1>collection.py<a class="headerlink" href="#module-collection" title="Permalink to this headline">¶</a></h1>
-<p>Project requests.</p>
+<p>Collection requests.</p>
 <dl class="py function">
-<dt id="collection.add_project">
-<code class="sig-prename descclassname">collection.</code><code class="sig-name descname">add_project</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/collection.html#add_project"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#collection.add_project" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add a project.</p>
+<dt id="collection.add_collection">
+<code class="sig-prename descclassname">collection.</code><code class="sig-name descname">add_collection</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/collection.html#add_collection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#collection.add_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a collection.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>Json structure with the <code class="docutils literal notranslate"><span class="pre">_id</span></code> of the project.</p>
+<dd class="field-odd"><p>Json structure with the <code class="docutils literal notranslate"><span class="pre">_id</span></code> of the collection.</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p>flask.Response</p>
@@ -63,27 +63,27 @@
 </dd></dl>
 
 <dl class="py function">
-<dt id="collection.delete_project">
-<code class="sig-prename descclassname">collection.</code><code class="sig-name descname">delete_project</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">identifier</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/collection.html#delete_project"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#collection.delete_project" title="Permalink to this definition">¶</a></dt>
-<dd><p>Delete a project.</p>
+<dt id="collection.delete_collection">
+<code class="sig-prename descclassname">collection.</code><code class="sig-name descname">delete_collection</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">identifier</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/collection.html#delete_collection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#collection.delete_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete a collection.</p>
 <p>Can be deleted only by an owner or user with DATA_MANAGEMENT permissions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>identifier</strong> (<em>str</em>) – The project uuid.</p>
+<dd class="field-odd"><p><strong>identifier</strong> (<em>str</em>) – The collection uuid.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
-<dt id="collection.get_project">
-<code class="sig-prename descclassname">collection.</code><code class="sig-name descname">get_project</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">identifier</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/collection.html#get_project"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#collection.get_project" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieve the project with uuid &lt;identifier&gt;.</p>
+<dt id="collection.get_collection">
+<code class="sig-prename descclassname">collection.</code><code class="sig-name descname">get_collection</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">identifier</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/collection.html#get_collection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#collection.get_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve the collection with uuid &lt;identifier&gt;.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>identifier</strong> (<em>str</em>) – uuid for the wanted project</p>
+<dd class="field-odd"><p><strong>identifier</strong> (<em>str</em>) – uuid for the wanted collection</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>json structure for the project</p>
+<dd class="field-even"><p>json structure for the collection</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>flask.Request</p>
@@ -92,13 +92,13 @@
 </dd></dl>
 
 <dl class="py function">
-<dt id="collection.get_project_log">
-<code class="sig-prename descclassname">collection.</code><code class="sig-name descname">get_project_log</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">identifier</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/collection.html#get_project_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#collection.get_project_log" title="Permalink to this definition">¶</a></dt>
+<dt id="collection.get_collection_log">
+<code class="sig-prename descclassname">collection.</code><code class="sig-name descname">get_collection_log</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">identifier</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/collection.html#get_collection_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#collection.get_collection_log" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get change logs for the user entry with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
 <p>Can be accessed by owners and admin (DATA_MANAGEMENT).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>identifier</strong> (<em>str</em>) – The uuid of the project.</p>
+<dd class="field-odd"><p><strong>identifier</strong> (<em>str</em>) – The uuid of the collection.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Logs as json.</p>
@@ -112,13 +112,13 @@
 <dl class="py function">
 <dt id="collection.get_random">
 <code class="sig-prename descclassname">collection.</code><code class="sig-name descname">get_random</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">amount</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/collection.html#get_random"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#collection.get_random" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieve random project(s).</p>
+<dd><p>Retrieve random collection(s).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>amount</strong> (<em>int</em>) – number of requested projects</p>
+<dd class="field-odd"><p><strong>amount</strong> (<em>int</em>) – number of requested collections</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>json structure for the project(s)</p>
+<dd class="field-even"><p>json structure for the collection(s)</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>flask.Request</p>
@@ -127,15 +127,15 @@
 </dd></dl>
 
 <dl class="py function">
-<dt id="collection.list_project">
-<code class="sig-prename descclassname">collection.</code><code class="sig-name descname">list_project</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/collection.html#list_project"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#collection.list_project" title="Permalink to this definition">¶</a></dt>
-<dd><p>Provide a simplified list of all available projects.</p>
+<dt id="collection.list_collection">
+<code class="sig-prename descclassname">collection.</code><code class="sig-name descname">list_collection</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/collection.html#list_collection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#collection.list_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Provide a simplified list of all available collections.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="collection.list_user_projects">
-<code class="sig-prename descclassname">collection.</code><code class="sig-name descname">list_user_projects</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/collection.html#list_user_projects"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#collection.list_user_projects" title="Permalink to this definition">¶</a></dt>
-<dd><p>List project owned by the user.</p>
+<dt id="collection.list_user_collections">
+<code class="sig-prename descclassname">collection.</code><code class="sig-name descname">list_user_collections</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/collection.html#list_user_collections"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#collection.list_user_collections" title="Permalink to this definition">¶</a></dt>
+<dd><p>List collection owned by the user.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>JSON structure.</p>
@@ -147,12 +147,12 @@
 </dd></dl>
 
 <dl class="py function">
-<dt id="collection.update_project">
-<code class="sig-prename descclassname">collection.</code><code class="sig-name descname">update_project</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">identifier</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/collection.html#update_project"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#collection.update_project" title="Permalink to this definition">¶</a></dt>
-<dd><p>Update a project.</p>
+<dt id="collection.update_collection">
+<code class="sig-prename descclassname">collection.</code><code class="sig-name descname">update_collection</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">identifier</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/collection.html#update_collection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#collection.update_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update a collection.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>identifier</strong> (<em>str</em>) – The project uuid.</p>
+<dd class="field-odd"><p><strong>identifier</strong> (<em>str</em>) – The collection uuid.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Status code.</p>

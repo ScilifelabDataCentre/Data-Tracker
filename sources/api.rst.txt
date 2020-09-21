@@ -2,46 +2,54 @@
 API
 ***
 
-Base URL for the API is ``<url>/api``. All API description have the base implied before the first ``/``.
+=========
+Version 1
+=========
+
+Base URL for the API is ``<url>/api/v1/``. All API description have the base implied before the first ``/``.
 
 Order
 =====
 
-    .. note::
+.. note::
 
-        Only for users with ``ORDERS_SELF`` or ``USER_MANAGEMENT``.
+     Only for users with ``ORDERS`` or ``DATA_MANAGEMENT``.
 
 
 .. function:: /order/
 
-    **GET** Get a list of all orders the user can access. All orders will be listed for a user with ``DATA_MANAGEMENT``.
-    Can be limited by parameters.
+    **GET**
+       * Get a list of all orders where the user is ``editor``.
+       * All orders will be listed for a user with ``DATA_MANAGEMENT``.
 
-    **POST** Add a new order.
-
-
-.. function:: /order/<identifier>/
-
-    **GET** Get information about the order with uuid ``identifier``.
-
-    **DELETE** Delete the order with uuid ``identifier``.
-
-    **PATCH** Update the order with uuid ``identifier``.
+    **PUT**
+       * Add a new order.
+       * Returns the ``uuid`` of the added order.
 
 
-.. function:: /order/<identifier>/dataset/
+.. function:: /order/<uuid>/
 
-    **POST** Add a new dataset belonging to order with uuid ``identifier``.
+    **GET**
+       * Get information about the order ``uuid``.
+
+    **DELETE**
+       * Delete the order ``uuid``.
+
+    **PATCH**
+       * Update the order ``uuid``.
 
 
-.. function:: /order/user/
+.. function:: /order/<uuid>/dataset/
 
-    **GET** Get a list of orders created or received by current user.
+    **PUT**
+       * Add a new dataset for the order ``uuid``.
+       * Returns the ``uuid`` of the added dataset.
     
 
-.. function:: /order/<identifier>/log/
+.. function:: /order/<uuid>/log/
 
-    **GET** Get a list of changes done to the order with uuid ``identifier``.
+    **GET**
+       * Get a list of changes for the order ``uuid``.
 
 
 Dataset
@@ -49,150 +57,204 @@ Dataset
 
 .. function:: /dataset/
 
-    **GET** Get a list of all datasets. Can be limited by parameters.
+    **GET**
+       * Get a list of all datasets.
 
 
-.. function:: /dataset/user/
+.. function:: /dataset/<uuid>/
 
-    **GET** Get a list of datasets created or received by current user.
+    **GET**
+       * Get information about the dataset ``uuid``.
 
+    **DELETE**
+       * Delete the dataset ``uuid``.
 
-.. function:: /dataset/<identifier>/
-
-    **GET** Get information about the dataset with uuid ``identifier``.
-
-    **DELETE** Delete the dataset with uuid ``identifier``.
-
-    **PATCH** Update the dataset with uuid ``identifier``.
+    **PATCH**
+       * Update the dataset ``uuid``.
 
 
-.. function:: /dataset/<identifier>/log/
+.. function:: /dataset/<uuid>/log/
 
-    **GET** Get a list of changes done to the dataset with uuid ``identifier``.
-
-
-Project
-=======
-
-.. function:: /project/
-
-    **GET** Get a list of all projects. Can be limited by parameters.
-
-    **POST** Add a new project.
+    **GET**
+       * Get a list of changes done to the dataset ``uuid``.
 
 
-.. function:: /project/user/[username>/]
+Collection
+==========
 
-    **GET** Get a list of projects created or received by current user.
+.. function:: /collection/
 
+    **GET**
+       * Get a list of all collections.
 
-.. function:: /project/<identifier>/
-
-    **GET** Get information about the project with uuid ``identifier``.
-
-    **DELETE** Delete the project with uuid ``identifier``.
-
-    **PATCH** Update the project with uuid ``identifier``.
+    **PUT**
+       * Add a new collection.
 
 
-.. function:: /project/<identifier>/log/
+.. function:: /collection/<uuid>/
 
-    **GET** Get a list of changes done to the project with uuid ``identifier``.
+    **GET**
+       * Get information about the collection ``uuid``.
+
+    **DELETE**
+       * Delete the collection ``uuid``.
+
+    **PATCH**
+       * Update the collection ``uuid``.
+
+
+.. function:: /collection/<uuid>/log/
+
+    **GET**
+       * Get a list of changes done to the collection ``uuid``.
 
 
 User
 ====
 
-.. function:: /user/
-
-    .. note::
-
-        Only for users with ``USER_MANAGEMENT``.
-
-    **GET** Get a list of all users.
-
-    **POST** Add a new user.
-
+Current User
+------------
 
 .. function:: /user/me/
 
-    **GET** Get information about the current user.
+    **GET**
+       * Get information about the current user.
 
-    **PATCH** Update information about the current user.
+    **PATCH**
+       * Update information for the current user.
 
 
 .. function:: /user/me/apikey/
 
-    **POST** Generate a new API key for the current user.
+    **POST**
+       * Generate a new API key for the current user.
+       * The new API key is returned.
 
 
 .. function:: /user/me/log/
 
-    **GET** Get a list of changes done to the current user.
+    **GET**
+       * Get a list of changes done to the current user.
 
 
 .. function:: /user/me/actions/
 
-    **GET** Get a list of changes done by the current user.
+    **GET**
+       * Get a list of changes done by the current user.
+
+
+.. function:: /user/me/orders/
+
+    **GET**
+       * Get a list of orders where the current user is listed as ``editor``.
+    
+
+.. function:: /user/me/datasets/
+
+    **GET**
+       * Get a list of datasets where the current user is listed as ``editor``. 
+
+
+.. function:: /user/me/collections/
+
+    **GET**
+       * Get a list of collections where the current user is listed as ``editor``. 
+
+
+Look Up Users
+-------------
+
+.. note::
+
+    Only for users with ``USER_MANAGEMENT``, or in some cases ``USER_SEARCH``.
+
+
+
+.. function:: /user/
+
+    .. note::
+
+        Only for users with ``USER_SEARCH`` or ``USER_MANAGEMENT``.
+
+    **GET**
+       * Get a list of all users.
+       * Users with ``USER_SEARCH`` will get a limited set of fields.
+
+    **PUT**
+       * Add a new user.
 
 
 .. function:: /user/<uuid>/
 
-    .. note::
+    **GET**
+       * Get information about the user ``uuid``.
 
-        Only for users with ``USER_MANAGEMENT``.
+    **PATCH**
+       * Update information about the user ``uuid``.
 
-
-    **GET** Get information about user with ``uuid``.
-
-    **PATCH** Update information about user with ``uuid``.
-
-    **DELETE** Delete the user with ``uuid``.
+    **DELETE**
+       * Delete the user ``uuid``.
 
 
 .. function:: /user/<uuid>/apikey/
 
-    .. note::
-
-        Only for users with ``USER_MANAGEMENT``.
-
-
-    **POST** Generate a new API key for the user with ``uuid``.
+    **POST**
+       * Generate a new API key for the user ``uuid``.
+       * The new API key is returned.
 
 
 .. function:: /user/<uuid>/log/
 
-    .. note::
-
-        Only for the actual user and users with ``USER_MANAGEMENT``.
-
-    **GET** Get a list of changes done to the user with ``uuid``.
+    **GET**
+       * Get a list of changes done to the user ``uuid``.
 
 
 .. function:: /user/<uuid>/actions/
 
-    .. note::
-
-        Only for the actual user and users with ``USER_MANAGEMENT``.
-
-    **GET** Get a list of changes done by the user with ``uuid``.
+    **GET**
+       * Get a list of changes done by the user with ``uuid``.
 
 
+.. function:: /user/<uuid>/orders/
+
+    **GET**
+       * Get a list of orders where the user ``uuid`` is listed as ``editor``.
+    
+
+.. function:: /user/<uuid>/datasets/
+
+    **GET**
+       * Get a list of datasets where the user ``uuid`` is listed as ``editor``. 
+
+
+.. function:: /user/<uuid>/collections/
+
+    **GET**
+       * Get a list of collections where the user ``uuid`` is listed as ``editor``. 
+
+
+Log In/Log Out
+--------------
+    
 .. function:: /logout/
 
-    **GET** Log out current user.
+    **GET**
+       * Log out the current user.
 
 
 .. function:: /login/oidc/<auth_name>/login/
 
-    **GET** Log in using OpenID Connect (e.g. Elixir AAI) for service ``auth_name``.
+    **GET**
+       * Log in using OpenID Connect (e.g. Elixir AAI) for service ``auth_name``.
 
 
 .. function:: /login/oidc/<auth_name>/authorize/
 
-    **GET** Authorize using OpenID Connect (e.g. Elixir AAI) for service ``auth_name`` (via ``login``).
+    **GET**
+       * Authorize using OpenID Connect (e.g. Elixir AAI) for service ``auth_name`` (via ``login``).
 
 
 .. function:: /login/apikey/
 
-    **GET** Log in using auth_id/api_key
+    **GET**
+       * Log in using ``auth_id`` + ``api_key``.
