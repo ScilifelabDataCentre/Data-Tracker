@@ -68,17 +68,19 @@
 <div class="section" id="current-units">
 <h3>Current units<a class="headerlink" href="#current-units" title="Permalink to this headline">¶</a></h3>
 <dl class="simple">
-<dt>DOI_REVIEWER</dt><dd><p>May evaluate DOI requests and create DOI entries.</p>
-</dd>
 <dt>LOGGED_IN</dt><dd><p>Task require a logged in user (e.g. show user info). Use the decorator <code class="docutils literal notranslate"><span class="pre">user.login_required</span></code>.</p>
 </dd>
-<dt>DATA_MANAGEMENT</dt><dd><p>May modify any order, dataset, or project. Includes <code class="docutils literal notranslate"><span class="pre">ORDERS_SELF</span></code> and <code class="docutils literal notranslate"><span class="pre">OWNERS_READ</span></code>.</p>
+<dt>DATA_MANAGEMENT</dt><dd><p>May modify any order, dataset, or project. Includes <code class="docutils literal notranslate"><span class="pre">ORDERS</span></code> and <code class="docutils literal notranslate"><span class="pre">OWNERS_READ</span></code>.</p>
 </dd>
-<dt>ORDERS_SELF</dt><dd><p>CRUD permissions for owned orders and datasets for the orders.</p>
+<dt>ORDERS</dt><dd><p>May create, edit, and delete orders if listed as an editor for the order. Includes <cite>USER_ADD</cite> and <cite>USER_SEARCH</cite>.</p>
 </dd>
 <dt>OWNERS_READ</dt><dd><p>May access all entity owner information.</p>
 </dd>
-<dt>USER_MANAGEMENT</dt><dd><p>May modify any user.</p>
+<dt>USER_ADD</dt><dd><p>May add users.</p>
+</dd>
+<dt>USER_SEARCH</dt><dd><p>May list and search for users.</p>
+</dd>
+<dt>USER_MANAGEMENT</dt><dd><p>May modify any user. Includes <cite>USER_ADD</cite> and <cite>USER_SEARCH</cite>.</p>
 </dd>
 </dl>
 </div>

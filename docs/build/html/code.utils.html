@@ -324,15 +324,15 @@ e.g. <code class="docutils literal notranslate"><span class="pre">data</span></c
 
 <dl class="py function">
 <dt id="utils.str_to_uuid">
-<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">str_to_uuid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">uuid_str</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; uuid.UUID<a class="reference internal" href="modules/utils.html#str_to_uuid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.str_to_uuid" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">str_to_uuid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">in_uuid</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>str<span class="p">, </span>uuid.UUID<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; uuid.UUID<a class="reference internal" href="modules/utils.html#str_to_uuid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.str_to_uuid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert str uuid to uuid.UUID.</p>
 <p>Provided as a convenience function if the identifier must be changed in the future.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>uuid_str</strong> (<em>str</em>) – The uuid to be converted.</p>
+<dd class="field-odd"><p><strong>in_uuid</strong> (<em>str</em><em> or </em><em>uuid.UUID</em>) – The uuid to be converted.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The uuid.</p>
+<dd class="field-even"><p>The uuid as a UUID object.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>uuid.UUID</p>
@@ -342,14 +342,14 @@ e.g. <code class="docutils literal notranslate"><span class="pre">data</span></c
 
 <dl class="py function">
 <dt id="utils.user_uuid_data">
-<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">user_uuid_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user_id</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>str<span class="p">, </span>uuid.UUID<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">mongodb</span><span class="p">:</span> <span class="n">pymongo.database.Database</span></em><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="modules/utils.html#user_uuid_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.user_uuid_data" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">user_uuid_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user_ids</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>str<span class="p">, </span>list<span class="p">, </span>uuid.UUID<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">mongodb</span><span class="p">:</span> <span class="n">pymongo.database.Database</span></em><span class="sig-paren">)</span> &#x2192; list<a class="reference internal" href="modules/utils.html#user_uuid_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.user_uuid_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieve some extra information about a user using a uuid as input.</p>
 <p>Note that <code class="docutils literal notranslate"><span class="pre">_id`</span></code> will be returned as <code class="docutils literal notranslate"><span class="pre">str</span></code>, not <code class="docutils literal notranslate"><span class="pre">uuid.UUID</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>user_id</strong> (<em>str</em><em> or </em><em>uuid.UUID</em>) – UUID of the user.</p></li>
-<li><p><strong>mongodb</strong> (<em>pymongo.database.Database</em>) – The Mongo database to use for the query</p></li>
+<li><p><strong>user_ids</strong> (<em>str</em><em>, </em><em>list</em><em>, or </em><em>uuid.UUID</em>) – UUID of the user(s).</p></li>
+<li><p><strong>mongodb</strong> (<em>pymongo.database.Database</em>) – The Mongo database to use for the query.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
