@@ -20,19 +20,15 @@
           <q-icon name="person" />
         </template>
         <template v-slot:control>
-          <q-list>
-            <user-info v-for="entry in dataset.editors" :key="entry._id" v-bind="entry" />
-          </q-list>
+          <user-info :entries="dataset.editors" />
         </template>
       </q-field>
       <q-field v-if="dataset.authors.length > 0" label="Authors" stack-label>
         <template v-slot:prepend>
           <q-icon name="person" />
         </template>
-        <template v-slot:control> 
-          <q-list>
-            <user-info v-for="entry in dataset.authors" :key="entry._id" v-bind="entry" />
-          </q-list>
+        <template v-slot:control>
+          <user-info :entries="dataset.authors" />
         </template>
       </q-field>
       <q-field v-if="dataset.generators.length > 0" label="Generators" stack-label>
@@ -40,9 +36,7 @@
           <q-icon name="person" />
         </template>
         <template v-slot:control>
-          <q-list>
-            <user-info v-for="entry in dataset.generators" :key="entry._id" v-bind="entry" />
-          </q-list>
+          <user-info :entries="dataset.generators" />
         </template>
       </q-field>
       <q-field v-if="dataset.organisation.name.length > 0" label="Organisation" stack-label>
@@ -50,9 +44,7 @@
           <q-icon name="person" />
         </template>
         <template v-slot:control>
-          <q-list>
-            <user-info v-bind="dataset.organisation" />
-          </q-list>
+          <user-info :entries="dataset.organisation" />
         </template>
       </q-field>
     </q-card-section>
