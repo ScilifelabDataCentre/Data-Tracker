@@ -77,8 +77,7 @@ def list_orders_user(user_id: str):
             return flask.abort(status=404)
     else:  # current user
         user_uuid = flask.session['user_id']
-    orders = list(flask.g.db['orders'].find({'$or': [{'receivers': user_uuid},
-                                                     {'editors': user_uuid}]},
+    orders = list(flask.g.db['orders'].find({'editors': user_uuid},
                                             projection={'_id': 1,
                                                         'title': 1}))
 
@@ -185,7 +184,7 @@ def add_order():
     if not validation.result:
         flask.abort(status=validation.status)
 
-    for field in ('editors', 'authors', 'receivers', 'generators'):
+    for field in ('editors', 'authors', 'generators'):
         if field in indata:
             indata[field] = [utils.str_to_uuid(entry) for entry in indata[field]]
     if 'organisation' in indata:
@@ -330,7 +329,7 @@ def update_order(identifier: str):  # pylint: disable=too-many-branches
     if not validation.result:
         flask.abort(status=validation.status)
 
-    for field in ('editors', 'authors', 'receivers', 'generators'):
+    for field in ('editors', 'authors', 'generators'):
         if field in indata:
             indata[field] = [utils.str_to_uuid(entry) for entry in indata[field]]
     if 'organisation' in indata:
@@ -370,8 +369,6 @@ def prepare_order_response(order_data: dict, mongodb):
                                 for user_uuid in order_data['generators']]
     order_data['editors'] = [utils.user_uuid_data(user_uuid, mongodb)
                              for user_uuid in order_data['editors']]
-    order_data['receivers'] = [utils.user_uuid_data(user_uuid, mongodb)
-                               for user_uuid in order_data['receivers']]
     order_data['organisation'] = utils.user_uuid_data(order_data['organisation'], mongodb)
 
     # convert dataset list into {title, _id}
