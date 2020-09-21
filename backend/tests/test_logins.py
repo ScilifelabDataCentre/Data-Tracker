@@ -6,7 +6,7 @@ import uuid
 
 import helpers
 
-from helpers import make_request, as_user, make_request_all_roles, USERS, use_db, random_string
+from helpers import make_request, as_user, make_request_all_roles, USERS, mdb, random_string
 # pylint: disable=redefined-outer-name
 
 def test_logout():

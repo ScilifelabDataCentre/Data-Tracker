@@ -8,7 +8,7 @@ import structure
 import utils
 
 from helpers import make_request, as_user, make_request_all_roles,\
-    USERS, random_string, TEST_LABEL, use_db, USER_RE
+    USERS, random_string, TEST_LABEL, mdb, USER_RE
 
 # avoid pylint errors because of fixtures
 # pylint: disable = redefined-outer-name, unused-import
@@ -16,7 +16,7 @@ from helpers import make_request, as_user, make_request_all_roles,\
 logging.getLogger().setLevel(logging.DEBUG)
 
 
-def test_get_order_permissions(use_db):
+def test_get_order_permissions(mdb):
     """
     Test permissions for requesting a order.
 
@@ -25,7 +25,7 @@ def test_get_order_permissions(use_db):
     """
     session = requests.Session()
 
-    db = use_db
+    db = mdb
     orders = list(db['orders'].aggregate([{'$match': {'auth_ids': USER_RE}},
                                           {'$sample': {'size': 2}}]))
     for order in orders:
@@ -47,7 +47,7 @@ def test_get_order_permissions(use_db):
         data = response.data['order']
 
 
-def test_get_order(use_db):
+def test_get_order(mdb):
     """
     Request multiple orders by uuid, one at a time.
 
@@ -56,7 +56,7 @@ def test_get_order(use_db):
     session = requests.Session()
     as_user(session, USERS['data'])
 
-    db = use_db
+    db = mdb
     orders = list(db['orders'].aggregate([{'$sample': {'size': 3}}]))
     for order in orders:
         # to simplify comparison
@@ -139,13 +139,13 @@ def test_get_order_bad():
             assert not response.data
 
 
-def test_get_order_logs_permissions(use_db):
+def test_get_order_logs_permissions(mdb):
     """
     Get order logs.
 
     Assert that DATA_MANAGEMENT or user in creator is required.
     """
-    db = use_db
+    db = mdb
     order_data = db['orders'].aggregate([{'$sample': {'size': 1}}]).next()
     user_data = db['users'].find_one({'_id': {'$in': order_data['editors']}})
     responses = make_request_all_roles(f'/api/order/{order_data["_id"]}/log/',
@@ -172,14 +172,14 @@ def test_get_order_logs_permissions(use_db):
     assert 'logs' in response.data
 
 
-def test_get_order_logs(use_db):
+def test_get_order_logs(mdb):
     """
     Request the logs for multiple orders.
 
     Confirm that the logs contain only the intended fields.
     """
     session = requests.session()
-    db = use_db
+    db = mdb
     orders = db['orders'].aggregate([{'$sample': {'size': 2}}])
     for order in orders:
         logs = list(db['logs'].find({'data_type': 'order', 'data._id': order['_id']}))
@@ -206,7 +206,7 @@ def test_get_order_logs_bad():
         assert response.code == 404
 
 
-def test_list_user_orders_permissions(use_db):
+def test_list_user_orders_permissions(mdb):
     """
     Request orders for multiple users by uuid, one at a time.
 
@@ -214,7 +214,7 @@ def test_list_user_orders_permissions(use_db):
     """
     session = requests.Session()
 
-    db = use_db
+    db = mdb
     users = db['users'].aggregate([{'$match': {'permissions': {'$in': ['ORDERS_SELF',
                                                                        'DATA_MANAGEMENT']}}},
                                    {'$sample': {'size': 2}}])
@@ -259,7 +259,7 @@ def test_list_user_orders_permissions(use_db):
             assert len(response.data['orders']) == 0
 
 
-def test_list_user_orders(use_db):
+def test_list_user_orders(mdb):
     """
     Request orders for multiple users by uuid, one at a time.
 
@@ -267,7 +267,7 @@ def test_list_user_orders(use_db):
     """
     session = requests.Session()
 
-    db = use_db
+    db = mdb
     users = db['users'].aggregate([{'$match': {'permissions': {'$in': ['ORDERS_SELF',
                                                                        'DATA_MANAGEMENT']}}},
                                    {'$sample': {'size': 2}}])
@@ -348,13 +348,13 @@ def test_add_order_permissions():
             assert not response.data
 
 
-def test_add_order(use_db):
+def test_add_order(mdb):
     """
     Add an order.
 
     Confirm that fields are set correctly.
     """
-    db = use_db
+    db = mdb
 
     indata = {'description': 'Test description',
               'title': 'Test title'}
@@ -421,13 +421,13 @@ def test_add_order(use_db):
             assert not response.data
 
 
-def test_add_order_log(use_db):
+def test_add_order_log(mdb):
     """
     Add an order.
 
     Confirm that logs are created.
     """
-    db = use_db
+    db = mdb
 
     indata = {'description': 'Test description',
               'title': 'Test title'}
@@ -525,7 +525,7 @@ def test_add_order_bad():
     assert response.code == 400
 
 
-def test_add_dataset_permissions(use_db):
+def test_add_dataset_permissions(mdb):
     """
     Add a dataset using .post(addDataset).
 
@@ -533,7 +533,7 @@ def test_add_dataset_permissions(use_db):
     """
     session = requests.Session()
 
-    db = use_db
+    db = mdb
     orders = db['orders'].aggregate([{'$sample': {'size': 2}}])
     indata = {'title': 'Test title'}
     indata.update(TEST_LABEL)
@@ -566,7 +566,7 @@ def test_add_dataset_permissions(use_db):
         assert len(response.data['_id']) == 36
 
 
-def test_add_dataset(use_db):
+def test_add_dataset(mdb):
     """
     Add a dataset using POST dataset.
 
@@ -576,7 +576,7 @@ def test_add_dataset(use_db):
               'description': 'Test description'}
     indata.update(TEST_LABEL)
 
-    db = use_db
+    db = mdb
     order = next(db['orders'].aggregate([{'$sample': {'size': 1}}]))
 
     session = requests.session()
@@ -600,7 +600,7 @@ def test_add_dataset(use_db):
     assert response.data['_id'] in db_o['datasets']
 
 
-def test_add_dataset_log(use_db):
+def test_add_dataset_log(mdb):
     """
     Confirm that logs are added correctly when datasets are added.
 
@@ -609,7 +609,7 @@ def test_add_dataset_log(use_db):
     indata = {'title': 'Test title'}
     indata.update(TEST_LABEL)
 
-    db = use_db
+    db = mdb
     order = next(db['orders'].aggregate([{'$sample': {'size': 1}}]))
 
     session = requests.session()
@@ -631,9 +631,9 @@ def test_add_dataset_log(use_db):
     assert ds_logs_post[0]['action']
 
 
-def test_add_dataset_bad_fields(use_db):
+def test_add_dataset_bad_fields(mdb):
     """Attempt to add datasets with e.g. forbidden fields."""
-    db = use_db
+    db = mdb
     order = next(db['orders'].aggregate([{'$sample': {'size': 1}}]))
     session = requests.Session()
     as_user(session, USERS['data'])
@@ -684,7 +684,7 @@ def test_add_dataset_bad_fields(use_db):
     assert not response.data
 
 
-def test_update_order_permissions(use_db):
+def test_update_order_permissions(mdb):
     """
     Update an order.
 
@@ -692,7 +692,7 @@ def test_update_order_permissions(use_db):
     """
     session = requests.Session()
 
-    db = use_db
+    db = mdb
 
     orders_user = db['users'].find_one({'auth_ids': USERS['orders']})
 
@@ -721,7 +721,7 @@ def test_update_order_permissions(use_db):
                 assert not response.data
 
 
-def test_update_order_data(use_db):
+def test_update_order_data(mdb):
     """
     Update existing orders.
 
@@ -730,7 +730,7 @@ def test_update_order_data(use_db):
     """
     session = requests.Session()
 
-    db = use_db
+    db = mdb
 
     orders_user = db['users'].find_one({'auth_ids': USERS['orders']})
 
@@ -770,13 +770,13 @@ def test_update_order_data(use_db):
                                         'user': orders_user['_id']})
 
 
-def test_update_order_bad(use_db):
+def test_update_order_bad(mdb):
     """
     Update an existing order.
 
     Bad requests.
     """
-    db = use_db
+    db = mdb
 
     orders_user = db['users'].find_one({'auth_ids': USERS['orders']})
     orders = list(db['orders'].aggregate([{'$match': {'editors': orders_user['_id']}},
@@ -869,7 +869,7 @@ def test_update_order_bad(use_db):
                 assert not response.data
 
 
-def test_delete_order(use_db):
+def test_delete_order(mdb):
     """
     Add and delete orders.
 
@@ -880,7 +880,7 @@ def test_delete_order(use_db):
     """
     session = requests.Session()
 
-    db = use_db
+    db = mdb
 
     orders_user = db['users'].find_one({'auth_ids': USERS['orders']})
 
@@ -952,13 +952,13 @@ def test_delete_order_bad():
     assert not response.data
 
 
-def test_list_all_orders(use_db):
+def test_list_all_orders(mdb):
     """
     Check that all orders in the system are listed.
 
     Check that the number of fields per order is correct.
     """
-    db = use_db
+    db = mdb
     nr_orders = db['orders'].count_documents({})
 
     responses = make_request_all_roles('/api/order/', ret_json=True)
