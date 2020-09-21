@@ -366,15 +366,16 @@ def check_email_uuid(user_identifier: str) -> Union[str, uuid.UUID]:
     return ''
 
 
-def user_uuid_data(user_ids: Union[str, list, uuid.UUID], mongodb: pymongo.database.Database) -> list:
+def user_uuid_data(user_ids: Union[str, list, uuid.UUID],
+                   mongodb: pymongo.database.Database) -> list:
     """
     Retrieve some extra information about a user using a uuid as input.
 
     Note that ``_id``` will be returned as ``str``, not ``uuid.UUID``.
 
     Args:
-        user_ids (str, list, or uuid.UUID): UUID of the user(s)
-        mongodb (pymongo.database.Database): The Mongo database to use for the query
+        user_ids (str, list, or uuid.UUID): UUID of the user(s).
+        mongodb (pymongo.database.Database): The Mongo database to use for the query.
 
     Returns:
         dict: The resulting data structure.
