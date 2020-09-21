@@ -180,19 +180,21 @@ def new_uuid() -> uuid.UUID:
     return uuid.uuid4()
 
 
-def str_to_uuid(uuid_str: str) -> uuid.UUID:
+def str_to_uuid(in_uuid: Union[str, uuid.UUID]) -> uuid.UUID:
     """
     Convert str uuid to uuid.UUID.
 
     Provided as a convenience function if the identifier must be changed in the future.
 
     Args:
-        uuid_str (str): The uuid to be converted.
+        in_uuid (str or uuid.UUID): The uuid to be converted.
 
     Returns:
-        uuid.UUID: The uuid.
+        uuid.UUID: The uuid as a UUID object.
     """
-    return uuid.UUID(uuid_str)
+    if isinstance(in_uuid, str):
+        return uuid.UUID(in_uuid)
+    return in_uuid
 
 
 # misc
@@ -364,24 +366,30 @@ def check_email_uuid(user_identifier: str) -> Union[str, uuid.UUID]:
     return ''
 
 
-def user_uuid_data(user_id: Union[str, uuid.UUID], mongodb: pymongo.database.Database) -> dict:
+def user_uuid_data(user_ids: Union[str, list, uuid.UUID], mongodb: pymongo.database.Database) -> list:
     """
     Retrieve some extra information about a user using a uuid as input.
 
     Note that ``_id``` will be returned as ``str``, not ``uuid.UUID``.
 
     Args:
-        user_id (str or uuid.UUID): UUID of the user.
+        user_ids (str, list, or uuid.UUID): UUID of the user(s)
         mongodb (pymongo.database.Database): The Mongo database to use for the query
 
     Returns:
         dict: The resulting data structure.
     """
-    if isinstance(user_id, str):
-        user_uuid = str_to_uuid(user_id)
+    if isinstance(user_ids, str):
+        user_uuids = [str_to_uuid(user_ids)]
+    elif isinstance(user_ids, list):
+        user_uuids = [str_to_uuid(entry) for entry in user_ids]
     else:
-        user_uuid = user_id
-    data = mongodb['users'].find_one({'_id': user_uuid})
-    return {'_id': str(user_uuid),
-            'name': data['name'],
-            'email': data['email_public']}
+        user_uuids = [user_ids]
+    data = mongodb['users'].find({'_id': {'$in': user_uuids}})
+    return [{'_id': str(entry['_id']),
+             'affiliation': entry['affiliation'],
+             'name': entry['name'],
+             'contact': entry['contact'],
+             'url': entry['url'],
+             'orcid': entry['orcid']}
+            for entry in data]
