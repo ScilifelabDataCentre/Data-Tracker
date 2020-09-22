@@ -22,7 +22,7 @@ Order
        * Get a list of all orders where the user is ``editor``.
        * All orders will be listed for a user with ``DATA_MANAGEMENT``.
 
-    **PUT**
+    **POST**
        * Add a new order.
        * Returns the ``uuid`` of the added order.
 
@@ -41,7 +41,7 @@ Order
 
 .. function:: /order/<uuid>/dataset/
 
-    **PUT**
+    **POST**
        * Add a new dataset for the order ``uuid``.
        * Returns the ``uuid`` of the added dataset.
     
@@ -87,7 +87,7 @@ Collection
     **GET**
        * Get a list of all collections.
 
-    **PUT**
+    **POST**
        * Add a new collection.
 
 
@@ -180,7 +180,7 @@ Look Up Users
        * Get a list of all users.
        * Users with ``USER_SEARCH`` will get a limited set of fields.
 
-    **PUT**
+    **POST**
        * Add a new user.
 
 
