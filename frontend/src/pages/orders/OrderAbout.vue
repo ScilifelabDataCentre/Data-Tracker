@@ -36,9 +36,6 @@
 
         <list-header title="Organisation"
                     explanation="The data owner, e.g. a university" />
-        <user-entry v-for="entry in order.editors"
-                    :key="entry._id"
-                    v-bind="entry" />
         <user-entry v-bind="order.organisation" />
 
         <list-header title="Editors"
