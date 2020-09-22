@@ -45,7 +45,8 @@
                     v-bind="entry" />
       </q-list>
     </q-card-section>
-
+  </q-card>
+  <q-card class="q-my-md">
     <q-card-section>
       <q-list dense>
         <list-header title="Datasets"
