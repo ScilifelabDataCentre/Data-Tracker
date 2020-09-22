@@ -66,11 +66,11 @@ def as_user(session: requests.Session, auth_id: str, set_csrf: bool = True) -> i
         int: Status code.
     """
     if auth_id:
-        code = session.get(f'{BASE_URL}/api/developer/login/{auth_id}').status_code
+        code = session.get(f'{BASE_URL}/api/v1/developer/login/{auth_id}').status_code
         assert code == 200
     else:
-        code = session.get(f'{BASE_URL}/api/logout/').status_code
-        session.get(f'{BASE_URL}/api/developer/hello')  # reset cookies
+        code = session.get(f'{BASE_URL}/api/v1/logout/').status_code
+        session.get(f'{BASE_URL}/api/v1/developer/hello')  # reset cookies
     if set_csrf:
         session.headers['X-CSRFToken'] = session.cookies.get('_csrf_token')
     return code

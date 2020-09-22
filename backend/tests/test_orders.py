@@ -30,7 +30,7 @@ def test_get_order_permissions(mdb):
                                           {'$sample': {'size': 2}}]))
     for order in orders:
         owner = db['users'].find_one({'_id': order['editors'][0]})
-        responses = make_request_all_roles(f'/api/order/{order["_id"]}/', ret_json=True)
+        responses = make_request_all_roles(f'/api/v1/order/{order["_id"]}/', ret_json=True)
         for response in responses:
             if response.role in ('data', 'root'):
                 assert response.code == 200
@@ -42,7 +42,7 @@ def test_get_order_permissions(mdb):
                 assert not response.data
 
         as_user(session, owner['auth_id'])
-        response = make_request(session, f'/api/order/{order["_id"]}/')
+        response = make_request(session, f'/api/v1/order/{order["_id"]}/')
         assert response.code == 200
         data = response.data['order']
 
@@ -73,7 +73,7 @@ def test_get_order(mdb):
             order['datasets'][i]['_id'] = str(order['datasets'][i]['_id'])
 
 
-        response = make_request(session, f'/api/order/{order["_id"]}/')
+        response = make_request(session, f'/api/v1/order/{order["_id"]}/')
         assert response.code == 200
         assert response.code == 200
         data = response.data['order']
@@ -104,7 +104,7 @@ def test_get_order_structure():
     reference['tagsUser'] = reference['tags_user']
     del reference['tags_user']
 
-    response = make_request(session, '/api/order/base/')
+    response = make_request(session, '/api/v1/order/base/')
     assert response.code == 200
     data = response.data['order']
     assert data == reference
@@ -117,7 +117,7 @@ def test_get_order_bad():
     All are expected to return 401, 403, or 404 depending on permissions.
     """
     for _ in range(2):
-        responses = make_request_all_roles(f'/api/order/{uuid.uuid4()}/')
+        responses = make_request_all_roles(f'/api/v1/order/{uuid.uuid4()}/')
         for response in responses:
             if response.role in ('orders', 'data', 'root'):
                 assert response.code == 404
@@ -128,7 +128,7 @@ def test_get_order_bad():
             assert not response.data
 
     for _ in range(2):
-        responses = make_request_all_roles(f'/api/order/{random_string()}/')
+        responses = make_request_all_roles(f'/api/v1/order/{random_string()}/')
         for response in responses:
             if response.role in ('orders', 'data', 'root'):
                 assert response.code == 404
@@ -148,7 +148,7 @@ def test_get_order_logs_permissions(mdb):
     db = mdb
     order_data = db['orders'].aggregate([{'$sample': {'size': 1}}]).next()
     user_data = db['users'].find_one({'_id': {'$in': order_data['editors']}})
-    responses = make_request_all_roles(f'/api/order/{order_data["_id"]}/log/',
+    responses = make_request_all_roles(f'/api/v1/order/{order_data["_id"]}/log/',
                                        ret_json=True)
     for response in responses:
         if response.role in ('data', 'root'):
@@ -165,7 +165,7 @@ def test_get_order_logs_permissions(mdb):
 
     as_user(session, user_data['auth_ids'][0])
     response = make_request(session,
-                            f'/api/order/{order_data["_id"]}/log/',
+                            f'/api/v1/order/{order_data["_id"]}/log/',
                             ret_json=True)
 
     assert response.code == 200
@@ -184,7 +184,7 @@ def test_get_order_logs(mdb):
     for order in orders:
         logs = list(db['logs'].find({'data_type': 'order', 'data._id': order['_id']}))
         as_user(session, USERS['data'])
-        response = make_request(session, f'/api/order/{order["_id"]}/log/', ret_json=True)
+        response = make_request(session, f'/api/v1/order/{order["_id"]}/log/', ret_json=True)
         assert response.data['dataType'] == 'order'
         assert response.data['entryId'] == str(order['_id'])
         assert len(response.data['logs']) == len(logs)
@@ -200,9 +200,9 @@ def test_get_order_logs_bad():
     session = requests.session()
     for _ in range(2):
         as_user(session, USERS['data'])
-        response = make_request(session, f'/api/order/{uuid.uuid4()}/log/', ret_json=True)
+        response = make_request(session, f'/api/v1/order/{uuid.uuid4()}/log/', ret_json=True)
         assert response.code == 200
-        response = make_request(session, f'/api/order/{random_string()}/log/', ret_json=True)
+        response = make_request(session, f'/api/v1/order/{random_string()}/log/', ret_json=True)
         assert response.code == 404
 
 
@@ -219,7 +219,7 @@ def test_list_user_orders_permissions(mdb):
                                                                        'DATA_MANAGEMENT']}}},
                                    {'$sample': {'size': 2}}])
     for user in users:
-        responses = make_request_all_roles('/api/order/user/', ret_json=True)
+        responses = make_request_all_roles('/api/v1/order/user/', ret_json=True)
         for response in responses:
             if response.role in ('orders', 'data', 'root'):
                 assert response.code == 200
@@ -232,7 +232,7 @@ def test_list_user_orders_permissions(mdb):
                 assert not response.data
 
         user_orders = list(db['orders'].find({'editors': user['_id']}))
-        responses = make_request_all_roles(f'/api/order/user/{user["_id"]}/', ret_json=True)
+        responses = make_request_all_roles(f'/api/v1/order/user/{user["_id"]}/', ret_json=True)
         for response in responses:
             if response.role in ('data', 'root'):
                 if user_orders:
@@ -249,7 +249,7 @@ def test_list_user_orders_permissions(mdb):
                 assert not response.data
 
         as_user(session, user['auth_ids'][0])
-        response = make_request(session, '/api/order/user/')
+        response = make_request(session, '/api/v1/order/user/')
         if user_orders:
             assert response.code == 200
             assert response.data
@@ -276,7 +276,7 @@ def test_list_user_orders(mdb):
         order_uuids = [str(order['_id']) for order in user_orders]
 
         as_user(session, user['auth_ids'][0])
-        response = make_request(session, '/api/order/user/')
+        response = make_request(session, '/api/v1/order/user/')
         if user_orders:
             assert response.code == 200
             assert response.data
@@ -298,7 +298,7 @@ def test_list_user_orders_bad():
 
     as_user(session, USERS['data'])
     for _ in range(2):
-        responses = make_request_all_roles(f'/api/order/user/{uuid.uuid4()}/')
+        responses = make_request_all_roles(f'/api/v1/order/user/{uuid.uuid4()}/')
         for response in responses:
             if response.role in ('data', 'root'):
                 assert response.code == 404
@@ -310,7 +310,7 @@ def test_list_user_orders_bad():
                 assert not response.data
 
     for _ in range(2):
-        responses = make_request_all_roles(f'/api/order/user/{random_string()}/')
+        responses = make_request_all_roles(f'/api/v1/order/user/{random_string()}/')
         for response in responses:
             if response.role in ('data', 'root'):
                 assert response.code == 404
@@ -329,7 +329,7 @@ def test_add_order_permissions():
     """
     indata = {'title': 'Test title'}
     indata.update(TEST_LABEL)
-    responses = make_request_all_roles('/api/order/',
+    responses = make_request_all_roles('/api/v1/order/',
                                        method='PUT',
                                        data=indata,
                                        ret_json=True)
@@ -358,7 +358,7 @@ def test_add_order(mdb):
               'title': 'Test title'}
     indata.update(TEST_LABEL)
 
-    responses = make_request_all_roles('/api/order/',
+    responses = make_request_all_roles('/api/v1/order/',
                                        method='PUT',
                                        data=indata,
                                        ret_json=True)
@@ -389,7 +389,7 @@ def test_add_order(mdb):
               'title': 'Test title'}
     indata.update(TEST_LABEL)
 
-    responses = make_request_all_roles('/api/order/',
+    responses = make_request_all_roles('/api/v1/order/',
                                        method='PUT',
                                        data=indata,
                                        ret_json=True)
@@ -430,7 +430,7 @@ def test_add_order_log(mdb):
               'title': 'Test title'}
     indata.update(TEST_LABEL)
 
-    responses = make_request_all_roles('/api/order/',
+    responses = make_request_all_roles('/api/v1/order/',
                                        method='PUT',
                                        data=indata,
                                        ret_json=True)
@@ -464,7 +464,7 @@ def test_add_order_bad():
               'title': 'Test title'}
     indata.update(TEST_LABEL)
 
-    responses = make_request_all_roles('/api/order/',
+    responses = make_request_all_roles('/api/v1/order/',
                                        method='PUT',
                                        data=indata,
                                        ret_json=True)
@@ -483,7 +483,7 @@ def test_add_order_bad():
               'title': 'Test title'}
     indata.update(TEST_LABEL)
 
-    responses = make_request_all_roles('/api/order/',
+    responses = make_request_all_roles('/api/v1/order/',
                                        method='PUT',
                                        data=indata,
                                        ret_json=True)
@@ -503,7 +503,7 @@ def test_add_order_bad():
               'title': 'Test title'}
     indata.update(TEST_LABEL)
     response = make_request(session,
-                            '/api/order/',
+                            '/api/v1/order/',
                             method='PUT',
                             data=indata,
                             ret_json=True)
@@ -524,7 +524,7 @@ def test_add_dataset_permissions(mdb):
     indata = {'title': 'Test title'}
     indata.update(TEST_LABEL)
     for order in orders:
-        responses = make_request_all_roles(f'/api/order/{order["_id"]}/dataset/',
+        responses = make_request_all_roles(f'/api/v1/order/{order["_id"]}/dataset/',
                                            method='PUT',
                                            data=indata,
                                            ret_json=True)
@@ -544,7 +544,7 @@ def test_add_dataset_permissions(mdb):
         owner = db['users'].find_one({'_id': order['editors'][0]})
         as_user(session, owner['auth_ids'][0])
         response = make_request(session,
-                                f'/api/order/{order["_id"]}/dataset/',
+                                f'/api/v1/order/{order["_id"]}/dataset/',
                                 method='PUT',
                                 data=indata)
         assert response.code == 200
@@ -569,7 +569,7 @@ def test_add_dataset(mdb):
     as_user(session, USERS['data'])
 
     response = make_request(session,
-                            f'/api/order/{order["_id"]}/dataset/',
+                            f'/api/v1/order/{order["_id"]}/dataset/',
                             method='PUT',
                             data=indata,
                             ret_json=True)
@@ -604,7 +604,7 @@ def test_add_dataset_log(mdb):
     order_logs = list(db['logs'].find({'data_type': 'order', 'data._id': order['_id']}))
 
     response = make_request(session,
-                            f'/api/order/{order["_id"]}/dataset/',
+                            f'/api/v1/order/{order["_id"]}/dataset/',
                             method='PUT',
                             data=indata,
                             ret_json=True)
@@ -627,7 +627,7 @@ def test_add_dataset_bad_fields(mdb):
     indata = {'_id': 'asd',
               'title': 'test title'}
     response = make_request(session,
-                            f'/api/order/{order["_id"]}/dataset/',
+                            f'/api/v1/order/{order["_id"]}/dataset/',
                             method='PUT',
                             data=indata)
     assert response.code == 403
@@ -636,7 +636,7 @@ def test_add_dataset_bad_fields(mdb):
     indata = {'timestamp': 'asd',
               'title': 'test title'}
     response = make_request(session,
-                            f'/api/order/{order["_id"]}/dataset/',
+                            f'/api/v1/order/{order["_id"]}/dataset/',
                             method='PUT',
                             data=indata)
     assert response.code == 400
@@ -645,7 +645,7 @@ def test_add_dataset_bad_fields(mdb):
     indata = {'extra': [{'asd': 123}],
               'title': 'test title'}
     response = make_request(session,
-                            f'/api/order/{order["_id"]}/dataset/',
+                            f'/api/v1/order/{order["_id"]}/dataset/',
                             method='PUT',
                             data=indata)
     assert response.code == 400
@@ -654,7 +654,7 @@ def test_add_dataset_bad_fields(mdb):
     indata = {'links': [{'asd': 123}],
               'title': 'test title'}
     response = make_request(session,
-                            f'/api/order/{order["_id"]}/dataset/',
+                            f'/api/v1/order/{order["_id"]}/dataset/',
                             method='PUT',
                             data=indata)
     assert response.code == 400
@@ -663,7 +663,7 @@ def test_add_dataset_bad_fields(mdb):
     indata = {'links': 'Some text',
               'title': 'test title'}
     response = make_request(session,
-                            f'/api/order/{order["_id"]}/dataset/',
+                            f'/api/v1/order/{order["_id"]}/dataset/',
                             method='PUT',
                             data=indata)
     assert response.code == 400
@@ -690,7 +690,7 @@ def test_update_order_permissions(mdb):
             as_user(session, USERS[role])
             indata = {'title': f'Test title - updated by {role}'}
             response = make_request(session,
-                                    f'/api/order/{order["_id"]}/',
+                                    f'/api/v1/order/{order["_id"]}/',
                                     method='PATCH',
                                     data=indata,
                                     ret_json=True)
@@ -733,7 +733,7 @@ def test_update_order_data(mdb):
         indata['tags_user'].update(TEST_LABEL['tags_user'])
 
         response = make_request(session,
-                                f'/api/order/{order["_id"]}/',
+                                f'/api/v1/order/{order["_id"]}/',
                                 method='PATCH',
                                 data=indata,
                                 ret_json=True)
@@ -772,7 +772,7 @@ def test_update_order_bad(mdb):
         indata = {'description': 'Test description',
                   'authors': str(uuid.uuid4()),
                   'title': 'Test title'}
-        responses = make_request_all_roles(f'/api/order/{order["_id"]}/',
+        responses = make_request_all_roles(f'/api/v1/order/{order["_id"]}/',
                                            method='PATCH',
                                            data=indata,
                                            ret_json=True)
@@ -789,7 +789,7 @@ def test_update_order_bad(mdb):
         indata = {'description': 'Test description',
                   'editors': str(orders_user['_id']),
                   'title': 'Test title'}
-        responses = make_request_all_roles(f'/api/order/{order["_id"]}/',
+        responses = make_request_all_roles(f'/api/v1/order/{order["_id"]}/',
                                            method='PATCH',
                                            data=indata,
                                            ret_json=True)
@@ -806,7 +806,7 @@ def test_update_order_bad(mdb):
         indata = {'description': 'Test description',
                   'editors': [str(uuid.uuid4())],
                   'title': 'Test title'}
-        responses = make_request_all_roles(f'/api/order/{order["_id"]}/',
+        responses = make_request_all_roles(f'/api/v1/order/{order["_id"]}/',
                                            method='PATCH',
                                            data=indata,
                                            ret_json=True)
@@ -823,7 +823,7 @@ def test_update_order_bad(mdb):
 
     for _ in range(2):
         indata = {'title': 'Test title'}
-        responses = make_request_all_roles(f'/api/order/{uuid.uuid4()}/',
+        responses = make_request_all_roles(f'/api/v1/order/{uuid.uuid4()}/',
                                            method='PATCH',
                                            data=indata,
                                            ret_json=True)
@@ -838,7 +838,7 @@ def test_update_order_bad(mdb):
                 assert not response.data
 
         indata = {'title': 'Test title'}
-        responses = make_request_all_roles(f'/api/order/{random_string}/',
+        responses = make_request_all_roles(f'/api/v1/order/{random_string}/',
                                            method='PATCH',
                                            data=indata,
                                            ret_json=True)
@@ -875,7 +875,7 @@ def test_delete_order(mdb):
         for role in USERS:
             as_user(session, USERS[role])
             response = make_request(session,
-                                    f'/api/order/{orders[i]["_id"]}/',
+                                    f'/api/v1/order/{orders[i]["_id"]}/',
                                     method='DELETE')
             if role in ('orders', 'data', 'root'):
                 if role != 'orders' or orders_user['_id'] in orders[i]['editors']:
@@ -905,12 +905,12 @@ def test_delete_order(mdb):
 
     as_user(session, USERS['orders'])
     response = make_request(session,
-                            '/api/order/',
+                            '/api/v1/order/',
                             data={'title': 'tmp'},
                             method='PUT')
     assert response.code == 200
     response = make_request(session,
-                            f'/api/order/{response.data["_id"]}/',
+                            f'/api/v1/order/{response.data["_id"]}/',
                             method='DELETE')
     assert response.code == 200
     assert not response.data
@@ -923,14 +923,14 @@ def test_delete_order_bad():
     as_user(session, USERS['data'])
     for _ in range(2):
         response = make_request(session,
-                                f'/api/order/{random_string()}/',
+                                f'/api/v1/order/{random_string()}/',
                                 method='DELETE')
     assert response.code == 404
     assert not response.data
 
     for _ in range(2):
         response = make_request(session,
-                                f'/api/order/{uuid.uuid4()}/',
+                                f'/api/v1/order/{uuid.uuid4()}/',
                                 method='DELETE')
     assert response.code == 404
     assert not response.data
@@ -945,7 +945,7 @@ def test_list_all_orders(mdb):
     db = mdb
     nr_orders = db['orders'].count_documents({})
 
-    responses = make_request_all_roles('/api/order/', ret_json=True)
+    responses = make_request_all_roles('/api/v1/order/', ret_json=True)
     for response in responses:
         if response.role in ('data', 'root'):
             assert response.code == 200

@@ -19,12 +19,12 @@ app = flask.Flask(__name__)  # pylint: disable=invalid-name
 app.config.update(config.init())
 
 if app.config['dev_mode']['api']:
-    app.register_blueprint(developer.blueprint, url_prefix='/api/developer')
+    app.register_blueprint(developer.blueprint, url_prefix='/api/v1/developer')
 
-app.register_blueprint(dataset.blueprint, url_prefix='/api/dataset')
-app.register_blueprint(order.blueprint, url_prefix='/api/order')
-app.register_blueprint(collection.blueprint, url_prefix='/api/collection')
-app.register_blueprint(user.blueprint, url_prefix='/api/user')
+app.register_blueprint(dataset.blueprint, url_prefix='/api/v1/dataset')
+app.register_blueprint(order.blueprint, url_prefix='/api/v1/order')
+app.register_blueprint(collection.blueprint, url_prefix='/api/v1/collection')
+app.register_blueprint(user.blueprint, url_prefix='/api/v1/user')
 
 
 oauth = OAuth(app)
@@ -65,19 +65,19 @@ def finalize(response):
     return response
 
 
-@app.route('/api/')
+@app.route('/api/v1/')
 def api_base():
     """List entities."""
     return flask.jsonify({'entities': ['dataset', 'order', 'collection', 'user', 'login']})
 
 
-@app.route('/api/login/')
+@app.route('/api/v1/login/')
 def login_types():
     """List login types."""
     return flask.jsonify({'types': ['apikey', 'oidc']})
 
 
-@app.route('/api/login/oidc/')
+@app.route('/api/v1/login/oidc/')
 def oidc_types():
     """List OpenID Connect types."""
     auth_types = {}
@@ -88,7 +88,7 @@ def oidc_types():
     return flask.jsonify(auth_types)
 
 
-@app.route('/api/login/oidc/<auth_name>/login/')
+@app.route('/api/v1/login/oidc/<auth_name>/login/')
 def oidc_login(auth_name):
     """Perform a login using OpenID Connect (e.g. Elixir AAI)."""
     client = oauth.create_client(auth_name)
@@ -98,7 +98,7 @@ def oidc_login(auth_name):
     return client.authorize_redirect(redirect_uri)
 
 
-@app.route('/api/login/oidc/<auth_name>/authorize/')
+@app.route('/api/v1/login/oidc/<auth_name>/authorize/')
 def oidc_authorize(auth_name):
     """Authorize a login using OpenID Connect (e.g. Elixir AAI)."""
     if auth_name not in app.config.get('oidc_names'):
@@ -121,7 +121,7 @@ def oidc_authorize(auth_name):
 
 
 # requests
-@app.route('/api/login/apikey/', methods=['POST'])
+@app.route('/api/v1/login/apikey/', methods=['POST'])
 def key_login():
     """Log in using an apikey."""
     try:
@@ -137,7 +137,7 @@ def key_login():
     return flask.Response(status=200)
 
 
-@app.route('/api/logout/')
+@app.route('/api/v1/logout/')
 def logout():
     """Log out the current user."""
     flask.session.clear()

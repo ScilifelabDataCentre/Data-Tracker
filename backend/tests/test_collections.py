@@ -10,7 +10,7 @@ from helpers import make_request, as_user, make_request_all_roles,\
 
 def test_random_collection():
     """Request a random collection."""
-    responses = make_request_all_roles('/api/collection/random', ret_json=True)
+    responses = make_request_all_roles('/api/v1/collection/random', ret_json=True)
     for response in responses:
         assert response.code == 200
         assert len(response.data['collections']) == 1
@@ -21,11 +21,11 @@ def test_random_collections():
     session = requests.Session()
     as_user(session, USERS['base'])
     for i in (1, 5, 0):
-        response = make_request(session, f'/api/collection/random/{i}', ret_json=True)
+        response = make_request(session, f'/api/v1/collection/random/{i}', ret_json=True)
         assert response.code == 200
         assert len(response.data['collections']) == i
 
-    response = make_request(session, '/api/collection/random/-1')
+    response = make_request(session, '/api/v1/collection/random/-1')
     assert response[1] == 404
     assert not response[0]
 
@@ -34,7 +34,7 @@ def test_get_collection_permissions(mdb):
     """Test permissions for requesting a collection."""
     collection = list(mdb['collections'].aggregate([{'$sample': {'size': 1}}]))[0]
 
-    responses = make_request_all_roles(f'/api/collection/{collection["_id"]}', ret_json=True)
+    responses = make_request_all_roles(f'/api/v1/collection/{collection["_id"]}', ret_json=True)
     for response in responses:
         assert response.code == 200
 
@@ -43,7 +43,7 @@ def test_get_collection(mdb):
     """
     Request multiple collections by uuid, one at a time.
 
-    Collections are choosen randomly using /api/collection/random.
+    Collections are choosen randomly using /api/v1/collection/random.
     """
     session = requests.Session()
     for _ in range(3):
@@ -54,7 +54,7 @@ def test_get_collection(mdb):
         collection['datasets'] = [str(entry) for entry in collection['datasets']]
         collection = utils.convert_keys_to_camel(collection)
         as_user(session, USERS['base'])
-        response = make_request(session, f'/api/collection/{collection["_id"]}')
+        response = make_request(session, f'/api/v1/collection/{collection["_id"]}')
         assert response.code == 200
         for field in collection:
             if field == 'datasets':
@@ -66,7 +66,7 @@ def test_get_collection(mdb):
                 assert collection[field] == response.data['collection'][field]
 
         as_user(session, proj_owner['auth_ids'][0])
-        response = make_request(session, f'/api/collection/{collection["_id"]}')
+        response = make_request(session, f'/api/v1/collection/{collection["_id"]}')
         assert response.code == 200
         print(collection)
         for field in collection:
@@ -79,7 +79,7 @@ def test_get_collection(mdb):
                 assert collection[field] == response.data['collection'][field]
 
         as_user(session, USERS['root'])
-        response = make_request(session, f'/api/collection/{collection["_id"]}')
+        response = make_request(session, f'/api/v1/collection/{collection["_id"]}')
         assert response.code == 200
         for field in collection:
             if field in ('datasets', 'editors'):
@@ -99,12 +99,12 @@ def test_get_collection_bad():
     """
     session = requests.Session()
     for _ in range(2):
-        response = make_request(session, f'/api/collection/{uuid.uuid4().hex}')
+        response = make_request(session, f'/api/v1/collection/{uuid.uuid4().hex}')
         assert response.code == 404
         assert not response.data
 
     for _ in range(2):
-        response = make_request(session, f'/api/collection/{random_string()}')
+        response = make_request(session, f'/api/v1/collection/{random_string()}')
         assert response.code == 404
         assert not response.data
 
@@ -118,7 +118,7 @@ def test_add_collection_permissions(mdb):
     indata = {'title': 'Test title'}
     indata.update(TEST_LABEL)
 
-    responses = make_request_all_roles('/api/collection/',
+    responses = make_request_all_roles('/api/v1/collection/',
                                        method='POST',
                                        data=indata,
                                        ret_json=True)
@@ -134,7 +134,7 @@ def test_add_collection_permissions(mdb):
     user_info = mdb['users'].find_one({'auth_ids': USERS['base']})
     indata.update({'editors': [str(user_info['_id'])]})
 
-    responses = make_request_all_roles('/api/collection/',
+    responses = make_request_all_roles('/api/v1/collection/',
                                        method='POST',
                                        data=indata,
                                        ret_json=True)
@@ -156,7 +156,7 @@ def test_add_collection_permissions(mdb):
     session = requests.Session()
     as_user(session, user_info['auth_ids'][0])
     response = make_request(session,
-                            '/api/collection/',
+                            '/api/v1/collection/',
                             method='POST',
                             data=indata,
                             ret_json=True)
@@ -164,7 +164,7 @@ def test_add_collection_permissions(mdb):
     assert '_id' in response.data
     assert len(response.data['_id']) == 36
 
-    responses = make_request_all_roles('/api/collection/',
+    responses = make_request_all_roles('/api/v1/collection/',
                                        method='POST',
                                        data=indata,
                                        ret_json=True)
@@ -203,7 +203,7 @@ def test_add_collection(mdb):
     indata.update(TEST_LABEL)
 
     response = make_request(session,
-                            '/api/collection/',
+                            '/api/v1/collection/',
                             method='POST',
                             data=indata,
                             ret_json=True)
@@ -225,7 +225,7 @@ def test_add_collection(mdb):
     as_user(session, USERS['data'])
 
     response = make_request(session,
-                            '/api/collection/',
+                            '/api/v1/collection/',
                             method='POST',
                             data=indata,
                             ret_json=True)
@@ -256,7 +256,7 @@ def test_add_collection_bad():
     indata = {'title': ''}
     indata.update(TEST_LABEL)
 
-    responses = make_request_all_roles('/api/collection/',
+    responses = make_request_all_roles('/api/v1/collection/',
                                        method='POST',
                                        data=indata,
                                        ret_json=True)
@@ -272,7 +272,7 @@ def test_add_collection_bad():
     indata = {}
     indata.update(TEST_LABEL)
 
-    responses = make_request_all_roles('/api/collection/',
+    responses = make_request_all_roles('/api/v1/collection/',
                                        method='POST',
                                        data=indata,
                                        ret_json=True)
@@ -290,7 +290,7 @@ def test_add_collection_bad():
 
     indata.update(TEST_LABEL)
 
-    responses = make_request_all_roles('/api/collection/',
+    responses = make_request_all_roles('/api/v1/collection/',
                                        method='POST',
                                        data=indata,
                                        ret_json=True)
@@ -307,7 +307,7 @@ def test_add_collection_bad():
               'title': 'Test title'}
     indata.update(TEST_LABEL)
 
-    responses = make_request_all_roles('/api/collection/',
+    responses = make_request_all_roles('/api/v1/collection/',
                                        method='POST',
                                        data=indata,
                                        ret_json=True)
@@ -326,7 +326,7 @@ def test_add_collection_bad():
               'title': 'Test title'}
     indata.update(TEST_LABEL)
     response = make_request(session,
-                             '/api/collection/',
+                             '/api/v1/collection/',
                              method='POST',
                              data=indata,
                              ret_json=True)
@@ -337,7 +337,7 @@ def test_add_collection_bad():
               'title': 'Test title'}
     indata.update(TEST_LABEL)
     response = make_request(session,
-                             '/api/collection/',
+                             '/api/v1/collection/',
                              method='POST',
                              data=indata,
                              ret_json=True)
@@ -359,7 +359,7 @@ def test_update_collection_permissions(mdb, collection_for_tests):
         as_user(session, USERS[role])
         indata = {'title': f'Test title - updated by {role}'}
         response = make_request(session,
-                                f'/api/collection/{collection_uuid}/',
+                                f'/api/v1/collection/{collection_uuid}/',
                                 method='PATCH',
                                 data=indata,
                                 ret_json=True)
@@ -397,7 +397,7 @@ def test_update_collection(mdb):
     as_user(session, USERS['base'])
 
     response = make_request(session,
-                            f'/api/collection/{collection_info["_id"]}/',
+                            f'/api/v1/collection/{collection_info["_id"]}/',
                             method='PATCH',
                             data=indata,
                             ret_json=True)
@@ -424,7 +424,7 @@ def test_update_collection(mdb):
     indata.update(TEST_LABEL)
 
     response = make_request(session,
-                            f'/api/collection/{collection_info["_id"]}/',
+                            f'/api/v1/collection/{collection_info["_id"]}/',
                             method='PATCH',
                             data=indata,
                             ret_json=True)
@@ -454,7 +454,7 @@ def test_update_collection_bad(mdb):
 
     indata = {'bad_tag': 'value'}
 
-    responses = make_request_all_roles(f'/api/collection/{collection_info["_id"]}/',
+    responses = make_request_all_roles(f'/api/v1/collection/{collection_info["_id"]}/',
                                        method='PATCH',
                                        data=indata,
                                        ret_json=True)
@@ -473,7 +473,7 @@ def test_update_collection_bad(mdb):
               'owners': [str(uuid.uuid4())],
               'title': 'Test title'}
 
-    responses = make_request_all_roles(f'/api/collection/{collection_info["_id"]}/',
+    responses = make_request_all_roles(f'/api/v1/collection/{collection_info["_id"]}/',
                                        method='PATCH',
                                        data=indata,
                                        ret_json=True)
@@ -490,7 +490,7 @@ def test_update_collection_bad(mdb):
 
     for _ in range(2):
         indata = {'title': 'Test title'}
-        responses = make_request_all_roles(f'/api/collection/{uuid.uuid4()}/',
+        responses = make_request_all_roles(f'/api/v1/collection/{uuid.uuid4()}/',
                                            method='PATCH',
                                            data=indata,
                                            ret_json=True)
@@ -503,7 +503,7 @@ def test_update_collection_bad(mdb):
                 assert not response.data
 
         indata = {'title': 'Test title'}
-        responses = make_request_all_roles(f'/api/collection/{random_string()}/',
+        responses = make_request_all_roles(f'/api/v1/collection/{random_string()}/',
                                            method='PATCH',
                                            data=indata,
                                            ret_json=True)
@@ -536,7 +536,7 @@ def test_delete_collection(mdb):
         for role in USERS:
             as_user(session, USERS[role])
             response = make_request(session,
-                                    f'/api/collection/{collections[i]["_id"]}/',
+                                    f'/api/v1/collection/{collections[i]["_id"]}/',
                                     method='DELETE')
             if role in ('data', 'root'):
                 assert response.code == 200
@@ -570,12 +570,12 @@ def test_delete_collection(mdb):
 
     as_user(session, USERS['base'])
     response = make_request(session,
-                            '/api/collection/',
+                            '/api/v1/collection/',
                             data={'title': 'tmp'},
                             method='POST')
     assert response.code == 200
     response = make_request(session,
-                            f'/api/collection/{response.data["_id"]}/',
+                            f'/api/v1/collection/{response.data["_id"]}/',
                             method='DELETE')
     assert response.code == 200
     assert not response.data
@@ -588,14 +588,14 @@ def test_delete_collection_bad():
     as_user(session, USERS['data'])
     for _ in range(2):
         response = make_request(session,
-                                f'/api/collection/{random_string()}/',
+                                f'/api/v1/collection/{random_string()}/',
                                 method='DELETE')
     assert response.code == 404
     assert not response.data
 
     for _ in range(2):
         response = make_request(session,
-                                f'/api/collection/{uuid.uuid4()}/',
+                                f'/api/v1/collection/{uuid.uuid4()}/',
                                 method='DELETE')
     assert response.code == 404
     assert not response.data
@@ -607,7 +607,7 @@ def test_list_collections(mdb):
 
     Should also test e.g. pagination once implemented.
     """
-    responses = make_request_all_roles('/api/collection/', ret_json=True)
+    responses = make_request_all_roles('/api/v1/collection/', ret_json=True)
     for response in responses:
         assert response.code == 200
         assert len(response.data['collections']) == mdb['collections'].count_documents({})
@@ -621,7 +621,7 @@ def test_get_collection_logs_permissions(mdb):
     """
     collection_data = mdb['collections'].aggregate([{'$sample': {'size': 1}}]).next()
     user_data = mdb['users'].find_one({'_id': {'$in': collection_data['editors']}})
-    responses = make_request_all_roles(f'/api/collection/{collection_data["_id"]}/log/',
+    responses = make_request_all_roles(f'/api/v1/collection/{collection_data["_id"]}/log/',
                                        ret_json=True)
     for response in responses:
         if response.role in ('data', 'root'):
@@ -638,7 +638,7 @@ def test_get_collection_logs_permissions(mdb):
 
     as_user(session, user_data['auth_ids'][0])
     response = make_request(session,
-                             f'/api/collection/{collection_data["_id"]}/log/',
+                             f'/api/v1/collection/{collection_data["_id"]}/log/',
                              ret_json=True)
 
     assert response.code == 200
@@ -656,7 +656,7 @@ def test_get_collection_logs(mdb):
     for collection in collections:
         logs = list(mdb['logs'].find({'data_type': 'collection', 'data._id': collection['_id']}))
         as_user(session, USERS['data'])
-        response = make_request(session, f'/api/collection/{collection["_id"]}/log/', ret_json=True)
+        response = make_request(session, f'/api/v1/collection/{collection["_id"]}/log/', ret_json=True)
         assert response.data['dataType'] == 'collection'
         assert response.data['entryId'] == str(collection['_id'])
         assert len(response.data['logs']) == len(logs)
