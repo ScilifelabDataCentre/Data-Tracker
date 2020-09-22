@@ -5,7 +5,7 @@ import {getCsrfHeader} from '../helpers.js';
 export function getDataset ({ commit, dispatch }, id) {
   return new Promise((resolve, reject) => {
     axios
-      .get('/api/dataset/' + id + '/')
+      .get('/api/v1/dataset/' + id + '/')
       .then((response) => {
         commit('updateDataset', response.data.dataset);
         resolve(response);
@@ -20,7 +20,7 @@ export function getDataset ({ commit, dispatch }, id) {
 export function getDatasets ({ commit, dispatch }) {
   return new Promise((resolve, reject) => {
     axios
-      .get('/api/dataset/')
+      .get('/api/v1/dataset/')
       .then((response) => {
         commit('updateDatasets', response.data.datasets);
         resolve(response);
@@ -37,7 +37,7 @@ export function saveDataset (context, payload) {
     let datasetUuid = payload.id;
     delete payload.id;
     axios
-      .patch('/api/dataset/' + datasetUuid + '/',
+      .patch('/api/v1/dataset/' + datasetUuid + '/',
              payload,
              {
                headers: getCsrfHeader(),
@@ -54,7 +54,7 @@ export function saveDataset (context, payload) {
 export function deleteDataset (context, dataset_id) {
   return new Promise((resolve, reject) => {
     axios
-      .delete('/api/dataset/' + dataset_id + '/',
+      .delete('/api/v1/dataset/' + dataset_id + '/',
               {
                 headers: getCsrfHeader(),
               })

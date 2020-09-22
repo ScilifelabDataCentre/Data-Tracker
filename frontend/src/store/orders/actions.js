@@ -5,7 +5,7 @@ import {getCsrfHeader} from '../helpers.js';
 export function getOrder ({ commit, dispatch }, id) {
   return new Promise((resolve, reject) => {
     axios
-      .get('/api/order/' + id + '/')
+      .get('/api/v1/order/' + id + '/')
       .then((response) => {
         commit('updateOrder', response.data.order);
         resolve(response);
@@ -19,7 +19,7 @@ export function getOrder ({ commit, dispatch }, id) {
 export function getOrders ({ commit, dispatch }) {
   return new Promise((resolve, reject) => {
     axios
-      .get('/api/order/')
+      .get('/api/v1/order/')
       .then((response) => {
         commit('updateOrders', response.data.orders);
         resolve(response);
@@ -33,7 +33,7 @@ export function getOrders ({ commit, dispatch }) {
 export function deleteOrder (context, order_id) {
   return new Promise((resolve, reject) => {
     axios
-      .delete('/api/order/' + order_id + '/',
+      .delete('/api/v1/order/' + order_id + '/',
               {
                 headers: getCsrfHeader(),
               })
@@ -52,7 +52,7 @@ export function saveOrder (context, payload) {
     delete payload.id;
     if (uuid === '') {
       axios
-        .post('/api/order/',
+        .post('/api/v1/order/',
               payload,
               {
                 headers: getCsrfHeader(),
@@ -66,7 +66,7 @@ export function saveOrder (context, payload) {
     }
     else {
       axios
-        .patch('/api/order/' + uuid + '/',
+        .patch('/api/v1/order/' + uuid + '/',
                payload,
                {
                  headers: getCsrfHeader(),
@@ -84,7 +84,7 @@ export function saveOrder (context, payload) {
 export function addDataset (context, payload) {
   return new Promise((resolve, reject) => {
     axios
-      .post('/api/order/' + payload.uuid + '/dataset/',
+      .post('/api/v1/order/' + payload.uuid + '/dataset/',
             payload.data,
             {
               headers: getCsrfHeader(),
