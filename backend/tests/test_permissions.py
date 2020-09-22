@@ -78,9 +78,9 @@ def test_request_permission_data_management():
 
 
 def test_csrf():
-    """Perform POST, PUT and DELETE requests to confirm that CSRF works correctly."""
+    """Perform POST, POST and DELETE requests to confirm that CSRF works correctly."""
     
-    for method in ('POST', 'PATCH', 'PUT', 'DELETE'):
+    for method in ('POST', 'PATCH', 'POST', 'DELETE'):
         responses = helpers.make_request_all_roles('/api/v1/developer/csrftest',
                                                    method=method,
                                                    set_csrf=False,

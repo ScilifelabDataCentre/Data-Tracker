@@ -164,7 +164,7 @@ def get_empty_order():
     return utils.response_json({'order': order})
 
 
-@blueprint.route('/', methods=['PUT'])
+@blueprint.route('/', methods=['POST'])
 def add_order():
     """
     Add an order.
@@ -205,7 +205,7 @@ def add_order():
     return utils.response_json({'_id': result.inserted_id})
 
 
-@blueprint.route('/<identifier>/dataset/', methods=['PUT'])
+@blueprint.route('/<identifier>/dataset/', methods=['POST'])
 def add_dataset(identifier):  # pylint: disable=too-many-branches
     """
     Add a dataset to the given order.

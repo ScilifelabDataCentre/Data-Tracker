@@ -273,7 +273,7 @@ def test_add_user(mdb):
     indata = {'auth_ids': ['user::added']}
     responses = make_request_all_roles('/api/v1/user/',
                                        ret_json=True,
-                                       method='PUT',
+                                       method='POST',
                                        data=indata)
     for response in responses:
         if response.role in ('users', 'root', 'orders'):
@@ -298,7 +298,7 @@ def test_add_user(mdb):
     response = make_request(session,
                             '/api/v1/user/',
                             ret_json=True,
-                            method='PUT',
+                            method='POST',
                             data=indata)
     assert response.code == 200
     assert '_id' in response.data
@@ -348,7 +348,7 @@ def test_key_reset(mdb):
         as_user(session, USERS[userid])
         response = make_request(session,
                                 '/api/v1/user/me/apikey/',
-                                method='PUT')
+                                method='POST')
         if userid == 'no-login':
             assert response.code == 401
             assert not response.data
@@ -368,7 +368,7 @@ def test_key_reset(mdb):
 
         response = make_request(session,
                                 f'/api/v1/user/{mod_user_info["_id"]}/apikey/',
-                                method='PUT')
+                                method='POST')
         if userid not in ('users', 'root'):
             assert response.code == 403
             assert not response.data

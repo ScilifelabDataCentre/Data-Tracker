@@ -49,7 +49,7 @@ def permission_hello(permission: str):
     return flask.jsonify({'test': 'success'})
 
 
-@blueprint.route('/csrftest', methods=['POST', 'PATCH', 'PUT', 'DELETE'])
+@blueprint.route('/csrftest', methods=['POST', 'PATCH', 'POST', 'DELETE'])
 def csrf_test():
     """Test csrf tokens."""
     return flask.jsonify({'test': 'success'})

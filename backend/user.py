@@ -93,8 +93,8 @@ def get_current_user_info():
 
 
 # requests
-@blueprint.route('/me/apikey/', methods=['PUT'])
-@blueprint.route('/<identifier>/apikey/', methods=['PUT'])
+@blueprint.route('/me/apikey/', methods=['POST'])
+@blueprint.route('/<identifier>/apikey/', methods=['POST'])
 @login_required
 def gen_new_api_key(identifier: str = None):
     """
@@ -160,7 +160,7 @@ def get_user_data(identifier: str):
     return utils.response_json({'user': user_info})
 
 
-@blueprint.route('/', methods=['PUT'])
+@blueprint.route('/', methods=['POST'])
 @login_required
 def add_user():
     """

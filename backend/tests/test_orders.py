@@ -330,7 +330,7 @@ def test_add_order_permissions():
     indata = {'title': 'Test title'}
     indata.update(TEST_LABEL)
     responses = make_request_all_roles('/api/v1/order/',
-                                       method='PUT',
+                                       method='POST',
                                        data=indata,
                                        ret_json=True)
     for response in responses:
@@ -359,7 +359,7 @@ def test_add_order(mdb):
     indata.update(TEST_LABEL)
 
     responses = make_request_all_roles('/api/v1/order/',
-                                       method='PUT',
+                                       method='POST',
                                        data=indata,
                                        ret_json=True)
     for response in responses:
@@ -390,7 +390,7 @@ def test_add_order(mdb):
     indata.update(TEST_LABEL)
 
     responses = make_request_all_roles('/api/v1/order/',
-                                       method='PUT',
+                                       method='POST',
                                        data=indata,
                                        ret_json=True)
     for response in responses:
@@ -431,7 +431,7 @@ def test_add_order_log(mdb):
     indata.update(TEST_LABEL)
 
     responses = make_request_all_roles('/api/v1/order/',
-                                       method='PUT',
+                                       method='POST',
                                        data=indata,
                                        ret_json=True)
     for response in responses:
@@ -465,7 +465,7 @@ def test_add_order_bad():
     indata.update(TEST_LABEL)
 
     responses = make_request_all_roles('/api/v1/order/',
-                                       method='PUT',
+                                       method='POST',
                                        data=indata,
                                        ret_json=True)
     for response in responses:
@@ -484,7 +484,7 @@ def test_add_order_bad():
     indata.update(TEST_LABEL)
 
     responses = make_request_all_roles('/api/v1/order/',
-                                       method='PUT',
+                                       method='POST',
                                        data=indata,
                                        ret_json=True)
     for response in responses:
@@ -504,7 +504,7 @@ def test_add_order_bad():
     indata.update(TEST_LABEL)
     response = make_request(session,
                             '/api/v1/order/',
-                            method='PUT',
+                            method='POST',
                             data=indata,
                             ret_json=True)
     assert response.code == 403
@@ -525,7 +525,7 @@ def test_add_dataset_permissions(mdb):
     indata.update(TEST_LABEL)
     for order in orders:
         responses = make_request_all_roles(f'/api/v1/order/{order["_id"]}/dataset/',
-                                           method='PUT',
+                                           method='POST',
                                            data=indata,
                                            ret_json=True)
         for response in responses:
@@ -545,7 +545,7 @@ def test_add_dataset_permissions(mdb):
         as_user(session, owner['auth_ids'][0])
         response = make_request(session,
                                 f'/api/v1/order/{order["_id"]}/dataset/',
-                                method='PUT',
+                                method='POST',
                                 data=indata)
         assert response.code == 200
         assert '_id' in response.data
@@ -570,7 +570,7 @@ def test_add_dataset(mdb):
 
     response = make_request(session,
                             f'/api/v1/order/{order["_id"]}/dataset/',
-                            method='PUT',
+                            method='POST',
                             data=indata,
                             ret_json=True)
     assert response.code == 200
@@ -605,7 +605,7 @@ def test_add_dataset_log(mdb):
 
     response = make_request(session,
                             f'/api/v1/order/{order["_id"]}/dataset/',
-                            method='PUT',
+                            method='POST',
                             data=indata,
                             ret_json=True)
 
@@ -628,7 +628,7 @@ def test_add_dataset_bad_fields(mdb):
               'title': 'test title'}
     response = make_request(session,
                             f'/api/v1/order/{order["_id"]}/dataset/',
-                            method='PUT',
+                            method='POST',
                             data=indata)
     assert response.code == 403
     assert not response.data
@@ -637,7 +637,7 @@ def test_add_dataset_bad_fields(mdb):
               'title': 'test title'}
     response = make_request(session,
                             f'/api/v1/order/{order["_id"]}/dataset/',
-                            method='PUT',
+                            method='POST',
                             data=indata)
     assert response.code == 400
     assert not response.data
@@ -646,7 +646,7 @@ def test_add_dataset_bad_fields(mdb):
               'title': 'test title'}
     response = make_request(session,
                             f'/api/v1/order/{order["_id"]}/dataset/',
-                            method='PUT',
+                            method='POST',
                             data=indata)
     assert response.code == 400
     assert not response.data
@@ -655,7 +655,7 @@ def test_add_dataset_bad_fields(mdb):
               'title': 'test title'}
     response = make_request(session,
                             f'/api/v1/order/{order["_id"]}/dataset/',
-                            method='PUT',
+                            method='POST',
                             data=indata)
     assert response.code == 400
     assert not response.data
@@ -664,7 +664,7 @@ def test_add_dataset_bad_fields(mdb):
               'title': 'test title'}
     response = make_request(session,
                             f'/api/v1/order/{order["_id"]}/dataset/',
-                            method='PUT',
+                            method='POST',
                             data=indata)
     assert response.code == 400
     assert not response.data
@@ -907,7 +907,7 @@ def test_delete_order(mdb):
     response = make_request(session,
                             '/api/v1/order/',
                             data={'title': 'tmp'},
-                            method='PUT')
+                            method='POST')
     assert response.code == 200
     response = make_request(session,
                             f'/api/v1/order/{response.data["_id"]}/',
