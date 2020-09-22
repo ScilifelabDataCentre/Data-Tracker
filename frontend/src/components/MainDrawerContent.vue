@@ -9,7 +9,7 @@
 
   <!-- Show only if permitted -->
   <NavEntry
-    v-if="currentUser.permissions.includes('ORDERS_SELF')"
+    v-if="currentUser.permissions.includes('ORDERS')"
     v-bind="orderLink"
     />
 
@@ -140,13 +140,13 @@ export default {
         {
           title: 'Datasets',
           caption: 'Data deliveries',
-          icon: 'insights',
+          icon: 'fas fa-chart-area',
           link:  { 'name': 'Dataset Browser'}
         },
         {
           title: 'Collections',
           caption: 'Collections of datasets',
-          icon: 'local_library',
+          icon: 'fas fa-layer-group',
           link:  { 'name': 'Collection Browser'}
         }
       ],
@@ -164,7 +164,7 @@ export default {
         title: 'Log Out',
         caption: 'Log out the current user',
         icon: 'exit_to_app',
-        link: '/api/logout/'
+        link: '/api/v1/logout/'
       },
 
       loginLinks: [
