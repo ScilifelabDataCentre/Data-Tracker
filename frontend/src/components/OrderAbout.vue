@@ -1,5 +1,5 @@
 <template>
-<q-page padding>
+<div>
   <div class="text-center q-mb-lg">
     <h1 class="text-h2 q-mb-xs ">{{ order.title }}</h1>
     <div class="text-subtitle1 text-italic">
@@ -85,19 +85,7 @@
       </q-field>
     </q-card-section>
   </q-card>
-
-  <q-page-sticky position="top-right"
-		 :offset="[18, 18]">
-    <q-btn fab
-           icon="edit"
-           color="accent"
-           :to="{ 'name': 'Order Edit', params: {'uuid': uuid} }" />
-  </q-page-sticky>
-
-  <q-inner-loading :showing="loading">
-    <q-spinner-gears size="100px" color="primary" />
-  </q-inner-loading>    <!-- content -->
-</q-page>
+</div>
 </template>
 
 <script>
@@ -110,13 +98,6 @@ export default {
   components: {
     'user-entry': UserEntry,
     'list-header': ListHeader
-  },
-  
-  props: {
-    uuid: {
-      type: String,
-      required: true
-    }
   },
 
   computed: {
@@ -132,12 +113,6 @@ export default {
       loading: true,
     }
   },
-  
-  mounted () {
-    this.$store.dispatch('orders/getOrder', this.uuid)
-      .then(() => this.loading = false)
-      .catch(() => this.loading = false)
-  }
 
 }
 </script>

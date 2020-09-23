@@ -15,9 +15,8 @@ const DatasetAbout = () => import(/* webpackChunkName: "dataset" */ 'pages/datas
 const DatasetBrowser = () => import(/* webpackChunkName: "dataset" */ 'pages/datasets/DatasetBrowser.vue')
 const DatasetEdit = () => import(/* webpackChunkName: "dataset" */ 'pages/datasets/DatasetEdit.vue')
 
-const OrderAbout = () => import(/* webpackChunkName: "order" */ 'pages/orders/OrderAbout.vue')
+const OrderInfo = () => import(/* webpackChunkName: "order" */ 'pages/orders/OrderInfo.vue')
 const OrderBrowser = () => import(/* webpackChunkName: "order" */ 'pages/orders/OrderBrowser.vue')
-const OrderEdit = () => import(/* webpackChunkName: "order" */ 'pages/orders/OrderEdit.vue')
 
 const UserManager = () => import(/* webpackChunkName: "admin" */ 'pages/admin/UserManager.vue')
 
@@ -71,21 +70,9 @@ const routes = [
       },
       {
         path: ':uuid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})',
-        component: OrderAbout,
+        component: OrderInfo,
         props: true,
         name: 'Order About'
-      },
-      {
-        path: ':uuid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/edit',
-        component: OrderEdit,
-        props: true,
-        name: 'Order Edit'
-      },
-      {
-        path: 'add',
-        component: OrderEdit,
-        props: { 'uuid': '' },
-        name: 'Order Add'
       },
     ]
   },
