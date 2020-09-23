@@ -2,12 +2,10 @@
 <q-page padding>
   <q-card>
     <q-card-section>
-      <q-field
-	v-if="newOrder.id !== ''"
-        label="UUID"
-	stack-label
-	  filled
-          >
+      <q-field v-if="newOrder.id !== ''"
+               label="UUID"
+	       stack-label
+	       filled>
 	  <template v-slot:prepend>
             <q-icon name="label_important" />
           </template>
@@ -35,24 +33,6 @@
             <q-icon name="description" />
           </template>
 	</q-input>
-      </q-card-section>
-
-      <q-card-section>
-        <q-input id="order-title"
-                 label="Creator"
-                 v-model="newOrder.creator">
-	  <template v-slot:prepend>
-            <q-icon name="person" />
-          </template>
-        </q-input>
-
-        <q-input id="order-title"
-                 label="Receiver"
-                 v-model="newOrder.receiver">
-	  <template v-slot:prepend>
-            <q-icon name="person" />
-          </template>
-        </q-input>
       </q-card-section>
 
       <q-card-section>
@@ -100,7 +80,7 @@
            <q-btn flat icon="add" color="primary" @click="addUserTag"/>
          </div>
         <q-list dense>
-          <q-item v-for="key in Object.keys(newOrder.extra)" :key="key">
+          <q-item v-for="key in Object.keys(newOrder.tags_user)" :key="key">
             <q-input :label="key"
                      v-model="newOrder.extra[key]"
                      stack-label>
@@ -124,9 +104,9 @@
         <q-btn label="Delete" color="negative" class="q-ml-xl" @click="deleteOrder"/>
       </q-card-section>
   </q-card>
-  <q-inner-loading :showing="loading">
+  <q-inner-isLoading :showing="isLoading">
     <q-spinner-gears size="100px" color="primary" />
-  </q-inner-loading>
+  </q-inner-isLoading>
 </q-page>
 </template>
 
@@ -156,19 +136,24 @@ export default {
 
   data () {
     return {
-      loading: true,
+      isLoading: true,
       newOrder: {
         id: '',
         title: '',
         description: '',
-        creator: '',
-        receiver: '',
-        extra: {}
+        authors: [],
+        generators: [],
+        organisation: '',
+        editors: [],
+        tags_standard: {},
+        tags_user: {},
       },
       addDsError: '',
       deleteDsError: '',
       linkDesc: '',
       tagName: '',
+      isSending: false,
+      userList: [],
     }
   },
 
@@ -248,10 +233,9 @@ export default {
         this.newOrder = JSON.parse(JSON.stringify(response.data.order));
         this.newOrder.id = this.newOrder._id;
         delete this.newOrder._id;
-        this.newOrder.creator = this.newOrder.creator.identifier;
-        this.loading = false;
+        this.isLoading = false;
       })
-      .catch(() => this.loading = false);
+      .catch(() => this.isLoading = false);
   }
 }
 </script>
