@@ -18,7 +18,7 @@
     </q-tab-panel>
 
     <q-tab-panel name="edit">
-      Lorem ipsum dolor sit amet consectetur adipisicing elit.
+      <order-edit />
     </q-tab-panel>
 
   </q-tab-panels>
@@ -46,18 +46,23 @@
 
 <script>
 import OrderAbout from 'components/OrderAbout.vue'
+import OrderEdit from 'components/OrderEdit.vue'
 
 export default {
   name: 'OrderInfo',
 
   components: {
     'order-about': OrderAbout,
+    'order-edit': OrderEdit,
   },
   
   props: {
     uuid: {
       type: String,
-      required: true
+    },
+    isNew: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -66,6 +71,7 @@ export default {
       isLoading: true,
       currentTab: 'preview',
       editMode: false,
+      
     }
   },
 
@@ -89,9 +95,17 @@ export default {
 
     loadData () {
       this.isLoading = true;
-      this.$store.dispatch('orders/getOrder', this.uuid)
-        .then(() => this.isLoading = false)
-        .catch(() => this.isLoading = false);
+      if (this.isNew) {
+        this.$store.dispatch('orders/getEmptyOrder', this.uuid)
+          .then(() => this.isLoading = false)
+          .catch(() => this.isLoading = false);
+
+      }
+      else {
+        this.$store.dispatch('orders/getOrder', this.uuid)
+          .then(() => this.isLoading = false)
+          .catch(() => this.isLoading = false);
+      }
     }
   },
   
