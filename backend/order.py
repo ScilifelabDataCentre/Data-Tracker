@@ -34,13 +34,10 @@ def prepare():
 @blueprint.route('/', methods=['GET'])
 def list_orders():
     """
-    List all orders belonging to the provided user.
-
-    Args:
-        userid (str): Uuid of user to find orders for.
+    List all orders visible to the current user.
 
     Returns:
-        flask.Response: Json structure with a list of orders.
+        flask.Response: JSON structure with a list of orders.
     """
     if user.has_permission('DATA_MANAGEMENT'):
         orders = list(flask.g.db['orders'].find(projection={'_id': 1,
@@ -52,6 +49,19 @@ def list_orders():
                                         'title': 1}))
 
     return utils.response_json({'orders': orders})
+
+
+@blueprint.route('/structure/', methods=['GET'])
+def get_order_data_structure():
+    """
+    Get an empty order entry.
+
+    Returns:
+        flask.Response: JSON structure with a list of orders.
+    """
+    empty_order = structure.order()
+    empty_order['_id'] = ''
+    return utils.response_json({'order': empty_order})
 
 
 @blueprint.route('/user/', defaults={'user_id': None}, methods=['GET'])
