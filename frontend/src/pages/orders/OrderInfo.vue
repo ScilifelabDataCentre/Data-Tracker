@@ -32,6 +32,7 @@
            icon="edit"
            active-icon="save"
            direction="down"
+           @show="activateEditMode"
            @hide="saveEdit">
         <q-fab-action color="negative" @click="cancelEdit" icon="cancel" label="Cancel" />
       </q-fab>
@@ -70,7 +71,7 @@ export default {
 
   methods: {
     activateEditMode () {
-      this.editMode = !this.editMode;
+      this.editMode = true;
       this.currentTab = "edit";
     },
 
@@ -81,8 +82,9 @@ export default {
     },
 
     saveEdit () {
-      this.editMode = false;
       // dispatch job to save entry as provided in state
+      this.editMode = false;
+      this.currentTab = "preview";
     },
 
     loadData () {
