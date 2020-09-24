@@ -23,8 +23,8 @@
 
   </q-tab-panels>
 
-  <q-page-sticky position="top-right"
-		 :offset="[18, 18]">
+  <q-page-sticky position="top-left"
+		 :offset="[14, 14]">
     <q-fab v-model="editMode"
            vertical-actions-align="center"
            :label="editMode ? 'Save' : 'Edit'"
