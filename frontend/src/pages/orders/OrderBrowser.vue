@@ -22,7 +22,12 @@
     </template>
 
     <template v-slot:top-right>
-      <q-input rounded outlined dense debounce="300" v-model="filter" placeholder="Search">
+      <q-input rounded
+               outlined
+               dense
+               debounce="300"
+               v-model="filter"
+               placeholder="Search">
         <template v-slot:append>
           <q-icon name="search" />
         </template>
