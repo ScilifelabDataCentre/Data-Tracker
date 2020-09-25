@@ -2,6 +2,7 @@ import axios from 'axios';
 
 import {getCsrfHeader} from '../helpers.js';
 
+
 export function getOrder ({ commit, dispatch }, id) {
   return new Promise((resolve, reject) => {
     axios
@@ -16,6 +17,26 @@ export function getOrder ({ commit, dispatch }, id) {
   });
 }
 
+
+export function setOrderFields({ commit }, data) {
+  commit('updateOrderFields', data);
+}
+
+export function getEmptyOrder ({ commit, dispatch }) {
+  return new Promise((resolve, reject) => {
+    axios
+      .get('/api/v1/order/structure/')
+      .then((response) => {
+        commit('updateOrder', response.data.order);
+        resolve(response);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+}
+
+
 export function getOrders ({ commit, dispatch }) {
   return new Promise((resolve, reject) => {
     axios
@@ -29,6 +50,7 @@ export function getOrders ({ commit, dispatch }) {
       });
   });
 }
+
 
 export function deleteOrder (context, order_id) {
   return new Promise((resolve, reject) => {
@@ -45,6 +67,7 @@ export function deleteOrder (context, order_id) {
       });
   });
 }
+
 
 export function saveOrder (context, payload) {
   return new Promise((resolve, reject) => {
@@ -80,6 +103,7 @@ export function saveOrder (context, payload) {
     }
   });
 }
+
 
 export function addDataset (context, payload) {
   return new Promise((resolve, reject) => {
