@@ -104,22 +104,12 @@
         <q-btn label="Delete" color="negative" class="q-ml-xl" @click="deleteOrder"/>
       </q-card-section>
   </q-card>
-  <q-inner-isLoading :showing="isLoading">
-    <q-spinner-gears size="100px" color="primary" />
-  </q-inner-isLoading>
 </q-page>
 </template>
 
 <script>
 export default {
   name: 'OrderEdit',
-
-  props: {
-    uuid: {
-      type: String,
-      required: true
-    }
-  },
 
   computed: {
     origOrder: {
@@ -226,16 +216,5 @@ export default {
     },
     
   },
-  
-  mounted () {
-    this.$store.dispatch('orders/getOrder', this.uuid)
-      .then((response) => {
-        this.newOrder = JSON.parse(JSON.stringify(response.data.order));
-        this.newOrder.id = this.newOrder._id;
-        delete this.newOrder._id;
-        this.isLoading = false;
-      })
-      .catch(() => this.isLoading = false);
-  }
 }
 </script>
