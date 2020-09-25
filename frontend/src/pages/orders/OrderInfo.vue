@@ -34,8 +34,16 @@
            direction="down"
            @show="activateEditMode"
            @hide="saveEdit">
-        <q-fab-action color="negative" @click="cancelEdit" icon="cancel" label="Cancel" />
-      </q-fab>
+      <q-fab-action v-show="!isNew"
+                    color="negative"
+                    @click="deleteEntry"
+                    icon="fas fa-trash"
+                    label="Delete" />
+      <q-fab-action color="grey-6"
+                    @click="cancelEdit"
+                    icon="cancel"
+                    label="Cancel" />
+    </q-fab>
   </q-page-sticky>
 
   <q-inner-loading :showing="isLoading">
@@ -66,6 +74,14 @@ export default {
     }
   },
 
+  computed: {
+    order: {
+      get () {
+        return this.$store.state.orders.order;
+      },
+    },
+  },
+
   data () {
     return {
       isLoading: true,
@@ -81,10 +97,35 @@ export default {
       this.currentTab = "edit";
     },
 
+    submitOrderForm(event) {
+      event.preventDefault();
+      // remove extra data etc
+      let orderToSubmit = JSON.parse(JSON.stringify(this.order));
+      this.$store.dispatch('orders/saveOrder', orderToSubmit)
+        .then(() => {
+          this.$router.push({'name': 'Order About', params: { 'uuid': this.uuid } });
+        });
+    },
+
     cancelEdit () {
+      if (this.isNew) {
+          this.$router.push({ 'name': 'Order Browser' });
+      }
       this.editMode = false;
       this.loadData();
       this.currentTab = "preview";
+    },
+
+    deleteEntry(event) {
+      event.preventDefault();
+      let response = confirm("Are you sure you want to delete the order?")
+      if (response) {
+        this.$store.dispatch('orders/deleteOrder', this.uuid)
+          .then(() => {
+            this.$router.push({ 'name': 'Order Browser' });
+          })
+          .catch((err) => console.log(err));
+      }
     },
 
     saveEdit () {
@@ -99,7 +140,6 @@ export default {
         this.$store.dispatch('orders/getEmptyOrder', this.uuid)
           .then(() => this.isLoading = false)
           .catch(() => this.isLoading = false);
-
       }
       else {
         this.$store.dispatch('orders/getOrder', this.uuid)
