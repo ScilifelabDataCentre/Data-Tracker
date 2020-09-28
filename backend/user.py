@@ -63,7 +63,15 @@ def list_users():
     """
     if not has_permission('USER_SEARCH'):
         flask.abort(403)
-    result = tuple(flask.g.db['users'].find())
+
+    fields = {'api_key': 0,
+              'api_salt': 0}
+
+    if not has_permission('USER_MANAGEMENT'):
+        fields['auth_ids'] = 0
+
+    result = tuple(flask.g.db['users'].find(projection=fields))
+
     return utils.response_json({'users': result})
 
 
