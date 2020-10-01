@@ -373,13 +373,13 @@ def prepare_order_response(order_data: dict, mongodb):
         order_data (dict): The order entry from the db.
         mongodb: The mongo database to use.
     """
-    order_data['authors'] = [utils.user_uuid_data(user_uuid, mongodb)
-                             for user_uuid in order_data['authors']]
-    order_data['generators'] = [utils.user_uuid_data(user_uuid, mongodb)
-                                for user_uuid in order_data['generators']]
-    order_data['editors'] = [utils.user_uuid_data(user_uuid, mongodb)
-                             for user_uuid in order_data['editors']]
-    order_data['organisation'] = utils.user_uuid_data(order_data['organisation'], mongodb)
+    order_data['authors'] = utils.user_uuid_data(order_data['authors'], mongodb)
+    order_data['generators'] = utils.user_uuid_data(order_data['generators'], mongodb)
+    order_data['editors'] = utils.user_uuid_data(order_data['editors'], mongodb)
+    if org_entry := utils.user_uuid_data(order_data['organisation'], mongodb):
+        order_data['organisation'] = org_entry[0]
+    else:
+        order_data['organisation'] = ''
 
     # convert dataset list into {title, _id}
     order_data['datasets'] = list(mongodb['datasets'].find({'_id': {'$in': order_data['datasets']}},
