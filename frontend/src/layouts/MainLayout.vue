@@ -14,7 +14,6 @@
         <q-btn dense
                flat
                no-wrap
-               no-caps
                class="q-ml-sm pull-right"
                type="a"
                target="_blank"
