@@ -6,7 +6,6 @@ export function updateOrder (state, payload) {
 export function updateOrderFields (state, payload) {
   let key = '';
   for (key in payload) {
-    console.log(key);
     state.order[key] = payload[key];
   }
 }

@@ -120,15 +120,13 @@ export default {
           .then(() => {
             this.$router.push({ 'name': 'Order Browser' });
           })
-          .catch((err) => console.log(err));
+          .catch((err) => {});
       }
     },
 
     saveEdit (event) {
       event.preventDefault();
-      console.log(this.order);
       let orderToSubmit = JSON.parse(JSON.stringify(this.order));
-      console.log(orderToSubmit);
       let field = '';
       for (field of ['authors', 'generators', 'editors']) {
         orderToSubmit[field] = orderToSubmit[field].map(item => item._id);
@@ -143,10 +141,8 @@ export default {
       delete orderToSubmit.tagsUser;
       delete orderToSubmit.datasets;
       this.$store.dispatch('orders/saveOrder', orderToSubmit)
-        .then((response) => {})
-        .catch((err) => {
-          console.log(err);
-        });
+        .then((response) => { })
+        .catch((err) => { });
       this.editMode = false;
       this.currentTab = "preview";
     },
