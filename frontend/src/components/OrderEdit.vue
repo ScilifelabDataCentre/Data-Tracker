@@ -1,110 +1,39 @@
 <template>
-<q-page padding>
-  <q-card>
-    <q-card-section>
-      <q-field v-if="newOrder.id !== ''"
-               label="UUID"
-	       stack-label
-	       filled>
-	  <template v-slot:prepend>
-            <q-icon name="label_important" />
-          </template>
-	  <template v-slot:control>
-            {{ newOrder.id }}
-          </template>
-	</q-field>
-      </q-card-section>
-
-      <q-card-section>
-        <div class="text-h6 q-mt-sm q-mb-xs">General</div>
-        <q-input id="order-title"
-                 label="Title"
-                 v-model="newOrder.title">
-	  <template v-slot:prepend>
-            <q-icon name="title" />
-          </template>
-	</q-input>
-        <q-input id="order-description"
-                 type="textarea"
-                 label="Description"
-                 v-model="newOrder.description"
-                 autogrow>
-	  <template v-slot:prepend>
-            <q-icon name="description" />
-          </template>
-	</q-input>
-      </q-card-section>
-
-      <q-card-section>
-        <div class="text-h6 q-mt-sm q-mb-xs">Datasets</div>
-        <div class="text-negative">
-          Note that any changes in this section are performed immediately
-        </div>
-        <q-btn round icon="add" color="positive" @click="addDataset"/>
-        <div class="text-negative" v-if="addDsError !== ''">
-          {{ addDsError }}
-        </div>
-        <div class="text-negative" v-if="deleteDsError !== ''">
-          {{ deleteDsError }}
-        </div>  
-
-        <q-list dense>
-          <q-item v-for="(ds, i) in origOrder.datasets" :key="i">
-            <q-field :label="ds._id"
-                     stack-label>
-              <template v-slot:prepend>
-                <q-icon name="insights" />
-              </template>
-              <template v-slot:control>
-                {{ ds.title }}
-              </template>
-              <template v-slot:append>
-                <q-btn icon="delete"
-                       flat
-                       size="sm"
-                       round
-                       @click="deleteDataset($event, ds._id)" />
-              </template>
-            </q-field>
-          </q-item>
-        </q-list>
-      </q-card-section>
-
-      <q-card-section>
-        <div class="text-h6 q-mt-sm q-mb-xs">User Tags</div>
-        <div class="row flex">
-          <q-input class="col-5 q-mr-md"
-                   id="add-tag"
-                   label="User tag name"
-                   v-model="tagName" />
-           <q-btn flat icon="add" color="primary" @click="addUserTag"/>
-         </div>
-        <q-list dense>
-          <q-item v-for="key in Object.keys(newOrder.tags_user)" :key="key">
-            <q-input :label="key"
-                     v-model="newOrder.extra[key]"
-                     stack-label>
-              <template v-slot:prepend>
-                <q-icon name="label" />
-              </template>
-              <template v-slot:append>
-                <q-btn icon="delete"
-                       flat
-                       size="sm"
-                       round
-                       @click="deleteUserTag($event, key)" />
-              </template>
-            </q-input>
-          </q-item>
-        </q-list>
-      </q-card-section>
-      <q-card-section>
-        <q-btn label="Submit" color="positive" class="q-mr-md" @click="submitOrderForm"/>
-        <q-btn label="Cancel" color="blue-grey-4" class="q-mr-lg" @click="cancelChanges"/>
-        <q-btn label="Delete" color="negative" class="q-ml-xl" @click="deleteOrder"/>
-      </q-card-section>
-  </q-card>
-</q-page>
+<q-card>
+  <q-card-section>
+    <q-field v-if="order._id !== ''"
+             label="UUID"
+	     stack-label
+	     filled>
+      <template v-slot:prepend>
+        <q-icon name="label_important" />
+      </template>
+      <template v-slot:control>
+        {{ order._id }}
+      </template>
+    </q-field>
+  </q-card-section>
+  
+  <q-card-section>
+    <div class="text-h6 q-mt-sm q-mb-xs">General</div>
+    <q-input id="order-title"
+             label="Title"
+             v-model="title">
+      <template v-slot:prepend>
+        <q-icon name="title" />
+      </template>
+    </q-input>
+    <q-input id="order-description"
+             type="textarea"
+             label="Description"
+             v-model="description"
+             autogrow>
+      <template v-slot:prepend>
+        <q-icon name="description" />
+      </template>
+    </q-input>
+  </q-card-section>
+</q-card>
 </template>
 
 <script>
@@ -112,11 +41,30 @@ export default {
   name: 'OrderEdit',
 
   computed: {
-    origOrder: {
+    order: {
       get () {
         return this.$store.state.orders.order;
       },
     },
+
+    title: {
+      get () {
+        return this.$store.state.orders.order.title;
+      },
+      set (newValue) {
+        this.$store.dispatch('orders/setOrderFields', {'title': newValue});
+      },
+    },
+
+    description: {
+      get () {
+        return this.$store.state.orders.order.description;
+      },
+      set (newValue) {
+        this.$store.dispatch('orders/setOrderFields', {'description': newValue});
+      },
+    },
+
     currentUser: {
       get () {
         return this.$store.state.currentUser.info;
@@ -126,18 +74,6 @@ export default {
 
   data () {
     return {
-      isLoading: true,
-      newOrder: {
-        id: '',
-        title: '',
-        description: '',
-        authors: [],
-        generators: [],
-        organisation: '',
-        editors: [],
-        tags_standard: {},
-        tags_user: {},
-      },
       addDsError: '',
       deleteDsError: '',
       linkDesc: '',
@@ -193,28 +129,10 @@ export default {
       this.$delete(this.newOrder.extra, keyName);
     },
 
-    submitOrderForm(event) {
+    setField(event, data) {
       event.preventDefault();
-      this.orderToSubmit = JSON.parse(JSON.stringify(this.newOrder));
-      this.$store.dispatch('orders/saveOrder', this.orderToSubmit)
-        .then(() => {
-          this.$router.push({'name': 'Order About', params: { 'uuid': this.uuid } });
-        });
+      this.$store.dispatch('orders/setOrderFields', data);
     },
-    
-    deleteOrder(event) {
-      event.preventDefault();
-      this.$store.dispatch('orders/deleteOrder', this.newOrder.id)
-        .then(() => {
-          this.$router.push({ 'name': 'Order Browser' });
-        });
-    },
-
-    cancelChanges(event) {
-      event.preventDefault();
-      this.$router.push({'name': 'Order About', params: { 'uuid': this.newOrder.id } });
-    },
-    
   },
 }
 </script>
