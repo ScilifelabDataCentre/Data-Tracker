@@ -99,7 +99,7 @@ export default {
 
     submitOrderForm(event) {
       event.preventDefault();
-      // remove extra data etc
+
       let orderToSubmit = JSON.parse(JSON.stringify(this.order));
       this.$store.dispatch('orders/saveOrder', orderToSubmit)
         .then(() => {
@@ -128,8 +128,29 @@ export default {
       }
     },
 
-    saveEdit () {
-      // dispatch job to save entry as provided in state
+    saveEdit (event) {
+      event.preventDefault();
+      console.log(this.order);
+      let orderToSubmit = JSON.parse(JSON.stringify(this.order));
+      console.log(orderToSubmit);
+      let field = '';
+      for (field of ['authors', 'generators', 'editors']) {
+        orderToSubmit[field] = orderToSubmit[field].map(item => item._id);
+        }
+      orderToSubmit.organisation = orderToSubmit.organisation._id;
+      // rename _id to id, otherwise it won't be dispatched
+      orderToSubmit.id = orderToSubmit._id;
+      orderToSubmit.tags_standard = orderToSubmit.tagsStandard
+      orderToSubmit.tags_user = orderToSubmit.tagsUser
+      delete orderToSubmit._id;
+      delete orderToSubmit.tagsStandard;
+      delete orderToSubmit.tagsUser;
+      delete orderToSubmit.datasets;
+      this.$store.dispatch('orders/saveOrder', orderToSubmit)
+        .then((response) => {})
+        .catch((err) => {
+          console.log(err);
+        });
       this.editMode = false;
       this.currentTab = "preview";
     },
