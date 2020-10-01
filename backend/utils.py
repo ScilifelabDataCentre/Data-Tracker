@@ -378,7 +378,7 @@ def user_uuid_data(user_ids: Union[str, list, uuid.UUID],
         mongodb (pymongo.database.Database): The Mongo database to use for the query.
 
     Returns:
-        dict: The resulting data structure.
+        list: The matching entries.
     """
     if isinstance(user_ids, str):
         user_uuids = [str_to_uuid(user_ids)]
