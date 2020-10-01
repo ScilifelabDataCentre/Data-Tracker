@@ -18,7 +18,7 @@
       <q-btn round
              color="accent"
              icon="add"
-             :to="{ 'name': 'Order Add' }" />
+             :to="{ 'name': 'Order New' }" />
     </template>
 
     <template v-slot:top-right>

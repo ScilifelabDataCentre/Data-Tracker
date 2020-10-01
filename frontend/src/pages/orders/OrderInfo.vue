@@ -34,7 +34,7 @@
            direction="down"
            @show="activateEditMode"
            @hide="saveEdit">
-      <q-fab-action v-show="!isNew"
+      <q-fab-action v-show="uuid !== ''"
                     color="negative"
                     @click="deleteEntry"
                     icon="fas fa-trash"
@@ -68,10 +68,6 @@ export default {
     uuid: {
       type: String,
     },
-    isNew: {
-      type: Boolean,
-      default: false
-    }
   },
 
   computed: {
@@ -108,7 +104,7 @@ export default {
     },
 
     cancelEdit () {
-      if (this.isNew) {
+      if (this.uuid === '') {
           this.$router.push({ 'name': 'Order Browser' });
       }
       this.editMode = false;
@@ -157,7 +153,7 @@ export default {
 
     loadData () {
       this.isLoading = true;
-      if (this.isNew) {
+      if (this.uuid === '') {
         this.$store.dispatch('orders/getEmptyOrder', this.uuid)
           .then(() => this.isLoading = false)
           .catch(() => this.isLoading = false);
@@ -172,6 +168,8 @@ export default {
   
   mounted () {
     this.loadData();
+    this.editMode = true;
+    this.currentTab = "edit";
   }
 
 }

@@ -11,9 +11,8 @@ const CollectionAbout = () => import(/* webpackChunkName: "collection" */ 'pages
 const CollectionBrowser = () => import(/* webpackChunkName: "collection" */ 'pages/collections/CollectionBrowser.vue')
 const CollectionEdit = () => import(/* webpackChunkName: "collection" */ 'pages/collections/CollectionEdit.vue')
 
-const DatasetAbout = () => import(/* webpackChunkName: "dataset" */ 'pages/datasets/DatasetAbout.vue')
+const DatasetInfo = () => import(/* webpackChunkName: "dataset" */ 'pages/datasets/DatasetInfo.vue')
 const DatasetBrowser = () => import(/* webpackChunkName: "dataset" */ 'pages/datasets/DatasetBrowser.vue')
-const DatasetEdit = () => import(/* webpackChunkName: "dataset" */ 'pages/datasets/DatasetEdit.vue')
 
 const OrderInfo = () => import(/* webpackChunkName: "order" */ 'pages/orders/OrderInfo.vue')
 const OrderBrowser = () => import(/* webpackChunkName: "order" */ 'pages/orders/OrderBrowser.vue')
@@ -43,15 +42,9 @@ const routes = [
       },
       {
         path: ':uuid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})',
-        component: DatasetAbout,
+        component: DatasetInfo,
         props: true,
         name: 'Dataset About'
-      },
-      {
-        path: ':uuid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/edit',
-        component: DatasetEdit,
-        props: true,
-        name: 'Dataset Edit'
       },
     ]
   },
@@ -73,6 +66,12 @@ const routes = [
         component: OrderInfo,
         props: true,
         name: 'Order About'
+      },
+      {
+        path: 'new',
+        component: OrderInfo,
+        props: {'uuid': ''},
+        name: 'Order New'
       },
     ]
   },
