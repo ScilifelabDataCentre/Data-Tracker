@@ -63,8 +63,8 @@ def test_get_order(mdb):
         order['_id'] = str(order['_id'])
         # user entries
         for key in ('authors', 'generators', 'editors'):
-            order[key] = [utils.user_uuid_data(str(entry), db) for entry in order[key]]
-        order['organisation'] = utils.user_uuid_data(order['organisation'], db)
+            order[key] = utils.user_uuid_data(order[key], db)
+        order['organisation'] = utils.user_uuid_data(order['organisation'], db)[0]
 
         for i, ds in enumerate(order['datasets']):
             order['datasets'][i] = next(db['datasets'].aggregate([{'$match': {'_id': ds}},
