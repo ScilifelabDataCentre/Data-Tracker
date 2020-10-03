@@ -69,6 +69,7 @@ def list_users():
 
     if not has_permission('USER_MANAGEMENT'):
         fields['auth_ids'] = 0
+        fields['permissions'] = 0
 
     result = tuple(flask.g.db['users'].find(projection=fields))
 
