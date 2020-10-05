@@ -7,17 +7,17 @@ const Login = () => import(/* webpackChunkName: "user" */ 'pages/Login.vue')
 
 const BaseContainer = () => import(/* webpackChunkName: "base" */ 'pages/BaseContainer.vue')
 
-const CollectionAbout = () => import(/* webpackChunkName: "collection" */ 'pages/collections/CollectionAbout.vue')
-const CollectionBrowser = () => import(/* webpackChunkName: "collection" */ 'pages/collections/CollectionBrowser.vue')
-const CollectionEdit = () => import(/* webpackChunkName: "collection" */ 'pages/collections/CollectionEdit.vue')
+const CollectionAbout = () => import(/* webpackChunkName: "collection" */ 'pages/CollectionAbout.vue')
+const CollectionBrowser = () => import(/* webpackChunkName: "collection" */ 'pages/CollectionBrowser.vue')
+const CollectionEdit = () => import(/* webpackChunkName: "collection" */ 'pages/CollectionEdit.vue')
 
-const DatasetInfo = () => import(/* webpackChunkName: "dataset" */ 'pages/datasets/DatasetInfo.vue')
-const DatasetBrowser = () => import(/* webpackChunkName: "dataset" */ 'pages/datasets/DatasetBrowser.vue')
+const DatasetInfo = () => import(/* webpackChunkName: "dataset" */ 'pages/DatasetInfo.vue')
+const DatasetBrowser = () => import(/* webpackChunkName: "dataset" */ 'pages/DatasetBrowser.vue')
 
-const OrderInfo = () => import(/* webpackChunkName: "order" */ 'pages/orders/OrderInfo.vue')
-const OrderBrowser = () => import(/* webpackChunkName: "order" */ 'pages/orders/OrderBrowser.vue')
+const OrderInfo = () => import(/* webpackChunkName: "order" */ 'pages/OrderInfo.vue')
+const OrderBrowser = () => import(/* webpackChunkName: "order" */ 'pages/OrderBrowser.vue')
 
-const UserManager = () => import(/* webpackChunkName: "admin" */ 'pages/admin/UserManager.vue')
+const UserManager = () => import(/* webpackChunkName: "admin" */ 'pages/UserManager.vue')
 
 const routes = [
   {
