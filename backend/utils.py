@@ -222,7 +222,7 @@ def convert_keys_to_camel(chunk: Any) -> Any:
             new_chunk[key] = value
             continue
         # First character should be the same as in the original string
-        new_key = key[0] + "".join([a[0].upper() + a[1:] for a in key.split("_")])[1:]
+        new_key = key[0] + ''.join([a[0].upper() + a[1:] for a in key.split('_')])[1:]
         new_chunk[new_key] = convert_keys_to_camel(value)
     return new_chunk
 

@@ -141,7 +141,7 @@ def key_login():
 def logout():
     """Log out the current user."""
     flask.session.clear()
-    response = flask.redirect("/", code=302)
+    response = flask.redirect('/', code=302)
     response.set_cookie('_csrf_token', utils.gen_csrf_token(), 0)
     return response
 

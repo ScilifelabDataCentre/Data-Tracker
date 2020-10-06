@@ -166,7 +166,7 @@ def delete_collection(identifier: str):
 
     result = flask.g.db['collections'].delete_one({'_id': ds_uuid})
     if not result.acknowledged:
-        logging.error(f'Failed to delete collection {ds_uuid}')
+        logging.error('Failed to delete collection %s', ds_uuid)
         return flask.Response(status=500)
     utils.make_log('collection', 'delete', 'Deleted collection', data={'_id': ds_uuid})
 

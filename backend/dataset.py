@@ -96,7 +96,7 @@ def delete_dataset(identifier: str):
 
     result = flask.g.db['datasets'].delete_one({'_id': ds_uuid})
     if not result.acknowledged:
-        logging.error(f'Failed to delete dataset {ds_uuid}')
+        logging.error('Failed to delete dataset %s', ds_uuid)
         return flask.Response(status=500)
     utils.make_log('dataset', 'delete', 'Deleted dataset', data={'_id': ds_uuid})
 
@@ -104,7 +104,8 @@ def delete_dataset(identifier: str):
         result = flask.g.db['orders'].update_one({'_id': entry['_id']},
                                                  {'$pull': {'datasets': ds_uuid}})
         if not result.acknowledged:
-            logging.error(f'Failed to delete dataset {ds_uuid} in order {entry["_id"]}')
+            logging.error('Failed to delete dataset %s in order %s',
+                          ds_uuid, entry['_id'])
             return flask.Response(status=500)
         new_data = flask.g.db['orders'].find_one({'_id': entry['_id']})
         utils.make_log('order', 'edit', f'Deleted dataset {ds_uuid}', new_data)
@@ -113,7 +114,8 @@ def delete_dataset(identifier: str):
         flask.g.db['collections'].update_one({'_id': entry['_id']},
                                              {'$pull': {'datasets': ds_uuid}})
         if not result.acknowledged:
-            logging.error(f'Failed to delete dataset {ds_uuid} in project {entry["_id"]}')
+            logging.error('Failed to delete dataset %s in project %s',
+                          ds_uuid, entry['_id'])
             return flask.Response(status=500)
         new_data = flask.g.db['collections'].find_one({'_id': entry['_id']})
         utils.make_log('collection', 'edit', f'Deleted dataset {ds_uuid}', new_data)
