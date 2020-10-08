@@ -35,13 +35,33 @@ export default {
       },
     },
 
-  currentUser: {
-    get () {
+    fieldEntries: {
+      get () {
+        return this.$store.state.orders.order[this.fieldDataName];
+      }
+    },
+
+    orderData: {
+      get () {
+        return this.$store.state.orders.order;
+      }
+    },
+
+    currentUser: {
+      get () {
         return this.$store.state.currentUser.info;
       },
     },
   },
 
+  watch: {
+    selected (newValue, OldValue) {
+      let data = {};
+      data.[this.fieldDataName] = newValue;
+      this.$store.dispatch('orders/setOrderFields', data);
+    },
+  },
+  
   props: {
     fieldTitle: {
       type: String,
@@ -115,5 +135,9 @@ export default {
       this.$store.dispatch('orders/setOrderFields', data);
     },
   },
+
+  mounted () {
+    this.selected = this.$store.state.orders.order[this.fieldDataName];
+  }
 }
 </script>
