@@ -35,8 +35,8 @@
     </template>
 
     <template v-slot:item="props">
-      <div class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
-        <q-card class="q-ma-xs bg-grey-1">
+      <div class="col-xs-12 col-md-6 col-lg-4 col-xl-3 row self-stretch">
+        <q-card class="q-ma-xs bg-grey-2 col">
           <q-card-section class="text-center">
             <div class="text-h6 bg-grey-4 q-mb-xs q-pa-xs">
               {{ props.row.title }}
@@ -45,7 +45,7 @@
               {{ props.row._id }}
             </div>
           </q-card-section>
-          <q-card-section class="flex flex-center">
+          <q-card-section class="column justify-end items-center">
             <q-btn
               flat
               label="More"
@@ -77,7 +77,7 @@ export default {
       loading: true,
       
       pagination: {
-        rowsPerPage: 20
+        rowsPerPage: 21
       },
 
       columns: [
