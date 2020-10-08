@@ -67,6 +67,7 @@ export default {
   props: {
     uuid: {
       type: String,
+      default: '',
     },
   },
 
@@ -83,7 +84,6 @@ export default {
       isLoading: true,
       currentTab: 'preview',
       editMode: false,
-      
     }
   },
 
@@ -164,8 +164,10 @@ export default {
   
   mounted () {
     this.loadData();
-    this.editMode = true;
-    this.currentTab = "edit";
+    if (this.uuid === '') {
+      this.editMode = true;
+      this.currentTab = "edit";
+    }
   }
 
 }
