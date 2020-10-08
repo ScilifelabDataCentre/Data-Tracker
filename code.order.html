@@ -1,17 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>order.py &#8212; Data Tracker  documentation</title>
     <link rel="stylesheet" href="static/nature.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="static/documentation_options.js"></script>
-    <script type="text/javascript" src="static/jquery.js"></script>
-    <script type="text/javascript" src="static/underscore.js"></script>
-    <script type="text/javascript" src="static/doctools.js"></script>
-    <script type="text/javascript" src="static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="./" src="static/documentation_options.js"></script>
+    <script src="static/jquery.js"></script>
+    <script src="static/underscore.js"></script>
+    <script src="static/doctools.js"></script>
+    <script src="static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="collection.py" href="code.collection.html" />
@@ -34,7 +35,8 @@
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">Data Tracker  documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="development.html" >Development</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="modules.html" accesskey="U">Code reference</a> &#187;</li> 
+          <li class="nav-item nav-item-2"><a href="modules.html" accesskey="U">Code reference</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">order.py</a></li> 
       </ul>
     </div>  
 
@@ -51,9 +53,9 @@
 <li><p>If you have permission <code class="docutils literal notranslate"><span class="pre">ORDERS</span></code> you have CRUD access to your own orders.</p></li>
 <li><p>If you have permission <code class="docutils literal notranslate"><span class="pre">DATA_MANAGER</span></code> you have CRUD access to any orders.</p></li>
 </ul>
-<dl class="function">
+<dl class="py function">
 <dt id="order.add_dataset">
-<code class="sig-prename descclassname">order.</code><code class="sig-name descname">add_dataset</code><span class="sig-paren">(</span><em class="sig-param">identifier</em><span class="sig-paren">)</span><a class="reference internal" href="modules/order.html#add_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#order.add_dataset" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">order.</code><code class="sig-name descname">add_dataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">identifier</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/order.html#add_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#order.add_dataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a dataset to the given order.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -62,7 +64,7 @@
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="order.add_order">
 <code class="sig-prename descclassname">order.</code><code class="sig-name descname">add_order</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/order.html#add_order"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#order.add_order" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add an order.</p>
@@ -76,9 +78,9 @@
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="order.delete_order">
-<code class="sig-prename descclassname">order.</code><code class="sig-name descname">delete_order</code><span class="sig-paren">(</span><em class="sig-param">identifier: str</em><span class="sig-paren">)</span><a class="reference internal" href="modules/order.html#delete_order"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#order.delete_order" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">order.</code><code class="sig-name descname">delete_order</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">identifier</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/order.html#delete_order"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#order.delete_order" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete the order with the given identifier.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -90,7 +92,7 @@
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="order.get_empty_order">
 <code class="sig-prename descclassname">order.</code><code class="sig-name descname">get_empty_order</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/order.html#get_empty_order"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#order.get_empty_order" title="Permalink to this definition">¶</a></dt>
 <dd><p>Provide the basic data structure for an empty order.</p>
@@ -104,9 +106,9 @@
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="order.get_order">
-<code class="sig-prename descclassname">order.</code><code class="sig-name descname">get_order</code><span class="sig-paren">(</span><em class="sig-param">identifier</em><span class="sig-paren">)</span><a class="reference internal" href="modules/order.html#get_order"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#order.get_order" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">order.</code><code class="sig-name descname">get_order</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">identifier</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/order.html#get_order"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#order.get_order" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieve the order with the provided uuid.</p>
 <p><code class="docutils literal notranslate"><span class="pre">order['datasets']</span></code> is returned as <code class="docutils literal notranslate"><span class="pre">[{_id,</span> <span class="pre">title},</span> <span class="pre">...]</span></code>.</p>
 <dl class="field-list simple">
@@ -122,7 +124,7 @@
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="order.get_order_data_structure">
 <code class="sig-prename descclassname">order.</code><code class="sig-name descname">get_order_data_structure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/order.html#get_order_data_structure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#order.get_order_data_structure" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get an empty order entry.</p>
@@ -136,9 +138,9 @@
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="order.get_order_logs">
-<code class="sig-prename descclassname">order.</code><code class="sig-name descname">get_order_logs</code><span class="sig-paren">(</span><em class="sig-param">identifier</em><span class="sig-paren">)</span><a class="reference internal" href="modules/order.html#get_order_logs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#order.get_order_logs" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">order.</code><code class="sig-name descname">get_order_logs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">identifier</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/order.html#get_order_logs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#order.get_order_logs" title="Permalink to this definition">¶</a></dt>
 <dd><p>List changes to the dataset.</p>
 <p>Logs will be sorted chronologically.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">data</span></code> in each log will be trimmed to only show the changed fields.</p>
@@ -155,7 +157,7 @@
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="order.list_orders">
 <code class="sig-prename descclassname">order.</code><code class="sig-name descname">list_orders</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/order.html#list_orders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#order.list_orders" title="Permalink to this definition">¶</a></dt>
 <dd><p>List all orders visible to the current user.</p>
@@ -169,9 +171,9 @@
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="order.list_orders_user">
-<code class="sig-prename descclassname">order.</code><code class="sig-name descname">list_orders_user</code><span class="sig-paren">(</span><em class="sig-param">user_id: str</em><span class="sig-paren">)</span><a class="reference internal" href="modules/order.html#list_orders_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#order.list_orders_user" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">order.</code><code class="sig-name descname">list_orders_user</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user_id</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/order.html#list_orders_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#order.list_orders_user" title="Permalink to this definition">¶</a></dt>
 <dd><p>List all orders belonging to the provided user.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -186,16 +188,16 @@
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="order.prepare">
 <code class="sig-prename descclassname">order.</code><code class="sig-name descname">prepare</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/order.html#prepare"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#order.prepare" title="Permalink to this definition">¶</a></dt>
 <dd><p>All order request require <code class="docutils literal notranslate"><span class="pre">ORDERS</span></code>.</p>
 <p>Make sure that the user is logged in and has the required permission.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="order.prepare_order_response">
-<code class="sig-prename descclassname">order.</code><code class="sig-name descname">prepare_order_response</code><span class="sig-paren">(</span><em class="sig-param">order_data: dict</em>, <em class="sig-param">mongodb</em><span class="sig-paren">)</span><a class="reference internal" href="modules/order.html#prepare_order_response"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#order.prepare_order_response" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">order.</code><code class="sig-name descname">prepare_order_response</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">order_data</span><span class="p">:</span> <span class="n">dict</span></em>, <em class="sig-param"><span class="n">mongodb</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/order.html#prepare_order_response"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#order.prepare_order_response" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prepare an order by e.g. converting user uuids to names etc.</p>
 <p>Changes are done in-place.</p>
 <dl class="field-list simple">
@@ -208,9 +210,9 @@
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="order.update_order">
-<code class="sig-prename descclassname">order.</code><code class="sig-name descname">update_order</code><span class="sig-paren">(</span><em class="sig-param">identifier: str</em><span class="sig-paren">)</span><a class="reference internal" href="modules/order.html#update_order"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#order.update_order" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">order.</code><code class="sig-name descname">update_order</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">identifier</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/order.html#update_order"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#order.update_order" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update an existing order.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -228,6 +230,7 @@
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -258,7 +261,7 @@
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -280,12 +283,13 @@
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">Data Tracker  documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="development.html" >Development</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="modules.html" >Code reference</a> &#187;</li> 
+          <li class="nav-item nav-item-2"><a href="modules.html" >Code reference</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">order.py</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2019-2020, SciLifeLab Data Centre.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.3.1.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>
