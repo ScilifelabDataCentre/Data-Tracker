@@ -35,10 +35,10 @@
     </template>
 
     <template v-slot:item="props">
-      <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4">
-        <q-card>
+      <div class="col-xs-12 col-md-6 col-lg-4 col-xl-3">
+        <q-card class="q-ma-xs bg-grey-1">
           <q-card-section class="text-center">
-            <div class="text-h6">
+            <div class="text-h6 bg-grey-4 q-mb-xs q-pa-xs">
               {{ props.row.title }}
             </div>
             <div class="text-caption">
