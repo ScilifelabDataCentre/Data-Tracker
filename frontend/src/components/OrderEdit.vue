@@ -1,45 +1,69 @@
 <template>
-<q-card>
-  <q-card-section>
-    <q-field v-if="order._id !== ''"
-             label="UUID"
-	     stack-label
-	     filled>
-      <template v-slot:prepend>
-        <q-icon name="label_important" />
-      </template>
-      <template v-slot:control>
-        {{ order._id }}
-      </template>
-    </q-field>
-  </q-card-section>
+<div>
+  <q-card class="q-my-sm">
+    <q-card-section>
+      <q-field v-if="order._id !== ''"
+               label="UUID"
+	       stack-label
+	       filled>
+        <template v-slot:prepend>
+          <q-icon name="label_important" />
+        </template>
+        <template v-slot:control>
+          {{ order._id }}
+        </template>
+      </q-field>
+    </q-card-section>
   
-  <q-card-section>
-    <div class="text-h6 q-mt-sm q-mb-xs">General</div>
-    <q-input id="order-title"
-             label="Title"
-             v-model="title">
-      <template v-slot:prepend>
-        <q-icon name="title" />
-      </template>
-    </q-input>
-    <q-input id="order-description"
-             type="textarea"
-             label="Description"
-             v-model="description"
-             autogrow>
-      <template v-slot:prepend>
-        <q-icon name="description" />
-      </template>
-    </q-input>
-  </q-card-section>
-</q-card>
+    <q-card-section>
+      <q-input id="order-title"
+               label="Title"
+               v-model="title">
+        <template v-slot:prepend>
+          <q-icon name="title" />
+        </template>
+      </q-input>
+      <q-input id="order-description"
+               type="textarea"
+               label="Description"
+               v-model="description"
+               autogrow>
+        <template v-slot:prepend>
+          <q-icon name="description" />
+        </template>
+      </q-input>
+    </q-card-section>
+  </q-card>
+
+  <user-selector fieldTitle="Authors"
+                 fieldDataName="authors"
+                 class="q-my-sm" />
+
+  <user-selector fieldTitle="Generators"
+                 fieldDataName="generators"
+                 class="q-my-sm" />
+
+  <user-selector fieldTitle="Organisation"
+                 fieldDataName="organisation"
+                 selectType="single"
+                 class="q-my-sm" />
+
+  <user-selector fieldTitle="Editors"
+                 fieldDataName="editors"
+                 class="q-my-sm" />
+</div>
 </template>
 
 <script>
+import UserSelector from 'components/UserSelector.vue'
+
 export default {
   name: 'OrderEdit',
 
+  components: {
+    'user-selector': UserSelector
+  },
+  
   computed: {
     order: {
       get () {
@@ -134,5 +158,9 @@ export default {
       this.$store.dispatch('orders/setOrderFields', data);
     },
   },
+
+  mounted () {
+    this.$store.dispatch('adminUsers/getUsers');    
+  }
 }
 </script>
