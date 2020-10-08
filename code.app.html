@@ -1,18 +1,17 @@
 
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>app.py &#8212; Data Tracker  documentation</title>
     <link rel="stylesheet" href="static/nature.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="static/documentation_options.js"></script>
-    <script src="static/jquery.js"></script>
-    <script src="static/underscore.js"></script>
-    <script src="static/doctools.js"></script>
-    <script src="static/language_data.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="static/documentation_options.js"></script>
+    <script type="text/javascript" src="static/jquery.js"></script>
+    <script type="text/javascript" src="static/underscore.js"></script>
+    <script type="text/javascript" src="static/doctools.js"></script>
+    <script type="text/javascript" src="static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="config.py" href="code.config.html" />
@@ -35,8 +34,7 @@
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">Data Tracker  documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="development.html" >Development</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="modules.html" accesskey="U">Code reference</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">app.py</a></li> 
+          <li class="nav-item nav-item-2"><a href="modules.html" accesskey="U">Code reference</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -45,91 +43,11 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-app">
-<span id="app-py"></span><h1>app.py<a class="headerlink" href="#module-app" title="Permalink to this headline">¶</a></h1>
-<p>Main app for the Data Tracker.</p>
-<dl class="py function">
-<dt id="app.api_base">
-<code class="sig-prename descclassname">app.</code><code class="sig-name descname">api_base</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#api_base"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.api_base" title="Permalink to this definition">¶</a></dt>
-<dd><p>List entities.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="app.error_bad_request">
-<code class="sig-prename descclassname">app.</code><code class="sig-name descname">error_bad_request</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">_</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#error_bad_request"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.error_bad_request" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make sure a simple 400 is returned instead of an html page.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="app.error_forbidden">
-<code class="sig-prename descclassname">app.</code><code class="sig-name descname">error_forbidden</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">_</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#error_forbidden"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.error_forbidden" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make sure a simple 403 is returned instead of an html page.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="app.error_not_found">
-<code class="sig-prename descclassname">app.</code><code class="sig-name descname">error_not_found</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">_</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#error_not_found"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.error_not_found" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make sure a simple 404 is returned instead of an html page.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="app.error_unauthorized">
-<code class="sig-prename descclassname">app.</code><code class="sig-name descname">error_unauthorized</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">_</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#error_unauthorized"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.error_unauthorized" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make sure a simple 401 is returned instead of an html page.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="app.finalize">
-<code class="sig-prename descclassname">app.</code><code class="sig-name descname">finalize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">response</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#finalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.finalize" title="Permalink to this definition">¶</a></dt>
-<dd><p>Finalize the response and clean up.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="app.key_login">
-<code class="sig-prename descclassname">app.</code><code class="sig-name descname">key_login</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#key_login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.key_login" title="Permalink to this definition">¶</a></dt>
-<dd><p>Log in using an apikey.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="app.login_types">
-<code class="sig-prename descclassname">app.</code><code class="sig-name descname">login_types</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#login_types"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.login_types" title="Permalink to this definition">¶</a></dt>
-<dd><p>List login types.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="app.logout">
-<code class="sig-prename descclassname">app.</code><code class="sig-name descname">logout</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#logout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.logout" title="Permalink to this definition">¶</a></dt>
-<dd><p>Log out the current user.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="app.oidc_authorize">
-<code class="sig-prename descclassname">app.</code><code class="sig-name descname">oidc_authorize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">auth_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#oidc_authorize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.oidc_authorize" title="Permalink to this definition">¶</a></dt>
-<dd><p>Authorize a login using OpenID Connect (e.g. Elixir AAI).</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="app.oidc_login">
-<code class="sig-prename descclassname">app.</code><code class="sig-name descname">oidc_login</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">auth_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#oidc_login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.oidc_login" title="Permalink to this definition">¶</a></dt>
-<dd><p>Perform a login using OpenID Connect (e.g. Elixir AAI).</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="app.oidc_types">
-<code class="sig-prename descclassname">app.</code><code class="sig-name descname">oidc_types</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#oidc_types"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.oidc_types" title="Permalink to this definition">¶</a></dt>
-<dd><p>List OpenID Connect types.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="app.prepare">
-<code class="sig-prename descclassname">app.</code><code class="sig-name descname">prepare</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#prepare"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.prepare" title="Permalink to this definition">¶</a></dt>
-<dd><p>Open the database connection and get the current user.</p>
-</dd></dl>
-
+  <div class="section" id="app-py">
+<h1>app.py<a class="headerlink" href="#app-py" title="Permalink to this headline">¶</a></h1>
 </div>
 
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -160,7 +78,7 @@
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -182,13 +100,12 @@
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">Data Tracker  documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="development.html" >Development</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="modules.html" >Code reference</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">app.py</a></li> 
+          <li class="nav-item nav-item-2"><a href="modules.html" >Code reference</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2019-2020, SciLifeLab Data Centre.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.3.1.
     </div>
   </body>
 </html>

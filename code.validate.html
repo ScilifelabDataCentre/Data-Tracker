@@ -1,18 +1,17 @@
 
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>validate.py &#8212; Data Tracker  documentation</title>
     <link rel="stylesheet" href="static/nature.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="static/documentation_options.js"></script>
-    <script src="static/jquery.js"></script>
-    <script src="static/underscore.js"></script>
-    <script src="static/doctools.js"></script>
-    <script src="static/language_data.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="static/documentation_options.js"></script>
+    <script type="text/javascript" src="static/jquery.js"></script>
+    <script type="text/javascript" src="static/underscore.js"></script>
+    <script type="text/javascript" src="static/doctools.js"></script>
+    <script type="text/javascript" src="static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="prev" title="utils.py" href="code.utils.html" /> 
@@ -31,8 +30,7 @@
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">Data Tracker  documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="development.html" >Development</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="modules.html" accesskey="U">Code reference</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">validate.py</a></li> 
+          <li class="nav-item nav-item-2"><a href="modules.html" accesskey="U">Code reference</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -46,9 +44,9 @@
 <p>Validators for indata.</p>
 <p>Indata can be sent to <code class="docutils literal notranslate"><span class="pre">validate_field</span></code>, which will use the corresponding
 functions to check each field.</p>
-<dl class="py function">
+<dl class="function">
 <dt id="validate.validate_datasets">
-<code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_datasets</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span><span class="p">:</span> <span class="n">list</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_datasets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_datasets" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_datasets</code><span class="sig-paren">(</span><em class="sig-param">data: list</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_datasets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_datasets" title="Permalink to this definition">¶</a></dt>
 <dd><p>Validate input for the <code class="docutils literal notranslate"><span class="pre">datasets</span></code> field.</p>
 <p>It must be a list of uuids. Validate that the datasets exist in the db.</p>
 <dl class="field-list simple">
@@ -67,9 +65,9 @@ functions to check each field.</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="validate.validate_email">
-<code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_email</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_email"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_email" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_email</code><span class="sig-paren">(</span><em class="sig-param">data</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_email"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_email" title="Permalink to this definition">¶</a></dt>
 <dd><p>Validate input for the <code class="docutils literal notranslate"><span class="pre">email</span></code> field.</p>
 <p>It must be a string.</p>
 <dl class="field-list simple">
@@ -88,9 +86,9 @@ functions to check each field.</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="validate.validate_field">
-<code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_field</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">field_key</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">field_value</span><span class="p">:</span> <span class="n">Any</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_field"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_field" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_field</code><span class="sig-paren">(</span><em class="sig-param">field_key: str</em>, <em class="sig-param">field_value: Any</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_field"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_field" title="Permalink to this definition">¶</a></dt>
 <dd><p>Validate that the input data matches expectations.</p>
 <p>Will check the data based on the key.</p>
 <p>The validation is only done at the technical level,
@@ -113,9 +111,9 @@ for the entry must be performed separately.</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="validate.validate_list_of_strings">
-<code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_list_of_strings</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span><span class="p">:</span> <span class="n">list</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_list_of_strings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_list_of_strings" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_list_of_strings</code><span class="sig-paren">(</span><em class="sig-param">data: list</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_list_of_strings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_list_of_strings" title="Permalink to this definition">¶</a></dt>
 <dd><p>Validate that input is a list of strings.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -133,9 +131,9 @@ for the entry must be performed separately.</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="validate.validate_permissions">
-<code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_permissions</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span><span class="p">:</span> <span class="n">list</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_permissions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_permissions" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_permissions</code><span class="sig-paren">(</span><em class="sig-param">data: list</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_permissions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_permissions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Validate input for the <code class="docutils literal notranslate"><span class="pre">permissions</span></code> field.</p>
 <p>It must be a list containing permissions found in <code class="docutils literal notranslate"><span class="pre">PERMISSIONS</span></code>.</p>
 <dl class="field-list simple">
@@ -154,9 +152,9 @@ for the entry must be performed separately.</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="validate.validate_string">
-<code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_string</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_string" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_string</code><span class="sig-paren">(</span><em class="sig-param">data: str</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_string" title="Permalink to this definition">¶</a></dt>
 <dd><p>Validate input for field that must have a <code class="docutils literal notranslate"><span class="pre">str</span></code> value.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -174,9 +172,9 @@ for the entry must be performed separately.</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="validate.validate_tags_std">
-<code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_tags_std</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span><span class="p">:</span> <span class="n">dict</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_tags_std"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_tags_std" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_tags_std</code><span class="sig-paren">(</span><em class="sig-param">data: dict</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_tags_std"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_tags_std" title="Permalink to this definition">¶</a></dt>
 <dd><p>Validate input for the <code class="docutils literal notranslate"><span class="pre">tags_standard</span></code> field.</p>
 <p>It must be a dict.</p>
 <dl class="field-list simple">
@@ -195,9 +193,9 @@ for the entry must be performed separately.</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="validate.validate_tags_user">
-<code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_tags_user</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span><span class="p">:</span> <span class="n">dict</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_tags_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_tags_user" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_tags_user</code><span class="sig-paren">(</span><em class="sig-param">data: dict</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_tags_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_tags_user" title="Permalink to this definition">¶</a></dt>
 <dd><p>Validate input for the <code class="docutils literal notranslate"><span class="pre">tags_user</span></code> field.</p>
 <p>It must be a dict.</p>
 <dl class="field-list simple">
@@ -216,9 +214,9 @@ for the entry must be performed separately.</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="validate.validate_title">
-<code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_title</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_title"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_title" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_title</code><span class="sig-paren">(</span><em class="sig-param">data: str</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_title"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_title" title="Permalink to this definition">¶</a></dt>
 <dd><p>Validate input for the <code class="docutils literal notranslate"><span class="pre">title</span></code> field.</p>
 <p>It must be a non-empty string.</p>
 <dl class="field-list simple">
@@ -237,9 +235,9 @@ for the entry must be performed separately.</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="validate.validate_url">
-<code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_url</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_url" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_url</code><span class="sig-paren">(</span><em class="sig-param">data: str</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_url" title="Permalink to this definition">¶</a></dt>
 <dd><p>Validate input for a url intended for browsers.</p>
 <p>It must start with <code class="docutils literal notranslate"><span class="pre">http(s)://</span></code>.</p>
 <dl class="field-list simple">
@@ -258,9 +256,9 @@ for the entry must be performed separately.</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="validate.validate_user">
-<code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_user</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_user" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_user</code><span class="sig-paren">(</span><em class="sig-param">data: str</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_user" title="Permalink to this definition">¶</a></dt>
 <dd><p>Validate input for a field containing a single user uuid string.</p>
 <p>All users must exist in the database.</p>
 <dl class="field-list simple">
@@ -279,9 +277,9 @@ for the entry must be performed separately.</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="validate.validate_user_list">
-<code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_user_list</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>str<span class="p">, </span>list<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_user_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_user_list" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_user_list</code><span class="sig-paren">(</span><em class="sig-param">data: Union[str, list]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_user_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_user_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Validate input for a field containing a list of user uuid(s).</p>
 <p>For compatibility, the input may be UUIDs as either string (single user) or
 a list (single or multiple users).</p>
@@ -305,7 +303,6 @@ a list (single or multiple users).</p>
 </div>
 
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -333,7 +330,7 @@ a list (single or multiple users).</p>
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -352,13 +349,12 @@ a list (single or multiple users).</p>
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">Data Tracker  documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="development.html" >Development</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="modules.html" >Code reference</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">validate.py</a></li> 
+          <li class="nav-item nav-item-2"><a href="modules.html" >Code reference</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2019-2020, SciLifeLab Data Centre.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.3.1.
     </div>
   </body>
 </html>
