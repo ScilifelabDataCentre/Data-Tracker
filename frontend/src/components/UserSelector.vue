@@ -4,6 +4,7 @@
   :data="users"
   :columns="columns"
   row-key="_id"
+  :filter="filter"
   :selection="selectType"
   :selected.sync="selected"
   :pagination.sync="pagination"
@@ -83,7 +84,6 @@ export default {
   data () {
     return {
       filter: '',
-      localUsers: [],
       pagination: {
         rowsPerPage: 5
       },
@@ -138,6 +138,9 @@ export default {
 
   mounted () {
     this.selected = this.$store.state.orders.order[this.fieldDataName];
+    if (typeof this.selected === 'object') {
+      this.selected = [this.selected];
+    }
   }
 }
 </script>
