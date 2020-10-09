@@ -37,20 +37,24 @@
 
   <user-selector fieldTitle="Authors"
                  fieldDataName="authors"
-                 class="q-my-sm" />
+                 class="q-my-sm"
+                 helpText="The ones who own the sample (e.g. PI)"/>
 
   <user-selector fieldTitle="Generators"
                  fieldDataName="generators"
-                 class="q-my-sm" />
+                 class="q-my-sm"
+                 helpText="The ones who generated the data (e.g. Facility)"/>
 
   <user-selector fieldTitle="Organisation"
                  fieldDataName="organisation"
                  selectType="single"
-                 class="q-my-sm" />
+                 class="q-my-sm"
+                 helpText="The data controller (e.g. university)"/>
 
   <user-selector fieldTitle="Editors"
                  fieldDataName="editors"
-                 class="q-my-sm" />
+                 class="q-my-sm"
+                 helpText="Users who may edit this order and the associated datasets"/>
 </div>
 </template>
 
@@ -107,37 +111,7 @@ export default {
     }
   },
 
-  methods: {    
-    addDataset(event) {
-      event.preventDefault();
-      this.$store.dispatch('orders/addDataset', {
-        'data': {
-          'title': this.origOrder.title + ' dataset ' + (this.origOrder.datasets.length + 1)
-        },
-        'uuid': this.uuid
-      })
-        .then(() => {
-          this.$store.dispatch('orders/getOrder', this.uuid);
-          this.addDsError = '';
-        })
-        .catch((error) => {
-          this.addDsError = 'Adding dataset failed (' + error + ')'
-        });
-    },
-
-    deleteDataset(event, uuid) {
-      event.preventDefault();
-      this.$store.dispatch('datasets/deleteDataset', uuid)
-        .then(() => {
-          this.$store.dispatch('orders/getOrder', this.uuid);
-          this.deleteDsError = '';
-        })
-        .catch((error) => {
-          this.deleteDsError = 'Deleting dataset failed (' + error + ')'
-        });
-
-    },
-    
+  methods: {
     addUserTag(event) {
       event.preventDefault();
       if (this.tagName !== '') {

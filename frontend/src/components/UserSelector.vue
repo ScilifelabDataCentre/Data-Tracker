@@ -10,6 +10,24 @@
   :pagination.sync="pagination"
   no-data-label="No entries found"
   :no-results-label="filter + ' does not match any entries'">
+  <template v-slot:top-left>
+    <div class="q-table__title">
+      {{ fieldTitle }}
+      <q-btn flat
+             round
+             dense
+             push
+             color="primary"
+             icon="info"
+             v-if="helpText.length > 0">
+        <q-popup-proxy>
+          <q-banner>
+            {{ helpText }}
+          </q-banner>
+        </q-popup-proxy>
+      </q-btn>
+    </div>
+  </template>
   <template v-slot:top-right>
     <q-input rounded
              outlined
@@ -77,6 +95,11 @@ export default {
     selectType: {
       type: String,
       default: 'multiple',
+    },
+
+    helpText: {
+      type: String,
+      default: '',
     },
   },
 
