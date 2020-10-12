@@ -18,18 +18,26 @@
     <q-card-section>
       <q-input id="order-title"
                label="Title"
-               v-model="title">
+               v-model="title"
+               outlined>
         <template v-slot:prepend>
           <q-icon name="title" />
         </template>
       </q-input>
+    </q-card-section>
+    <q-card-section>
       <q-input id="order-description"
                type="textarea"
                label="Description"
                v-model="description"
-               autogrow>
+               autogrow
+               outlined
+               bottom-slots>
         <template v-slot:prepend>
           <q-icon name="description" />
+        </template>
+        <template v-slot:hint>
+          Use <a class="std-link" href="https://www.markdownguide.org/cheat-sheet/">Markdown</a> to format the description.
         </template>
       </q-input>
     </q-card-section>
@@ -71,25 +79,25 @@ export default {
   computed: {
     order: {
       get () {
-        return this.$store.state.orders.order;
+        return this.$store.state.entries.entry;
       },
     },
 
     title: {
       get () {
-        return this.$store.state.orders.order.title;
+        return this.$store.state.entries.entry.title;
       },
       set (newValue) {
-        this.$store.dispatch('orders/setOrderFields', {'title': newValue});
+        this.$store.dispatch('entries/setEntryFields', {'title': newValue});
       },
     },
 
     description: {
       get () {
-        return this.$store.state.orders.order.description;
+        return this.$store.state.entries.entry.description;
       },
       set (newValue) {
-        this.$store.dispatch('orders/setOrderFields', {'description': newValue});
+        this.$store.dispatch('entries/setEntryFields', {'description': newValue});
       },
     },
 
@@ -129,7 +137,7 @@ export default {
 
     setField(event, data) {
       event.preventDefault();
-      this.$store.dispatch('orders/setOrderFields', data);
+      this.$store.dispatch('entries/setEntryFields', data);
     },
   },
 
