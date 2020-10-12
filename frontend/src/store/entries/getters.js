@@ -1,7 +1,7 @@
 export function order (state) {
-  return state.order;
+  return state.entry;
 }                  
 
 export function orders (state) {
-  return state.orders;
+  return state.entryList;
 }
