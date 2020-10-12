@@ -7,46 +7,13 @@
     </div>
   </div>
 
-  <q-card class="q-my-lg">
+  <q-card class="q-my-md">
     <q-card-section>
       <q-markdown :src="order.description" />
     </q-card-section>
   </q-card>
 
-  <q-card>
-    <q-card-section>
-      <q-list dense>
-        <div v-show="order.authors.length > 0">
-          <list-header title="Authors"
-                       explanation="The ones who provided the sample, e.g. a researcher" />
-          <user-entry v-for="author in order.authors"
-                      :key="author._id"
-                      v-bind="author" />
-        </div>
-
-        <div v-show="order.generators.length > 0">
-          <list-header title="Generators"
-                       explanation="The ones who generated the data, e.g. a facility" />
-          <user-entry v-for="generator in order.generators"
-                      :key="generator._id"
-                      v-bind="generator" />
-        </div>
-
-        <div v-show="order.organisation !== {}">
-          <list-header title="Organisation"
-                       explanation="The data owner, e.g. a university" />
-          <user-entry v-bind="order.organisation" />
-        </div>
-
-        <div v-show="order.editors.length > 0">
-          <list-header title="Editors"
-                       explanation="Users that may edit this order" />
-          <user-entry v-for="entry in order.editors"
-                      :key="entry._id"
-                      v-bind="entry" />
-        </div>
-      </q-list>
-    </q-card-section>
+  <q-card class="q-my-md">
     <q-card-section>
       <div v-show="order.datasets.length > 0">
         <q-list dense>
@@ -85,6 +52,42 @@
           </span>
         </template>
       </q-field>
+    </q-card-section>
+  </q-card>
+
+  <q-card class="q-my-md">
+    <q-card-section>
+      <q-list dense>
+        <div v-show="order.authors.length > 0">
+          <list-header title="Authors"
+                       explanation="The ones who provided the sample, e.g. a researcher" />
+          <user-entry v-for="author in order.authors"
+                      :key="author._id"
+                      v-bind="author" />
+        </div>
+
+        <div v-show="order.generators.length > 0">
+          <list-header title="Generators"
+                       explanation="The ones who generated the data, e.g. a facility" />
+          <user-entry v-for="generator in order.generators"
+                      :key="generator._id"
+                      v-bind="generator" />
+        </div>
+
+        <div v-show="order.organisation !== {}">
+          <list-header title="Organisation"
+                       explanation="The data owner, e.g. a university" />
+          <user-entry v-bind="order.organisation" />
+        </div>
+
+        <div v-show="order.editors.length > 0">
+          <list-header title="Editors"
+                       explanation="Users that may edit this order" />
+          <user-entry v-for="entry in order.editors"
+                      :key="entry._id"
+                      v-bind="entry" />
+        </div>
+      </q-list>
     </q-card-section>
   </q-card>
 </div>
