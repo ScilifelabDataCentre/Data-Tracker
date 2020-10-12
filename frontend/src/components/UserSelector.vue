@@ -159,7 +159,7 @@ export default {
 
   mounted () {
     this.selected = this.$store.state.entries.entry[this.fieldDataName];
-    if (typeof this.selected === 'object') {
+    if (!Array.isArray(this.selected)) {
       this.selected = [this.selected];
     }
   }
