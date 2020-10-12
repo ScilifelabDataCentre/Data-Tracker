@@ -45,39 +45,62 @@
     </q-card-section>
   </q-card>
 
+  <q-card>
+    <q-card-section>
+      <tag-editor fieldTitle="Standard Tags"
+                  helpText="Set standard tags"
+                  fieldDataName="tagsStandard"
+                  :dataLoaded="dataLoaded"/>
+      
+    </q-card-section>
+  </q-card>
+
   <user-selector fieldTitle="Authors"
                  fieldDataName="authors"
                  class="q-my-sm"
-                 helpText="The ones who own the sample (e.g. PI)"/>
+                 helpText="The ones who own the sample (e.g. PI)"
+                 :dataLoaded="dataLoaded"/>
 
   <user-selector fieldTitle="Generators"
                  fieldDataName="generators"
                  class="q-my-sm"
-                 helpText="The ones who generated the data (e.g. Facility)"/>
+                 helpText="The ones who generated the data (e.g. Facility)"
+                 :dataLoaded="dataLoaded"/>
 
   <user-selector fieldTitle="Organisation"
                  fieldDataName="organisation"
                  selectType="single"
                  class="q-my-sm"
-                 helpText="The data controller (e.g. university)"/>
+                 helpText="The data controller (e.g. university)"
+                 :dataLoaded="dataLoaded"/>
 
   <user-selector fieldTitle="Editors"
                  fieldDataName="editors"
                  class="q-my-sm"
-                 helpText="Users who may edit this order and the associated datasets"/>
+                 helpText="Users who may edit this order and the associated datasets"
+                 :dataLoaded="dataLoaded"/>
 </div>
 </template>
 
 <script>
 import UserSelector from 'components/UserSelector.vue'
+import TagEditor from 'components/TagEditor.vue'
 
 export default {
   name: 'OrderEdit',
 
   components: {
-    'user-selector': UserSelector
+    'user-selector': UserSelector,
+    'tag-editor': TagEditor,
   },
-  
+
+  props: {    
+    dataLoaded: {
+      type: Boolean,
+      default: false
+    }
+  },
+
   computed: {
     order: {
       get () {

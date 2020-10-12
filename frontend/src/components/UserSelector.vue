@@ -74,6 +74,13 @@ export default {
       data[this.fieldDataName] = newValue;
       this.$store.dispatch('entries/setEntryFields', data);
     },
+
+    dataLoaded (newValue, OldValue) {
+      this.selected = JSON.parse(JSON.stringify(this.fieldEntries[this.fieldDataName]));
+      if (!Array.isArray(this.selected)) {
+        this.selected = [this.selected];
+      }
+    },
   },
   
   props: {
@@ -96,6 +103,11 @@ export default {
       type: String,
       default: '',
     },
+
+    dataLoaded: {
+      type: Boolean,
+      default: false
+    }
   },
 
   

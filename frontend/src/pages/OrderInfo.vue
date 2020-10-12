@@ -18,7 +18,7 @@
     </q-tab-panel>
 
     <q-tab-panel name="edit">
-      <order-edit />
+      <order-edit :dataLoaded="!isLoading"/>
     </q-tab-panel>
 
   </q-tab-panels>

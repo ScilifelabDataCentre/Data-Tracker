@@ -115,6 +115,23 @@ export function setEntryFields({ commit }, data) {
 }
 
 
+export function setStdTags({ commit }, data) {
+  return new Promise((resolve, reject) => {
+    commit('UPDATE_STD_TAGS', data);
+    resolve();
+  });
+}
+
+
+export function setUserTags({ commit }, data) {
+  return new Promise((resolve, reject) => {
+    commit('UPDATE_USER_TAGS', data);
+    resolve();
+  });
+}
+
+
+
 export function resetEntryList({ commit }) {
   return new Promise((resolve, reject) => {
     commit('RESET_ENTRY_LIST');
