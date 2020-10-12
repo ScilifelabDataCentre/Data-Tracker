@@ -8,7 +8,7 @@ export function getOrder ({ commit, dispatch }, id) {
     axios
       .get('/api/v1/order/' + id + '/')
       .then((response) => {
-        commit('updateOrder', response.data.order);
+        commit('UPDATE_ENTRY', response.data.order);
         resolve(response);
       })
       .catch((err) => {
@@ -17,17 +17,13 @@ export function getOrder ({ commit, dispatch }, id) {
   });
 }
 
-
-export function setOrderFields({ commit }, data) {
-  commit('updateOrderFields', data);
-}
 
 export function getEmptyOrder ({ commit, dispatch }) {
   return new Promise((resolve, reject) => {
     axios
       .get('/api/v1/order/structure/')
       .then((response) => {
-        commit('updateOrder', response.data.order);
+        commit('UPDATE_ENTRY', response.data.order);
         resolve(response);
       })
       .catch((err) => {
@@ -37,12 +33,12 @@ export function getEmptyOrder ({ commit, dispatch }) {
 }
 
 
-export function getOrders ({ commit, dispatch }) {
+export function getEntries ({ commit, dispatch }, dataType) {
   return new Promise((resolve, reject) => {
     axios
-      .get('/api/v1/order/')
+      .get('/api/v1/' + dataType + '/')
       .then((response) => {
-        commit('updateOrders', response.data.orders);
+        commit('UPDATE_ENTRY_LIST', response.data[dataType + 's']);
         resolve(response);
       })
       .catch((err) => {
@@ -119,5 +115,21 @@ export function addDataset (context, payload) {
       .catch(function (err) {
         reject(err);
       });
+  });
+}
+
+
+export function setEntryFields({ commit }, data) {
+  return new Promise((resolve, reject) => {
+    commit('UPDATE_ENTRY_FIELDS', data);
+    resolve();
+  });
+}
+
+
+export function resetEntryList({ commit }, data) {
+  return new Promise((resolve, reject) => {
+    commit('RESET_ENTRY_LIST', data);
+    resolve();
   });
 }

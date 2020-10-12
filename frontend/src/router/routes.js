@@ -8,14 +8,13 @@ const Login = () => import(/* webpackChunkName: "user" */ 'pages/Login.vue')
 const BaseContainer = () => import(/* webpackChunkName: "base" */ 'pages/BaseContainer.vue')
 
 const CollectionAbout = () => import(/* webpackChunkName: "collection" */ 'pages/CollectionAbout.vue')
-const CollectionBrowser = () => import(/* webpackChunkName: "collection" */ 'pages/CollectionBrowser.vue')
 const CollectionEdit = () => import(/* webpackChunkName: "collection" */ 'pages/CollectionEdit.vue')
 
 const DatasetInfo = () => import(/* webpackChunkName: "dataset" */ 'pages/DatasetInfo.vue')
-const DatasetBrowser = () => import(/* webpackChunkName: "dataset" */ 'pages/DatasetBrowser.vue')
 
 const OrderInfo = () => import(/* webpackChunkName: "order" */ 'pages/OrderInfo.vue')
-const OrderBrowser = () => import(/* webpackChunkName: "order" */ 'pages/OrderBrowser.vue')
+
+const EntryBrowser = () => import(/* webpackChunkName: "browser" */ 'pages/EntryBrowser.vue')
 
 const UserManager = () => import(/* webpackChunkName: "admin" */ 'pages/UserManager.vue')
 
@@ -37,8 +36,9 @@ const routes = [
     children: [
       {
         path: '',
-        component: DatasetBrowser,
-        name: 'Dataset Browser'
+        component: EntryBrowser,
+        name: 'Dataset Browser',
+        props: { 'entryType': 'dataset'}
       },
       {
         path: ':uuid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})',
@@ -46,6 +46,13 @@ const routes = [
         props: true,
         name: 'Dataset About'
       },
+      {
+        path: 'new',
+        component: DatasetInfo,
+        props: {'uuid': ''},
+        name: 'Dataset New'
+      },
+
     ]
   },
   
@@ -58,8 +65,9 @@ const routes = [
     children: [
       {
         path: '',
-        component: OrderBrowser,
-        name: 'Order Browser'
+        component: EntryBrowser,
+        name: 'Order Browser',
+        props: { 'entryType': 'order'}
       },
       {
         path: ':uuid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})',
@@ -82,8 +90,9 @@ const routes = [
     children: [
       {
         path: '',
-        component: CollectionBrowser,
-        name: 'Collection Browser'
+        component: EntryBrowser,
+        name: 'Collection Browser',
+        props: { 'entryType': 'collection'}
       },
       {
         path: ':uuid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})',
@@ -98,10 +107,10 @@ const routes = [
         name: 'Collection Edit'
       },
       {
-        path: 'add',
+        path: 'new',
         component: CollectionEdit,
         props: { 'uuid': '' },
-        name: 'Collection Add'
+        name: 'Collection New'
       },
     ]
   },

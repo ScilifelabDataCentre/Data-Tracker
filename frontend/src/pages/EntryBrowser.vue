@@ -1,9 +1,9 @@
 <template>
 <q-page padding>
-  <h2>Orders</h2>
+  <h2 class="text-capitalize">{{ entryType + 's' }}</h2>
 
   <q-table
-    :data="orders"
+    :data="entries"
     :columns="columns"
     row-key="id"
     :pagination.sync="pagination"
@@ -11,14 +11,13 @@
     grid
     :loading="loading"
     no-data-label="No entries found"
-    :no-results-label="filter + ' does not match any entries'"
-    >
+    :no-results-label="filter + ' does not match any entries'">
 
     <template v-slot:top-left>
       <q-btn round
              color="accent"
              icon="add"
-             :to="{ 'name': 'Order New' }" />
+             :to="{ 'name': pageNew }" />
     </template>
 
     <template v-slot:top-right>
@@ -49,7 +48,7 @@
             <q-btn
               flat
               label="More"
-              :to="{ name: 'Order About', params: { 'uuid': props.row._id } }" />
+              :to="{ name: pageAbout, params: { 'uuid': props.row._id } }" />
           </q-card-section>
         </q-card>
       </div>
@@ -59,27 +58,45 @@
 </template>
 
 <script>
+import { format } from 'quasar'
+const { capitalize } = format
+
 export default {
-  name: 'OrderBrowser',
+  name: 'EntryBrowser',
 
   computed: {
-    orders: {
+    entries: {
       get () {
-        return this.$store.state.orders.orders;
+        return this.$store.state.entries.entryList;
       },
     }
   },
 
+  props: {
+    entryType: {
+      type: String,
+      required: true
+    }
+  },
+
+  watch: {
+    entryType: {
+      immediate: true,
+      handler () {
+        this.loadData();
+      }
+    }
+  },
+  
   data () {
     return {
       filter: '',
-
+      pageAbout: '',
+      pageNew: '',
       loading: true,
-      
       pagination: {
         rowsPerPage: 21
       },
-
       columns: [
         {
           name: 'id',
@@ -100,10 +117,18 @@ export default {
     }
   },
 
-  mounted () {
-    this.$store.dispatch('orders/getOrders')
-      .then(() => this.loading = false)
-      .catch(() => this.loading = false)
+  methods: {
+    loadData () {
+      this.$store.dispatch('entries/resetEntryList')
+        .then(() => this.loading = true)
+        .then(() => {
+          this.$store.dispatch('entries/getEntries', this.entryType)
+            .then(() => this.loading = false)
+            .catch(() => this.loading = false)
+        });
+      this.pageAbout = capitalize(this.entryType) + ' About';
+      this.pageNew = capitalize(this.entryType) + ' New';
+    },
   }
 }
 </script>

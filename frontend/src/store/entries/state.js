@@ -1,6 +1,6 @@
 export default function () {
   return {
-    order: {},
-    orders: {},
+    entry: {},
+    entryList: [],
   }
 }
