@@ -5,7 +5,6 @@ import adminUsers from './adminUsers'
 import collections from './collections'
 import currentUser from './currentUser'
 import datasets from './datasets'
-import orders from './orders'
 import entries from './entries'
 
 Vue.use(Vuex)
@@ -26,7 +25,6 @@ export default function (/* { ssrContext } */) {
       collections,
       currentUser,
       datasets,
-      orders,
       entries,
     },
 
