@@ -36,7 +36,7 @@
            @hide="saveEdit">
       <q-fab-action v-show="uuid !== ''"
                     color="negative"
-                    @click="deleteEntry"
+                    @click="confirmDelete"
                     icon="fas fa-trash"
                     label="Delete" />
       <q-fab-action color="grey-6"
@@ -45,6 +45,20 @@
                     label="Cancel" />
     </q-fab>
   </q-page-sticky>
+
+  <q-dialog v-model="showConfirmDelete">
+    <q-card>
+      <q-card-section class="row items-center">
+        <q-avatar icon="fas fa-trash" color="alert" text-color="primary" />
+        <span class="q-ml-sm">Are you sure you want to delete this {{ dataType }}?</span>
+      </q-card-section>
+
+      <q-card-actions align="right">
+        <q-btn flat label="Cancel" color="grey-9" v-close-popup />
+        <q-btn flat label="Delete" color="negative" @click="deleteEntry" v-close-popup />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
 
   <q-inner-loading :showing="isLoading">
     <q-spinner-gears size="100px" color="primary" />
@@ -84,6 +98,8 @@ export default {
       isLoading: true,
       currentTab: 'preview',
       editMode: false,
+      showConfirmDelete: false,
+      dataType: 'order',
     }
   },
 
@@ -112,16 +128,20 @@ export default {
       this.currentTab = "preview";
     },
 
+    confirmDelete(event) {
+      event.preventDefault();
+      this.showConfirmDelete = true;
+      this.editMode = true;
+    },
+    
     deleteEntry(event) {
       event.preventDefault();
-      let response = confirm("Are you sure you want to delete the order?")
-      if (response) {
-        this.$store.dispatch('orders/deleteOrder', this.uuid)
-          .then(() => {
-            this.$router.push({ 'name': 'Order Browser' });
-          })
-          .catch((err) => {});
-      }
+      this.$store.dispatch('entries/deleteEntry', {'id': this.uuid,
+                                                'dataType': this.dataType})
+        .then(() => {
+          this.$router.push({ 'name': 'Order Browser' });
+        })
+        .catch((err) => {});
     },
 
     saveEdit (event) {
@@ -131,7 +151,7 @@ export default {
       for (field of ['authors', 'generators', 'editors']) {
         orderToSubmit[field] = orderToSubmit[field].map(item => item._id);
         }
-      orderToSubmit.organisation = orderToSubmit.organisation._id;
+      orderToSubmit.organisation = orderToSubmit.organisation[0]._id;
       // rename _id to id, otherwise it won't be dispatched
       orderToSubmit.id = orderToSubmit._id;
       orderToSubmit.tags_standard = orderToSubmit.tagsStandard
@@ -140,7 +160,8 @@ export default {
       delete orderToSubmit.tagsStandard;
       delete orderToSubmit.tagsUser;
       delete orderToSubmit.datasets;
-      this.$store.dispatch('orders/saveOrder', orderToSubmit)
+      this.$store.dispatch('entries/saveEntry', {data: orderToSubmit,
+                                                 dataType: this.dataType})
         .then((response) => { })
         .catch((err) => { });
       this.editMode = false;
@@ -150,12 +171,13 @@ export default {
     loadData () {
       this.isLoading = true;
       if (this.uuid === '') {
-        this.$store.dispatch('orders/getEmptyOrder', this.uuid)
+        this.$store.dispatch('entries/getEmptyEntry', this.dataType)
           .then(() => this.isLoading = false)
           .catch(() => this.isLoading = false);
       }
       else {
-        this.$store.dispatch('orders/getOrder', this.uuid)
+        this.$store.dispatch('entries/getEntry', {'id': this.uuid,
+                                                  'dataType': this.dataType})
           .then(() => this.isLoading = false)
           .catch(() => this.isLoading = false);
       }
