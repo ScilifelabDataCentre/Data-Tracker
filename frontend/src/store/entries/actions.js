@@ -3,12 +3,13 @@ import axios from 'axios';
 import {getCsrfHeader} from '../helpers.js';
 
 
-export function getOrder ({ commit, dispatch }, id) {
+export function getEntry ({ commit, dispatch }, payload) {
+  // payload: {'id': id, 'dataType': dataType}
   return new Promise((resolve, reject) => {
     axios
-      .get('/api/v1/order/' + id + '/')
+      .get('/api/v1/' + payload.dataType + '/' + payload.id + '/')
       .then((response) => {
-        commit('UPDATE_ENTRY', response.data.order);
+        commit('UPDATE_ENTRY', response.data[payload.dataType]);
         resolve(response);
       })
       .catch((err) => {
@@ -18,12 +19,12 @@ export function getOrder ({ commit, dispatch }, id) {
 }
 
 
-export function getEmptyOrder ({ commit, dispatch }) {
+export function getEmptyEntity ({ commit, dispatch }, dataType) {
   return new Promise((resolve, reject) => {
     axios
       .get('/api/v1/order/structure/')
       .then((response) => {
-        commit('UPDATE_ENTRY', response.data.order);
+        commit('UPDATE_ENTRY', response.data[dataType]);
         resolve(response);
       })
       .catch((err) => {
@@ -33,25 +34,11 @@ export function getEmptyOrder ({ commit, dispatch }) {
 }
 
 
-export function getEntries ({ commit, dispatch }, dataType) {
+export function deleteEntry (context, payload) {
+  // payload: {'id': id, 'dataType': dataType}
   return new Promise((resolve, reject) => {
     axios
-      .get('/api/v1/' + dataType + '/')
-      .then((response) => {
-        commit('UPDATE_ENTRY_LIST', response.data[dataType + 's']);
-        resolve(response);
-      })
-      .catch((err) => {
-        reject(err);
-      });
-  });
-}
-
-
-export function deleteOrder (context, order_id) {
-  return new Promise((resolve, reject) => {
-    axios
-      .delete('/api/v1/order/' + order_id + '/',
+      .delete('/api/v1/' + payload.dataType + '/' + payload.id + '/',
               {
                 headers: getCsrfHeader(),
               })
@@ -65,13 +52,14 @@ export function deleteOrder (context, order_id) {
 }
 
 
-export function saveOrder (context, payload) {
+export function saveEntity (context, payload) {
+  // payload: {'data': data, 'dataType': dataType}
   return new Promise((resolve, reject) => {
-    let uuid = payload.id;
-    delete payload.id;
+    let uuid = payload.data.id;
+    delete payload.data.id;
     if (uuid === '') {
       axios
-        .post('/api/v1/order/',
+        .post('/api/v1/' + payload.dataType + '/',
               payload,
               {
                 headers: getCsrfHeader(),
@@ -131,5 +119,20 @@ export function resetEntryList({ commit }, data) {
   return new Promise((resolve, reject) => {
     commit('RESET_ENTRY_LIST', data);
     resolve();
+  });
+}
+
+
+export function getEntries ({ commit, dispatch }, dataType) {
+  return new Promise((resolve, reject) => {
+    axios
+      .get('/api/v1/' + dataType + '/')
+      .then((response) => {
+        commit('UPDATE_ENTRY_LIST', response.data[dataType + 's']);
+        resolve(response);
+      })
+      .catch((err) => {
+        reject(err);
+      });
   });
 }
