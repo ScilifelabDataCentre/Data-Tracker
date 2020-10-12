@@ -176,10 +176,14 @@ export default {
           .catch(() => this.isLoading = false);
       }
       else {
-        this.$store.dispatch('entries/getEntry', {'id': this.uuid,
-                                                  'dataType': this.dataType})
-          .then(() => this.isLoading = false)
-          .catch(() => this.isLoading = false);
+        this.isLoading = true;
+        this.$store.dispatch('entries/resetEntry')
+          .then(() => {
+            this.$store.dispatch('entries/getEntry', {'id': this.uuid,
+                                                      'dataType': this.dataType})
+              .then(() => this.isLoading = false)
+              .catch(() => this.isLoading = false)
+          });
       }
     }
   },
