@@ -13,19 +13,14 @@
   <template v-slot:top-left>
     <div class="q-table__title">
       {{ fieldTitle }}
-      <q-btn flat
-             round
-             dense
-             push
-             color="primary"
-             icon="info"
-             v-if="helpText.length > 0">
-        <q-popup-proxy>
-          <q-banner>
-            {{ helpText }}
-          </q-banner>
-        </q-popup-proxy>
-      </q-btn>
+      <q-icon size="xs"
+              color="primary"
+              name="info"
+              v-if="helpText.length > 0">
+        <q-tooltip>
+          {{ helpText }}
+        </q-tooltip>
+      </q-icon>
     </div>
   </template>
   <template v-slot:top-right>
@@ -56,13 +51,13 @@ export default {
 
     fieldEntries: {
       get () {
-        return this.$store.state.orders.order[this.fieldDataName];
+        return this.$store.state.entries.entry[this.fieldDataName];
       }
     },
 
     orderData: {
       get () {
-        return this.$store.state.orders.order;
+        return this.$store.state.entries.entry;
       }
     },
 
@@ -76,8 +71,8 @@ export default {
   watch: {
     selected (newValue, OldValue) {
       let data = {};
-      data.[this.fieldDataName] = newValue;
-      this.$store.dispatch('orders/setOrderFields', data);
+      data[this.fieldDataName] = newValue;
+      this.$store.dispatch('entries/setEntryFields', data);
     },
   },
   
@@ -126,12 +121,14 @@ export default {
           label: 'Affiliation',
           field: 'affiliation',
           required: true,
+          align: 'left',
           sortable: true
         },
         {
           name: 'email',
           label: 'Email',
           field: 'email',
+          align: 'left',
           required: true,
           sortable: true
         },
@@ -139,6 +136,7 @@ export default {
           name: 'orcid',
           label: 'Orcid',
           field: 'orcid',
+          align: 'left',
           required: true,
           sortable: true
         },
@@ -150,17 +148,17 @@ export default {
   methods: {
     deleteUserTag(event, keyName) {
       event.preventDefault();
-      this.$delete(this.newOrder.extra, keyName);
+      this.$delete(this.newEntry.extra, keyName);
     },
 
     setField(event, data) {
       event.preventDefault();
-      this.$store.dispatch('orders/setOrderFields', data);
+      this.$store.dispatch('entries/setEntryFields', data);
     },
   },
 
   mounted () {
-    this.selected = this.$store.state.orders.order[this.fieldDataName];
+    this.selected = this.$store.state.entries.entry[this.fieldDataName];
     if (typeof this.selected === 'object') {
       this.selected = [this.selected];
     }
