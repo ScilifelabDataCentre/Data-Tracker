@@ -95,7 +95,7 @@ export default {
       pageNew: '',
       loading: true,
       pagination: {
-        rowsPerPage: 21
+        rowsPerPage: 20
       },
       columns: [
         {
