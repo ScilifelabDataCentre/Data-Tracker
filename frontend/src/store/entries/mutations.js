@@ -16,11 +16,11 @@ export function UPDATE_ENTRY_LIST (state, payload) {
 }
 
 
-export function RESET_ENTRY (state, payload) {
+export function RESET_ENTRY (state) {
   state.entry = {};
 }
 
 
-export function RESET_ENTRY_LIST (state, payload) {
+export function RESET_ENTRY_LIST (state) {
   state.entryList = [];
 }

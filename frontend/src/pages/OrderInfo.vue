@@ -1,5 +1,5 @@
 <template>
-<q-page padding>
+<q-page padding>  
   <q-tabs v-show="editMode"
           v-model="currentTab"
           dense
@@ -24,25 +24,28 @@
   </q-tab-panels>
 
   <q-page-sticky position="top-left"
-		 :offset="[14, 14]">
+		 :offset="editButtonPos">
     <q-fab v-model="editMode"
-           vertical-actions-align="center"
+           vertical-actions-align="left"
            :label="editMode ? 'Save' : 'Edit'"
            :color="editMode ? 'positive' : 'accent'"
            icon="edit"
            active-icon="save"
            direction="down"
            @show="activateEditMode"
-           @hide="saveEdit">
+           @hide="saveEdit"
+           v-touch-pan.prevent.mouse="moveEditButton">
       <q-fab-action v-show="uuid !== ''"
                     color="negative"
                     @click="confirmDelete"
                     icon="fas fa-trash"
-                    label="Delete" />
+                    label="Delete"
+                    external-label/>
       <q-fab-action color="grey-6"
                     @click="cancelEdit"
                     icon="cancel"
-                    label="Cancel" />
+                    label="Cancel"
+                    external-label/>
     </q-fab>
   </q-page-sticky>
 
@@ -56,6 +59,19 @@
       <q-card-actions align="right">
         <q-btn flat label="Cancel" color="grey-9" v-close-popup />
         <q-btn flat label="Delete" color="negative" @click="deleteEntry" v-close-popup />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+
+  <q-dialog v-model="error">
+    <q-card>
+      <q-card-section class="row items-center">
+        <q-avatar icon="fas fa-exclamation-triangle" color="white" text-color="negative" />
+        <span class="q-ml-sm">The operation failed. Please try again.</span>
+      </q-card-section>
+
+      <q-card-actions align="right">
+        <q-btn flat label="Dismiss" color="negative" @click="error=false" v-close-popup />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -88,7 +104,7 @@ export default {
   computed: {
     order: {
       get () {
-        return this.$store.state.orders.order;
+        return this.$store.state.entries.entry;
       },
     },
   },
@@ -100,23 +116,26 @@ export default {
       editMode: false,
       showConfirmDelete: false,
       dataType: 'order',
+      error: false,
+      editButtonPos: [18, 18],
+      draggingEditButton: false,
     }
   },
 
   methods: {
+
+    moveEditButton (ev) {
+      this.draggingEditButton = ev.isFirst !== true && ev.isFinal !== true
+
+      this.editButtonPos = [
+        this.editButtonPos[0] + ev.delta.x,
+        this.editButtonPos[1] + ev.delta.y
+      ]
+    },
+
     activateEditMode () {
       this.editMode = true;
       this.currentTab = "edit";
-    },
-
-    submitOrderForm(event) {
-      event.preventDefault();
-
-      let orderToSubmit = JSON.parse(JSON.stringify(this.order));
-      this.$store.dispatch('orders/saveOrder', orderToSubmit)
-        .then(() => {
-          this.$router.push({'name': 'Order About', params: { 'uuid': this.uuid } });
-        });
     },
 
     cancelEdit () {
@@ -133,7 +152,7 @@ export default {
       this.showConfirmDelete = true;
       this.editMode = true;
     },
-    
+
     deleteEntry(event) {
       event.preventDefault();
       this.$store.dispatch('entries/deleteEntry', {'id': this.uuid,
@@ -141,11 +160,11 @@ export default {
         .then(() => {
           this.$router.push({ 'name': 'Order Browser' });
         })
-        .catch((err) => {});
+        .catch((err) => this.error = true);
     },
 
-    saveEdit (event) {
-      event.preventDefault();
+    saveEdit () {
+      this.runcounter = this.runcounter + 1;
       let orderToSubmit = JSON.parse(JSON.stringify(this.order));
       let field = '';
       for (field of ['authors', 'generators', 'editors']) {
@@ -162,10 +181,14 @@ export default {
       delete orderToSubmit.datasets;
       this.$store.dispatch('entries/saveEntry', {data: orderToSubmit,
                                                  dataType: this.dataType})
-        .then((response) => { })
-        .catch((err) => { });
-      this.editMode = false;
-      this.currentTab = "preview";
+        .then((response) => {
+          this.editMode = false;
+          this.currentTab = "preview";
+        })
+        .catch((err) => {
+          this.error = true;
+          this.editMode = true;
+        });
     },
 
     loadData () {
@@ -182,7 +205,7 @@ export default {
             this.$store.dispatch('entries/getEntry', {'id': this.uuid,
                                                       'dataType': this.dataType})
               .then(() => this.isLoading = false)
-              .catch(() => this.isLoading = false)
+              .catch(() => this.isLoading = false);
           });
       }
     }

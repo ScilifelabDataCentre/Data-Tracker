@@ -153,7 +153,9 @@ export default {
 
     setField(event, data) {
       event.preventDefault();
-      this.$store.dispatch('entries/setEntryFields', data);
+      if (this.fieldDataName === 'organisation')
+        
+        this.$store.dispatch('entries/setEntryFields', data);
     },
   },
 

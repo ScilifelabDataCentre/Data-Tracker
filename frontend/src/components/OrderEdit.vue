@@ -37,7 +37,9 @@
           <q-icon name="description" />
         </template>
         <template v-slot:hint>
-          Use <a class="std-link" href="https://www.markdownguide.org/cheat-sheet/">Markdown</a> to format the description.
+          Use <a class="std-link"
+                 href="https://www.markdownguide.org/cheat-sheet/"
+                 target="_blank">Markdown</a> to format the description.
         </template>
       </q-input>
     </q-card-section>
@@ -120,21 +122,6 @@ export default {
   },
 
   methods: {
-    addUserTag(event) {
-      event.preventDefault();
-      if (this.tagName !== '') {
-        if (! Object.keys(this.newOrder.extra).includes(this.tagName)) {
-          this.$set(this.newOrder.extra, this.tagName, '');
-        }
-      }
-      this.tagName = '';
-    },
-
-    deleteUserTag(event, keyName) {
-      event.preventDefault();
-      this.$delete(this.newOrder.extra, keyName);
-    },
-
     setField(event, data) {
       event.preventDefault();
       this.$store.dispatch('entries/setEntryFields', data);

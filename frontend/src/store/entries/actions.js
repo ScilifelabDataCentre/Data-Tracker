@@ -19,7 +19,7 @@ export function getEntry ({ commit, dispatch }, payload) {
 }
 
 
-export function getEmptyEntity ({ commit, dispatch }, dataType) {
+export function getEmptyEntry ({ commit, dispatch }, dataType) {
   return new Promise((resolve, reject) => {
     axios
       .get('/api/v1/order/structure/')
@@ -52,7 +52,7 @@ export function deleteEntry (context, payload) {
 }
 
 
-export function saveEntity (context, payload) {
+export function saveEntry (context, payload) {
   // payload: {'data': data, 'dataType': dataType}
   return new Promise((resolve, reject) => {
     let uuid = payload.data.id;
@@ -60,7 +60,7 @@ export function saveEntity (context, payload) {
     if (uuid === '') {
       axios
         .post('/api/v1/' + payload.dataType + '/',
-              payload,
+              payload.data,
               {
                 headers: getCsrfHeader(),
               })
@@ -73,8 +73,8 @@ export function saveEntity (context, payload) {
     }
     else {
       axios
-        .patch('/api/v1/order/' + uuid + '/',
-               payload,
+        .patch('/api/v1/' + payload.dataType + '/' + uuid + '/',
+               payload.data,
                {
                  headers: getCsrfHeader(),
                })
@@ -115,9 +115,17 @@ export function setEntryFields({ commit }, data) {
 }
 
 
-export function resetEntryList({ commit }, data) {
+export function resetEntryList({ commit }) {
   return new Promise((resolve, reject) => {
-    commit('RESET_ENTRY_LIST', data);
+    commit('RESET_ENTRY_LIST');
+    resolve();
+  });
+}
+
+
+export function resetEntry({ commit }) {
+  return new Promise((resolve, reject) => {
+    commit('RESET_ENTRY');
     resolve();
   });
 }

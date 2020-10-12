@@ -32,7 +32,7 @@
                       v-bind="generator" />
         </div>
 
-        <div v-show="order.organisation.length > 0">
+        <div v-show="order.organisation !== {}">
           <list-header title="Organisation"
                        explanation="The data owner, e.g. a university" />
           <user-entry v-bind="order.organisation" />
@@ -105,7 +105,7 @@ export default {
   computed: {
     order: {
       get () {
-        return this.$store.state.orders.order;
+        return this.$store.state.entries.entry;
       },
     },
   },
