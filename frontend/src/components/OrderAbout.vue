@@ -28,31 +28,31 @@
     </q-card-section>
   </q-card>
 
-  <q-card class="q-my-md">
+  <q-card class="q-my-md"
+          v-show="order.datasets.length > 0">
     <q-card-section>
-      <div v-show="order.datasets.length > 0">
-        <q-list dense>
-          <list-header title="Datasets"
-                       explanation="Datasets generated from this order" />
-          <q-item v-for="dataset in order.datasets" :key="dataset._id">
-            <q-item-section avatar>
-              <q-btn flat
-                     dense
-                     round
-                     icon="link"
-                     :to="{ 'name': 'Dataset About', 'params': { 'uuid': dataset._id } }" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>
-                {{ dataset.title }}
-              </q-item-label>
-              <q-item-label caption>
-                {{ dataset._id }}
-              </q-item-label>
-            </q-item-section>
-          </q-item>
-        </q-list>
-      </div>
+      <q-list dense>
+        <list-header title="Datasets"
+                     explanation="Datasets generated from this order" />
+        <q-item v-for="dataset in order.datasets" :key="dataset._id">
+          <q-item-section avatar>
+            <q-btn flat
+                   dense
+                   round
+                   icon="link"
+                   :to="{ 'name': 'Dataset About', 
+                          'params': { 'uuid': dataset._id } }" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>
+              {{ dataset.title }}
+            </q-item-label>
+            <q-item-label caption>
+              {{ dataset._id }}
+            </q-item-label>
+          </q-item-section>
+        </q-item>
+      </q-list>
     </q-card-section>
   </q-card>
 
