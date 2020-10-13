@@ -1,7 +1,7 @@
 <template>
 <q-table
   :title="fieldTitle"
-  :data="users"
+  :data="onlySelected ? selected : users"
   :columns="columns"
   row-key="_id"
   :filter="filter"
@@ -24,6 +24,9 @@
     </div>
   </template>
   <template v-slot:top-right>
+    <q-checkbox v-model="onlySelected"
+                label="Only selected"
+                class="q-mx-md"/>
     <q-input rounded
              outlined
              dense
@@ -113,6 +116,7 @@ export default {
   
   data () {
     return {
+      onlySelected: false,
       filter: '',
       pagination: {
         rowsPerPage: 5
