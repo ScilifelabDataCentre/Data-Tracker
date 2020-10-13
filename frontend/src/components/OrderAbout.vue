@@ -1,5 +1,5 @@
 <template>
-<div v-if="Object.keys(order).length > 0">
+<div v-if="Object.keys(order).length">
   <div class="text-center q-mb-lg">
     <h1 class="text-h2 q-mb-xs ">{{ order.title }}</h1>
     <div class="text-subtitle1 text-italic">
@@ -7,9 +7,24 @@
     </div>
   </div>
 
-  <q-card class="q-my-md">
+  <q-card class="q-my-md" v-show="order.description.length">
     <q-card-section>
       <q-markdown :src="order.description" />
+    </q-card-section>
+  </q-card>
+
+  <q-card class="q-my-md"
+          v-show="Object.keys(order.tagsStandard).length ||
+                  Object.keys(order.tagsUser).length">
+    <q-card-section class="flex q-ma-sm">
+      <q-chip v-for="field in Object.keys(order.tagsStandard)" :key="field">
+        <q-avatar icon="label" color="blue" text-color="white" />
+        {{ field }}: {{ order.tagsStandard[field] }}
+      </q-chip>
+      <q-chip v-for="field in Object.keys(order.tagsUser)" :key="field">
+        <q-avatar icon="label" color="green" text-color="white" />
+        {{ field }}: {{ order.tagsUser[field] }}
+      </q-chip>
     </q-card-section>
   </q-card>
 
@@ -38,27 +53,13 @@
           </q-item>
         </q-list>
       </div>
-      
-      <q-field
-        v-for="field in Object.keys(order.tagsUser)" :key="field"
-        :label="field"
-        stack-label>
-        <template v-slot:prepend>
-          <q-icon name="label" />
-        </template>
-        <template v-slot:control>
-          <span>
-            {{ order.userTags[field] }}
-          </span>
-        </template>
-      </q-field>
     </q-card-section>
   </q-card>
 
   <q-card class="q-my-md">
     <q-card-section>
       <q-list dense>
-        <div v-show="order.authors.length > 0">
+        <div v-show="order.authors.length">
           <list-header title="Authors"
                        explanation="The ones who provided the sample, e.g. a researcher" />
           <user-entry v-for="author in order.authors"
@@ -66,7 +67,7 @@
                       v-bind="author" />
         </div>
 
-        <div v-show="order.generators.length > 0">
+        <div v-show="order.generators.length">
           <list-header title="Generators"
                        explanation="The ones who generated the data, e.g. a facility" />
           <user-entry v-for="generator in order.generators"
@@ -80,7 +81,7 @@
           <user-entry v-bind="order.organisation" />
         </div>
 
-        <div v-show="order.editors.length > 0">
+        <div v-show="order.editors.length">
           <list-header title="Editors"
                        explanation="Users that may edit this order" />
           <user-entry v-for="entry in order.editors"
