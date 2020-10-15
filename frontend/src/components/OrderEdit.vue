@@ -51,7 +51,12 @@
                   helpText="Set standard tags"
                   fieldDataName="tagsStandard"
                   :dataLoaded="dataLoaded"/>
-      
+    </q-card-section>
+    <q-card-section>
+      <tag-editor fieldTitle="User Tags"
+                  helpText="Set user tags"
+                  fieldDataName="tagsUser"
+                  :dataLoaded="dataLoaded"/>
     </q-card-section>
   </q-card>
 

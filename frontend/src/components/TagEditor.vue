@@ -1,25 +1,34 @@
 <template>
 <div>
   <span class="text-h6">{{ fieldTitle }}</span>
-  
-  <q-input stack-label
-           outlined
-           label="Tag Name"
-           v-model="key">
-    <template v-slot:append>
-      <q-icon name="fas fa-plus-circle"
-              color="positive"
-              @click="addTag"
-              class="cursor-pointer" />
-    </template>
-  </q-input>
   <q-list>
+    <q-item>
+      <q-item-section>
+        <q-input stack-label
+                 outlined
+                 label="Tag Name"
+                 v-model="key">
+          <template v-slot:append>
+            <q-icon name="fas fa-plus-circle"
+                    color="positive"
+                    @click="addTag"
+                    class="cursor-pointer" />
+          </template>
+        </q-input>
+      </q-item-section>
+    </q-item>
     <q-item v-for="tagKey in Object.keys(fieldEntries)" :key="tagKey">
       <q-item-section>
         <q-input stack-label
                  outlined
                  :label="tagKey"
                  v-model="tags[tagKey]">
+          <template v-slot:append>
+            <q-icon name="fas fa-plus-circle"
+                    color="positive"
+                    @click="addTag"
+                    class="cursor-pointer" />
+          </template>
         </q-input>
       </q-item-section>
     </q-item>
@@ -42,7 +51,7 @@ export default {
   watch: {
     tags (newValue, OldValue) {
       let data = {};
-      data[this.fieldDataName] = newValue;
+      data[this.fieldDataName] = JSON.parse(JSON.stringify(newValue));
       this.$store.dispatch('entries/setEntryFields', data);
     },
 
@@ -77,6 +86,7 @@ export default {
   data () {
     return {
       key: '',
+      value: '',
       tags: {},
     }
   },
@@ -101,7 +111,7 @@ export default {
   },
 
   mounted () {
-    this.tags = this.$store.state.entries.entry[this.fieldDataName];
+      this.tags = JSON.parse(JSON.stringify(this.fieldEntries[this.fieldDataName]));
   }
 }
 </script>
