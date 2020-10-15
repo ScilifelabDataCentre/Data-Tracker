@@ -1,23 +1,37 @@
 <template>
 <q-page padding>
   <h1 class="text-h2">Login</h1>
-  <q-card shadowed
-          class="q-my-lg">
+  <q-banner v-show="oidcError"
+            class="bg-negative text-white q-my-md">
+    <template v-slot:avatar>
+      <q-icon name="warning" color="white" />
+    </template>
+    Failed to load the list of supported OpenID Connect logins.
+    <template v-slot:action>
+      <q-btn flat color="white" label="Dismiss" @click="oidcError=false" />
+    </template>
+  </q-banner>
+  <q-card class="q-my-lg"
+          v-show="Object.keys(oidcTypes).length > 0">
     <q-card-section>
       <div class="text-h4">OpenID</div>
     </q-card-section>
     <q-card-section>
-      <q-btn type="a"
-             class="text-capitalize"
-             v-for="authName in Object.keys(oidcTypes)"
-             :key="authName"
-             :href="oidcTypes[authName]"
-             :label="authName">
-      </q-btn>
+      <q-list>
+        <q-item v-for="authName in Object.keys(oidcTypes)"
+                :key="authName">
+          <q-btn type="a"
+                 class="text-capitalize"
+                 :href="oidcTypes[authName]"
+                 :label="authName"
+                 color="primary">
+          </q-btn>
+        </q-item>
+      </q-list>
     </q-card-section>
   </q-card>
 
-  <q-card shadowed>
+  <q-card>
     <q-card-section>
       <div class="text-h4">API Key</div>
     </q-card-section>
@@ -40,8 +54,9 @@
     </q-card-section>
     <q-card-section>
       <q-btn label="Submit"
-             @click="submitLogin" />
-      <p v-if="badLogin" class="text-caption text-negative">Bad login credentials</p>
+             @click="submitLogin"
+             color="primary"/>
+      <p v-show="badLogin" class="text-caption text-negative">Bad login credentials</p>
     </q-card-section>
   </q-card>
 </q-page>
@@ -61,6 +76,8 @@ export default {
         'apiKey': '',
       },
       'badLogin': false,
+      'oidcLoading': true,
+      'oidcError': false,
     }
   },
 
@@ -81,10 +98,14 @@ export default {
   },
 
   created () {
-    axios
-      .get('/api/login/oidc/')
+    this.$store.dispatch('currentUser/getOIDC')
       .then((response) => {
         this.oidcTypes = response.data;
+        this.oidcLoading = false;
+      })
+      .catch(() => {
+        this.oidcError = true;
+        this.oidcLoading = false;
       });
   },
 

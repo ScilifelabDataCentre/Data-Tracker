@@ -111,3 +111,9 @@ export function getCollections ({ commit }) {
       });
   });
 }
+
+
+export function getOIDC () {
+  return axios
+    .get('/api/v1/login/oidc/')
+}
