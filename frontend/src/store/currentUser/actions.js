@@ -17,37 +17,19 @@ export function getInfo ({ commit }) {
 }
 
 export function updateInfo(context, payload) {
-  return new Promise((resolve, reject) => {
-    axios
-      .patch('/api/v1/user/me/',
-             payload,
-             {
-               headers: getCsrfHeader(),
-             })
-      .then((response) => {
-        resolve(response);
-      })
-      .catch((err) => {
-        reject(err);
-      });
-  });
+  return axios.patch('/api/v1/user/me/',
+                     payload,
+                     {
+                       headers: getCsrfHeader(),
+                     });
 }
   
 export function genApiKey() {
-  return new Promise((resolve, reject) => {
-    axios
-      .post('/api/v1/user/me/apikey/',
-            {},
-            {
-              headers: getCsrfHeader(),
-            })
-      .then((response) => {
-        resolve(response);
-      })
-      .catch(function (err) {
-        reject(err);
-      });
-  });
+  return axios.post('/api/v1/user/me/apikey/',
+                    {},
+                    {
+                      headers: getCsrfHeader(),
+                    });
 }
   
 export function loginKey (context, payload) {

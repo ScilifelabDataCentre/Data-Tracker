@@ -18,6 +18,8 @@ const EntryBrowser = () => import(/* webpackChunkName: "browser" */ 'pages/Entry
 
 const UserManager = () => import(/* webpackChunkName: "admin" */ 'pages/UserManager.vue')
 
+const CurrentUser = () => import(/* webpackChunkName: "current" */ 'pages/CurrentUser.vue')
+
 const routes = [
   {
     path: '/',
@@ -52,7 +54,18 @@ const routes = [
         props: {'uuid': ''},
         name: 'Dataset New'
       },
+    ]
+  },
 
+  {
+    path: '/me',
+    component:  MainLayout,
+    children: [
+      {
+        path: '',
+        component: CurrentUser,
+        name: 'About Current User',
+      },
     ]
   },
   

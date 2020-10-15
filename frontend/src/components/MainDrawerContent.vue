@@ -31,9 +31,7 @@
       v-bind="adminUserLink"
       />
   </div>
-  <div
-    v-if="currentUser.name !== ''"
-    >
+  <div v-if="currentUser.name !== ''">
     <q-item-label
       header
       class="text-grey-8"
@@ -69,32 +67,24 @@
   <div
     v-else
     >
-    <q-item-label
-      header
-      class="text-grey-8"
-      >
+    <q-item-label header
+                  class="text-grey-8">
       Current User
     </q-item-label>
 
-    <NavEntry
-      v-for="link in loginLinks"
-      :key="link.title"
-      v-bind="link"
-      />
+    <NavEntry v-for="link in loginLinks"
+              :key="link.title"
+              v-bind="link" />
   </div>
   <div>
-    <q-item-label
-      header
-      class="text-grey-8"
-      >
+    <q-item-label header
+                  class="text-grey-8">
       Other
     </q-item-label>
 
-    <NavEntry
-      v-for="link in otherLinks"
-      :key="link.title"
-      v-bind="link"
-      />
+    <NavEntry v-for="link in otherLinks"
+              :key="link.title"
+              v-bind="link"/>
   </div>
 </q-list>
 </template>
@@ -156,7 +146,7 @@ export default {
           title: 'Current User',
           caption: 'About the current user',
           icon: 'person',
-          link: '/user/about'
+          link: '/me'
         },
       ],
       
