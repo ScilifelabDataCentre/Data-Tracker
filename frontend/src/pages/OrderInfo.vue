@@ -173,8 +173,8 @@ export default {
       orderToSubmit.organisation = orderToSubmit.organisation[0]._id;
       // rename _id to id, otherwise it won't be dispatched
       orderToSubmit.id = orderToSubmit._id;
-      orderToSubmit.tags_standard = orderToSubmit.tagsStandard
-      orderToSubmit.tags_user = orderToSubmit.tagsUser
+      orderToSubmit.tags_standard = orderToSubmit.tagsStandard;
+      orderToSubmit.tags_user = orderToSubmit.tagsUser;
       delete orderToSubmit._id;
       delete orderToSubmit.tagsStandard;
       delete orderToSubmit.tagsUser;
@@ -184,6 +184,10 @@ export default {
         .then((response) => {
           this.editMode = false;
           this.currentTab = "preview";
+          if (this.uuid === '') {
+            this.$router.push({ name: 'Order About', params: { 'uuid': response._id } });
+          }
+          this.loadData();
         })
         .catch((err) => {
           this.error = true;
