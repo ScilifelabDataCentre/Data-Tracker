@@ -1,33 +1,37 @@
 <template>
 <div>
   <span class="text-h6">{{ fieldTitle }}</span>
-  <q-list>
-    <q-item>
-      <q-item-section>
-        <q-input stack-label
-                 outlined
-                 label="Tag Name"
-                 v-model="key">
-          <template v-slot:append>
-            <q-icon name="fas fa-plus-circle"
-                    color="positive"
-                    @click="addTag"
-                    class="cursor-pointer" />
-          </template>
-        </q-input>
-      </q-item-section>
-    </q-item>
-    <q-item v-for="tagKey in Object.keys(fieldEntries)" :key="tagKey">
+  <div class="row q-my-md">
+    <q-input stack-label
+             outlined
+             label="New Tag Name"
+             v-model="key"
+             @keyup.enter="addTag"
+             class="col-10" />
+    <q-btn icon="fas fa-tag"
+           color="positive"
+           @click="addTag"
+           label="Add"
+           class="col-2"
+           flat/>
+  </div>
+  <q-list dense>
+    <q-item v-for="tagKey of Object.keys(fieldEntries)" :key="tagKey">
       <q-item-section>
         <q-input stack-label
                  outlined
                  :label="tagKey"
-                 v-model="tags[tagKey]">
+                 @input="setTag(tagKey, $event)"
+                 :value="fieldEntries[tagKey]">
           <template v-slot:append>
-            <q-icon name="fas fa-plus-circle"
-                    color="positive"
-                    @click="addTag"
+            <q-icon name="fas fa-minus-circle"
+                    color="negative"
+                    @click="deleteTag(tagKey)"
                     class="cursor-pointer" />
+          </template>
+          <template v-slot:prepend>
+            <q-icon name="fas fa-tag"
+                    color="primary"/>
           </template>
         </q-input>
       </q-item-section>
@@ -50,9 +54,8 @@ export default {
 
   watch: {
     tags (newValue, OldValue) {
-      let data = {};
-      data[this.fieldDataName] = JSON.parse(JSON.stringify(newValue));
-      this.$store.dispatch('entries/setEntryFields', data);
+      this.$store.dispatch('entries/setTags',
+                           {'tagName': this.fieldDataName, 'values': newValue});
     },
 
     dataLoaded (newValue, OldValue) {
@@ -86,7 +89,6 @@ export default {
   data () {
     return {
       key: '',
-      value: '',
       tags: {},
     }
   },
@@ -94,24 +96,25 @@ export default {
   methods: {
     addTag(event) {
       event.preventDefault();
-      this.$set(this.tags, this.key, '');
+      if (this.key.length > 0 && !Object.keys(this.tags).includes(this.key)) {
+        this.$set(this.tags, this.key, '');
+        this.key = '';
+      }
     },
 
-    deleteUserTag(event, keyName) {
-      event.preventDefault();
-      this.$delete(this.newEntry.extra, keyName);
+    setTag(keyName, value) {
+      let outObject = {};
+      outObject[keyName] = value;
+      this.$store.dispatch('entries/setTag',
+                           {'tagName': this.fieldDataName,
+                            'value': outObject});
     },
 
-    setField(event, data) {
-      event.preventDefault();
-      if (this.fieldDataName === 'organisation')
-        
-        this.$store.dispatch('entries/setEntryFields', data);
+    deleteTag(keyName) {
+      this.$store.dispatch('entries/deleteTag',
+                           {'tagName': this.fieldDataName, 'key': keyName});
+      this.$delete(this.tags, keyName);
     },
   },
-
-  mounted () {
-      this.tags = JSON.parse(JSON.stringify(this.fieldEntries[this.fieldDataName]));
-  }
 }
 </script>
