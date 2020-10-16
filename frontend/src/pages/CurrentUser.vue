@@ -32,10 +32,21 @@
                class="q-my-sm"
                label="URL"
                v-model="userData.url"/>
+    </q-card-section>
+    <q-card-section>
+      <div class="row">
       <q-btn color="positive"
              class="q-mt-md"
-             label="Save settings"
-             @click="saveSettings" />
+             :label="'Save settings'"
+             @click="saveSettings"
+             :loading="userDataSaveWaiting">
+        <template v-slot:loading>
+          <q-spinner-radio />
+        </template>
+      </q-btn>
+        <span v-show="userDataSaveSuccess" class="text-positive q-ml-md q-mt-md self-center">Settings saved</span>
+        <span v-show="userDataSaveError" class="text-negative q-ml-md q-mt-md self-center">Failed to save settings</span>
+      </div>
     </q-card-section>
   </q-card>
 
@@ -96,39 +107,54 @@ export default {
       get () {
         return this.$store.state.currentUser.info;
       },
-      set (newValue) {
-        console.log(newValue)
-        this.$store.dispatch('currentUser/updateInfo', newValue)
-          .then(() => this.$store.dispatch('currentUser/getInfo'));
-      }
     }
   },
 
   data () {
     return {
       userData: {},
+      userDataSaveSuccess: false,
+      userDataSaveError: false,
+      userDataSaveWaiting: false,
       filter: '',
       pageAbout: '',
       pageNew: '',
-      loading: true,
       newApiKey: '',
       newApiKeyError: false,
+      newApiKeyWaiting: false,
     }
   },
 
   methods: {
     saveSettings () {
+      this.userDataSaveSuccess = false;
+      this.userDataSaveError = false;
+      this.userDataSaveWaiting = true;
       let toSubmit = JSON.parse(JSON.stringify(this.userData));
-      this.currentUser = toSubmit;
+      this.$store.dispatch('currentUser/updateInfo', toSubmit)
+        .then(() => {
+          this.$store.dispatch('currentUser/getInfo');
+          this.userDataSaveSuccess = true;
+          this.userDataSaveWaiting = false;
+        })
+        .catch(() => {
+          this.userDataSaveError = true;
+          this.userDataSaveWaiting = false;
+        });
     },
 
     generateNewApiKey () {
+      this.newApiKeyWaiting = true;
+      this.newApiKeyError  = false;
       this.$store.dispatch('currentUser/genApiKey')
         .then((response) => {
           this.newApiKey = response.data.key;
-          console.log(response);
+          this.newApiKeyWaiting = false;
         })
-        .catch(() => this.newApiKeyError = true);
+        .catch(() => {
+          this.newApiKeyError = true
+          this.newApiKeyWaiting = false;
+        });
     },
 
     trimUserData () {
