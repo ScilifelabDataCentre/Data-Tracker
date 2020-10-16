@@ -115,9 +115,26 @@ export function setEntryFields({ commit }, data) {
 }
 
 
-export function setStdTags({ commit }, data) {
+// expects payLoad: {'tagName': tagName, 'values': tagObject}
+export function setTags({ commit }, payload) {
   return new Promise((resolve, reject) => {
-    commit('UPDATE_STD_TAGS', data);
+    commit('UPDATE_TAGS', payload);
+    resolve();
+  });
+}
+
+// expects payLoad: {'tagName': tagName, 'value': {key: value}}
+export function setTag({ commit }, payload) {
+  return new Promise((resolve, reject) => {
+    commit('UPDATE_TAG', payload);
+    resolve();
+  });
+}
+
+// expects payLoad: {'tagName': tagName, 'key': keyName}
+export function deleteTag({ commit }, payload) {
+  return new Promise((resolve, reject) => {
+    commit('DELETE_TAG', payload);
     resolve();
   });
 }
