@@ -50,13 +50,13 @@
       <tag-editor fieldTitle="Standard Tags"
                   helpText="Set standard tags"
                   fieldDataName="tagsStandard"
-                  :dataLoaded="dataLoaded"/>
+                  :isLoading="dataLoaded"/>
     </q-card-section>
     <q-card-section>
       <tag-editor fieldTitle="User Tags"
                   helpText="Set user tags"
                   fieldDataName="tagsUser"
-                  :dataLoaded="dataLoaded"/>
+                  :isLoading="dataLoaded"/>
     </q-card-section>
   </q-card>
 
