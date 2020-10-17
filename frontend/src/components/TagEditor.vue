@@ -52,17 +52,6 @@ export default {
     },
   },
 
-  watch: {
-    tags (newValue, OldValue) {
-      this.$store.dispatch('entries/setTags',
-                           {'tagName': this.fieldDataName, 'values': newValue});
-    },
-
-    dataLoaded (newValue, OldValue) {
-      this.tags = JSON.parse(JSON.stringify(this.fieldEntries[this.fieldDataName]));
-    },
-  },
-  
   props: {
     fieldTitle: {
       type: String,
@@ -79,25 +68,25 @@ export default {
       default: '',
     },
 
-    dataLoaded: {
+    isLoading: {
       type: Boolean,
       default: false
     }
   },
 
-  
   data () {
     return {
       key: '',
-      tags: {},
     }
   },
 
   methods: {
     addTag(event) {
       event.preventDefault();
-      if (this.key.length > 0 && !Object.keys(this.tags).includes(this.key)) {
-        this.$set(this.tags, this.key, '');
+      if (this.key.length > 0 && !Object.keys(this.fieldEntries).includes(this.key)) {
+        this.$store.dispatch('entries/addTag',
+                             {'tagName': this.fieldDataName,
+                              'key': this.key});
         this.key = '';
       }
     },
@@ -113,7 +102,6 @@ export default {
     deleteTag(keyName) {
       this.$store.dispatch('entries/deleteTag',
                            {'tagName': this.fieldDataName, 'key': keyName});
-      this.$delete(this.tags, keyName);
     },
   },
 }

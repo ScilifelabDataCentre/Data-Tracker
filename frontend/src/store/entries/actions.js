@@ -115,13 +115,14 @@ export function setEntryFields({ commit }, data) {
 }
 
 
-// expects payLoad: {'tagName': tagName, 'values': tagObject}
-export function setTags({ commit }, payload) {
+// expects payLoad: {'tagName': tagName, 'key': keyName}
+export function addTag({ commit }, payload) {
   return new Promise((resolve, reject) => {
-    commit('UPDATE_TAGS', payload);
+    commit('ADD_TAG', payload);
     resolve();
   });
 }
+
 
 // expects payLoad: {'tagName': tagName, 'value': {key: value}}
 export function setTag({ commit }, payload) {
@@ -138,15 +139,6 @@ export function deleteTag({ commit }, payload) {
     resolve();
   });
 }
-
-
-export function setUserTags({ commit }, data) {
-  return new Promise((resolve, reject) => {
-    commit('UPDATE_USER_TAGS', data);
-    resolve();
-  });
-}
-
 
 
 export function resetEntryList({ commit }) {
