@@ -17,13 +17,17 @@
           v-show="Object.keys(order.tagsStandard).length ||
                   Object.keys(order.tagsUser).length">
     <q-card-section class="flex q-ma-sm">
-      <q-chip square v-for="field in Object.keys(order.tagsStandard)" :key="field">
-        <q-avatar icon="fas fa-tag" color="blue" text-color="white" />
-        <span class="text-primary text-bold text-capitalize q-mr-sm">{{ field }}</span> {{ order.tagsStandard[field] }}
+      <q-chip square
+              color="grey-3"
+              v-for="field in Object.keys(order.tagsStandard)"
+              :key="field">
+        <span class="text-bold text-capitalize text-blue-9 q-mr-sm">{{ field }}</span> {{ order.tagsStandard[field] }}
       </q-chip>
-      <q-chip square v-for="field in Object.keys(order.tagsUser)" :key="field">
-        <q-avatar icon="fas fa-tag" color="green" text-color="white" />
-        <span class="text-primary text-bold text-capitalize q-mr-sm">{{ field }}</span> {{ order.tagsUser[field] }}
+      <q-chip square
+              color="grey-3"
+              v-for="field in Object.keys(order.tagsUser)"
+              :key="field">
+        <span class="text-bold text-capitalize text-secondary q-mr-sm">{{ field }}</span> {{ order.tagsUser[field] }}
       </q-chip>
     </q-card-section>
   </q-card>
