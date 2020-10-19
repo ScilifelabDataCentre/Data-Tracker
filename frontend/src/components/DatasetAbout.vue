@@ -1,5 +1,5 @@
 <template>
-<q-page padding>
+<div v-if="Object.keys(dataset).length">
   <div class="text-center q-mb-lg">
     <h1 class="text-h2 q-mb-xs ">{{ dataset.title }}</h1>
     <div class="text-subtitle1 text-italic">
@@ -7,187 +7,127 @@
     </div>
   </div>
 
-  <q-card class="q-my-lg">
+  <q-card class="q-my-md" v-show="dataset.description.length">
     <q-card-section>
       <q-markdown :src="dataset.description" />
     </q-card-section>
   </q-card>
 
-  <q-card>
-    <q-card-section>
-      <q-field v-if="dataset.hasOwnProperty('editors')"
-               label="Editors"
-               stack-label
-               outlined>
-        <template v-slot:prepend>
-          <q-icon name="person" />
-        </template>
-        <template v-slot:control>
-          <user-info :entries="dataset.editors" />
-        </template>
-      </q-field>
-      <q-field v-if="dataset.authors.length > 0"
-               label="Authors"
-               stack-label
-               outlined>
-        <template v-slot:prepend>
-          <q-icon name="person" />
-        </template>
-        <template v-slot:control>
-          <user-info :entries="dataset.authors" />
-        </template>
-      </q-field>
-      <q-field v-if="dataset.generators.length > 0"
-               label="Generators"
-               stack-label
-               filled>
-        <template v-slot:prepend>
-          <q-icon name="person" />
-        </template>
-        <template v-slot:control>
-          <user-info :entries="dataset.generators" />
-        </template>
-      </q-field>
-      <q-field v-if="dataset.organisation.name.length > 0"
-               label="Organisation"
-               stack-label>
-        <template v-slot:prepend>
-          <q-icon name="person" />
-        </template>
-        <template v-slot:control>
-          <user-info :entries="[dataset.organisation]" />
-        </template>
-      </q-field>
+  <q-card class="q-my-md"
+          v-show="Object.keys(dataset.tagsStandard).length ||
+                  Object.keys(dataset.tagsUser).length">
+    <q-card-section class="flex q-ma-sm">
+      <q-chip square
+              color="grey-3"
+              v-for="field in Object.keys(dataset.tagsStandard)"
+              :key="field">
+        <span class="text-bold text-capitalize text-blue-9 q-mr-sm">{{ field }}</span> {{ dataset.tagsStandard[field] }}
+      </q-chip>
+      <q-chip square
+              color="grey-3"
+              v-for="field in Object.keys(dataset.tagsUser)"
+              :key="field">
+        <span class="text-bold text-capitalize text-secondary q-mr-sm">{{ field }}</span> {{ dataset.tagsUser[field] }}
+      </q-chip>
     </q-card-section>
   </q-card>
+
+  <q-card class="q-my-md"
+          v-show="related.length > 0">
+    <q-card-section>
+      <q-list dense>
+        <list-header title="Related Datasets"
+                     explanation="Other datasets generated from the same order" />
+        <q-item v-for="dataset in related" :key="dataset._id">
+          <q-item-section avatar>
+            <q-btn flat
+                   dense
+                   round
+                   icon="link"
+                   :to="{ 'name': 'Dataset About', 
+                          'params': { 'uuid': dataset._id } }" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>
+              {{ dataset.title }}
+            </q-item-label>
+            <q-item-label caption>
+              {{ dataset._id }}
+            </q-item-label>
+          </q-item-section>
+        </q-item>
+      </q-list>
+    </q-card-section>
+  </q-card>
+
   <q-card class="q-my-md">
     <q-card-section>
-      <q-field
-        v-for="entry in dataset.tagsStandard" :key="entry.key"
-        :label="entry.key"
-        stack-label>
-        <template v-slot:prepend>
-          <q-icon name="label" />
-        </template>
-        <template v-slot:control>
-          <span>
-            {{ entry.value }}
-          </span>
-        </template>
-      </q-field>
+      <q-list dense>
+        <div v-show="dataset.authors.length">
+          <list-header title="Authors"
+                       explanation="The ones who provided the sample, e.g. a researcher" />
+          <user-entry v-for="author in dataset.authors"
+                      :key="author._id"
+                      v-bind="author" />
+        </div>
 
-      <q-field
-        v-for="entry in dataset.tagsUser" :key="entry.key"
-        :label="entry.key"
-        stack-label>
-        <template v-slot:prepend>
-          <q-icon name="label" />
-        </template>
-        <template v-slot:control>
-          <span>
-            {{ entry.value }}
-          </span>
-        </template>
-      </q-field>
+        <div v-show="dataset.generators.length">
+          <list-header title="Generators"
+                       explanation="The ones who generated the data, e.g. a facility" />
+          <user-entry v-for="generator in dataset.generators"
+                      :key="generator._id"
+                      v-bind="generator" />
+        </div>
 
-      <q-field
-        v-if="dataset.collections.length > 0"
-        label="Collections"
-        stack-label>
-        <template v-slot:prepend>
-          <q-icon name="local_library" />
-        </template>
-        <template v-slot:control>
-          <ul class="">
-            <li v-for="collection in dataset.projects" :key="collection._id">
-              <q-btn 
-                flat
-                no-caps
-                dense
-                :label="collection.title"
-                :to="{ 'name': 'Dataset About', 'params': { 'uuid': collection._id } }" />
-            </li>
-          </ul>
-        </template>
-      </q-field>
+        <div v-if="Object.keys(dataset.organisation).length">
+          <list-header title="Organisation"
+                       explanation="The data owner, e.g. a university" />
+          <user-entry v-bind="dataset.organisation" />
+        </div>
 
-      <q-field
-        v-if="dataset.related.length > 0"
-        label="Related datasets"
-        stack-label>
-        <template v-slot:prepend>
-          <q-icon name="insights" />
-        </template>
-
-        <template v-slot:control>
-          <ul class="">
-            <li v-for="relDataset in dataset.related" :key="relDataset._id">
-              <q-btn 
-                flat
-                no-caps
-                dense
-                :label="relDataset.title"
-                :to="{ 'name': 'Dataset About', 'params': { 'uuid': relDataset._id } }" />
-            </li>
-          </ul>
-        </template>
-      </q-field>
+        <div v-show="dataset.editors.length">
+          <list-header title="Editors"
+                       explanation="Users that may edit this dataset" />
+          <user-entry v-for="entry in dataset.editors"
+                      :key="entry._id"
+                      v-bind="entry" />
+        </div>
+      </q-list>
     </q-card-section>
   </q-card>
-
-  <q-page-sticky position="bottom-right"
-                 :offset="[24, 24]"
-                 v-if="dataset.creator === currentUser.name ||
-                       currentUser.permissions.includes('DATA_MANAGEMENT')">
-    <q-btn fab icon="edit" color="accent" :to="{ 'name': 'Dataset Edit', params: {'uuid': uuid} }" />
-  </q-page-sticky>
-
-  <q-inner-loading :showing="loading">
-    <q-spinner-gears size="100px" color="primary" />
-  </q-inner-loading>
-</q-page>
+</div>
 </template>
 
 <script>
-import UserInfo from 'components/UserInfo.vue'
+import UserEntry from 'components/UserEntry.vue'
+import ListHeader from 'components/ListHeader.vue'
 
 export default {
   name: 'DatasetAbout',
 
- components: {'user-info': UserInfo},
-  
-  props: {
-    uuid: {
-      type: String,
-      required: true
-    }
+  components: {
+    'user-entry': UserEntry,
+    'list-header': ListHeader
   },
 
   computed: {
     dataset: {
       get () {
-        return this.$store.state.datasets.dataset;
+        return this.$store.state.entries.entry;
       },
     },
-    currentUser: {
+
+    related: {
       get () {
-        return this.$store.state.currentUser.info;
+        return this.dataset.related.filter((entry) => entry._id !== this.dataset._id);
       },
-    },
+    }
   },
 
   data () {
     return {
-      loading: true,
     }
   },
-  
-  mounted () {
-    this.$store.dispatch('datasets/getDataset', this.uuid)
-      .then(() => this.loading = false)
-      .catch(() => this.loading = false)
-  }
-  
+
 }
 </script>
-
