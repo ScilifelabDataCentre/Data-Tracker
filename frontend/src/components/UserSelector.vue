@@ -78,7 +78,7 @@ export default {
       this.$store.dispatch('entries/setEntryFields', data);
     },
 
-    dataLoaded (newValue, OldValue) {
+    isLoading (newValue, OldValue) {
       this.selected = JSON.parse(JSON.stringify(this.fieldEntries[this.fieldDataName]));
       if (!Array.isArray(this.selected)) {
         this.selected = [this.selected];
@@ -107,9 +107,9 @@ export default {
       default: '',
     },
 
-    dataLoaded: {
+    isLoading: {
       type: Boolean,
-      default: false
+      default: true
     }
   },
 
@@ -174,12 +174,5 @@ export default {
         this.$store.dispatch('entries/setEntryFields', data);
     },
   },
-
-  mounted () {
-    this.selected = this.$store.state.entries.entry[this.fieldDataName];
-    if (!Array.isArray(this.selected)) {
-      this.selected = [this.selected];
-    }
-  }
 }
 </script>
