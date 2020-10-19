@@ -198,7 +198,8 @@ def add_order():
         if field in indata:
             indata[field] = [utils.str_to_uuid(entry) for entry in indata[field]]
     if 'organisation' in indata:
-        indata['organisation'] = utils.str_to_uuid(indata['organisation'])
+        if indata['organisation']:
+            indata['organisation'] = utils.str_to_uuid(indata['organisation'])
 
     new_order.update(indata)
 
@@ -344,7 +345,8 @@ def update_order(identifier: str):  # pylint: disable=too-many-branches
         if field in indata:
             indata[field] = [utils.str_to_uuid(entry) for entry in indata[field]]
     if 'organisation' in indata:
-        indata['organisation'] = utils.str_to_uuid(indata['organisation'])
+        if indata['organisation']:
+            indata['organisation'] = utils.str_to_uuid(indata['organisation'])
 
     is_different = False
     for field in indata:
@@ -377,10 +379,13 @@ def prepare_order_response(order_data: dict, mongodb):
     order_data['authors'] = utils.user_uuid_data(order_data['authors'], mongodb)
     order_data['generators'] = utils.user_uuid_data(order_data['generators'], mongodb)
     order_data['editors'] = utils.user_uuid_data(order_data['editors'], mongodb)
-    if org_entry := utils.user_uuid_data(order_data['organisation'], mongodb):
-        order_data['organisation'] = org_entry[0]
+    if order_data['organisation']:
+        if org_entry := utils.user_uuid_data(order_data['organisation'], mongodb):
+            order_data['organisation'] = org_entry[0]
+        else:
+            logging.error('Reference to non-existing organisation: %s', order_data['organisation'])
     else:
-        order_data['organisation'] = ''
+        order_data['organisation'] = {}
 
     # convert dataset list into {title, _id}
     order_data['datasets'] = list(mongodb['datasets'].find({'_id': {'$in': order_data['datasets']}},

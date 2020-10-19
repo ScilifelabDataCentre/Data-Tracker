@@ -263,6 +263,9 @@ def validate_user(data: str) -> bool:
     if not isinstance(data, str):
         raise ValueError(f'Bad data type (must be str): {data}')
 
+    if not data:
+        return True
+
     try:
         user_uuid = uuid.UUID(data)
     except ValueError as err:
