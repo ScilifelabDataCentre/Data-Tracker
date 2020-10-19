@@ -1,6 +1,16 @@
 <template>
 <div>
-  <span class="text-h6">{{ fieldTitle }}</span>
+  <span class="text-h6">
+    {{ fieldTitle }}
+    <q-icon size="xs"
+            color="primary"
+            name="info"
+            v-if="helpText.length > 0">
+      <q-tooltip>
+        {{ helpText }}
+      </q-tooltip>
+    </q-icon>
+  </span>
   <div class="row q-my-md">
     <q-input stack-label
              outlined
@@ -37,6 +47,9 @@
       </q-item-section>
     </q-item>
   </q-list>
+  <q-inner-loading :showing="isLoading">
+    <q-spinner-gears size="100px" color="primary" />
+  </q-inner-loading>
 </div>
 </template>
 
@@ -47,7 +60,9 @@ export default {
   computed: {
     fieldEntries: {
       get () {
-        return this.$store.state.entries.entry[this.fieldDataName];
+        if (!this.isLoading)
+          return this.$store.state.entries.entry[this.fieldDataName];
+        return {}
       }
     },
   },
@@ -70,7 +85,7 @@ export default {
 
     isLoading: {
       type: Boolean,
-      default: false
+      default: true
     }
   },
 
