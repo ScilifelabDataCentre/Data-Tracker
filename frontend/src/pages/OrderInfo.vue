@@ -1,5 +1,5 @@
 <template>
-<q-page padding>  
+<q-page padding>
   <q-tabs v-show="editMode"
           v-model="currentTab"
           dense
@@ -18,7 +18,7 @@
     </q-tab-panel>
 
     <q-tab-panel name="edit">
-      <order-edit :dataLoaded="!isLoading"/>
+      <order-edit :isLoading="isLoading"/>
     </q-tab-panel>
 
   </q-tab-panels>
@@ -123,7 +123,6 @@ export default {
   },
 
   methods: {
-
     moveEditButton (ev) {
       this.draggingEditButton = ev.isFirst !== true && ev.isFinal !== true
 
@@ -164,18 +163,26 @@ export default {
     },
 
     saveEdit () {
-      this.runcounter = this.runcounter + 1;
+      this.editMode = true;
+      if (this.order.title.length === 0)
+        return;
       let orderToSubmit = JSON.parse(JSON.stringify(this.order));
       let field = '';
       for (field of ['authors', 'generators', 'editors']) {
         orderToSubmit[field] = orderToSubmit[field].map(item => item._id);
-        }
-      orderToSubmit.organisation = orderToSubmit.organisation[0]._id;
+      }
+      if (orderToSubmit.organisation.length && '_id' in orderToSubmit.organisation[0])
+        orderToSubmit.organisation = orderToSubmit.organisation[0]._id;
+      else
+        orderToSubmit.organisation;
       // rename _id to id, otherwise it won't be dispatched
-      orderToSubmit.id = orderToSubmit._id;
+      if (this.uuid !== '')
+        orderToSubmit.id = orderToSubmit._id;
+      else
+        orderToSubmit.id = ''
+      delete orderToSubmit._id;
       orderToSubmit.tags_standard = orderToSubmit.tagsStandard;
       orderToSubmit.tags_user = orderToSubmit.tagsUser;
-      delete orderToSubmit._id;
       delete orderToSubmit.tagsStandard;
       delete orderToSubmit.tagsUser;
       delete orderToSubmit.datasets;
@@ -185,7 +192,7 @@ export default {
           this.editMode = false;
           this.currentTab = "preview";
           if (this.uuid === '') {
-            this.$router.push({ name: 'Order About', params: { 'uuid': response._id } });
+            this.$router.push({ name: 'Order About', params: { 'uuid': response.data._id } });
           }
           this.loadData();
         })
@@ -203,7 +210,6 @@ export default {
           .catch(() => this.isLoading = false);
       }
       else {
-        this.isLoading = true;
         this.$store.dispatch('entries/resetEntry')
           .then(() => {
             this.$store.dispatch('entries/getEntry', {'id': this.uuid,

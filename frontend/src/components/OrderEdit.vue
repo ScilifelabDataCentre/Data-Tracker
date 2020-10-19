@@ -50,13 +50,13 @@
       <tag-editor fieldTitle="Standard Tags"
                   helpText="Set standard tags"
                   fieldDataName="tagsStandard"
-                  :isLoading="dataLoaded"/>
+                  :isLoading="isLoading"/>
     </q-card-section>
     <q-card-section>
       <tag-editor fieldTitle="User Tags"
                   helpText="Set user tags"
                   fieldDataName="tagsUser"
-                  :isLoading="dataLoaded"/>
+                  :isLoading="isLoading"/>
     </q-card-section>
   </q-card>
 
@@ -64,26 +64,26 @@
                  fieldDataName="authors"
                  class="q-my-sm"
                  helpText="The ones who own the sample (e.g. PI)"
-                 :dataLoaded="dataLoaded"/>
+                 :dataLoaded="isLoading"/>
 
   <user-selector fieldTitle="Generators"
                  fieldDataName="generators"
                  class="q-my-sm"
                  helpText="The ones who generated the data (e.g. Facility)"
-                 :dataLoaded="dataLoaded"/>
+                 :dataLoaded="isLoading"/>
 
   <user-selector fieldTitle="Organisation"
                  fieldDataName="organisation"
                  selectType="single"
                  class="q-my-sm"
                  helpText="The data controller (e.g. university)"
-                 :dataLoaded="dataLoaded"/>
+                 :dataLoaded="isLoading"/>
 
   <user-selector fieldTitle="Editors"
                  fieldDataName="editors"
                  class="q-my-sm"
                  helpText="Users who may edit this order and the associated datasets"
-                 :dataLoaded="dataLoaded"/>
+                 :dataLoaded="isLoading"/>
 </div>
 </template>
 
@@ -100,9 +100,9 @@ export default {
   },
 
   props: {    
-    dataLoaded: {
+    isLoading: {
       type: Boolean,
-      default: false
+      default: true
     }
   },
 

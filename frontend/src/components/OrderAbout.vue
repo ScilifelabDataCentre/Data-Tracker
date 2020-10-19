@@ -79,7 +79,7 @@
                       v-bind="generator" />
         </div>
 
-        <div v-show="order.organisation !== {}">
+        <div v-if="Object.keys(order.organisation).length">
           <list-header title="Organisation"
                        explanation="The data owner, e.g. a university" />
           <user-entry v-bind="order.organisation" />
