@@ -157,6 +157,34 @@ def validate_string(data: str) -> bool:
     return True
 
 
+def validate_cross_references(data: list) -> bool:
+    """
+    Validate input for the ``cross_references`` field.
+
+    It must be a list.
+
+    Args:
+        data (dict): The data to be validated.
+
+    Returns:
+        bool: Validation passed.
+
+    Raises:
+        ValueError: Validation failed.
+    """
+    if not isinstance(data, list):
+        raise ValueError(f'Not a  list ({data})')
+    for entry in data:
+        if not isinstance(entry, dict):
+            raise ValueError(f'List entries must be dicts ({entry})')
+        if not list(entry.keys()) == ['title', 'value']:
+            raise KeyError(f'Incorrect keys ({entry.keys})')
+        if not isinstance(entry['title'], str) or \
+           not isinstance(entry['value'], str):
+            raise ValueError(f'Values must be strings ({entry.values()})')
+    return True
+
+
 def validate_tags_std(data: dict) -> bool:
     """
     Validate input for the ``tags_standard`` field.
@@ -310,6 +338,7 @@ VALIDATION_MAPPER = {'affiliation': validate_string,
                      'auth_ids': validate_list_of_strings,
                      'authors': validate_user_list,
                      'contact': validate_string,
+                     'cross_references': validate_cross_refs,
                      'description': validate_string,
                      'datasets': validate_datasets,
                      'editors': validate_user_list,
