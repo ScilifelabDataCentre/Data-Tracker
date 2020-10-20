@@ -7,8 +7,7 @@ const Login = () => import(/* webpackChunkName: "user" */ 'pages/Login.vue')
 
 const BaseContainer = () => import(/* webpackChunkName: "base" */ 'pages/BaseContainer.vue')
 
-const CollectionAbout = () => import(/* webpackChunkName: "collection" */ 'pages/CollectionAbout.vue')
-const CollectionEdit = () => import(/* webpackChunkName: "collection" */ 'pages/CollectionEdit.vue')
+const CollectionInfo = () => import(/* webpackChunkName: "collection" */ 'pages/CollectionInfo.vue')
 
 const DatasetInfo = () => import(/* webpackChunkName: "dataset" */ 'pages/DatasetInfo.vue')
 
@@ -109,20 +108,14 @@ const routes = [
       },
       {
         path: ':uuid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})',
-        component: CollectionAbout,
+        component: CollectionInfo,
         props: true,
         name: 'Collection About'
       },
       {
-        path: ':uuid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/edit',
-        component: CollectionEdit,
-        props: true,
-        name: 'Collection Edit'
-      },
-      {
         path: 'new',
-        component: CollectionEdit,
-        props: { 'uuid': '' },
+        component: CollectionInfo,
+        props: {'uuid': ''},
         name: 'Collection New'
       },
     ]
