@@ -60,7 +60,7 @@
     <q-tabs v-show="editMode"
             v-model="currentTab"
             dense
-            class="text-grey"
+            class="text-grey-8"
             active-color="primary"
             indicator-color="primary"
             align="center"
