@@ -86,6 +86,19 @@ def get_collection(identifier):
     return utils.response_json({'collection': result})
 
 
+@blueprint.route('/structure/', methods=['GET'])
+def get_collection_data_structure():
+    """
+    Get an empty collection entry.
+
+    Returns:
+        flask.Response: JSON structure with a list of collections.
+    """
+    empty_collection = structure.collection()
+    empty_collection['_id'] = ''
+    return utils.response_json({'collection': empty_collection})
+
+
 @blueprint.route('/', methods=['POST'])
 @user.login_required
 def add_collection():  # pylint: disable=too-many-branches

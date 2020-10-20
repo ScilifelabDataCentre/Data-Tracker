@@ -51,6 +51,19 @@ def get_random_ds(amount: int = 1):
     return utils.response_json({'datasets': results})
 
 
+@blueprint.route('/structure/', methods=['GET'])
+def get_dataset_data_structure():
+    """
+    Get an empty dataset entry.
+
+    Returns:
+        flask.Response: JSON structure with a list of datasets.
+    """
+    empty_dataset = structure.dataset()
+    empty_dataset['_id'] = ''
+    return utils.response_json({'dataset': empty_dataset})
+
+
 @blueprint.route('/<identifier>/', methods=['GET'])
 def get_dataset(identifier):
     """
