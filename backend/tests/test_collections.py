@@ -4,8 +4,10 @@ import requests
 
 import utils
 
+# pylint: disable=unused-import
 from helpers import make_request, as_user, make_request_all_roles,\
-    USERS, random_string, mdb, TEST_LABEL, collection_for_tests, add_dataset, delete_dataset  # pylint: disable=unused-import
+    USERS, random_string, mdb, TEST_LABEL, collection_for_tests, add_dataset, delete_dataset
+# pylint: enable=unused-import
 # pylint: disable=redefined-outer-name
 
 def test_random_collection():

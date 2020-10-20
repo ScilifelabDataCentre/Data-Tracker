@@ -260,7 +260,8 @@ def test_dataset_update_bad(dataset_for_tests):
     for _ in range(2):
         indata = {'title': 'Updated title'}
         ds_uuid = random_string()
-        responses = make_request_all_roles(f'/api/v1/dataset/{ds_uuid}/', method='PATCH', data=indata)
+        responses = make_request_all_roles(f'/api/v1/dataset/{ds_uuid}/',
+                                           method='PATCH', data=indata)
         for response in responses:
             if response.role in ('base', 'orders', 'data', 'root'):
                 assert response.code == 404
@@ -271,7 +272,8 @@ def test_dataset_update_bad(dataset_for_tests):
                 assert not response.data
 
         ds_uuid = uuid.uuid4().hex
-        responses = make_request_all_roles(f'/api/v1/dataset/{ds_uuid}/', method='PATCH', data=indata)
+        responses = make_request_all_roles(f'/api/v1/dataset/{ds_uuid}/',
+                                           method='PATCH', data=indata)
         for response in responses:
             if response.role in ('base', 'orders', 'data', 'root'):
                 assert response.code == 404
