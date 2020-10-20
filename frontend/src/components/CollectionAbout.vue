@@ -37,7 +37,7 @@
     <q-card-section>
       <q-list dense>
         <list-header title="Datasets"
-                     explanation="Datasets generated from this collection" />
+                     explanation="Datasets associated with this collection" />
         <q-item v-for="dataset in collection.datasets" :key="dataset._id">
           <q-item-section avatar>
             <q-btn flat
@@ -63,28 +63,6 @@
   <q-card class="q-my-md">
     <q-card-section>
       <q-list dense>
-        <div v-show="collection.authors.length">
-          <list-header title="Authors"
-                       explanation="The ones who provided the sample, e.g. a researcher" />
-          <user-entry v-for="author in collection.authors"
-                      :key="author._id"
-                      v-bind="author" />
-        </div>
-
-        <div v-show="collection.generators.length">
-          <list-header title="Generators"
-                       explanation="The ones who generated the data, e.g. a facility" />
-          <user-entry v-for="generator in collection.generators"
-                      :key="generator._id"
-                      v-bind="generator" />
-        </div>
-
-        <div v-if="Object.keys(collection.organisation).length">
-          <list-header title="Organisation"
-                       explanation="The data owner, e.g. a university" />
-          <user-entry v-bind="collection.organisation" />
-        </div>
-
         <div v-show="collection.editors.length">
           <list-header title="Editors"
                        explanation="Users that may edit this collection" />
@@ -103,7 +81,7 @@ import UserEntry from 'components/UserEntry.vue'
 import ListHeader from 'components/ListHeader.vue'
 
 export default {
-  name: 'OrderAbout',
+  name: 'CollectionAbout',
 
   components: {
     'user-entry': UserEntry,

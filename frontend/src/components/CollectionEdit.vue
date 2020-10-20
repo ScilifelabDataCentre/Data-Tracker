@@ -97,7 +97,7 @@ import UserSelector from 'components/UserSelector.vue'
 import TagEditor from 'components/TagEditor.vue'
 
 export default {
-  name: 'OrderEdit',
+  name: 'CollectionEdit',
 
   components: {
     'user-selector': UserSelector,

@@ -118,15 +118,15 @@
 </template>
 
 <script>
-import OrderAbout from 'components/OrderAbout.vue'
-import OrderEdit from 'components/OrderEdit.vue'
+import CollectionAbout from 'components/CollectionAbout.vue'
+import CollectionEdit from 'components/CollectionEdit.vue'
 
 export default {
-  name: 'OrderInfo',
+  name: 'CollectionInfo',
 
   components: {
-    'collection-about': OrderAbout,
-    'collection-edit': OrderEdit,
+    'collection-about': CollectionAbout,
+    'collection-edit': CollectionEdit,
   },
   
   props: {
@@ -170,7 +170,7 @@ export default {
 
     cancelEdit () {
       if (this.uuid === '') {
-          this.$router.push({ 'name': 'Order Browser' });
+          this.$router.push({ 'name': 'Collection Browser' });
       }
       this.editMode = false;
       this.loadData();
@@ -187,7 +187,7 @@ export default {
       this.$store.dispatch('entries/deleteEntry', {'id': this.uuid,
                                                 'dataType': this.dataType})
         .then(() => {
-          this.$router.push({ 'name': 'Order Browser' });
+          this.$router.push({ 'name': 'Collection Browser' });
           this.showConfirmDelete = false;
         })
         .catch((err) => this.error = true);
@@ -222,7 +222,7 @@ export default {
                                                  dataType: this.dataType})
         .then((response) => {
           if (this.uuid === '') {
-            this.$router.push({ name: 'Order About', params: { 'uuid': response.data._id } });
+            this.$router.push({ name: 'Collection About', params: { 'uuid': response.data._id } });
           }
           this.loadData();
           this.isSaving = false;
