@@ -199,24 +199,20 @@ export default {
         return;
       let collectionToSubmit = JSON.parse(JSON.stringify(this.collection));
       let field = '';
-      for (field of ['authors', 'generators', 'editors']) {
-        collectionToSubmit[field] = collectionToSubmit[field].map(item => item._id);
-      }
-      if (collectionToSubmit.organisation.length && '_id' in collectionToSubmit.organisation[0])
-        collectionToSubmit.organisation = collectionToSubmit.organisation[0]._id;
-      else
-        collectionToSubmit.organisation = '';
+      for (field of ['editors', 'datasets'])
+           collectionToSubmit[field] = collectionToSubmit[field].map(item => item._id);
       // rename _id to id, otherwise it won't be dispatched
       if (this.uuid !== '')
         collectionToSubmit.id = collectionToSubmit._id;
       else
         collectionToSubmit.id = ''
       delete collectionToSubmit._id;
+      collectionToSubmit.cross_references = collectionToSubmit.crossReferences;
+      delete collectionToSubmit.crossReferences;
       collectionToSubmit.tags_standard = collectionToSubmit.tagsStandard;
-      collectionToSubmit.tags_user = collectionToSubmit.tagsUser;
       delete collectionToSubmit.tagsStandard;
+      collectionToSubmit.tags_user = collectionToSubmit.tagsUser;
       delete collectionToSubmit.tagsUser;
-      delete collectionToSubmit.datasets;
       this.isSaving = true;
       this.$store.dispatch('entries/saveEntry', {data: collectionToSubmit,
                                                  dataType: this.dataType})

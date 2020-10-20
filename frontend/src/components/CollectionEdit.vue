@@ -60,28 +60,6 @@
     </q-card-section>
   </q-card>
 
-  <user-selector fieldTitle="Authors"
-                 fieldDataName="authors"
-                 class="q-my-sm"
-                 helpText="The ones who own the sample (e.g. PI)"
-                 :isLoadingUsers="isLoadingUsers"
-                 :isLoading="isLoading"/>
-
-  <user-selector fieldTitle="Generators"
-                 fieldDataName="generators"
-                 class="q-my-sm"
-                 helpText="The ones who generated the data (e.g. Facility)"
-                 :isLoadingUsers="isLoadingUsers"
-                 :isLoading="isLoading"/>
-
-  <user-selector fieldTitle="Organisation"
-                 fieldDataName="organisation"
-                 selectType="single"
-                 class="q-my-sm"
-                 helpText="The data controller (e.g. university)"
-                 :isLoadingUsers="isLoadingUsers"
-                 :isLoading="isLoading"/>
-
   <user-selector fieldTitle="Editors"
                  fieldDataName="editors"
                  class="q-my-sm"
