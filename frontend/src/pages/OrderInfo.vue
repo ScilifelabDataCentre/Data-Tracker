@@ -1,16 +1,74 @@
 <template>
 <q-page padding>
-  <q-tabs v-show="editMode"
-          v-model="currentTab"
-          dense
-          class="text-grey"
-          active-color="primary"
-          indicator-color="primary"
-          align="center"
-          narrow-indicator>
-    <q-tab name="edit" label="Edit" />
-    <q-tab name="preview" label="Preview" />
-  </q-tabs>
+  <div class="flex">
+    <q-btn-dropdown class="q-mr-sm"
+                    color="secondary"
+                    icon="fas fa-cog"
+                    label="Options">
+      <q-list dense>
+        <q-item :disable="editMode"
+                v-close-popup
+                clickable
+                @click="toggleEditMode">
+          <q-item-section avatar>
+            <q-avatar icon="edit"
+                      text-color="primary" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Edit</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-item clickable
+                v-close-popup
+                @click="confirmDelete">
+          <q-item-section avatar>
+            <q-avatar icon="fas fa-trash" text-color="negative" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Delete</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-item clickable
+                v-close-popup>
+          <q-item-section avatar>
+            <q-avatar icon="fas fa-history" text-color="secondary" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Entry History</q-item-label>
+          </q-item-section>
+        </q-item>
+      </q-list>
+    </q-btn-dropdown>
+
+    <q-btn class="q-mx-sm"
+           v-show="editMode"
+           icon="cancel"
+           label="Cancel"
+           color="grey-6"
+           @click="cancelEdit" />
+
+    <q-btn class="q-ml-sm q-mr-lg"
+           v-show="editMode"
+           icon="save"
+           label="Save"
+           color="positive"
+           :loading="isSaving"
+           @click="saveEdit" />
+
+    <q-tabs v-show="editMode"
+            v-model="currentTab"
+            dense
+            class="text-grey"
+            active-color="primary"
+            indicator-color="primary"
+            align="center"
+            narrow-indicator>
+      <q-tab name="edit" label="Edit" />
+      <q-tab name="preview" label="Preview" />
+    </q-tabs>
+  </div>
 
   <q-tab-panels v-model="currentTab">
     <q-tab-panel name="preview">
@@ -23,32 +81,6 @@
 
   </q-tab-panels>
 
-  <q-page-sticky position="top-left"
-		 :offset="editButtonPos">
-    <q-fab v-model="editMode"
-           vertical-actions-align="left"
-           :label="editMode ? 'Save' : 'Edit'"
-           :color="editMode ? 'positive' : 'accent'"
-           icon="edit"
-           active-icon="save"
-           direction="down"
-           @show="activateEditMode"
-           @hide="saveEdit"
-           v-touch-pan.prevent.mouse="moveEditButton">
-      <q-fab-action v-show="uuid !== ''"
-                    color="negative"
-                    @click="confirmDelete"
-                    icon="fas fa-trash"
-                    label="Delete"
-                    external-label/>
-      <q-fab-action color="grey-6"
-                    @click="cancelEdit"
-                    icon="cancel"
-                    label="Cancel"
-                    external-label/>
-    </q-fab>
-  </q-page-sticky>
-
   <q-dialog v-model="showConfirmDelete">
     <q-card>
       <q-card-section class="row items-center">
@@ -57,8 +89,11 @@
       </q-card-section>
 
       <q-card-actions align="right">
-        <q-btn flat label="Cancel" color="grey-9" v-close-popup />
-        <q-btn flat label="Delete" color="negative" @click="deleteEntry" v-close-popup />
+        <q-btn flat label="Cancel" color="grey-7" v-close-popup />
+        <q-btn flat label="Delete" color="negative" @click="deleteEntry" />
+        <q-spinner v-show="isDeleting"
+                   color="negative"
+                   size="1.5em" />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -117,24 +152,20 @@ export default {
       showConfirmDelete: false,
       dataType: 'order',
       error: false,
-      editButtonPos: [18, 18],
       draggingEditButton: false,
+      showOptions: false,
+      isSaving: false,
+      isDeleting: false,
     }
   },
 
   methods: {
-    moveEditButton (ev) {
-      this.draggingEditButton = ev.isFirst !== true && ev.isFinal !== true
-
-      this.editButtonPos = [
-        this.editButtonPos[0] + ev.delta.x,
-        this.editButtonPos[1] + ev.delta.y
-      ]
-    },
-
-    activateEditMode () {
-      this.editMode = true;
-      this.currentTab = "edit";
+    toggleEditMode () {
+      this.editMode = !this.editMode;
+      if (this.editMode)
+        this.currentTab = "edit";
+      else
+        this.currentTab = "preview";
     },
 
     cancelEdit () {
@@ -149,7 +180,6 @@ export default {
     confirmDelete(event) {
       event.preventDefault();
       this.showConfirmDelete = true;
-      this.editMode = true;
     },
 
     deleteEntry(event) {
@@ -158,13 +188,14 @@ export default {
                                                 'dataType': this.dataType})
         .then(() => {
           this.$router.push({ 'name': 'Order Browser' });
+          this.showConfirmDelete = false;
         })
         .catch((err) => this.error = true);
     },
 
-    saveEdit () {
-      this.editMode = true;
-      if (this.order.title.length === 0)
+    saveEdit (event) {
+      event.preventDefault();
+      if (this.order.title === '')
         return;
       let orderToSubmit = JSON.parse(JSON.stringify(this.order));
       let field = '';
@@ -174,7 +205,7 @@ export default {
       if (orderToSubmit.organisation.length && '_id' in orderToSubmit.organisation[0])
         orderToSubmit.organisation = orderToSubmit.organisation[0]._id;
       else
-        orderToSubmit.organisation;
+        orderToSubmit.organisation = '';
       // rename _id to id, otherwise it won't be dispatched
       if (this.uuid !== '')
         orderToSubmit.id = orderToSubmit._id;
@@ -186,19 +217,22 @@ export default {
       delete orderToSubmit.tagsStandard;
       delete orderToSubmit.tagsUser;
       delete orderToSubmit.datasets;
+      this.isSaving = true;
       this.$store.dispatch('entries/saveEntry', {data: orderToSubmit,
                                                  dataType: this.dataType})
         .then((response) => {
-          this.editMode = false;
-          this.currentTab = "preview";
           if (this.uuid === '') {
             this.$router.push({ name: 'Order About', params: { 'uuid': response.data._id } });
           }
           this.loadData();
+          this.isSaving = false;
+          this.editMode = false;
+          this.currentTab = "preview";
+
         })
         .catch((err) => {
           this.error = true;
-          this.editMode = true;
+          this.isSaving = false;
         });
     },
 
@@ -225,7 +259,7 @@ export default {
     this.loadData();
     if (this.uuid === '') {
       this.editMode = true;
-      this.currentTab = "edit";
+      this.currentTab = 'edit';
     }
   }
 

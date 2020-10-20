@@ -64,26 +64,31 @@
                  fieldDataName="authors"
                  class="q-my-sm"
                  helpText="The ones who own the sample (e.g. PI)"
-                 :dataLoaded="isLoading"/>
+                 :isLoadingUsers="isLoadingUsers"
+                 :isLoading="isLoading"/>
 
   <user-selector fieldTitle="Generators"
                  fieldDataName="generators"
                  class="q-my-sm"
                  helpText="The ones who generated the data (e.g. Facility)"
-                 :dataLoaded="isLoading"/>
+                 :isLoadingUsers="isLoadingUsers"
+                 :isLoading="isLoading"/>
 
   <user-selector fieldTitle="Organisation"
                  fieldDataName="organisation"
                  selectType="single"
                  class="q-my-sm"
                  helpText="The data controller (e.g. university)"
-                 :dataLoaded="isLoading"/>
+                 :isLoadingUsers="isLoadingUsers"
+                 :isLoading="isLoading"/>
 
   <user-selector fieldTitle="Editors"
                  fieldDataName="editors"
                  class="q-my-sm"
                  helpText="Users who may edit this order and the associated datasets"
-                 :dataLoaded="isLoading"/>
+                 value="order.editors"
+                 :isLoadingUsers="isLoadingUsers"
+                 :isLoading="isLoading"/>
 </div>
 </template>
 
@@ -145,6 +150,7 @@ export default {
       linkDesc: '',
       tagName: '',
       isSending: false,
+      isLoadingUsers: false,
       userList: [],
     }
   },
@@ -157,7 +163,10 @@ export default {
   },
 
   mounted () {
-    this.$store.dispatch('adminUsers/getUsers');    
+    this.isLoadingUsers = true;
+    this.$store.dispatch('adminUsers/getUsers')
+      .then(() => this.isLoadingUsers = false)
+      .catch(() => this.isLoadingUsers = false);
   }
 }
 </script>

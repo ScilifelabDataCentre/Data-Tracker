@@ -4,6 +4,7 @@
   :data="onlySelected ? selected : users"
   :columns="columns"
   row-key="_id"
+  :loading="isLoadingUsers"
   :filter="filter"
   :selection="selectType"
   :selected.sync="selected"
@@ -23,6 +24,7 @@
       </q-icon>
     </div>
   </template>
+
   <template v-slot:top-right>
     <q-checkbox v-model="onlySelected"
                 label="Only selected"
@@ -46,16 +48,27 @@ export default {
   name: 'UserSelector',
 
   computed: {
+    selected: {
+      get () {
+        if (this.isLoading)
+          return [];
+        let data = this.$store.state.entries.entry[this.fieldDataName];
+        if (!Array.isArray(data))
+            data = [data];
+        return JSON.parse(JSON.stringify(data));
+      },
+
+      set (newValue) {
+        let data = {};
+        data[this.fieldDataName] = newValue;
+        this.$store.dispatch('entries/setEntryFields', data);
+      }
+    },
+    
     users: {
       get () {
         return this.$store.state.adminUsers.userList;
       },
-    },
-
-    fieldEntries: {
-      get () {
-        return this.$store.state.entries.entry[this.fieldDataName];
-      }
     },
 
     orderData: {
@@ -68,21 +81,6 @@ export default {
       get () {
         return this.$store.state.currentUser.info;
       },
-    },
-  },
-
-  watch: {
-    selected (newValue, OldValue) {
-      let data = {};
-      data[this.fieldDataName] = newValue;
-      this.$store.dispatch('entries/setEntryFields', data);
-    },
-
-    isLoading (newValue, OldValue) {
-      this.selected = JSON.parse(JSON.stringify(this.fieldEntries[this.fieldDataName]));
-      if (!Array.isArray(this.selected)) {
-        this.selected = [this.selected];
-      }
     },
   },
   
@@ -110,7 +108,11 @@ export default {
     isLoading: {
       type: Boolean,
       default: true
-    }
+    },
+    isLoadingUsers: {
+      type: Boolean,
+      default: true
+    },
   },
 
   
@@ -121,8 +123,6 @@ export default {
       pagination: {
         rowsPerPage: 5
       },
-      selected: [],
-
       columns: [
         {
           name: 'name',
@@ -162,6 +162,11 @@ export default {
   },
 
   methods: {
+    updateSelection(event, selectedArray) {
+      event.preventDefault();
+      this.$emit('input', selectedArray);
+    },
+    
     deleteUserTag(event, keyName) {
       event.preventDefault();
       this.$delete(this.newEntry.extra, keyName);
