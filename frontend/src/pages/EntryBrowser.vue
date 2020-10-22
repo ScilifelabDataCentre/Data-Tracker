@@ -1,7 +1,8 @@
 <template>
 <q-page padding>
   <h2 class="text-capitalize">{{ entryType + 's' }}</h2>
-
+  <q-card>
+    <q-card-section>
   <q-table
     :data="entries"
     :columns="columns"
@@ -55,6 +56,8 @@
       </div>
     </template>
   </q-table>
+    </q-card-section>
+  </q-card>
 </q-page>
 </template>
 
