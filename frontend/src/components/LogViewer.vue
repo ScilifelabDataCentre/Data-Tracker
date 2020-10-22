@@ -95,13 +95,15 @@ export default {
   },
 
   mounted () {
-    this.$store.dispatch('entries/resetEntryLog')
-      .then(() => {
-        this.$store.dispatch('entries/getEntryLog', {'id': this.uuid,
-                                                     'dataType': this.dataType})
-          .then(() => this.isLoading = false)
-          .catch(() => this.isLoading = false);
-      });
+    if (uuid !== '') {
+      this.$store.dispatch('entries/resetEntryLog')
+        .then(() => {
+          this.$store.dispatch('entries/getEntryLog', {'id': this.uuid,
+                                                       'dataType': this.dataType})
+            .then(() => this.isLoading = false)
+            .catch(() => this.isLoading = false);
+        });
+    }
   },
 }
 </script>
