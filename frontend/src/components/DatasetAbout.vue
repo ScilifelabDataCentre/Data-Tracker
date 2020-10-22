@@ -85,7 +85,7 @@
           <user-entry v-bind="dataset.organisation" />
         </div>
 
-        <div v-show="dataset.editors.length">
+        <div v-show="'editors' in dataset && dataset.editors.length">
           <list-header title="Editors"
                        explanation="Users that may edit this dataset" />
           <user-entry v-for="entry in dataset.editors"

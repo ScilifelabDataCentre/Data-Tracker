@@ -33,7 +33,7 @@
   </q-card>
 
   <q-card class="q-my-md"
-          v-show="collection.datasets.length > 0">
+          v-show="collection.datasets.length">
     <q-card-section>
       <q-list dense>
         <list-header title="Datasets"
@@ -60,10 +60,10 @@
     </q-card-section>
   </q-card>
 
-  <q-card class="q-my-md">
+  <q-card class="q-my-md" v-show="'editors' in collection && collection.editors.length">
     <q-card-section>
       <q-list dense>
-        <div v-show="collection.editors.length">
+        <div>
           <list-header title="Editors"
                        explanation="Users that may edit this collection" />
           <user-entry v-for="entry in collection.editors"
@@ -86,6 +86,13 @@ export default {
   components: {
     'user-entry': UserEntry,
     'list-header': ListHeader
+  },
+
+  props: {
+    isLoading: {
+      type: Boolean,
+      default: true,
+    },
   },
 
   computed: {

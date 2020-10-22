@@ -1,7 +1,8 @@
 <template>
 <q-page padding>
   <div class="flex">
-    <q-btn-dropdown class="q-mr-sm"
+    <q-btn-dropdown v-show="'editors' in collection"
+                    class="q-mr-sm"
                     color="secondary"
                     icon="fas fa-cog"
                     label="Options">
@@ -72,7 +73,7 @@
 
   <q-tab-panels v-model="currentTab">
     <q-tab-panel name="preview">
-      <collection-about />
+      <collection-about :isLoading="isLoading"/>
     </q-tab-panel>
 
     <q-tab-panel name="edit">
@@ -140,6 +141,12 @@ export default {
     collection: {
       get () {
         return this.$store.state.entries.entry;
+      },
+    },
+
+    currentUser: {
+      get () {
+        return this.$store.state.currentUser.info;
       },
     },
   },

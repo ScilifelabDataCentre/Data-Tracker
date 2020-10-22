@@ -1,7 +1,8 @@
 <template>
 <q-page padding>
   <div class="flex">
-    <q-btn-dropdown class="q-mr-sm"
+    <q-btn-dropdown v-show="'editors' in dataset"
+                    class="q-mr-sm"
                     color="secondary"
                     icon="fas fa-cog"
                     label="Options">
@@ -31,7 +32,8 @@
         </q-item>
 
         <q-item clickable
-                v-close-popup>
+                v-close-popup
+                @click="showLogs = true">
           <q-item-section avatar>
             <q-avatar icon="fas fa-history" text-color="secondary" />
           </q-item-section>
@@ -81,6 +83,11 @@
 
   </q-tab-panels>
 
+
+  <log-viewer v-model="showLogs"
+              :dataType="dataType"
+              :uuid="uuid" />
+
   <q-dialog v-model="showConfirmDelete">
     <q-card>
       <q-card-section class="row items-center">
@@ -120,6 +127,7 @@
 <script>
 import DatasetAbout from 'components/DatasetAbout.vue'
 import DatasetEdit from 'components/DatasetEdit.vue'
+import LogViewer from 'components/LogViewer.vue'
 
 export default {
   name: 'DatasetInfo',
@@ -127,6 +135,7 @@ export default {
   components: {
     'dataset-about': DatasetAbout,
     'dataset-edit': DatasetEdit,
+    'log-viewer': LogViewer,
   },
   
   props: {
@@ -156,6 +165,7 @@ export default {
       showOptions: false,
       isSaving: false,
       isDeleting: false,
+      showLogs: false,
     }
   },
 
