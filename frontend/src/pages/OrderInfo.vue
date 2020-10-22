@@ -31,7 +31,8 @@
         </q-item>
 
         <q-item clickable
-                v-close-popup>
+                v-close-popup
+                @click="showLogs = true">
           <q-item-section avatar>
             <q-avatar icon="fas fa-history" text-color="secondary" />
           </q-item-section>
@@ -81,6 +82,10 @@
 
   </q-tab-panels>
 
+  <log-viewer v-model="showLogs"
+              :dataType="dataType"
+              :uuid="uuid" />
+
   <q-dialog v-model="showConfirmDelete">
     <q-card>
       <q-card-section class="row items-center">
@@ -120,6 +125,7 @@
 <script>
 import OrderAbout from 'components/OrderAbout.vue'
 import OrderEdit from 'components/OrderEdit.vue'
+import LogViewer from 'components/LogViewer.vue'
 
 export default {
   name: 'OrderInfo',
@@ -127,6 +133,7 @@ export default {
   components: {
     'order-about': OrderAbout,
     'order-edit': OrderEdit,
+    'log-viewer': LogViewer,
   },
   
   props: {
@@ -156,6 +163,7 @@ export default {
       showOptions: false,
       isSaving: false,
       isDeleting: false,
+      showLogs: false,
     }
   },
 

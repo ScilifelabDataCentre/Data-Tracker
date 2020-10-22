@@ -19,6 +19,22 @@ export function getEntry ({ commit, dispatch }, payload) {
 }
 
 
+export function getEntryLog ({ commit, dispatch }, payload) {
+  // payload: {'id': id, 'dataType': dataType}
+  return new Promise((resolve, reject) => {
+    axios
+      .get('/api/v1/' + payload.dataType + '/' + payload.id + '/log/')
+      .then((response) => {
+        commit('UPDATE_ENTRY_LOG', response.data.logs);
+        resolve(response);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+}
+
+
 export function getEmptyEntry ({ commit, dispatch }, dataType) {
   return new Promise((resolve, reject) => {
     axios
@@ -152,6 +168,14 @@ export function resetEntryList({ commit }) {
 export function resetEntry({ commit }) {
   return new Promise((resolve, reject) => {
     commit('RESET_ENTRY');
+    resolve();
+  });
+}
+
+
+export function resetEntryLog({ commit }) {
+  return new Promise((resolve, reject) => {
+    commit('RESET_ENTRY_LOG');
     resolve();
   });
 }

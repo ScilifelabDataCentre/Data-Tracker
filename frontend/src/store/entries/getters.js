@@ -1,7 +1,13 @@
-export function order (state) {
+export function entry (state) {
   return state.entry;
 }                  
 
-export function orders (state) {
+
+export function log (state) {
+  return state.logs;
+}                  
+
+
+export function entryList (state) {
   return state.entryList;
 }
