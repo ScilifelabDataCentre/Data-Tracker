@@ -145,6 +145,13 @@ export default {
     },
   },
 
+
+  watch: {
+    $route() {
+      this.loadData();
+    }
+  },
+
   computed: {
     order: {
       get () {
@@ -249,9 +256,12 @@ export default {
     loadData () {
       this.isLoading = true;
       if (this.uuid === '') {
-        this.$store.dispatch('entries/getEmptyEntry', this.dataType)
-          .then(() => this.isLoading = false)
-          .catch(() => this.isLoading = false);
+        this.$store.dispatch('entries/resetEntry')
+          .then(() => {
+            this.$store.dispatch('entries/getEmptyEntry', this.dataType)
+              .then(() => this.isLoading = false)
+              .catch(() => this.isLoading = false);
+          });
       }
       else {
         this.$store.dispatch('entries/resetEntry')
