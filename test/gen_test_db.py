@@ -66,7 +66,7 @@ def gen_datasets(db, nr_datasets: int = 500):
         db['orders'].update_one({'_id': order_uuid},
                                 {'$push': {'datasets': uuids[-1]}})
         order = db['orders'].find_one({'_id': order_uuid})
-        make_log(db, action='update', data=order, data_type='order', comment='Generated - add ds', user='system')
+        make_log(db, action='edit', data=order, data_type='order', comment='Generated - add ds', user='system')
 
     return uuids
 
