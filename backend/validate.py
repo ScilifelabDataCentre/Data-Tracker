@@ -177,7 +177,7 @@ def validate_cross_references(data: list) -> bool:
     for entry in data:
         if not isinstance(entry, dict):
             raise ValueError(f'List entries must be dicts ({entry})')
-        if not list(entry.keys()) == ['title', 'value']:
+        if list(entry.keys()) != ['title', 'value']:
             raise KeyError(f'Incorrect keys ({entry.keys})')
         if not isinstance(entry['title'], str) or \
            not isinstance(entry['value'], str):

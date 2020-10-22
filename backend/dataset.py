@@ -4,6 +4,7 @@ import logging
 
 import flask
 
+import structure
 import utils
 import user
 
