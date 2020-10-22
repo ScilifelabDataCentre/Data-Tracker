@@ -245,6 +245,10 @@ def build_dataset_info(identifier: str):
     if not dataset:
         return None
     order = flask.g.db['orders'].find_one({'datasets': dataset_uuid})
+
+    if (user.has_permission('DATA_MANAGEMENT') or\
+        flask.g.db.current_user['id'] in order['editors']):
+        dataset['order'] = order['_id']
     dataset['related'] = list(flask.g.db['datasets'].find({'_id': {'$in': order['datasets']}},
                                                           {'title': 1}))
     dataset['related'].remove({'_id': dataset['_id'], 'title': dataset['title']})
