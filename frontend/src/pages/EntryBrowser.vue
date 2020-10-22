@@ -14,7 +14,8 @@
     :no-results-label="filter + ' does not match any entries'">
 
     <template v-slot:top-left>
-      <q-btn round
+      <q-btn v-show="showAdd"
+             round
              color="accent"
              icon="add"
              :to="{ 'name': pageNew }" />
@@ -69,7 +70,24 @@ export default {
       get () {
         return this.$store.state.entries.entryList;
       },
-    }
+    },
+
+    showAdd: {
+      get () {
+        let passed = false;
+        if (this.entryType === 'datasets' && this.currentUser.permissions.includes('ORDERS'))
+          passed = true;
+        else if (this.currentUser.email !== '')
+          passed = true;
+        return passed;
+      }
+    },
+
+    currentUser: {
+      get () {
+        return this.$store.state.currentUser.info;
+      },
+    },
   },
 
   props: {
