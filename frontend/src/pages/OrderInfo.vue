@@ -20,6 +20,7 @@
         </q-item>
 
         <q-item clickable
+                :disable="uuid === ''"
                 v-close-popup
                 @click="confirmDelete">
           <q-item-section avatar>
@@ -31,6 +32,7 @@
         </q-item>
 
         <q-item clickable
+                :disable="uuid === ''"
                 v-close-popup
                 @click="showLogs = true">
           <q-item-section avatar>
