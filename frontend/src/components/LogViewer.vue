@@ -95,7 +95,7 @@ export default {
   },
 
   mounted () {
-    if (uuid !== '') {
+    if (this.uuid !== '') {
       this.$store.dispatch('entries/resetEntryLog')
         .then(() => {
           this.$store.dispatch('entries/getEntryLog', {'id': this.uuid,
