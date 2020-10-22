@@ -233,7 +233,7 @@ Summary
 +------------------+---------------------------------------------------+-------------------+---------+
 | cross_references | External identifiers, links etc.                  | Empty             | Visible |
 +------------------+---------------------------------------------------+-------------------+---------+
-| editors          | List of users who can edit the order and datasets | Entry creator     | Hidden  |
+| editors          | List of users who can edit the collection         | Entry creator     | Hidden  |
 +------------------+---------------------------------------------------+-------------------+---------+
 
 

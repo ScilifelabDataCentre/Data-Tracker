@@ -58,7 +58,7 @@ def gen_datasets(db, nr_datasets: int = 500):
         # add extra field
         if random.random() > 0.7:
             tag = random.choice(EXTRA_KEYS)
-            changes['tags_user'] = [{'key': tag, 'value': random.choice(EXTRA_FIELDS[tag])}]
+            changes['tags_user'] = {tag: random.choice(EXTRA_FIELDS[tag])}
         dataset.update(changes)
         uuids.append(db['datasets'].insert_one(dataset).inserted_id)
         make_log(db, action='add', data=dataset, data_type='dataset', comment='Generated', user='system')
@@ -66,7 +66,7 @@ def gen_datasets(db, nr_datasets: int = 500):
         db['orders'].update_one({'_id': order_uuid},
                                 {'$push': {'datasets': uuids[-1]}})
         order = db['orders'].find_one({'_id': order_uuid})
-        make_log(db, action='update', data=order, data_type='order', comment='Generated - add ds', user='system')
+        make_log(db, action='edit', data=order, data_type='order', comment='Generated - add ds', user='system')
 
     return uuids
 
@@ -81,9 +81,9 @@ def gen_facilities(db, nr_facilities: int = 30):
                    'api_salt': apikey.salt,
                    'auth_ids': [f'facility{i}::local'],
                    'email': f'facility{i}@domain{i}.se',
-                   'email_public': f'pub_facility{i}@domain{i}.se',
+                   'contact': f'pub_facility{i}@domain{i}.se',
                    'name': f'Facility {i}',
-                   'permissions': ['ORDERS_SELF'],
+                   'permissions': ['ORDERS'],
                    'url': f'https://www.example.com/facility{i}'}
         user.update(changes)
         uuids.append(db['users'].insert_one(user).inserted_id)
@@ -101,9 +101,9 @@ def gen_organisations(db, nr_organisations: int = 15):
                    'api_salt': apikey.salt,
                    'auth_ids': [f'organisation{i}::local'],
                    'email': f'organisation{i}@domain{i}.se',
-                   'email_public': f'pub_organisation{i}@domain{i}.se',
+                   'contact': f'pub_organisation{i}@domain{i}.se',
                    'name': f'Organisation {i}',
-                   'permissions': ['ORDERS_SELF'],
+                   'permissions': ['ORDERS'],
                    'url': f'https://www.example.com/org{i}'}
         user.update(changes)
         uuids.append(db['users'].insert_one(user).inserted_id)
@@ -118,7 +118,7 @@ def gen_orders(db, nr_orders: int = 300):
     user_re = re.compile('.*::local')
     facilities = tuple(db['users'].find({'auth_ids': facility_re}))
     organisations = tuple(db['users'].find({'auth_ids': organisation_re}))
-    users = tuple(db['users'].find({'$and': [{'auth_ids': user_re}, {'permissions': 'ORDERS_SELF'}]}))
+    users = tuple(db['users'].find({'$and': [{'auth_ids': user_re}, {'permissions': 'ORDERS'}]}))
     for i in range(1, nr_orders+1):
         order = structure.order()
         changes = {'authors': [random.choice(users)['_id'] for _ in range(random.randint(0, 4))],
@@ -126,7 +126,6 @@ def gen_orders(db, nr_orders: int = 300):
                    'organisation': random.choice(organisations)['_id'],
                    'editors': [random.choice(users+facilities)['_id'] for _ in range(random.randint(1, 5))],
                    'description': make_description(),
-                   'receivers': [random.choice(facilities)['_id'] for _ in range(random.randint(0, 2))],
                    'title': f'Order {i} Title {lorem.sentence()[:-1]}'}
         order.update(changes)
         uuids.append(db['orders'].insert_one(order).inserted_id)
@@ -155,7 +154,7 @@ def gen_users(db, nr_users: int = 100):
     perm_keys = tuple(PERMISSIONS.keys())
     # non-random users with specific rights
     special_users = [{'name': 'Base', 'permissions': []},
-                     {'name': 'Orders', 'permissions': ['ORDERS_SELF']},
+                     {'name': 'Orders', 'permissions': ['ORDERS']},
                      {'name': 'Owners', 'permissions': ['OWNERS_READ']},
                      {'name': 'Users', 'permissions': ['USER_MANAGEMENT']},
                      {'name': 'Data', 'permissions': ['DATA_MANAGEMENT']},
@@ -168,7 +167,8 @@ def gen_users(db, nr_users: int = 100):
                      'api_key': utils.gen_api_key_hash(apikey['key'], apikey['salt']),
                      'api_salt': apikey['salt'],
                      'email': f'{"".join(user["name"].split())}@example.com',
-                     'email_public': f'pub_{"".join(user["name"].split())}@example.com',
+                     'contact': f'pub_{"".join(user["name"].split())}@example.com',
+                     'orcid': f'1111-1111-1111-111{i}',
                      'auth_ids': [f'{user["name"].lower()}::testers'],
                      'url': 'https://www.example.com/specuser'})
         db['users'].insert_one(user)
@@ -182,7 +182,8 @@ def gen_users(db, nr_users: int = 100):
                    'api_salt': apikey.salt,
                    'auth_ids': [f'user{i}::local'],
                    'email': f'user{i}@place{i}.se',
-                   'email_public': f'pub_user{i}@place{i}.se',
+                   'contact': f'pub_user{i}@place{i}.se',
+                   'orcid': '-'.join(f'{random.randint(0,10000):04}' for _ in range(4)),
                    'name': f'First Last {i}',
                    'permissions': list(set(random.choice(perm_keys)
                                            for _ in range(random.randint(0,2)))),

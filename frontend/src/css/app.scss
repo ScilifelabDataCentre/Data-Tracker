@@ -1,1 +1,12 @@
 // app global css in SCSS form
+
+a.std-link {
+    color: $primary;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+a.std-link:hover {
+    text-decoration: underline;
+}

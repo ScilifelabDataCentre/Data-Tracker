@@ -4,9 +4,9 @@
 
 A system for tracking datasets.
 
-[Setting up a development system](https://scilifelabdatacentre.github.io/SciLifeLab-Data-Tracker/development.quick_environment.html)
+[Setting up a development system](https://scilifelabdatacentre.github.io/Data-Tracker/development.quick_environment.html)
 
-[Documentation](https://scilifelabdatacentre.github.io/SciLifeLab-Data-Tracker/)
+[Documentation](https://scilifelabdatacentre.github.io/Data-Tracker/)
 
 
 ## Containers

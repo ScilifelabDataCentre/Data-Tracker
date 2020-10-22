@@ -9,7 +9,7 @@
 
   <!-- Show only if permitted -->
   <NavEntry
-    v-if="currentUser.permissions.includes('ORDERS_SELF')"
+    v-if="currentUser.permissions.includes('ORDERS')"
     v-bind="orderLink"
     />
 
@@ -31,9 +31,7 @@
       v-bind="adminUserLink"
       />
   </div>
-  <div
-    v-if="currentUser.name !== ''"
-    >
+  <div v-if="currentUser.name !== ''">
     <q-item-label
       header
       class="text-grey-8"
@@ -69,32 +67,24 @@
   <div
     v-else
     >
-    <q-item-label
-      header
-      class="text-grey-8"
-      >
+    <q-item-label header
+                  class="text-grey-8">
       Current User
     </q-item-label>
 
-    <NavEntry
-      v-for="link in loginLinks"
-      :key="link.title"
-      v-bind="link"
-      />
+    <NavEntry v-for="link in loginLinks"
+              :key="link.title"
+              v-bind="link" />
   </div>
   <div>
-    <q-item-label
-      header
-      class="text-grey-8"
-      >
+    <q-item-label header
+                  class="text-grey-8">
       Other
     </q-item-label>
 
-    <NavEntry
-      v-for="link in otherLinks"
-      :key="link.title"
-      v-bind="link"
-      />
+    <NavEntry v-for="link in otherLinks"
+              :key="link.title"
+              v-bind="link"/>
   </div>
 </q-list>
 </template>
@@ -140,13 +130,13 @@ export default {
         {
           title: 'Datasets',
           caption: 'Data deliveries',
-          icon: 'insights',
+          icon: 'fas fa-chart-area',
           link:  { 'name': 'Dataset Browser'}
         },
         {
           title: 'Collections',
           caption: 'Collections of datasets',
-          icon: 'local_library',
+          icon: 'fas fa-layer-group',
           link:  { 'name': 'Collection Browser'}
         }
       ],
@@ -156,7 +146,7 @@ export default {
           title: 'Current User',
           caption: 'About the current user',
           icon: 'person',
-          link: '/user/about'
+          link: '/me'
         },
       ],
       
@@ -164,7 +154,7 @@ export default {
         title: 'Log Out',
         caption: 'Log out the current user',
         icon: 'exit_to_app',
-        link: '/api/logout/'
+        link: '/api/v1/logout/'
       },
 
       loginLinks: [
@@ -179,10 +169,16 @@ export default {
       otherLinks: [
         {
           title: 'About',
-          caption: 'Information about the system',
+          caption: 'About the Data Tracker',
           icon: 'info',
           link:  { 'name': 'About'}
         },
+        {
+          title: 'User guide',
+          caption: 'How to use the Data Tracker',
+          icon: 'info',
+          link:  { 'name': 'User Guide'}
+        }
       ]
     }
   },

@@ -1,6 +1,5 @@
 """Tests for dataset requests."""
 import itertools
-import json
 import uuid
 import requests
 
@@ -8,40 +7,39 @@ import requests
 # pylint: disable = redefined-outer-name, unused-import
 
 from helpers import make_request, as_user, make_request_all_roles,\
-    dataset_for_tests, USERS, random_string, parse_time, TEST_LABEL, use_db,\
+    dataset_for_tests, USERS, random_string, parse_time, TEST_LABEL, mdb,\
     add_dataset, delete_dataset, USER_RE
 
 
-def test_list_user_datasets(use_db):
+def test_list_user_datasets(mdb):
     """
     Choose a few users.
 
     Compare the ids of datasets from the request to a db query.
     """
     session = requests.Session()
-    db = use_db
-    users = db['users'].aggregate([{'$sample': {'size': 5}},
-                                   {'$match': {'auth_ids': USER_RE}}])
+    users = mdb['users'].aggregate([{'$sample': {'size': 5}},
+                                    {'$match': {'auth_ids': USER_RE}}])
     for user in users:
-        user_orders = list(db['orders'].find({'$or': [{'editors': user['_id']},
-                                                      {'receivers': user['_id']}],
-                                              'datasets': {'$not': {'$size': 0} }},
-                                             {'datasets': 1}))
+        user_orders = list(mdb['orders'].find({'$or': [{'editors': user['_id']},
+                                                       {'receivers': user['_id']}],
+                                               'datasets': {'$not': {'$size': 0}}},
+                                              {'datasets': 1}))
         user_datasets = list(itertools.chain.from_iterable(order['datasets']
                                                            for order in user_orders))
         user_datasets = [str(uuid) for uuid in user_datasets]
 
         as_user(session, user['auth_ids'][0])
-        response = make_request(session, f'/api/dataset/user/')
+        response = make_request(session, '/api/v1/dataset/user/')
         assert response.code == 200
         assert len(user_datasets) == len(response.data['datasets'])
-        for ds in response.data['datasets']:
-            assert ds['_id'] in user_datasets
+        for dset in response.data['datasets']:
+            assert dset['_id'] in user_datasets
 
 
 def test_random_dataset():
     """Request a random dataset."""
-    responses = make_request_all_roles('/api/dataset/random/', ret_json=True)
+    responses = make_request_all_roles('/api/v1/dataset/random/', ret_json=True)
     for response in responses:
         assert response.code == 200
         assert len(response.data['datasets']) == 1
@@ -52,22 +50,20 @@ def test_random_datasets():
     session = requests.Session()
     as_user(session, USERS['base'])
     for i in (1, 5, 0):
-        response = make_request(session, f'/api/dataset/random/{i}/')
+        response = make_request(session, f'/api/v1/dataset/random/{i}/')
         assert response.code == 200
         assert len(response.data['datasets']) == i
 
-    response = make_request(session, '/api/dataset/random/-1')
+    response = make_request(session, '/api/v1/dataset/random/-1')
     assert response.code == 404
     assert not response.data
 
 
-def test_get_dataset_get_permissions(use_db):
+def test_get_dataset_get_permissions(mdb):
     """Test permissions for requesting a dataset."""
-    session = requests.Session()
-    db = use_db
-    orders = list(db['datasets'].aggregate([{'$sample': {'size': 2}}]))
+    orders = list(mdb['datasets'].aggregate([{'$sample': {'size': 2}}]))
     for order in orders:
-        responses = make_request_all_roles(f'/api/dataset/{order["_id"]}/', ret_json=True)
+        responses = make_request_all_roles(f'/api/v1/dataset/{order["_id"]}/', ret_json=True)
         for response in responses:
             assert response.data['dataset']
             assert response.code == 200
@@ -77,12 +73,12 @@ def test_get_dataset():
     """
     Request multiple datasets by uuid, one at a time.
 
-    Datasets are choosen randomly using /api/dataset/random.
+    Datasets are choosen randomly using /api/v1/dataset/random.
     """
     session = requests.Session()
     for _ in range(10):
-        orig = make_request(session, '/api/dataset/random/')[0]['datasets'][0]
-        response = make_request(session, f'/api/dataset/{orig["_id"]}/')
+        orig = make_request(session, '/api/v1/dataset/random/')[0]['datasets'][0]
+        response = make_request(session, f'/api/v1/dataset/{orig["_id"]}/')
         assert response[1] == 200
         requested = response[0]['dataset']
         assert orig == requested
@@ -97,17 +93,17 @@ def test_get_dataset_bad():
     """
     session = requests.Session()
     for _ in range(5):
-        response = make_request(session, f'/api/dataset/{uuid.uuid4().hex}/')
+        response = make_request(session, f'/api/v1/dataset/{uuid.uuid4().hex}/')
         assert response.code == 404
         assert not response.data
 
     for _ in range(5):
-        response = make_request(session, f'/api/dataset/{random_string()}/')
+        response = make_request(session, f'/api/v1/dataset/{random_string()}/')
         assert response.code == 404
         assert not response.data
 
 
-def test_delete_dataset(use_db):
+def test_delete_dataset(mdb):
     """
     Add and delete datasets.
 
@@ -116,26 +112,22 @@ def test_delete_dataset(use_db):
     * Confirm that related dataset entries in orders and projects are deleted.
     * Check that logs are created correctly.
     """
-    db = use_db
-
     session = requests.Session()
 
     uuids = [add_dataset() for _ in range(5)]
 
-    orders_user = db['users'].find_one({'auth_id': USERS['data']})
-
     # must be updated if TEST_LABEL is modified
-    datasets = list(db['datasets'].find({'tags_user': {'testing': 'true'}}))
+    datasets = list(mdb['datasets'].find({'tags_user': {'testing': 'true'}}))
     i = 0
     while i < len(datasets):
         for role in USERS:
             as_user(session, USERS[role])
-            order = db['orders'].find_one({'datasets': datasets[i]['_id']})
-            collections = list(db['collections'].find({'datasets': datasets[i]['_id']}))
+            order = mdb['orders'].find_one({'datasets': datasets[i]['_id']})
+            collections = list(mdb['collections'].find({'datasets': datasets[i]['_id']}))
             response = make_request(session,
-                                    f'/api/dataset/{datasets[i]["_id"]}/',
+                                    f'/api/v1/dataset/{datasets[i]["_id"]}/',
                                     method='DELETE')
-            current_user = db['users'].find_one({'auth_ids': USERS[role]})
+            current_user = mdb['users'].find_one({'auth_ids': USERS[role]})
             if role == 'no-login':
                 assert response.code == 401
                 assert not response.data
@@ -143,23 +135,23 @@ def test_delete_dataset(use_db):
             elif role in ('data', 'root') or current_user['_id'] in order['editors']:
                 assert response.code == 200
                 assert not response.data
-                # confirm that dataset does not exist in db and that a log has been created
-                assert not db['datasets'].find_one({'_id': datasets[i]['_id']})
-                assert db['logs'].find_one({'data._id': datasets[i]['_id'],
-                                            'action': 'delete',
-                                            'data_type': 'dataset'})
+                # confirm that dataset does not exist in mdb and that a log has been created
+                assert not mdb['datasets'].find_one({'_id': datasets[i]['_id']})
+                assert mdb['logs'].find_one({'data._id': datasets[i]['_id'],
+                                             'action': 'delete',
+                                             'data_type': 'dataset'})
                 # confirm that no references to the dataset exist in orders or collection
-                assert not list(db['orders'].find({'datasets': datasets[i]['_id']}))
-                assert not list(db['collections'].find({'datasets': datasets[i]['_id']}))
+                assert not list(mdb['orders'].find({'datasets': datasets[i]['_id']}))
+                assert not list(mdb['collections'].find({'datasets': datasets[i]['_id']}))
                 # confirm that the removal of the references are logged.
-                assert db['logs'].find_one({'data._id': order['_id'],
-                                            'action': 'edit',
-                                            'data_type': 'order',
-                                            'comment': f'Deleted dataset {datasets[i]["_id"]}'})
-                p_logs = list(db['logs'].find({'action': 'edit',
+                assert mdb['logs'].find_one({'data._id': order['_id'],
+                                             'action': 'edit',
+                                             'data_type': 'order',
+                                             'comment': f'Deleted dataset {datasets[i]["_id"]}'})
+                p_log = list(mdb['logs'].find({'action': 'edit',
                                                'data_type': 'collection',
                                                'comment': f'Deleted dataset {datasets[i]["_id"]}'}))
-                assert len(p_logs) == len(collections)
+                assert len(p_log) == len(collections)
                 i += 1
                 if i >= len(datasets):
                     break
@@ -183,28 +175,27 @@ def test_delete_bad():
     for _ in range(3):
         ds_uuid = random_string()
         response = make_request(session,
-                                f'/api/dataset/{ds_uuid}/',
+                                f'/api/v1/dataset/{ds_uuid}/',
                                 method='DELETE')
         assert response.code == 404
         assert not response.data
         ds_uuid = uuid.uuid4().hex
         response = make_request(session,
-                                f'/api/dataset/{ds_uuid}/',
+                                f'/api/v1/dataset/{ds_uuid}/',
                                 method='DELETE')
         assert response.code == 404
         assert not response.data
 
 
-def test_dataset_update_permissions(use_db, dataset_for_tests):
+def test_dataset_update_permissions(dataset_for_tests):
     """
     Test the permissions for the request.
 
     Should require at least Steward or being the owner of the dataset.
     """
-    db = use_db
     ds_uuid = dataset_for_tests
     indata = {'title': 'Updated title'}
-    responses = make_request_all_roles(f'/api/dataset/{ds_uuid}/', method='PATCH', data=indata)
+    responses = make_request_all_roles(f'/api/v1/dataset/{ds_uuid}/', method='PATCH', data=indata)
     for response in responses:
         if response.role in ('orders', 'data', 'root'):
             assert response.code == 200
@@ -223,7 +214,7 @@ def test_dataset_update_empty(dataset_for_tests):
     """
     ds_uuid = dataset_for_tests
     indata = {}
-    responses = make_request_all_roles(f'/api/dataset/{ds_uuid}/', method='PATCH', data=indata)
+    responses = make_request_all_roles(f'/api/v1/dataset/{ds_uuid}/', method='PATCH', data=indata)
     for response in responses:
         if response.role in ('orders', 'data', 'root'):
             assert response.code == 200
@@ -234,14 +225,13 @@ def test_dataset_update_empty(dataset_for_tests):
         assert not response.data
 
 
-def test_dataset_update(use_db, dataset_for_tests):
+def test_dataset_update(mdb, dataset_for_tests):
     """
     Update a dataset multiple times. Confirm that the update is done correctly.
 
     Should require at least Steward.
     """
     ds_uuid = dataset_for_tests
-    db = use_db
     indata = {'description': 'Test description - updated',
               'title': 'Test title - updated'}
     indata.update(TEST_LABEL)
@@ -249,16 +239,16 @@ def test_dataset_update(use_db, dataset_for_tests):
     session = requests.Session()
     as_user(session, USERS['data'])
 
-    response = make_request(session, f'/api/dataset/{ds_uuid}/', method='PATCH', data=indata)
+    response = make_request(session, f'/api/v1/dataset/{ds_uuid}/', method='PATCH', data=indata)
     assert response.code == 200
     assert not response.data
 
-    dataset = db['datasets'].find_one({'_id': ds_uuid})
+    dataset = mdb['datasets'].find_one({'_id': ds_uuid})
     for field in indata:
         assert dataset[field] == indata[field]
-    assert db['logs'].find_one({'data._id': ds_uuid,
-                                'action': 'edit',
-                                'data_type': 'dataset'})
+    assert mdb['logs'].find_one({'data._id': ds_uuid,
+                                 'action': 'edit',
+                                 'data_type': 'dataset'})
 
 
 def test_dataset_update_bad(dataset_for_tests):
@@ -270,7 +260,8 @@ def test_dataset_update_bad(dataset_for_tests):
     for _ in range(2):
         indata = {'title': 'Updated title'}
         ds_uuid = random_string()
-        responses = make_request_all_roles(f'/api/dataset/{ds_uuid}/', method='PATCH', data=indata)
+        responses = make_request_all_roles(f'/api/v1/dataset/{ds_uuid}/',
+                                           method='PATCH', data=indata)
         for response in responses:
             if response.role in ('base', 'orders', 'data', 'root'):
                 assert response.code == 404
@@ -281,7 +272,8 @@ def test_dataset_update_bad(dataset_for_tests):
                 assert not response.data
 
         ds_uuid = uuid.uuid4().hex
-        responses = make_request_all_roles(f'/api/dataset/{ds_uuid}/', method='PATCH', data=indata)
+        responses = make_request_all_roles(f'/api/v1/dataset/{ds_uuid}/',
+                                           method='PATCH', data=indata)
         for response in responses:
             if response.role in ('base', 'orders', 'data', 'root'):
                 assert response.code == 404
@@ -295,48 +287,46 @@ def test_dataset_update_bad(dataset_for_tests):
     session = requests.Session()
     as_user(session, USERS['data'])
     indata = {'title': ''}
-    response = make_request(session, f'/api/dataset/{ds_uuid}/',
+    response = make_request(session, f'/api/v1/dataset/{ds_uuid}/',
                             method='PATCH', data=indata)
     assert response.code == 400
     assert not response.data
 
     indata = {'extra': 'asd'}
-    response = make_request(session, f'/api/dataset/{ds_uuid}/',
+    response = make_request(session, f'/api/v1/dataset/{ds_uuid}/',
                             method='PATCH', data=indata)
     assert response.code == 400
     assert not response.data
 
     indata = {'timestamp': 'asd'}
-    response = make_request(session, f'/api/dataset/{ds_uuid}/',
+    response = make_request(session, f'/api/v1/dataset/{ds_uuid}/',
                             method='PATCH', data=indata)
     assert response.code == 400
     assert not response.data
 
 
-def test_list_datasets(use_db):
+def test_list_datasets(mdb):
     """
     Request a list of all datasets.
 
     Should also test e.g. pagination once implemented.
     """
-    db = use_db
-    responses = make_request_all_roles('/api/dataset/', ret_json=True)
+    responses = make_request_all_roles('/api/v1/dataset/', ret_json=True)
     for response in responses:
         assert response.code == 200
-        assert len(response.data['datasets']) == db['datasets'].count_documents({})
+        assert len(response.data['datasets']) == mdb['datasets'].count_documents({})
 
 
-def test_get_dataset_logs_permissions(use_db):
+def test_get_dataset_logs_permissions(mdb):
     """
     Get dataset logs.
 
     Assert that DATA_MANAGEMENT or user in editors is required.
     """
-    db = use_db
-    dataset_data = db['datasets'].aggregate([{'$sample': {'size': 1}}]).next()
-    order_data = db['orders'].find_one({'datasets': dataset_data['_id']})
-    user_data = db['users'].find_one({'$or': [{'_id': {'$in': order_data['editors']}}]})
-    responses = make_request_all_roles(f'/api/dataset/{dataset_data["_id"]}/log/',
+    dataset_data = mdb['datasets'].aggregate([{'$sample': {'size': 1}}]).next()
+    order_data = mdb['orders'].find_one({'datasets': dataset_data['_id']})
+    user_data = mdb['users'].find_one({'$or': [{'_id': {'$in': order_data['editors']}}]})
+    responses = make_request_all_roles(f'/api/v1/dataset/{dataset_data["_id"]}/log/',
                                        ret_json=True)
     for response in responses:
         if response.role in ('data', 'root'):
@@ -353,26 +343,25 @@ def test_get_dataset_logs_permissions(use_db):
 
     as_user(session, user_data['auth_ids'][0])
     response = make_request(session,
-                             f'/api/dataset/{dataset_data["_id"]}/log/',
-                             ret_json=True)
+                            f'/api/v1/dataset/{dataset_data["_id"]}/log/',
+                            ret_json=True)
 
     assert response.code == 200
     assert 'logs' in response.data
 
 
-def test_get_dataset_logs(use_db):
+def test_get_dataset_logs(mdb):
     """
     Request the logs for multiple datasets.
 
     Confirm that the logs contain only the intended fields.
     """
     session = requests.session()
-    db = use_db
-    datasets = db['datasets'].aggregate([{'$sample': {'size': 2}}])
+    datasets = mdb['datasets'].aggregate([{'$sample': {'size': 2}}])
     for dataset in datasets:
-        logs = list(db['logs'].find({'data_type': 'dataset', 'data._id': dataset['_id']}))
+        logs = list(mdb['logs'].find({'data_type': 'dataset', 'data._id': dataset['_id']}))
         as_user(session, USERS['data'])
-        response = make_request(session, f'/api/dataset/{dataset["_id"]}/log/', ret_json=True)
+        response = make_request(session, f'/api/v1/dataset/{dataset["_id"]}/log/', ret_json=True)
         assert response.data['dataType'] == 'dataset'
         assert response.data['entryId'] == str(dataset['_id'])
         assert len(response.data['logs']) == len(logs)

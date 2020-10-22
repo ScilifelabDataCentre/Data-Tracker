@@ -57,8 +57,8 @@
             <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
             <span class="s1">&#39;cross_references&#39;</span><span class="p">:</span> <span class="p">[],</span>
             <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;tags_standard&#39;</span><span class="p">:</span> <span class="p">[],</span>
-            <span class="s1">&#39;tags_user&#39;</span><span class="p">:</span> <span class="p">[]}</span></div>
+            <span class="s1">&#39;tags_standard&#39;</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="s1">&#39;tags_user&#39;</span><span class="p">:</span> <span class="p">{}}</span></div>
 
 
 <div class="viewcode-block" id="order"><a class="viewcode-back" href="../code.structure.html#structure.order">[docs]</a><span class="k">def</span> <span class="nf">order</span><span class="p">():</span>
@@ -75,10 +75,9 @@
             <span class="s1">&#39;generators&#39;</span><span class="p">:</span> <span class="p">[],</span>
             <span class="s1">&#39;organisation&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
             <span class="s1">&#39;editors&#39;</span><span class="p">:</span> <span class="p">[],</span>
-            <span class="s1">&#39;receivers&#39;</span><span class="p">:</span> <span class="p">[],</span>
             <span class="s1">&#39;datasets&#39;</span><span class="p">:</span> <span class="p">[],</span>
-            <span class="s1">&#39;tags_standard&#39;</span><span class="p">:</span> <span class="p">[],</span>
-            <span class="s1">&#39;tags_user&#39;</span><span class="p">:</span> <span class="p">[]}</span></div>
+            <span class="s1">&#39;tags_standard&#39;</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="s1">&#39;tags_user&#39;</span><span class="p">:</span> <span class="p">{}}</span></div>
 
 
 <div class="viewcode-block" id="collection"><a class="viewcode-back" href="../code.structure.html#structure.collection">[docs]</a><span class="k">def</span> <span class="nf">collection</span><span class="p">():</span>
@@ -89,13 +88,12 @@
 <span class="sd">        dict: The data structure for a project.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">utils</span><span class="o">.</span><span class="n">new_uuid</span><span class="p">(),</span>
-            <span class="s1">&#39;contact&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
             <span class="s1">&#39;datasets&#39;</span><span class="p">:</span> <span class="p">[],</span>
             <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;dmp&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;extra&#39;</span><span class="p">:</span> <span class="p">{},</span>
-            <span class="s1">&#39;owners&#39;</span><span class="p">:</span> <span class="p">[],</span>
-            <span class="s1">&#39;publications&#39;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s1">&#39;tags_standard&#39;</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="s1">&#39;tags_user&#39;</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="s1">&#39;cross_references&#39;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s1">&#39;editors&#39;</span><span class="p">:</span> <span class="p">[],</span>
             <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">}</span></div>
 
 
@@ -112,7 +110,7 @@
             <span class="s1">&#39;api_salt&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
             <span class="s1">&#39;auth_ids&#39;</span><span class="p">:</span> <span class="p">[],</span>
             <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;email_public&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;contact&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
             <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
             <span class="s1">&#39;orcid&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
             <span class="s1">&#39;permissions&#39;</span><span class="p">:</span> <span class="p">[],</span>
@@ -174,7 +172,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2019-2020, SciLifeLab Data Centre.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.0.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

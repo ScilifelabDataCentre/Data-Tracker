@@ -23,10 +23,12 @@ import utils
 
 blueprint = flask.Blueprint('user', __name__)  # pylint: disable=invalid-name
 
-PERMISSIONS = {'ORDERS_SELF': ('ORDERS_SELF',),
+PERMISSIONS = {'ORDERS': ('ORDERS', 'USER_ADD', 'USER_SEARCH'),
                'OWNERS_READ': ('OWNERS_READ',),
-               'USER_MANAGEMENT': ('USER_MANAGEMENT',),
-               'DATA_MANAGEMENT': ('ORDERS_SELF', 'OWNERS_READ', 'DATA_MANAGEMENT')}
+               'USER_ADD': ('USER_ADD',),
+               'USER_SEARCH': ('USER_SEARCH',),
+               'USER_MANAGEMENT': ('USER_MANAGEMENT', 'USER_ADD', 'USER_SEARCH'),
+               'DATA_MANAGEMENT': ('ORDERS', 'OWNERS_READ', 'DATA_MANAGEMENT')}
 
 
 # Decorators
@@ -48,7 +50,7 @@ def login_required(func):
 @blueprint.route('/permissions/')
 def get_permission_info():
     """Get a list of all permission types."""
-    return flask.jsonify({'permissions': list(PERMISSIONS.keys())})
+    return utils.response_json({'permissions': list(PERMISSIONS.keys())})
 
 
 @blueprint.route('/')
@@ -59,9 +61,18 @@ def list_users():
 
     Admin access should be required.
     """
-    if not has_permission('USER_MANAGEMENT'):
+    if not has_permission('USER_SEARCH'):
         flask.abort(403)
-    result = tuple(flask.g.db['users'].find())
+
+    fields = {'api_key': 0,
+              'api_salt': 0}
+
+    if not has_permission('USER_MANAGEMENT'):
+        fields['auth_ids'] = 0
+        fields['permissions'] = 0
+
+    result = tuple(flask.g.db['users'].find(projection=fields))
+
     return utils.response_json({'users': result})
 
 
@@ -78,8 +89,9 @@ def get_current_user_info():
     outstructure = {'affiliation': '',
                     'auth_ids': [],
                     'email': '',
-                    'email_public': '',
+                    'contact': '',
                     'name': '',
+                    'orcid': '',
                     'permissions': '',
                     'url': ''}
     if data:
@@ -90,8 +102,8 @@ def get_current_user_info():
 
 
 # requests
-@blueprint.route('/me/apikey/', methods=['PUT'])
-@blueprint.route('/<identifier>/apikey/', methods=['PUT'])
+@blueprint.route('/me/apikey/', methods=['POST'])
+@blueprint.route('/<identifier>/apikey/', methods=['POST'])
 @login_required
 def gen_new_api_key(identifier: str = None):
     """
@@ -157,7 +169,7 @@ def get_user_data(identifier: str):
     return utils.response_json({'user': user_info})
 
 
-@blueprint.route('/', methods=['PUT'])
+@blueprint.route('/', methods=['POST'])
 @login_required
 def add_user():
     """
@@ -166,7 +178,7 @@ def add_user():
     Returns:
         flask.Response: Information about the user as json.
     """
-    if not has_permission('USER_MANAGEMENT'):
+    if not has_permission('USER_ADD'):
         flask.abort(403)
 
     new_user = structure.user()

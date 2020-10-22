@@ -44,36 +44,6 @@ def validate_field(field_key: str, field_value: Any) -> bool:
     return True
 
 
-def validate_creator(data: str) -> bool:
-    """
-    Validate input for the ``creator`` field.
-
-    It must be a non-empty string.
-    If uuid, confirms that uuid is present in db.
-
-    Args:
-        data (str): The data to be validated.
-
-    Returns:
-        bool: Validation passed.
-
-    Raises:
-        ValueError: Validation failed.
-    """
-    if not isinstance(data, str):
-        raise ValueError(f'Bad data type ({data})')
-
-    # If it is a uuid, make sure it matches a user
-    try:
-        user_uuid = uuid.UUID(data)
-    except ValueError:
-        return True
-    else:
-        if not flask.g.db['users'].find_one({'_id': user_uuid}):
-            raise ValueError(f'Uuid not in db ({data})')
-    return True
-
-
 def validate_datasets(data: list) -> bool:
     """
     Validate input for the ``datasets`` field.
@@ -125,34 +95,6 @@ def validate_email(data) -> bool:
     return True
 
 
-def validate_links(data: list) -> bool:
-    """
-    Validate input for the ``links`` field.
-
-    It must have the form ``[{'url': value, 'description': value}, ...]``.
-
-    Args:
-        data: The data to be validated.
-
-    Returns:
-        bool: Validation passed.
-
-    Raises:
-        ValueError: Validation failed.
-    """
-    if not isinstance(data, list):
-        raise ValueError('Must be a list')
-    for entry in data:
-        if not isinstance(entry, dict):
-            raise ValueError('Must be a list of dicts')
-        for key in entry:
-            if key not in ('url', 'description'):
-                raise ValueError('Bad key in dict')
-            if not isinstance(entry[key], str):
-                raise ValueError('Values must be type str')
-    return True
-
-
 def validate_list_of_strings(data: list) -> bool:
     """
     Validate that input is a list of strings.
@@ -197,29 +139,6 @@ def validate_permissions(data: list) -> bool:
     return True
 
 
-def validate_publications(data: list) -> bool:
-    """
-    Validate input for the ``publications`` field.
-
-    It must have the form ``['publication text', ...]``.
-
-    Args:
-        data (list): The data to be validated.
-
-    Returns:
-        bool: Validation passed.
-
-    Raises:
-        ValueError: Validation failed.
-    """
-    if not isinstance(data, list):
-        raise ValueError('Must be a list')
-    for entry in data:
-        if not isinstance(entry, str):
-            raise ValueError('Must be a list of strings')
-    return True
-
-
 def validate_string(data: str) -> bool:
     """
     Validate input for field that must have a ``str`` value.
@@ -235,6 +154,34 @@ def validate_string(data: str) -> bool:
     """
     if not isinstance(data, str):
         raise ValueError(f'Not a string ({data})')
+    return True
+
+
+def validate_cross_references(data: list) -> bool:
+    """
+    Validate input for the ``cross_references`` field.
+
+    It must be a list.
+
+    Args:
+        data (dict): The data to be validated.
+
+    Returns:
+        bool: Validation passed.
+
+    Raises:
+        ValueError: Validation failed.
+    """
+    if not isinstance(data, list):
+        raise ValueError(f'Not a  list ({data})')
+    for entry in data:
+        if not isinstance(entry, dict):
+            raise ValueError(f'List entries must be dicts ({entry})')
+        if list(entry.keys()) != ['title', 'value']:
+            raise KeyError(f'Incorrect keys ({entry.keys})')
+        if not isinstance(entry['title'], str) or \
+           not isinstance(entry['value'], str):
+            raise ValueError(f'Values must be strings ({entry.values()})')
     return True
 
 
@@ -344,6 +291,9 @@ def validate_user(data: str) -> bool:
     if not isinstance(data, str):
         raise ValueError(f'Bad data type (must be str): {data}')
 
+    if not data:
+        return True
+
     try:
         user_uuid = uuid.UUID(data)
     except ValueError as err:
@@ -385,24 +335,19 @@ def validate_user_list(data: Union[str, list]) -> bool:
 
 
 VALIDATION_MAPPER = {'affiliation': validate_string,
-                     'api_key': validate_string,
                      'auth_ids': validate_list_of_strings,
                      'authors': validate_user_list,
                      'contact': validate_string,
+                     'cross_references': validate_cross_references,
                      'description': validate_string,
-                     'dmp': validate_string,
                      'datasets': validate_datasets,
                      'editors': validate_user_list,
                      'email': validate_email,
-                     'email_public': validate_email,
                      'generators': validate_user_list,
-                     'links': validate_links,
                      'name': validate_string,
                      'orcid': validate_string,
                      'organisation': validate_user,
                      'permissions': validate_permissions,
-                     'publications': validate_publications,
-                     'receivers': validate_user_list,
                      'tags_standard': validate_tags_std,
                      'tags_user': validate_tags_user,
                      'title': validate_title,

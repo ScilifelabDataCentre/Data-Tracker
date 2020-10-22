@@ -47,13 +47,9 @@ def db_connection():
 
 
 @pytest.fixture
-def use_db():
+def mdb():
     """Get a connection to the db as defined in the app config."""
-    conf = config.init()
-    client = utils.get_dbclient(conf)
-    db = utils.get_db(client, conf)
-    yield db
-    client.close()
+    yield db_connection()
 
 
 def as_user(session: requests.Session, auth_id: str, set_csrf: bool = True) -> int:
@@ -70,11 +66,11 @@ def as_user(session: requests.Session, auth_id: str, set_csrf: bool = True) -> i
         int: Status code.
     """
     if auth_id:
-        code = session.get(f'{BASE_URL}/api/developer/login/{auth_id}').status_code
+        code = session.get(f'{BASE_URL}/api/v1/developer/login/{auth_id}').status_code
         assert code == 200
     else:
-        code = session.get(f'{BASE_URL}/api/logout/').status_code
-        session.get(f'{BASE_URL}/api/developer/hello')  # reset cookies
+        code = session.get(f'{BASE_URL}/api/v1/logout/').status_code
+        session.get(f'{BASE_URL}/api/v1/developer/hello')  # reset cookies
     if set_csrf:
         session.headers['X-CSRFToken'] = session.cookies.get('_csrf_token')
     return code
@@ -101,20 +97,20 @@ def add_dataset():
     Returns:
         tuple: (order_uuid, dataset_uuid)
     """
-    db = db_connection()
+    mongo_db = db_connection()
     # prepare
     order_indata = structure.order()
     order_indata.update({'description': 'Added by fixture.',
                          'title': 'Test title from fixture'})
     order_indata.update(TEST_LABEL)
-    orders_user = db['users'].find_one({'auth_ids': USERS['orders']})
-    base_user = db['users'].find_one({'auth_ids': USERS['base']})
+    orders_user = mongo_db['users'].find_one({'auth_ids': USERS['orders']})
+    base_user = mongo_db['users'].find_one({'auth_ids': USERS['base']})
     order_indata['authors'] = [orders_user['_id']]
     order_indata['editors'] = [orders_user['_id']]
     order_indata['generators'] = [orders_user['_id']]
     order_indata['organisation'] = orders_user['_id']
     order_indata['receivers'] = [base_user['_id']]
-    
+
     dataset_indata = structure.dataset()
     dataset_indata.update({'description': 'Added by fixture.',
                            'title': 'Test title from fixture'})
@@ -126,11 +122,11 @@ def add_dataset():
                            'editors': [base_user['_id']]})
     collection_indata.update(TEST_LABEL)
 
-    db['datasets'].insert_one(dataset_indata)
+    mongo_db['datasets'].insert_one(dataset_indata)
     order_indata['datasets'].append(dataset_indata['_id'])
     collection_indata['datasets'].append(dataset_indata['_id'])
-    db['orders'].insert_one(order_indata)
-    db['collections'].insert_one(collection_indata)
+    mongo_db['orders'].insert_one(order_indata)
+    mongo_db['collections'].insert_one(collection_indata)
     return (order_indata['_id'], dataset_indata['_id'], collection_indata['_id'])
 
 
@@ -138,10 +134,10 @@ def delete_dataset(order_uuid, dataset_uuid, project_uuid):
     """
     Delete an order and a dataset added by ``add_dataset()``.
     """
-    db = db_connection()
-    db['orders'].delete_one({'_id': order_uuid})
-    db['datasets'].delete_one({'_id': dataset_uuid})
-    db['projects'].delete_one({'_id': project_uuid})
+    mongo_db = db_connection()
+    mongo_db['orders'].delete_one({'_id': order_uuid})
+    mongo_db['datasets'].delete_one({'_id': dataset_uuid})
+    mongo_db['projects'].delete_one({'_id': project_uuid})
 
 
 def make_request(session, url: str, data: dict = None, method='GET', ret_json: bool = True) -> dict:
@@ -174,11 +170,7 @@ def make_request(session, url: str, data: dict = None, method='GET', ret_json: b
         raise ValueError(f'Unsupported http method ({method})')
 
     if response.text and ret_json:
-        try:
-            data = json.loads(response.text)
-        except json.decoder.JSONDecodeError:
-            print(response.text)
-            exit
+        data = json.loads(response.text)
     elif response.text:
         data = response.text
     else:
@@ -214,20 +206,20 @@ def collection_for_tests():
     Yields the uuid of the added collection.
     """
     # prepare
-    db = db_connection()
+    mongo_db = db_connection()
     session = requests.Session()
     as_user(session, USERS['data'])
     collection_indata = structure.collection()
-    base_user = db['users'].find_one({'auth_ids': USERS['base']})
+    base_user = mongo_db['users'].find_one({'auth_ids': USERS['base']})
     collection_indata.update({'description': 'Added by fixture.',
                               'title': 'Test title from fixture',
                               'editors': [base_user['_id']]})
     collection_indata.update(TEST_LABEL)
-    db['collections'].insert_one(collection_indata)
+    mongo_db['collections'].insert_one(collection_indata)
 
     yield collection_indata['_id']
 
-    db['collections'].delete_one({'_id': collection_indata['_id']})
+    mongo_db['collections'].delete_one({'_id': collection_indata['_id']})
 
 
 def random_string(min_length: int = 1, max_length: int = 150):

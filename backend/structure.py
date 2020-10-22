@@ -18,8 +18,8 @@ def dataset():
             'description': '',
             'cross_references': [],
             'title': '',
-            'tags_standard': [],
-            'tags_user': []}
+            'tags_standard': {},
+            'tags_user': {}}
 
 
 def order():
@@ -36,10 +36,9 @@ def order():
             'generators': [],
             'organisation': '',
             'editors': [],
-            'receivers': [],
             'datasets': [],
-            'tags_standard': [],
-            'tags_user': []}
+            'tags_standard': {},
+            'tags_user': {}}
 
 
 def collection():
@@ -72,7 +71,7 @@ def user():
             'api_salt': '',
             'auth_ids': [],
             'email': '',
-            'email_public': '',
+            'contact': '',
             'name': '',
             'orcid': '',
             'permissions': [],

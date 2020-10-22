@@ -1,25 +1,18 @@
 <template>
-  <q-page padding>
-    <h1 class="text-h2">About</h1>
-    <p>Some text about the Data Tracker.</p>
+<q-page padding>
+  <q-card>
+    <q-card-section>
+      <h1 class="text-h2">About the Data Tracker</h1>
 
-    <p>Some more text.</p>
+      The SciLifeLab Data Tracker is tracking data generated at SciLifeLab facilities.
 
-    <p>Track data. Only metadata.</p>
-
-    <h2 class="text-h3">Background</h2>
-
-    <h2 class="text-h3">Data types</h2>
-    
-    <h3 class="text-h4">Orders</h3>
-
-    <h3 class="text-h4">Datasets</h3>
-
-    <h3 class="text-h4">Collections</h3>
-
-    <h2 class="text-h3">Contact</h2>
-    
-  </q-page>
+      No actual data is hosted here, only metadata.
+    </q-card-section>
+    <q-card-section>
+      The Data Tracker is developed by <a class="std-link" href="https://www.scilifelab.se/data">SciLifeLab Data Centre</a>
+    </q-card-section>
+  </q-card>
+</q-page>
 </template>
 
 <script>

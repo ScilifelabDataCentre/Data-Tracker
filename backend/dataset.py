@@ -4,6 +4,7 @@ import logging
 
 import flask
 
+import structure
 import utils
 import user
 
@@ -51,6 +52,19 @@ def get_random_ds(amount: int = 1):
     return utils.response_json({'datasets': results})
 
 
+@blueprint.route('/structure/', methods=['GET'])
+def get_dataset_data_structure():
+    """
+    Get an empty dataset entry.
+
+    Returns:
+        flask.Response: JSON structure with a list of datasets.
+    """
+    empty_dataset = structure.dataset()
+    empty_dataset['_id'] = ''
+    return utils.response_json({'dataset': empty_dataset})
+
+
 @blueprint.route('/<identifier>/', methods=['GET'])
 def get_dataset(identifier):
     """
@@ -96,7 +110,7 @@ def delete_dataset(identifier: str):
 
     result = flask.g.db['datasets'].delete_one({'_id': ds_uuid})
     if not result.acknowledged:
-        logging.error(f'Failed to delete dataset {ds_uuid}')
+        logging.error('Failed to delete dataset %s', ds_uuid)
         return flask.Response(status=500)
     utils.make_log('dataset', 'delete', 'Deleted dataset', data={'_id': ds_uuid})
 
@@ -104,7 +118,8 @@ def delete_dataset(identifier: str):
         result = flask.g.db['orders'].update_one({'_id': entry['_id']},
                                                  {'$pull': {'datasets': ds_uuid}})
         if not result.acknowledged:
-            logging.error(f'Failed to delete dataset {ds_uuid} in order {entry["_id"]}')
+            logging.error('Failed to delete dataset %s in order %s',
+                          ds_uuid, entry['_id'])
             return flask.Response(status=500)
         new_data = flask.g.db['orders'].find_one({'_id': entry['_id']})
         utils.make_log('order', 'edit', f'Deleted dataset {ds_uuid}', new_data)
@@ -113,7 +128,8 @@ def delete_dataset(identifier: str):
         flask.g.db['collections'].update_one({'_id': entry['_id']},
                                              {'$pull': {'datasets': ds_uuid}})
         if not result.acknowledged:
-            logging.error(f'Failed to delete dataset {ds_uuid} in project {entry["_id"]}')
+            logging.error('Failed to delete dataset %s in project %s',
+                          ds_uuid, entry['_id'])
             return flask.Response(status=500)
         new_data = flask.g.db['collections'].find_one({'_id': entry['_id']})
         utils.make_log('collection', 'edit', f'Deleted dataset {ds_uuid}', new_data)
@@ -234,10 +250,13 @@ def build_dataset_info(identifier: str):
     dataset['related'].remove({'_id': dataset['_id'], 'title': dataset['title']})
     dataset['collections'] = list(flask.g.db['projects'].find({'datasets': dataset_uuid},
                                                               {'title': 1}))
-    for field in ('generators', 'authors', 'receivers'):
-        dataset[field] = list(flask.g.db['users'].find({'_id': {'$in': order[field]}},
-                                                       {'name': 1}))
-    dataset['organisation'] = flask.g.db['users'].find_one({'_id': order['organisation']},
-                                                           {'name': 1})
+    for field in ('editors', 'generators', 'authors'):
+        if field == 'editors' and\
+           (not user.has_permission('DATA_MANAGEMENT') and\
+            flask.g.db.current_user['id'] not in order[field]):
+            continue
+        dataset[field] = utils.user_uuid_data(order[field], flask.g.db)
 
+    dataset['organisation'] = utils.user_uuid_data(order[field], flask.g.db)
+    dataset['organisation'] = dataset['organisation'][0] if dataset['organisation'] else ''
     return dataset

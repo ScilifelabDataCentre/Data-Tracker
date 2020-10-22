@@ -5,7 +5,7 @@ import {getCsrfHeader} from '../helpers.js';
 export function getCollection ({ commit, dispatch }, id) {
   return new Promise((resolve, reject) => {
     axios
-      .get('/api/collection/' + id + '/')
+      .get('/api/v1/collection/' + id + '/')
       .then((response) => {
         commit('updateCollection', response.data.collection);
         resolve(response);
@@ -20,7 +20,7 @@ export function getCollection ({ commit, dispatch }, id) {
 export function getCollections ({ commit, dispatch }) {
   return new Promise((resolve, reject) => {
     axios
-      .get('/api/collection/')
+      .get('/api/v1/collection/')
       .then((response) => {
         commit('updateCollections', response.data.collections);
         resolve(response);
@@ -35,7 +35,7 @@ export function getCollections ({ commit, dispatch }) {
 export function deleteCollection (context, payload) {
   return new Promise((resolve, reject) => {
     axios
-      .delete('/api/collection/' + payload + '/',
+      .delete('/api/v1/collection/' + payload + '/',
               {
                 headers: getCsrfHeader(),
               })
@@ -54,7 +54,7 @@ export function saveCollection (context, payload) {
     delete payload.id
     if (collectionUuid === '-1') {
       axios
-        .post('/api/collection/',
+        .post('/api/v1/collection/',
               payload,
               {
                 headers: getCsrfHeader(),
@@ -68,7 +68,7 @@ export function saveCollection (context, payload) {
     }
     else {
       axios
-        .patch('/api/collection/' + collectionUuid + '/',
+        .patch('/api/v1/collection/' + collectionUuid + '/',
                payload,
                {
                  headers: getCsrfHeader(),

@@ -7,7 +7,7 @@ export default function () {
       email: '',
       name: '',
       orcid: '',
-      permissions: []
+      permissions: [],
     },
     datasets: [],
     orders: [],

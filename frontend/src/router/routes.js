@@ -7,19 +7,17 @@ const Login = () => import(/* webpackChunkName: "user" */ 'pages/Login.vue')
 
 const BaseContainer = () => import(/* webpackChunkName: "base" */ 'pages/BaseContainer.vue')
 
-const CollectionAbout = () => import(/* webpackChunkName: "collection" */ 'pages/collections/CollectionAbout.vue')
-const CollectionBrowser = () => import(/* webpackChunkName: "collection" */ 'pages/collections/CollectionBrowser.vue')
-const CollectionEdit = () => import(/* webpackChunkName: "collection" */ 'pages/collections/CollectionEdit.vue')
+const CollectionInfo = () => import(/* webpackChunkName: "collection" */ 'pages/CollectionInfo.vue')
 
-const DatasetAbout = () => import(/* webpackChunkName: "dataset" */ 'pages/datasets/DatasetAbout.vue')
-const DatasetBrowser = () => import(/* webpackChunkName: "dataset" */ 'pages/datasets/DatasetBrowser.vue')
-const DatasetEdit = () => import(/* webpackChunkName: "dataset" */ 'pages/datasets/DatasetEdit.vue')
+const DatasetInfo = () => import(/* webpackChunkName: "dataset" */ 'pages/DatasetInfo.vue')
 
-const OrderAbout = () => import(/* webpackChunkName: "order" */ 'pages/orders/OrderAbout.vue')
-const OrderBrowser = () => import(/* webpackChunkName: "order" */ 'pages/orders/OrderBrowser.vue')
-const OrderEdit = () => import(/* webpackChunkName: "order" */ 'pages/orders/OrderEdit.vue')
+const OrderInfo = () => import(/* webpackChunkName: "order" */ 'pages/OrderInfo.vue')
 
-const UserManager = () => import(/* webpackChunkName: "admin" */ 'pages/admin/UserManager.vue')
+const EntryBrowser = () => import(/* webpackChunkName: "browser" */ 'pages/EntryBrowser.vue')
+
+const UserManager = () => import(/* webpackChunkName: "admin" */ 'pages/UserManager.vue')
+
+const CurrentUser = () => import(/* webpackChunkName: "current" */ 'pages/CurrentUser.vue')
 
 const routes = [
   {
@@ -28,6 +26,7 @@ const routes = [
     children: [
       { path: '', component: Index, name: 'Home'},
       { path: 'about', component: About, name: 'About' },
+      { path: 'guide', component: About, name: 'User Guide' },
       { path: 'login', component: Login, name: 'Login' },
     ]
   },
@@ -38,20 +37,33 @@ const routes = [
     children: [
       {
         path: '',
-        component: DatasetBrowser,
-        name: 'Dataset Browser'
+        component: EntryBrowser,
+        name: 'Dataset Browser',
+        props: { 'entryType': 'dataset'}
       },
       {
         path: ':uuid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})',
-        component: DatasetAbout,
+        component: DatasetInfo,
         props: true,
         name: 'Dataset About'
       },
       {
-        path: ':uuid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/edit',
-        component: DatasetEdit,
-        props: true,
-        name: 'Dataset Edit'
+        path: 'new',
+        component: DatasetInfo,
+        props: {'uuid': ''},
+        name: 'Dataset New'
+      },
+    ]
+  },
+
+  {
+    path: '/me',
+    component:  MainLayout,
+    children: [
+      {
+        path: '',
+        component: CurrentUser,
+        name: 'About Current User',
       },
     ]
   },
@@ -65,26 +77,21 @@ const routes = [
     children: [
       {
         path: '',
-        component: OrderBrowser,
-        name: 'Order Browser'
+        component: EntryBrowser,
+        name: 'Order Browser',
+        props: { 'entryType': 'order'}
       },
       {
         path: ':uuid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})',
-        component: OrderAbout,
+        component: OrderInfo,
         props: true,
         name: 'Order About'
       },
       {
-        path: ':uuid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/edit',
-        component: OrderEdit,
-        props: true,
-        name: 'Order Edit'
-      },
-      {
-        path: 'add',
-        component: OrderEdit,
-        props: { 'uuid': '' },
-        name: 'Order Add'
+        path: 'new',
+        component: OrderInfo,
+        props: {'uuid': ''},
+        name: 'Order New'
       },
     ]
   },
@@ -95,26 +102,21 @@ const routes = [
     children: [
       {
         path: '',
-        component: CollectionBrowser,
-        name: 'Collection Browser'
+        component: EntryBrowser,
+        name: 'Collection Browser',
+        props: { 'entryType': 'collection'}
       },
       {
         path: ':uuid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})',
-        component: CollectionAbout,
+        component: CollectionInfo,
         props: true,
         name: 'Collection About'
       },
       {
-        path: ':uuid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/edit',
-        component: CollectionEdit,
-        props: true,
-        name: 'Collection Edit'
-      },
-      {
-        path: 'add',
-        component: CollectionEdit,
-        props: { 'uuid': '' },
-        name: 'Collection Add'
+        path: 'new',
+        component: CollectionInfo,
+        props: {'uuid': ''},
+        name: 'Collection New'
       },
     ]
   },

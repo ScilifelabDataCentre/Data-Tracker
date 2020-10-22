@@ -5,7 +5,7 @@ import {getCsrfHeader} from '../helpers.js';
 export function getInfo ({ commit }) {
   return new Promise((resolve, reject) => {
     axios
-      .get('/api/user/me/')
+      .get('/api/v1/user/me/')
       .then((response) => {
         commit('setInfo', response.data.user);
         resolve(response);
@@ -17,44 +17,26 @@ export function getInfo ({ commit }) {
 }
 
 export function updateInfo(context, payload) {
-  return new Promise((resolve, reject) => {
-    axios
-      .patch('/api/user/me/',
-             payload,
-             {
-               headers: getCsrfHeader(),
-             })
-      .then((response) => {
-        resolve(response);
-      })
-      .catch((err) => {
-        reject(err);
-      });
-  });
+  return axios.patch('/api/v1/user/me/',
+                     payload,
+                     {
+                       headers: getCsrfHeader(),
+                     });
 }
   
 export function genApiKey() {
-  return new Promise((resolve, reject) => {
-    axios
-      .post('/api/user/me/apikey/',
-            {},
-            {
-              headers: getCsrfHeader(),
-            })
-      .then((response) => {
-        resolve(response);
-      })
-      .catch(function (err) {
-        reject(err);
-      });
-  });
+  return axios.post('/api/v1/user/me/apikey/',
+                    {},
+                    {
+                      headers: getCsrfHeader(),
+                    });
 }
   
 export function loginKey (context, payload) {
   return new Promise((resolve, reject) => {
     console.log('was here');
     axios
-      .post('/api/login/apikey/',
+      .post('/api/v1/login/apikey/',
             payload,
             {
               headers: getCsrfHeader(),
@@ -73,7 +55,7 @@ export function loginKey (context, payload) {
 export function getOrders ({ commit }) {
   return new Promise((resolve, reject) => {
     axios
-      .get('/api/order/user/')
+      .get('/api/v1/order/user/')
       .then((response) => {
         commit('setOrders', response.data.orders);
         resolve(response);
@@ -87,7 +69,7 @@ export function getOrders ({ commit }) {
 export function getDatasets ({ commit }) {
   return new Promise((resolve, reject) => {
     axios
-      .get('/api/dataset/user/')
+      .get('/api/v1/dataset/user/')
       .then((response) => {
         commit('setDatasets', response.data.datasets);
         resolve(response);
@@ -101,7 +83,7 @@ export function getDatasets ({ commit }) {
 export function getCollections ({ commit }) {
   return new Promise((resolve, reject) => {
     axios
-      .get('/api/project/user/')
+      .get('/api/v1/project/user/')
       .then((response) => {
         commit('setCollections', response.data.collections);
         resolve(response);
@@ -110,4 +92,10 @@ export function getCollections ({ commit }) {
         reject(err);
       });
   });
+}
+
+
+export function getOIDC () {
+  return axios
+    .get('/api/v1/login/oidc/')
 }

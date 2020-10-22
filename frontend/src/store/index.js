@@ -1,11 +1,11 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
-import adminUser from './adminUser'
+import adminUsers from './adminUsers'
 import collections from './collections'
 import currentUser from './currentUser'
 import datasets from './datasets'
-import orders from './orders'
+import entries from './entries'
 
 Vue.use(Vuex)
 
@@ -21,11 +21,11 @@ Vue.use(Vuex)
 export default function (/* { ssrContext } */) {
   const Store = new Vuex.Store({
     modules: {
-      adminUser,
+      adminUsers,
       collections,
       currentUser,
       datasets,
-      orders,
+      entries,
     },
 
     // enable strict mode (adds overhead!)
