@@ -19,6 +19,21 @@ export function getEntry ({ commit, dispatch }, payload) {
 }
 
 
+export function getLocalEntry ({ commit, dispatch }, payload) {
+  // payload: {'id': id, 'dataType': dataType}
+  return new Promise((resolve, reject) => {
+    axios
+      .get('/api/v1/' + payload.dataType + '/' + payload.id + '/')
+      .then((response) => {
+        resolve(response.data[payload.dataType]);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+}
+
+
 export function getEntryLog ({ commit, dispatch }, payload) {
   // payload: {'id': id, 'dataType': dataType}
   return new Promise((resolve, reject) => {
