@@ -149,39 +149,6 @@ def test_add_collection_permissions(mdb):
             assert '_id' in response.data
             assert len(response.data['_id']) == 36
 
-    dataset_info = next(mdb['datasets'].aggregate([{'$sample': {'size': 1}}]))
-    order_info = mdb['orders'].find_one({'datasets': dataset_info['_id']})
-    user_info = mdb['users'].find_one({'_id': {'$in': order_info['editors']}})
-    indata.update({'editors': [str(user_info['_id'])],
-                   'datasets': [str(dataset_info['_id'])]})
-
-    session = requests.Session()
-    as_user(session, user_info['auth_ids'][0])
-    response = make_request(session,
-                            '/api/v1/collection/',
-                            method='POST',
-                            data=indata,
-                            ret_json=True)
-    assert response.code == 200
-    assert '_id' in response.data
-    assert len(response.data['_id']) == 36
-
-    responses = make_request_all_roles('/api/v1/collection/',
-                                       method='POST',
-                                       data=indata,
-                                       ret_json=True)
-    for response in responses:
-        if response.role in ('data', 'root'):
-            assert response.code == 200
-            assert '_id' in response.data
-            assert len(response.data['_id']) == 36
-        elif response.role == 'no-login':
-            assert response.code == 401
-            assert not response.data
-        else:
-            assert response.code == 400
-            assert not response.data
-
 
 def test_add_collection(mdb):
     """
