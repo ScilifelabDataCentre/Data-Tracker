@@ -44,7 +44,7 @@
     </q-card-actions>
 
     <q-inner-loading :showing="isLoading">
-      <q-spinner-gears size="100px" color="primary" />
+      <q-spinner-dots size="50px" color="primary" />
     </q-inner-loading>
   </q-card>
 </q-dialog>
