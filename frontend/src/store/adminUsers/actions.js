@@ -5,7 +5,7 @@ export function getUsers ({ commit }) {
     axios
       .get('/api/v1/user/')
       .then((response) => {
-        commit('updateUsers', response.data.users);
+        commit('UPDATE_USERS', response.data.users);
         resolve(response);
       })
       .catch(function (err) {

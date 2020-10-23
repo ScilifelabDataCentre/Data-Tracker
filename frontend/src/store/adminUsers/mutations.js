@@ -2,7 +2,7 @@
 export function someMutation (state) {
 }
 */
-export function updateUsers (state, payload) {
+export function UPDATE_USERS (state, payload) {
   state.userList = payload;
 }
 
