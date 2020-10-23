@@ -128,19 +128,7 @@ def add_collection():  # pylint: disable=too-many-branches
         indata['editors'] = [flask.g.current_user['_id']]
 
     if 'datasets' in indata:
-        for i, dataset_uuid_str in enumerate(indata['datasets']):
-            dataset_uuid = utils.str_to_uuid(dataset_uuid_str)
-            indata['datasets'][i] = dataset_uuid
-            # allow new ones only if owner or DATA_MANAGEMENT
-            order_info = flask.g.db['orders'].find_one({'datasets': dataset_uuid})
-            if not order_info:
-                flask.abort(status=400)
-            if not user.has_permission('DATA_MANAGEMENT') and\
-               flask.g.current_user['_id'] not in order_info['editors'] and\
-               flask.g.current_user['_id'] not in order_info['authors'] and\
-               flask.g.current_user['_id'] not in order_info['generators']:
-                flask.abort(status=400)
-
+        indata['datasets'] = [utils.str_to_uuid(value) for value in indata['datasets']]
     collection.update(indata)
 
     # add to db
@@ -225,27 +213,8 @@ def update_collection(identifier):  # pylint: disable=too-many-branches
     if not validation[0]:
         flask.abort(status=validation[1])
 
-    if indata.get('owners'):
-        for i, owner in enumerate(indata['owners']):
-            if utils.is_email(owner):
-                owner_info = flask.g.db['users'].find_one({'email': owner})
-                if owner_info:
-                    indata['owners'][i] = owner_info['_id']
-
     if 'datasets' in indata:
-        for i, dataset_uuid_str in enumerate(indata['datasets']):
-            dataset_uuid = utils.str_to_uuid(dataset_uuid_str)
-            indata['datasets'][i] = dataset_uuid
-            # do not reject existing datasets
-            if dataset_uuid in collection['datasets']:
-                continue
-            # allow new ones only if owner or DATA_MANAGEMENT
-            order_info = flask.g.db['orders'].find_one({'datasets': dataset_uuid})
-            if not order_info:
-                flask.abort(status=400)
-            if not user.has_permission('DATA_MANAGEMENT') and\
-               flask.g.current_user['_id'] not in order_info['editors']:
-                flask.abort(status=400)
+        indata['datasets'] = [utils.str_to_uuid(value) for value in indata['datasets']]
 
     is_different = False
     for field in indata:
