@@ -38,7 +38,7 @@ export function getEntryLog ({ commit, dispatch }, payload) {
 export function getEmptyEntry ({ commit, dispatch }, dataType) {
   return new Promise((resolve, reject) => {
     axios
-      .get('/api/v1/order/structure/')
+      .get('/api/v1/' + dataType + '/structure/')
       .then((response) => {
         commit('UPDATE_ENTRY', response.data[dataType]);
         resolve(response);
