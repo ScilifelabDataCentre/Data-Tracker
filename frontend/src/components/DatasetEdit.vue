@@ -43,6 +43,7 @@
   <q-card class="q-my-sm">
     <q-card-section>
       <q-field v-if="!isNew"
+               class="q-my-sm"
                label="UUID"
 	       stack-label
 	       filled>
@@ -53,7 +54,8 @@
           {{ dataset._id }}
         </template>
       </q-field>
-      <q-field v-if="'order' in dataset"
+      <q-field class="q-my-sm"
+               v-if="'order' in dataset"
                label="Order UUID"
 	       stack-label
 	       filled>
