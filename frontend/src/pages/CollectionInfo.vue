@@ -151,6 +151,12 @@ export default {
     },
   },
 
+  watch: {
+    $route() {
+      this.loadData();
+    },
+  },
+
   data () {
     return {
       isLoading: true,
