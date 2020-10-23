@@ -82,8 +82,8 @@ def get_dataset(identifier):
         return flask.Response(status=404)
     return utils.response_json({'dataset': result})
 
-
 @blueprint.route('/', methods=['POST'])
+@user.login_required
 def add_dataset():  # pylint: disable=too-many-branches
     """
     Add a dataset to the given order.
