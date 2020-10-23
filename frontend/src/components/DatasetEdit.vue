@@ -4,7 +4,7 @@
           class="q-my-sm">
     <q-card-section>
       <q-table title="Select an order"
-               :data="onlySelected ? selected : orders"
+               :data="onlySelected ? selectedOrder : orders"
                :columns="columns"
                row-key="_id"
                :loading="isLoadingOrders"
@@ -31,7 +31,7 @@
         </template>
       </q-table>
       <q-btn class="q-mt-sm"
-             label="Use selected order"
+             label="Confirm selected order"
              color="primary"
              @click="confirmOrder"
              :disable="selectedOrder.length === 0"
@@ -188,7 +188,6 @@ export default {
       isLoadingOrderData: false,
       isLoadingUsers: false,
       onlySelected: false,
-      chosenOrder: '',
       filter: '',
       pagination: {
         rowsPerPage: 5
