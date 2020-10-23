@@ -452,7 +452,7 @@ def test_add_dataset_log(mdb):
 
     Check that both there is both update on order and add on dataset.
     """
-    order = next(db['orders'].aggregate([{'$sample': {'size': 1}}]))
+    order = next(mdb['orders'].aggregate([{'$sample': {'size': 1}}]))
     indata = {'title': 'Test title',
               'order': str(order['_id'])}
     indata.update(TEST_LABEL)
