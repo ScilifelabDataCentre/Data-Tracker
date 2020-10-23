@@ -76,6 +76,19 @@ def list_users():
     return utils.response_json({'users': result})
 
 
+@blueprint.route('/structure/', methods=['GET'])
+def get_user_data_structure():
+    """
+    Get an empty user entry.
+
+    Returns:
+        flask.Response: JSON structure with a list of users.
+    """
+    empty_user = structure.user()
+    empty_user['_id'] = ''
+    return utils.response_json({'user': empty_user})
+
+
 # requests
 @blueprint.route('/me/')
 def get_current_user_info():
