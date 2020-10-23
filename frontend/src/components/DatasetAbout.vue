@@ -33,7 +33,7 @@
   </q-card>
 
   <q-card class="q-my-md"
-          v-show="related.length > 0">
+          v-show="related.length">
     <q-card-section>
       <q-list dense>
         <list-header title="Related Datasets"
@@ -119,7 +119,9 @@ export default {
 
     related: {
       get () {
-        return this.dataset.related.filter((entry) => entry._id !== this.dataset._id);
+        if ('related' in this.dataset)
+          return this.dataset.related.filter((entry) => entry._id !== this.dataset._id);
+        return []
       },
     }
   },
