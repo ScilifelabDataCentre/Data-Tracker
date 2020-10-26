@@ -58,46 +58,48 @@
                      v-model="userData.url"/>
             </q-item-section>
         </q-item>
-        <q-item-label caption>Permissions</q-item-label>
-        <div>
-          <q-item v-for="field of Object.keys(permissions)"
-                  :key="field">
-            <q-item-section>
-              <q-checkbox v-model="permissions[field]"
-                          :label="field" />
-            </q-item-section>
-          </q-item>
-          <q-inner-loading :showing="isLoadingPermissions">
-            <q-spinner-dots size="md" color="primary" />
-          </q-inner-loading>
-        </div>
-        <div v-if="uuid !== ''">
-        <q-item-label caption>Authentication IDs</q-item-label>
-        <q-item class="flex">
-          <q-chip v-for="authId in userData.authIds"
-                  :key="authId"
-                  :label="authId"
-                  color="primary"
-                  text-color="white"
-                  square />
-        </q-item>
-        <q-item-label caption>API Key</q-item-label>
-        <q-item>
-          <q-item-section>
-            <q-btn color="positive"
-                   label="Generate new API key"
-                   :loading="newApiKeyWaiting"
-                   @click="generateNewApiKey" />
-            <span class="text-italic text-grey-8">API keys are generated immediately and cannot be reverted</span>
-            <q-input outlined
-                     stack-label
-                     v-show="newApiKey.length > 0"
-                     label="New API Key"
-                     class="q-my-sm"
-                     :value="newApiKey"
-                     disable />
-          </q-item-section>
-        </q-item>
+        <div v-if="currentUser.permissions.includes('USER_MANAGEMENT')">
+          <q-item-label caption>Permissions</q-item-label>
+          <div>
+            <q-item v-for="field of Object.keys(permissions)"
+                    :key="field">
+              <q-item-section>
+                <q-checkbox v-model="permissions[field]"
+                            :label="field" />
+              </q-item-section>
+            </q-item>
+            <q-inner-loading :showing="isLoadingPermissions">
+              <q-spinner-dots size="md" color="primary" />
+            </q-inner-loading>
+          </div>
+          <div v-if="uuid !== ''">
+            <q-item-label caption>Authentication IDs</q-item-label>
+            <q-item class="flex">
+              <q-chip v-for="authId in userData.authIds"
+                      :key="authId"
+                      :label="authId"
+                      color="primary"
+                      text-color="white"
+                      square />
+            </q-item>
+            <q-item-label caption>API Key</q-item-label>
+            <q-item>
+              <q-item-section>
+                <q-btn color="positive"
+                       label="Generate new API key"
+                       :loading="newApiKeyWaiting"
+                       @click="generateNewApiKey" />
+                <span class="text-italic text-grey-8">API keys are generated immediately and cannot be reverted</span>
+                <q-input outlined
+                         stack-label
+                         v-show="newApiKey.length > 0"
+                         label="New API Key"
+                         class="q-my-sm"
+                         :value="newApiKey"
+                         disable />
+              </q-item-section>
+            </q-item>
+          </div>
         </div>
       </q-list>    
     </q-card-section>
@@ -164,6 +166,11 @@ export default {
         return this.$store.state.entries.entry;
       },
     },
+    currentUser: {
+      get () {
+        return this.$store.state.currentUser.info;
+      },
+    },
   },
 
   data () {
@@ -210,7 +217,15 @@ export default {
       toSubmit.id = toSubmit._id;
       delete toSubmit._id;
       delete toSubmit.authIds;
-      toSubmit.permissions = Object.keys(this.permissions).filter((key) => this.permissions[key]);
+      if (this.uuid === '') {
+        delete toSubmit.apiKey;
+        delete toSubmit.apiSalt;
+      }
+      console.log(!this.currentUser.permissions.includes('USER_MANAGEMENT'));
+      if (!this.currentUser.permissions.includes('USER_MANAGEMENT'))
+        delete toSubmit.permissions;
+      else 
+        toSubmit.permissions = Object.keys(this.permissions).filter((key) => this.permissions[key]);
       console.log(toSubmit);
       this.$store.dispatch('entries/saveEntry', {data: toSubmit,
                                                  dataType: this.dataType})

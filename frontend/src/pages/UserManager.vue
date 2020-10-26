@@ -74,7 +74,7 @@ export default {
       loading: true,
       showUserEdit: false,
       showEntryLog: false,
-      userId: '',
+      userId: 'default',
       pagination: {
         rowsPerPage: 20
       },
