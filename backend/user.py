@@ -343,7 +343,7 @@ def update_user_info(identifier: str):
 
     if 'email' in indata:
         old_user = flask.g.db['users'].find_one({'email': indata['email']})
-        if old_user:
+        if old_user and old_user['_id'] != user_data['_id']:
             flask.current_app.logger.debug('User already exists')
             flask.abort(status=400)
 
