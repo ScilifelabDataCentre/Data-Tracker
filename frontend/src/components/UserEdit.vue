@@ -1,9 +1,20 @@
 <template>
 <q-dialog :value="value"
           @input="updateVisibility">
-  <q-card style="width: 400em">
+  <q-card v-if="loadingError">
+    <q-card-section class="row items-center">
+      <q-avatar icon="fas fa-exclamation-triangle" text-color="red" />
+      <span class="q-ml-sm">Failed to retrieve user data</span>
+    </q-card-section>
+    <q-card-actions align="right">
+      <q-btn flat label="Ok" color="primary" v-close-popup />
+    </q-card-actions>
+  </q-card>
+
+  <q-card v-else
+          style="width: 400em">
     <q-card-section>
-      <q-list >
+      <q-list>
         <q-item-label caption>User Data</q-item-label>
         <q-item>
           <q-item-section>
@@ -93,7 +104,7 @@
 
     <q-card-actions align="right">
       <q-btn label="Cancel" color="grey-6" v-close-popup />
-      <q-btn label="Save" color="positive" v-close-popup @click="saveUser"/>
+      <q-btn label="Save" color="positive" @click="saveUser"/>
     </q-card-actions>
 
     <q-inner-loading :showing="isLoading">
@@ -121,21 +132,22 @@ export default {
   watch: {
     uuid () {
       this.isLoading = true;
+      this.loadingError = false;
       if (this.uuid === '') {
         this.$store.dispatch('entries/resetEntry')
           .then(() => {
-            this.$store.dispatch('entries/getEmptyEntry', 'user')
-              .then(() => this.isLoading = false)
-              .catch(() => this.isLoading = false);
+            this.$store.dispatch('entries/getEmptyEntry', this.dataType)
+              .catch(() => this.loadingError = true)
+              .finally(() => this.isLoading = false);
           });
       }
       else {
         this.$store.dispatch('entries/resetEntry')
           .then(() => {
             this.$store.dispatch('entries/getEntry', {'id': this.uuid,
-                                                      'dataType': 'user'})
-              .then(() => this.isLoading = false)
-              .catch(() => this.isLoading = false);
+                                                      'dataType': this.dataType})
+              .catch(() => this.loadingError = true)
+              .finally(() => this.isLoading = false);
           });
       }
     },
@@ -157,13 +169,17 @@ export default {
   data () {
     return {
       isLoading: false,
+      loadingError: false,
       userData: {},
+      dataType: 'user',
       isLoadingPermissions: false,
       loadPermissionsError: false,
       permissions: {},
       newApiKey: '',
       newApiKeyWaiting: false,
       newApiKeyError: false,
+      userDataSaveError: false,
+      userDataSaveWaiting: true,
     }
   },
 
@@ -179,9 +195,7 @@ export default {
                       this.userData.permissions.includes(key));
           }
         })
-        .catch((err) => {
-          this.loadPermissionsError = true;
-        })
+        .catch((err) => this.loadPermissionsError = true)
         .finally(() => this.isLoadingPermissions = false);
     },
 
@@ -190,20 +204,19 @@ export default {
     },
 
     saveUser () {
-      this.userDataSaveSuccess = false;
       this.userDataSaveError = false;
       this.userDataSaveWaiting = true;
       let toSubmit = JSON.parse(JSON.stringify(this.userData));
-      this.$store.dispatch('currentUser/updateInfo', toSubmit)
-        .then(() => {
-          this.$store.dispatch('currentUser/getInfo');
-          this.userDataSaveSuccess = true;
-          this.userDataSaveWaiting = false;
-        })
-        .catch(() => {
-          this.userDataSaveError = true;
-          this.userDataSaveWaiting = false;
-        });
+      toSubmit.id = toSubmit._id;
+      delete toSubmit._id;
+      delete toSubmit.authIds;
+      toSubmit.permissions = Object.keys(this.permissions).filter((key) => this.permissions[key]);
+      console.log(toSubmit);
+      this.$store.dispatch('entries/saveEntry', {data: toSubmit,
+                                                 dataType: this.dataType})
+        .then(() => this.updateVisibility(false))
+        .catch(() => this.userDataSaveError = true)
+        .finally(() => this.userDataSaveWaiting = false);
     },
 
     generateNewApiKey () {
