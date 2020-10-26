@@ -202,17 +202,18 @@ def add_user():
     try:
         indata = flask.json.loads(flask.request.data)
     except json.decoder.JSONDecodeError:
+        logging.error('Bad JSON')
         flask.abort(status=400)
     validation = utils.basic_check_indata(indata, new_user, ('_id',
                                                              'api_key',
-                                                             'api_salt'))
-    if not validation[0]:
-        flask.abort(status=validation[1])
-
-    if 'auth_ids' not in indata:
-        flask.abort(status=400)
+                                                             'api_salt',
+                                                             'auth_ids'))
+    if not validation.result:
+        flask.abort(status=validation.status)
 
     new_user.update(indata)
+
+    new_user['auth_ids'] = [f'{new_user["_id"]::local']
 
     result = flask.g.db['users'].insert_one(new_user)
     if not result.acknowledged:
