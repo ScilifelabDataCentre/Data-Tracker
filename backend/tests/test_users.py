@@ -270,7 +270,7 @@ def test_update_user_bad(mdb):
 
 def test_add_user(mdb):
     """Add a user."""
-    indata = {'auth_ids': ['user::added']}
+    indata = {'email': 'new_user@added.example.com'}
     responses = make_request_all_roles('/api/v1/user/',
                                        ret_json=True,
                                        method='POST',
@@ -289,11 +289,18 @@ def test_add_user(mdb):
             assert not response.data
 
     indata = {'affiliation': 'Added University',
-              'auth_ids': ['user2::added'],
               'name': 'Added name',
-              'email': 'user2@added.se',
+              'email': 'user2@added.example.com',
               'permissions': ['ORDERS']}
     session = requests.session()
+    as_user(session, USERS['orders'])
+    response = make_request(session,
+                            '/api/v1/user/',
+                            ret_json=True,
+                            method='POST',
+                            data=indata)
+    assert response.code == 403
+
     as_user(session, USERS['root'])
     response = make_request(session,
                             '/api/v1/user/',
@@ -309,8 +316,8 @@ def test_add_user(mdb):
 
 def test_delete_user(mdb):
     """Test deleting users (added when testing to add users)"""
-    re_users = re.compile('::added')
-    users = list(mdb['users'].find({'auth_ids': re_users}, {'_id': 1}))
+    re_users = re.compile('@added.example.com')
+    users = list(mdb['users'].find({'email': re_users}, {'_id': 1}))
 
     session = requests.Session()
     i = 0
