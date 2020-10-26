@@ -280,7 +280,7 @@ def test_add_user(mdb):
             assert response.code == 200
             assert '_id' in response.data
             new_user_info = mdb['users'].find_one({'_id': uuid.UUID(response.data['_id'])})
-            assert indata['auth_ids'] == new_user_info['auth_ids']
+            assert indata['email'] == new_user_info['email']
         elif response.role == 'no-login':
             assert response.code == 401
             assert not response.data
@@ -318,7 +318,8 @@ def test_delete_user(mdb):
     """Test deleting users (added when testing to add users)"""
     re_users = re.compile('@added.example.com')
     users = list(mdb['users'].find({'email': re_users}, {'_id': 1}))
-
+    if not users:
+        assert False
     session = requests.Session()
     i = 0
     while i < len(users):
