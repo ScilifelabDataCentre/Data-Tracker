@@ -458,7 +458,8 @@ def add_new_user(user_info: dict):
         result = flask.g.db['users'].update_one({'email': user_info['email']},
                                                 {'$set': {'auth_ids': email_user['auth_ids']}})
         if not result.acknowledged:
-            flask.current_app.logger.error('Failed to add new auth_id to user with email %s', user_info['email'])
+            flask.current_app.logger.error('Failed to add new auth_id to user with email %s',
+                                           user_info['email'])
             flask.Response(status=500)
         else:
             utils.make_log('user',
@@ -475,7 +476,8 @@ def add_new_user(user_info: dict):
 
         result = flask.g.db['users'].insert_one(new_user)
         if not result.acknowledged:
-            flask.current_app.logger.error('Failed to add user with email %s via oidc', user_info['email'])
+            flask.current_app.logger.error('Failed to add user with email %s via oidc',
+                                           user_info['email'])
             flask.Response(status=500)
         else:
             utils.make_log('user', 'add', 'Creating new user from OAuth', new_user, no_user=True)

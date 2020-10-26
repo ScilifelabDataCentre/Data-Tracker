@@ -132,7 +132,8 @@ def add_dataset():  # pylint: disable=too-many-branches
         result_o = flask.g.db['orders'].update_one({'_id': order_uuid},
                                                    {'$push': {'datasets': dataset['_id']}})
         if not result_o.acknowledged:
-            flask.current_app.logger.error('Order %s insert failed: ADD dataset %s', order_uuid, dataset['_id'])
+            flask.current_app.logger.error('Order %s insert failed: ADD dataset %s',
+                                           order_uuid, dataset['_id'])
         else:
             order = flask.g.db['orders'].find_one({'_id': order_uuid})
 

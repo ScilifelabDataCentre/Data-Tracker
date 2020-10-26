@@ -325,7 +325,8 @@ def prepare_order_response(order_data: dict, mongodb):
         if org_entry := utils.user_uuid_data(order_data['organisation'], mongodb):
             order_data['organisation'] = org_entry[0]
         else:
-            flask.current_app.logger.error('Reference to non-existing organisation: %s', order_data['organisation'])
+            flask.current_app.logger.error('Reference to non-existing organisation: %s',
+                                           order_data['organisation'])
     else:
         order_data['organisation'] = {}
 

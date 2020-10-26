@@ -37,7 +37,8 @@ def get_random(amount: int = 1):
         if not flask.g.current_user or\
            (not user.has_permission('DATA_MANAGEMENT') or
             flask.g.current_user['_id'] not in result['editors']):
-            flask.current_app.logger.debug('Not allowed to access editors field %s', flask.g.current_user)
+            flask.current_app.logger.debug('Not allowed to access editors field %s',
+                                           flask.g.current_user)
             del result['editors']
 
             # return {_id, _title} for datasets
@@ -72,7 +73,8 @@ def get_collection(identifier):
     if not flask.g.current_user or\
        (not user.has_permission('DATA_MANAGEMENT') and
         flask.g.current_user['_id'] not in result['editors']):
-        flask.current_app.logger.debug('Not allowed to access editors field %s', flask.g.current_user)
+        flask.current_app.logger.debug('Not allowed to access editors field %s',
+                                       flask.g.current_user)
         del result['editors']
     else:
         result['editors'] = utils.user_uuid_data(result['editors'], flask.g.db)
