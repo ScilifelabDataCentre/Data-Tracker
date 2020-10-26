@@ -131,6 +131,7 @@ const routes = [
         meta: {
           'accessReq': ['userManagement'],
         },
+        name: 'User Manager',
       },
     ]
   },

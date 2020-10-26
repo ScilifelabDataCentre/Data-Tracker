@@ -123,7 +123,7 @@ export default {
         title: 'Users',
         caption: 'User administration',
         icon: 'people',
-        link: { 'name': 'Admin User Manager'}
+        link: { 'name': 'User Manager'}
       },
 
       dataLinks: [

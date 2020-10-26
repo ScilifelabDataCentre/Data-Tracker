@@ -1,68 +1,94 @@
 <template>
 <q-dialog :value="value"
           @input="updateVisibility">
-  <q-card>
+  <q-card style="width: 400em">
     <q-card-section>
-      <q-input outlined
-               label="Email"
-               v-model="userData.email" />
-      <q-input outlined
-               class="q-my-sm"
-               label="Name"
-               v-model="userData.name"/>
-      <q-input outlined
-               class="q-my-sm"
-               label="Affiliation"
-               v-model="userData.affiliation"/>
-      <q-input outlined
-               class="q-my-sm"
-               label="Contact"
-               v-model="userData.contact"/>
-      <q-input outlined
-               class="q-my-sm"
-               label="ORCID"
-               v-model="userData.orcid"/>
-      <q-input outlined
-               class="q-my-sm"
-               label="URL"
-               v-model="userData.url"/>
-    </q-card-section>
-    <q-card-section>
-      <span class="text-h6">Permissions</span>
-    </q-card-section>
-    <q-card-section class="flex text-bold">
-      <q-chip color="blue-9"
-              text-color="white"
-              v-for="perm in userData.permissions"
-              :key="perm"
-              :label="perm" />
-    </q-card-section>
-    <q-card-section>
-      <span class="text-h6">API Key</span>
-    </q-card-section>
-    
-    <q-card-section>
-      <span class="text-h6">Authentication IDs:</span>
-      <q-list>
-        <q-item v-for="authId in userData.authIds"
-                :key="authId">
+      <q-list >
+        <q-item-label caption>User Data</q-item-label>
+        <q-item>
           <q-item-section>
-            {{ authId }}
+            <q-input outlined
+                     label="Email"
+                     v-model="userData.email" />
           </q-item-section>
         </q-item>
-      </q-list>
-    </q-card-section>
-    <q-card-section>
-      <q-btn color="positive"
-             label="Generate new API key"
-             @click="generateNewApiKey" />
-      <q-input outlined
-               stack-label
-               v-show="newApiKey.length > 0"
-               label="New API Key"
-               class="q-my-sm"
-               :value="newApiKey"
-               disable />
+        <q-item>
+          <q-item-section>
+            <q-input outlined
+                     label="Name"
+                     v-model="userData.name"/>
+            </q-item-section>
+        </q-item>
+        <q-item>
+          <q-item-section>
+            <q-input outlined
+                     label="Affiliation"
+                     v-model="userData.affiliation"/>
+            </q-item-section>
+        </q-item>
+        <q-item>
+          <q-item-section>
+            <q-input outlined
+                     label="Contact"
+                     v-model="userData.contact"/>
+            </q-item-section>
+        </q-item>
+        <q-item>
+          <q-item-section>
+            <q-input outlined
+                     label="ORCID"
+                     v-model="userData.orcid"/>
+          </q-item-section>
+        </q-item>
+        <q-item>
+          <q-item-section>
+            <q-input outlined
+                     label="URL"
+                     v-model="userData.url"/>
+            </q-item-section>
+        </q-item>
+        <q-item-label caption>Permissions</q-item-label>
+        <div>
+          <q-item v-for="field of Object.keys(permissions)"
+                  :key="field">
+            <q-item-section>
+              <q-checkbox v-model="permissions[field]"
+                          :label="field" />
+            </q-item-section>
+          </q-item>
+          <q-inner-loading :showing="isLoadingPermissions">
+            <q-spinner-dots size="md" color="primary" />
+          </q-inner-loading>
+        </div>
+        <div v-if="uuid !== ''">
+        <q-item-label caption>Authentication IDs</q-item-label>
+        <q-item class="flex">
+          <q-chip v-for="authId in userData.authIds"
+                  :key="authId"
+                  :label="authId"
+                  color="primary"
+                  text-color="white"
+                  square />
+        </q-item>
+        <q-item-label caption>API Key</q-item-label>
+        <q-item>
+          <q-item-section>
+            <q-btn color="positive"
+                   label="Generate new API key"
+                   :loading="newApiKeyWaiting"
+                   @click="generateNewApiKey" />
+            <span class="text-italic text-grey-8">API keys are generated immediately and cannot be reverted</span>
+            <q-input outlined
+                     stack-label
+                     v-show="newApiKey.length > 0"
+                     label="New API Key"
+                     class="q-my-sm"
+                     :value="newApiKey"
+                     disable />
+          </q-item-section>
+        </q-item>
+        </div>
+      </q-list>    
     </q-card-section>
 
     <q-card-actions align="right">
@@ -115,6 +141,8 @@ export default {
     },
     storedUser () {
       this.userData = JSON.parse(JSON.stringify(this.storedUser));
+      if (Object.keys(this.userData).length)
+        this.loadPermissions();
     }
   },
 
@@ -130,23 +158,62 @@ export default {
     return {
       isLoading: false,
       userData: {},
+      isLoadingPermissions: false,
+      loadPermissionsError: false,
+      permissions: {},
       newApiKey: '',
+      newApiKeyWaiting: false,
+      newApiKeyError: false,
     }
   },
 
   methods: {
+    loadPermissions () {
+      this.isLoadingPermissions = true;
+      this.loadPermissionsError = false;
+      this.$store.dispatch('adminUsers/getPermissionTypes')
+        .then((data) => {
+          let key;
+          for (key of data) {
+            this.$set(this.permissions, key,
+                      this.userData.permissions.includes(key));
+          }
+        })
+        .catch((err) => {
+          this.loadPermissionsError = true;
+        })
+        .finally(() => this.isLoadingPermissions = false);
+    },
+
     updateVisibility (value) {
       this.$emit('input', value)
     },
 
     saveUser () {
+      this.userDataSaveSuccess = false;
+      this.userDataSaveError = false;
+      this.userDataSaveWaiting = true;
+      let toSubmit = JSON.parse(JSON.stringify(this.userData));
+      this.$store.dispatch('currentUser/updateInfo', toSubmit)
+        .then(() => {
+          this.$store.dispatch('currentUser/getInfo');
+          this.userDataSaveSuccess = true;
+          this.userDataSaveWaiting = false;
+        })
+        .catch(() => {
+          this.userDataSaveError = true;
+          this.userDataSaveWaiting = false;
+        });
     },
 
     generateNewApiKey () {
+      this.newApiKeyWaiting = true;
+      this.newApiKeyError = false;
+      this.$store.dispatch('adminUsers/genApiKey', this.uuid)
+        .then((response) => this.newApiKey = response.data.key)
+        .catch(() => this.newApiKeyError = true)
+        .finally(() => this.newApiKeyWaiting = false);
     },
-  },
-
-  mounted () {
   },
 }
 </script>
