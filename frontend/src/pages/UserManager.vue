@@ -1,63 +1,59 @@
-xc<template>
+<template>
 <q-page padding>
   <h2 class="text-capitalize">Users</h2>
-  <q-card>
-    <q-card-section>
-      <q-table
-        :data="userList"
-        :columns="columns"
-        row-key="id"
-        :pagination.sync="pagination"
-        :filter="filter"
-        :loading="loading"
-        no-data-label="No entries found"
-        :no-results-label="filter + ' does not match any entries'">
-        <template v-slot:top-left>
-          <q-btn round
-                 color="primary"
-                 icon="add"
-                 @click="activateUserEdit('')" />
+  <q-table
+    :data="userList"
+    :columns="columns"
+    row-key="id"
+    :pagination.sync="pagination"
+    :filter="filter"
+    :loading="loading"
+    no-data-label="No entries found"
+    :no-results-label="filter + ' does not match any entries'">
+    <template v-slot:top-left>
+      <q-btn round
+             color="primary"
+             icon="add"
+             @click="activateUserEdit('')" />
+    </template>
+    <template v-slot:top-right>
+      <q-input rounded outlined dense debounce="300" v-model="filter" placeholder="Search">
+        <template v-slot:append>
+          <q-icon name="search" />
         </template>
-        <template v-slot:top-right>
-          <q-input rounded outlined dense debounce="300" v-model="filter" placeholder="Search">
-            <template v-slot:append>
-              <q-icon name="search" />
-            </template>
-          </q-input>
-        </template>
-        <template v-slot:body="props">
-          <q-tr :props="props">
-            <q-td
-              v-for="col in props.cols"
+      </q-input>
+    </template>
+    <template v-slot:body="props">
+      <q-tr :props="props">
+        <q-td v-for="col in props.cols"
               :key="col.name"
-              :props="props"
-              >
-              {{ col.value }}
-            </q-td>
-            <q-td auto-width>
-              <q-btn flat
-                     dense
-                     round
-                     icon="edit"
-                     @click="activateUserEdit(props.row._id)"
-                     size="sm" />
-              <q-btn flat
-                     dense
-                     round
-                     icon="pending_actions"
-                     size="sm" />
-              <q-btn flat
-                     dense
-                     round
-                     icon="assessment"
-                     size="sm" />
-            </q-td>
-          </q-tr>
-        </template>
-      </q-table>
-    </q-card-section>
-  </q-card>
+              :props="props">
+          {{ col.value }}
+        </q-td>
+        <q-td auto-width>
+          <q-btn flat
+                 dense
+                 round
+                 icon="edit"
+                 @click="activateUserEdit(props.row._id)"
+                 size="sm" />
+          <q-btn flat
+                 dense
+                 round
+                 icon="pending_actions"
+                 size="sm" />
+          <q-btn flat
+                 dense
+                 round
+                 icon="assessment"
+                 size="sm" />
+        </q-td>
+      </q-tr>
+    </template>
+  </q-table>
+
   <user-edit v-model="showUserEdit" :uuid="userId" />
+
 </q-page>
 </template>
 
@@ -77,6 +73,7 @@ export default {
       filter: '',
       loading: true,
       showUserEdit: false,
+      showEntryLog: false,
       userId: '',
       pagination: {
         rowsPerPage: 20
@@ -90,12 +87,6 @@ export default {
           sortable: true,
         },
         {
-          name: 'authId',
-          label: 'Authentication IDs',
-          field: 'authIds',
-          sortable: true
-        },
-        {
           name: 'email',
           label: 'Email',
           field: 'email',
@@ -107,6 +98,19 @@ export default {
           field: 'affiliation',
           sortable: true
         },
+        {
+          name: 'contact',
+          label: 'Contact',
+          field: 'contact',
+          sortable: true
+        },
+        {
+          name: 'url',
+          label: 'URL',
+          field: 'url',
+          sortable: true
+        },
+
       ]
     }
   },
