@@ -209,6 +209,15 @@ def add_user():
     if not validation.result:
         flask.abort(status=validation.status)
 
+    if 'email' not in indata:
+        flask.current_app.logger.debug('Email must be set')
+        flask.abort(status=400)
+
+    old_user = flask.g.db['users'].find_one({'email': indata['email']})
+    if old_user:
+        flask.current_app.logger.debug('User already exists')
+        flask.abort(status=400)
+
     if not has_permission('USER_MANAGEMENT') and 'permissions' in indata:
         flask.current_app.logger.debug('USER_MANAGEMENT required for permissions')
         flask.abort(403)
