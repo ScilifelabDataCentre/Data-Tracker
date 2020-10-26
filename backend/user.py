@@ -341,6 +341,12 @@ def update_user_info(identifier: str):
     if not validation.result:
         flask.abort(status=validation.status)
 
+    if 'email' in indata:
+        old_user = flask.g.db['users'].find_one({'email': indata['email']})
+        if old_user:
+            flask.current_app.logger.debug('User already exists')
+            flask.abort(status=400)
+
     # Avoid "updating" and making log if there are no changes
     is_different = False
     for field in indata:
