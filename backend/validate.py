@@ -267,7 +267,7 @@ def validate_url(data: str) -> bool:
     """
     if not isinstance(data, str):
         raise ValueError('Must be a string')
-    if not data.startswith('http://') and not data.startswith('https://'):
+    if data and not data.startswith('http://') and not data.startswith('https://'):
         raise ValueError('URLs must start with http(s)://')
     return True
 
