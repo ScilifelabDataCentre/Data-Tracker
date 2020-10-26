@@ -1,6 +1,5 @@
 """Dataset requests."""
 import json
-import logging
 
 import flask
 
@@ -97,16 +96,16 @@ def add_dataset():  # pylint: disable=too-many-branches
     except json.decoder.JSONDecodeError:
         flask.abort(status=400)
     if not 'order' in indata:
-        logging.debug('Order field missing')
+        flask.current_app.logger.debug('Order field missing')
         flask.abort(status=400)
     try:
         order_uuid = utils.str_to_uuid(indata['order'])
     except ValueError:
-        logging.debug('Incorrect order UUID (%s)', indata['order'])
+        flask.current_app.logger.debug('Incorrect order UUID (%s)', indata['order'])
         flask.abort(status=400)
     order = flask.g.db['orders'].find_one({'_id': order_uuid})
     if not order:
-        logging.debug('Order (%s) not in db', indata['order'])
+        flask.current_app.logger.debug('Order (%s) not in db', indata['order'])
         flask.abort(status=400)
     if not (user.has_permission('DATA_MANAGEMENT') or
             flask.g.current_user['_id'] in order['editors']):
@@ -123,7 +122,7 @@ def add_dataset():  # pylint: disable=too-many-branches
     # add to db
     result_ds = flask.g.db['datasets'].insert_one(dataset)
     if not result_ds.acknowledged:
-        logging.error('Dataset insert failed: %s', dataset)
+        flask.current_app.logger.error('Dataset insert failed: %s', dataset)
     else:
         utils.make_log('dataset',
                        'add',
@@ -133,7 +132,7 @@ def add_dataset():  # pylint: disable=too-many-branches
         result_o = flask.g.db['orders'].update_one({'_id': order_uuid},
                                                    {'$push': {'datasets': dataset['_id']}})
         if not result_o.acknowledged:
-            logging.error('Order %s insert failed: ADD dataset %s', order_uuid, dataset['_id'])
+            flask.current_app.logger.error('Order %s insert failed: ADD dataset %s', order_uuid, dataset['_id'])
         else:
             order = flask.g.db['orders'].find_one({'_id': order_uuid})
 
@@ -172,7 +171,7 @@ def delete_dataset(identifier: str):
 
     result = flask.g.db['datasets'].delete_one({'_id': ds_uuid})
     if not result.acknowledged:
-        logging.error('Failed to delete dataset %s', ds_uuid)
+        flask.current_app.logger.error('Failed to delete dataset %s', ds_uuid)
         return flask.Response(status=500)
     utils.make_log('dataset', 'delete', 'Deleted dataset', data={'_id': ds_uuid})
 
@@ -180,7 +179,7 @@ def delete_dataset(identifier: str):
         result = flask.g.db['orders'].update_one({'_id': entry['_id']},
                                                  {'$pull': {'datasets': ds_uuid}})
         if not result.acknowledged:
-            logging.error('Failed to delete dataset %s in order %s',
+            flask.current_app.logger.error('Failed to delete dataset %s in order %s',
                           ds_uuid, entry['_id'])
             return flask.Response(status=500)
         new_data = flask.g.db['orders'].find_one({'_id': entry['_id']})
@@ -190,7 +189,7 @@ def delete_dataset(identifier: str):
         flask.g.db['collections'].update_one({'_id': entry['_id']},
                                              {'$pull': {'datasets': ds_uuid}})
         if not result.acknowledged:
-            logging.error('Failed to delete dataset %s in project %s',
+            flask.current_app.logger.error('Failed to delete dataset %s in project %s',
                           ds_uuid, entry['_id'])
             return flask.Response(status=500)
         new_data = flask.g.db['collections'].find_one({'_id': entry['_id']})
@@ -242,7 +241,7 @@ def update_dataset(identifier):
     if is_different:
         result = flask.g.db['datasets'].update_one({'_id': dataset['_id']}, {'$set': indata})
         if not result.acknowledged:
-            logging.error('Dataset update failed: %s', dataset)
+            flask.current_app.logger.error('Dataset update failed: %s', dataset)
             flask.abort(status=500)
         else:
             dataset.update(indata)

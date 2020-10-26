@@ -1,6 +1,5 @@
 """Collection requests."""
 import json
-import logging
 
 import flask
 
@@ -38,7 +37,7 @@ def get_random(amount: int = 1):
         if not flask.g.current_user or\
            (not user.has_permission('DATA_MANAGEMENT') or
             flask.g.current_user['_id'] not in result['editors']):
-            logging.debug('Not allowed to access editors field %s', flask.g.current_user)
+            flask.current_app.logger.debug('Not allowed to access editors field %s', flask.g.current_user)
             del result['editors']
 
             # return {_id, _title} for datasets
@@ -73,7 +72,7 @@ def get_collection(identifier):
     if not flask.g.current_user or\
        (not user.has_permission('DATA_MANAGEMENT') and
         flask.g.current_user['_id'] not in result['editors']):
-        logging.debug('Not allowed to access editors field %s', flask.g.current_user)
+        flask.current_app.logger.debug('Not allowed to access editors field %s', flask.g.current_user)
         del result['editors']
     else:
         result['editors'] = utils.user_uuid_data(result['editors'], flask.g.db)
@@ -134,7 +133,7 @@ def add_collection():  # pylint: disable=too-many-branches
     # add to db
     result = flask.g.db['collections'].insert_one(collection)
     if not result.acknowledged:
-        logging.error('Collection insert failed: %s', collection)
+        flask.current_app.logger.error('Collection insert failed: %s', collection)
     else:
         utils.make_log('collection', 'add', 'Collection added', collection)
 
@@ -167,7 +166,7 @@ def delete_collection(identifier: str):
 
     result = flask.g.db['collections'].delete_one({'_id': ds_uuid})
     if not result.acknowledged:
-        logging.error('Failed to delete collection %s', ds_uuid)
+        flask.current_app.logger.error('Failed to delete collection %s', ds_uuid)
         return flask.Response(status=500)
     utils.make_log('collection', 'delete', 'Deleted collection', data={'_id': ds_uuid})
 
@@ -203,7 +202,7 @@ def update_collection(identifier):  # pylint: disable=too-many-branches
     if not user.has_permission('DATA_MANAGEMENT') and \
        flask.g.current_user['_id'] not in collection['editors'] and\
        flask.g.current_user['email'] not in collection['editors']:
-        logging.debug('Unauthorized update attempt (collection %s, user %s)',
+        flask.current_app.logger.debug('Unauthorized update attempt (collection %s, user %s)',
                       collection_uuid,
                       flask.g.current_user['_id'])
         flask.abort(status=403)
@@ -225,7 +224,7 @@ def update_collection(identifier):  # pylint: disable=too-many-branches
     if indata and is_different:
         result = flask.g.db['collections'].update_one({'_id': collection['_id']}, {'$set': indata})
         if not result.acknowledged:
-            logging.error('Collection update failed: %s', indata)
+            flask.current_app.logger.error('Collection update failed: %s', indata)
         else:
             collection.update(indata)
             utils.make_log('collection', 'edit', 'Collection updated', collection)

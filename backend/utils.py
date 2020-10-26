@@ -4,7 +4,6 @@ from collections import abc, namedtuple
 from typing import Any, Union
 import datetime
 import hashlib
-import logging
 import re
 import secrets
 import uuid
@@ -47,15 +46,15 @@ def basic_check_indata(indata: dict,
     if 'title' in reference_data and \
        not reference_data['title'] and \
        not indata.get('title'):
-        logging.debug('Title empty')
+        flask.current_app.logger.debug('Title empty')
         return ValidationResult(result=False, status=400)
 
     for key in indata:
         if key in prohibited and indata[key] != reference_data[key]:
-            logging.debug('Prohibited key (%s) with new value', key)
+            flask.current_app.logger.debug('Prohibited key (%s) with new value', key)
             return ValidationResult(result=False, status=403)
         if key not in reference_data:
-            logging.debug('Bad key (%s)', key)
+            flask.current_app.logger.debug('Bad key (%s)', key)
             return ValidationResult(result=False, status=400)
         if not validate.validate_field(key, indata[key]):
             return ValidationResult(result=False, status=400)
@@ -71,7 +70,7 @@ def verify_csrf_token():
     """
     token = flask.request.headers.get('X-CSRFToken')
     if not token or (token != flask.request.cookies.get('_csrf_token')):
-        logging.warning('Bad csrf token received')
+        flask.current_app.logger.warning('Bad csrf token received')
         flask.abort(status=400)
 
 
@@ -125,16 +124,16 @@ def verify_api_key(username: str, api_key: str):
     """
     user_info = flask.g.db['users'].find_one({'auth_ids': username})
     if not user_info:
-        logging.warning('API key verification failed (bad username)')
+        flask.current_app.logger.warning('API key verification failed (bad username)')
         flask.abort(status=401)
     try:
         ct_bytes = bytes.fromhex(api_key + user_info['api_salt'])
     except ValueError:
-        logging.warning('Non-hex API key provided')
+        flask.current_app.logger.warning('Non-hex API key provided')
         flask.abort(status=401)
     new_hash = hashlib.sha512(ct_bytes).hexdigest()
     if not new_hash == user_info['api_key']:
-        logging.warning('API key verification failed (bad hash)')
+        flask.current_app.logger.warning('API key verification failed (bad hash)')
         flask.abort(status=401)
 
 
@@ -310,7 +309,7 @@ def make_log(data_type: str,
                 'user': active_user})
     result = flask.g.db['logs'].insert_one(log, session=dbsession)
     if not result.acknowledged:
-        logging.error(f'Log failed: A:{action} C:{comment} D:{data} ' +
+        flask.current_app.logger.error(f'Log failed: A:{action} C:{comment} D:{data} ' +
                       f'DT: {data_type} U: {flask.g.current_user["_id"]}')
     return result.acknowledged
 

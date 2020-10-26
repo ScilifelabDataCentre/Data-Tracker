@@ -130,7 +130,7 @@ def key_login():
         flask.abort(status=400)
 
     if 'api-user' not in indata or 'api-key' not in indata:
-        logging.debug('API key login - bad keys: %s', indata)
+        app.logger.debug('API key login - bad keys: %s', indata)
         return flask.Response(status=400)
     utils.verify_api_key(indata['api-user'], indata['api-key'])
     user.do_login(auth_id=indata['api-user'])

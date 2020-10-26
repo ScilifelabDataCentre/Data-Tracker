@@ -14,7 +14,6 @@ Requests
 from itertools import chain
 import functools
 import json
-import logging
 
 import flask
 
@@ -148,7 +147,7 @@ def gen_new_api_key(identifier: str = None):
     result = flask.g.db['users'].update_one({'_id': user_data['_id']},
                                             {'$set': new_values})
     if not result.acknowledged:
-        logging.error('Updating API key for user %s failed', user_data['_id'])
+        flask.current_app.logger.error('Updating API key for user %s failed', user_data['_id'])
         flask.Response(status=500)
     else:
         utils.make_log('user', 'edit', 'New API key', user_data)
@@ -216,7 +215,7 @@ def add_user():
 
     result = flask.g.db['users'].insert_one(new_user)
     if not result.acknowledged:
-        logging.error('User Addition failed: %s', new_user['email'])
+        flask.current_app.logger.error('User Addition failed: %s', new_user['email'])
         flask.Response(status=500)
     else:
         utils.make_log('user', 'add', 'User added by admin', new_user)
@@ -249,7 +248,7 @@ def delete_user(identifier: str):
 
     result = flask.g.db['users'].delete_one({'_id': user_uuid})
     if not result.acknowledged:
-        logging.error('User deletion failed: %s', user_uuid)
+        flask.current_app.logger.error('User deletion failed: %s', user_uuid)
         flask.Response(status=500)
     else:
         utils.make_log('user', 'delete', 'User delete', {'_id': user_uuid})
@@ -286,7 +285,7 @@ def update_current_user_info():
     result = flask.g.db['users'].update_one({'_id': user_data['_id']},
                                             {'$set': user_data})
     if not result.acknowledged:
-        logging.error('User self-update failed: %s', indata)
+        flask.current_app.logger.error('User self-update failed: %s', indata)
         flask.Response(status=500)
     else:
         utils.make_log('user', 'edit', 'User self-updated', user_data)
@@ -340,7 +339,7 @@ def update_user_info(identifier: str):
         result = flask.g.db['users'].update_one({'_id': user_data['_id']},
                                                 {'$set': indata})
         if not result.acknowledged:
-            logging.error('User update failed: %s', indata)
+            flask.current_app.logger.error('User update failed: %s', indata)
             flask.Response(status=500)
         else:
             user_data.update(indata)
@@ -440,7 +439,7 @@ def add_new_user(user_info: dict):
         result = flask.g.db['users'].update_one({'email': user_info['email']},
                                                 {'$set': {'auth_ids': email_user['auth_ids']}})
         if not result.acknowledged:
-            logging.error('Failed to add new auth_id to user with email %s', user_info['email'])
+            flask.current_app.logger.error('Failed to add new auth_id to user with email %s', user_info['email'])
             flask.Response(status=500)
         else:
             utils.make_log('user',
@@ -457,7 +456,7 @@ def add_new_user(user_info: dict):
 
         result = flask.g.db['users'].insert_one(new_user)
         if not result.acknowledged:
-            logging.error('Failed to add user with email %s via oidc', user_info['email'])
+            flask.current_app.logger.error('Failed to add user with email %s via oidc', user_info['email'])
             flask.Response(status=500)
         else:
             utils.make_log('user', 'add', 'Creating new user from OAuth', new_user, no_user=True)
