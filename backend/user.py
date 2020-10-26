@@ -179,6 +179,10 @@ def get_user_data(identifier: str):
     if not (user_info := flask.g.db['users'].find_one({'_id': user_uuid})):  # pylint: disable=superfluous-parens
         flask.abort(status=404)
 
+    # The hash and salt should never leave the system
+    del user_info['api_key']
+    del user_info['api_salt']
+
     return utils.response_json({'user': user_info})
 
 
