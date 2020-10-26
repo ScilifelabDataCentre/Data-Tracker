@@ -202,7 +202,6 @@ def add_user():
     try:
         indata = flask.json.loads(flask.request.data)
     except json.decoder.JSONDecodeError:
-        logging.error('Bad JSON')
         flask.abort(status=400)
     validation = utils.basic_check_indata(indata, new_user, ('_id',
                                                              'api_key',
@@ -324,10 +323,11 @@ def update_user_info(identifier: str):
         flask.abort(status=400)
     validation = utils.basic_check_indata(indata, user_data, ('_id',
                                                               'api_key',
-                                                              'api_salt'))
+                                                              'api_salt',
+                                                              'auth_ids'))
 
-    if not validation[0]:
-        flask.abort(status=validation[1])
+    if not validation.result:
+        flask.abort(status=validation.status)
 
     # Avoid "updating" and making log if there are no changes
     is_different = False
