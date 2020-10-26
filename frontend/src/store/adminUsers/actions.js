@@ -1,5 +1,7 @@
 import axios from 'axios'
 
+import {getCsrfHeader} from '../helpers.js';
+
 export function getUsers ({ commit }) {
   return new Promise((resolve, reject) => {
     axios
@@ -33,7 +35,7 @@ export function getPermissionTypes() {
     axios
       .get('/api/v1/user/permissions/')
       .then((response) => {
-        resolve(response);
+        resolve(response.data.permissions);
       })
       .catch((err) => {
         reject(err);
@@ -42,20 +44,11 @@ export function getPermissionTypes() {
 }
 
 export function genApiKey(context, payload) {
-  return new Promise((resolve, reject) => {
-    axios
-      .post('/api/v1/user/' + payload + '/apikey/',
-            {},
-            {
-              headers: getCsrfHeader(),
-            })
-      .then((response) => {
-        resolve(response);
-      })
-      .catch(function (err) {
-        reject(err);
-      });
-  });
+  return axios.post('/api/v1/user/' + payload + '/apikey/',
+                    {},
+                    {
+                      headers: getCsrfHeader(),
+                    });
 }
 
 export function saveUser (context, payload) {
