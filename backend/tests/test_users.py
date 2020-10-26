@@ -271,17 +271,21 @@ def test_update_user_bad(mdb):
 def test_add_user(mdb):
     """Add a user."""
     indata = {'email': 'new_user@added.example.com'}
-    responses = make_request_all_roles('/api/v1/user/',
-                                       ret_json=True,
-                                       method='POST',
-                                       data=indata)
-    for response in responses:
-        if response.role in ('users', 'root', 'orders'):
+    session = requests.Session()
+    for role in USERS:
+        as_user(session, USERS[role])
+        response = make_request(session,
+                                '/api/v1/user/',
+                                ret_json=True,
+                                method='POST',
+                                data=indata)
+        if role in ('users', 'root', 'orders'):
             assert response.code == 200
             assert '_id' in response.data
             new_user_info = mdb['users'].find_one({'_id': uuid.UUID(response.data['_id'])})
             assert indata['email'] == new_user_info['email']
-        elif response.role == 'no-login':
+            indata['email'] = 'new_' + indata['email']
+        elif role == 'no-login':
             assert response.code == 401
             assert not response.data
         else:
