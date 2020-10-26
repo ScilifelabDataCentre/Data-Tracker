@@ -212,7 +212,7 @@ def add_user():
 
     new_user.update(indata)
 
-    new_user['auth_ids'] = [f'{new_user["_id"]::local']
+    new_user['auth_ids'] = [f'{new_user["_id"]}::local']
 
     result = flask.g.db['users'].insert_one(new_user)
     if not result.acknowledged:
