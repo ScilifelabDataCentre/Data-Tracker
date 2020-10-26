@@ -209,6 +209,10 @@ def add_user():
     if not validation.result:
         flask.abort(status=validation.status)
 
+    if not has_permission('USER_MANAGEMENT') and 'permissions' in indata:
+        flask.current_app.logger.debug('USER_MANAGEMENT required for permissions')
+        flask.abort(403)
+
     new_user.update(indata)
 
     new_user['auth_ids'] = [f'{new_user["_id"]}::local']
