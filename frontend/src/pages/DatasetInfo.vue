@@ -85,7 +85,8 @@
   </q-tab-panels>
 
 
-  <log-viewer v-model="showLogs"
+  <log-viewer v-if="'editors' in dataset"
+              v-model="showLogs"
               :dataType="dataType"
               :uuid="uuid" />
 
