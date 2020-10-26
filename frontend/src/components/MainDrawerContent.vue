@@ -1,91 +1,54 @@
 <template>
 <q-list>
-  <q-item-label
-    header
-    class="text-grey-8"
-    >
-    Data
-  </q-item-label>
+  <q-item-label header> Data </q-item-label>
 
-  <!-- Show only if permitted -->
-  <NavEntry
-    v-if="currentUser.permissions.includes('ORDERS')"
-    v-bind="orderLink"
-    />
+  <NavEntry v-if="currentUser.permissions.includes('ORDERS')"
+            v-bind="orderLink" />
 
-  <NavEntry
-    v-for="link in dataLinks"
-    :key="link.title"
-    v-bind="link"
-    />
+  <NavEntry v-for="link in dataLinks"
+            :key="link.title"
+            v-bind="link" />
 
-  <div v-if="currentUser.permissions.includes('USER_MANAGEMENT')">
-    <q-item-label
-      header
-      class="text-grey-8"
-      >
-      Admin
-    </q-item-label>
-
-    <NavEntry
-      v-bind="adminUserLink"
-      />
+  <div v-if="currentUser.permissions.includes('USER_MANAGEMENT') || 
+             currentUser.permissions.includes('ORDERS')">
+    <q-item-label header> Admin </q-item-label>
+    <NavEntry v-bind="adminUserLink" />
   </div>
-  <div v-if="currentUser.name !== ''">
-    <q-item-label
-      header
-      class="text-grey-8"
-      >
-      User
-    </q-item-label>
 
-    <NavEntry
-      v-for="link in userLinks"
-      :key="link.title"
-      v-bind="link"
-      />
-    <q-item
-      clickable
-      tag="a"
-      :href="logoutLink.link"
-      >
-      <q-item-section
-        v-if="logoutLink.icon"
-        avatar
-        >
+  <div>
+    <q-item-label header> Other </q-item-label>
+    <NavEntry v-for="link in otherLinks"
+              :key="link.title"
+              v-bind="link"/>
+  </div>
+
+  <q-item-label header> User </q-item-label>
+  <div v-if="currentUser.name !== ''">
+    <NavEntry v-for="link in userLinks"
+              :key="link.title"
+              v-bind="link" />
+    <q-item clickable
+            tag="a"
+            :href="logoutLink.link">
+      <q-item-section v-if="logoutLink.icon"
+                      avatar>
         <q-icon :name="logoutLink.icon" />
       </q-item-section>
 
       <q-item-section>
-        <q-item-label>{{ logoutLink.title }}</q-item-label>
+        <q-item-label> {{ logoutLink.title }} </q-item-label>
         <q-item-label caption>
           {{ logoutLink.caption }}
         </q-item-label>
       </q-item-section>
     </q-item>
   </div>
-  <div
-    v-else
-    >
-    <q-item-label header
-                  class="text-grey-8">
-      Current User
-    </q-item-label>
-
+  <div v-else>
     <NavEntry v-for="link in loginLinks"
               :key="link.title"
               v-bind="link" />
   </div>
-  <div>
-    <q-item-label header
-                  class="text-grey-8">
-      Other
-    </q-item-label>
 
-    <NavEntry v-for="link in otherLinks"
-              :key="link.title"
-              v-bind="link"/>
-  </div>
 </q-list>
 </template>
 
