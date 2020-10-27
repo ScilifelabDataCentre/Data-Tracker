@@ -32,7 +32,8 @@
         </q-item>
 
         <q-item clickable
-                v-close-popup>
+                v-close-popup
+                @click="showLogs = true">
           <q-item-section avatar>
             <q-avatar icon="fas fa-history" text-color="secondary" />
           </q-item-section>
@@ -82,6 +83,11 @@
 
   </q-tab-panels>
 
+  <log-viewer v-if="'editors' in collection"
+              v-model="showLogs"
+              :dataType="dataType"
+              :uuid="uuid" />
+
   <q-dialog v-model="showConfirmDelete">
     <q-card>
       <q-card-section class="row items-center">
@@ -121,6 +127,7 @@
 <script>
 import CollectionAbout from 'components/CollectionAbout.vue'
 import CollectionEdit from 'components/CollectionEdit.vue'
+import LogViewer from 'components/LogViewer.vue'
 
 export default {
   name: 'CollectionInfo',
@@ -128,6 +135,7 @@ export default {
   components: {
     'collection-about': CollectionAbout,
     'collection-edit': CollectionEdit,
+    'log-viewer': LogViewer,
   },
   
   props: {
@@ -151,6 +159,12 @@ export default {
     },
   },
 
+  watch: {
+    $route() {
+      this.loadData();
+    },
+  },
+
   data () {
     return {
       isLoading: true,
@@ -163,6 +177,7 @@ export default {
       showOptions: false,
       isSaving: false,
       isDeleting: false,
+      showLogs: false,
     }
   },
 

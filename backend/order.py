@@ -7,7 +7,6 @@ Special permissions are required to access orders:
 * If you have permission ``DATA_MANAGER`` you have CRUD access to any orders.
 """
 import json
-import logging
 
 import flask
 
@@ -187,7 +186,7 @@ def add_order():
     try:
         indata = flask.json.loads(flask.request.data)
     except json.decoder.JSONDecodeError:
-        logging.debug('Bad json')
+        flask.current_app.logger.debug('Bad json')
         flask.abort(status=400)
 
     validation = utils.basic_check_indata(indata, new_order, ['_id', 'datasets'])
@@ -209,68 +208,11 @@ def add_order():
     # add to db
     result = flask.g.db['orders'].insert_one(new_order)
     if not result.acknowledged:
-        logging.error('Order insert failed: %s', new_order)
+        flask.current_app.logger.error('Order insert failed: %s', new_order)
     else:
         utils.make_log('order', 'add', 'Order added', new_order)
 
     return utils.response_json({'_id': result.inserted_id})
-
-
-@blueprint.route('/<identifier>/dataset/', methods=['POST'])
-def add_dataset(identifier):  # pylint: disable=too-many-branches
-    """
-    Add a dataset to the given order.
-
-    Args:
-        identifier (str): The order to add the dataset to.
-    """
-    # permissions
-    try:
-        order_uuid = utils.str_to_uuid(identifier)
-    except ValueError:
-        flask.abort(status=404)
-    order = flask.g.db['orders'].find_one({'_id': order_uuid})
-    if not order:
-        flask.abort(status=404)
-    if not (user.has_permission('DATA_MANAGEMENT') or
-            flask.g.current_user['_id'] in order['editors']):
-        return flask.abort(status=403)
-
-    # create new dataset
-    dataset = structure.dataset()
-    try:
-        indata = flask.json.loads(flask.request.data)
-    except json.decoder.JSONDecodeError:
-        flask.abort(status=400)
-
-    validation = utils.basic_check_indata(indata, dataset, ['_id'])
-    if not validation.result:
-        flask.abort(status=validation.status)
-    dataset.update(indata)
-
-    # add to db
-    result_ds = flask.g.db['datasets'].insert_one(dataset)
-    if not result_ds.acknowledged:
-        logging.error('Dataset insert failed: %s', dataset)
-    else:
-        utils.make_log('dataset',
-                       'add',
-                       f'Dataset added for order {order_uuid}',
-                       dataset)
-
-        result_o = flask.g.db['orders'].update_one({'_id': order_uuid},
-                                                   {'$push': {'datasets': dataset['_id']}})
-        if not result_o.acknowledged:
-            logging.error('Order %s insert failed: ADD dataset %s', order_uuid, dataset['_id'])
-        else:
-            order = flask.g.db['orders'].find_one({'_id': order_uuid})
-
-            utils.make_log('order',
-                           'update',
-                           f'Dataset {result_ds.inserted_id} added for order',
-                           order)
-
-    return utils.response_json({'_id': result_ds.inserted_id})
 
 
 @blueprint.route('/<identifier>/', methods=['DELETE'])
@@ -295,14 +237,14 @@ def delete_order(identifier: str):
     for dataset_uuid in order['datasets']:
         result = flask.g.db['datasets'].delete_one({'_id': dataset_uuid})
         if not result.acknowledged:
-            logging.error('Dataset %s delete failed (order %s deletion):',
+            flask.current_app.logger.error('Dataset %s delete failed (order %s deletion):',
                           dataset_uuid, order_uuid)
             flask.abort(status=500)
         else:
             utils.make_log('dataset', 'delete', 'Deleting order', {'_id': dataset_uuid})
     result = flask.g.db['orders'].delete_one(order)
     if not result.acknowledged:
-        logging.error('Order deletion failed: %s', order_uuid)
+        flask.current_app.logger.error('Order deletion failed: %s', order_uuid)
         flask.abort(status=500)
     else:
         utils.make_log('order', 'delete', 'Order deleted', {'_id': order_uuid})
@@ -359,7 +301,7 @@ def update_order(identifier: str):  # pylint: disable=too-many-branches
     if is_different:
         result = flask.g.db['orders'].update_one({'_id': order['_id']}, {'$set': order})
         if not result.acknowledged:
-            logging.error('Order update failed: %s', order)
+            flask.current_app.logger.error('Order update failed: %s', order)
         else:
             utils.make_log('order', 'edit', 'Order updated', order)
 
@@ -383,7 +325,8 @@ def prepare_order_response(order_data: dict, mongodb):
         if org_entry := utils.user_uuid_data(order_data['organisation'], mongodb):
             order_data['organisation'] = org_entry[0]
         else:
-            logging.error('Reference to non-existing organisation: %s', order_data['organisation'])
+            flask.current_app.logger.error('Reference to non-existing organisation: %s',
+                                           order_data['organisation'])
     else:
         order_data['organisation'] = {}
 

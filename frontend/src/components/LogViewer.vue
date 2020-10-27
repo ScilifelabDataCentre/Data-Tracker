@@ -44,7 +44,7 @@
     </q-card-actions>
 
     <q-inner-loading :showing="isLoading">
-      <q-spinner-gears size="100px" color="primary" />
+      <q-spinner-dots size="50px" color="primary" />
     </q-inner-loading>
   </q-card>
 </q-dialog>
@@ -95,13 +95,15 @@ export default {
   },
 
   mounted () {
-    this.$store.dispatch('entries/resetEntryLog')
-      .then(() => {
-        this.$store.dispatch('entries/getEntryLog', {'id': this.uuid,
-                                                     'dataType': this.dataType})
-          .then(() => this.isLoading = false)
-          .catch(() => this.isLoading = false);
-      });
+    if (this.uuid !== '') {
+      this.$store.dispatch('entries/resetEntryLog')
+        .then(() => {
+          this.$store.dispatch('entries/getEntryLog', {'id': this.uuid,
+                                                       'dataType': this.dataType})
+            .then(() => this.isLoading = false)
+            .catch(() => this.isLoading = false);
+        });
+    }
   },
 }
 </script>

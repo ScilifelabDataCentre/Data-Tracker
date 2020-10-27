@@ -13,6 +13,7 @@ export function UPDATE_ENTRY_LOG (state, payload) {
 export function UPDATE_ENTRY_FIELDS (state, payload) {
   let key = '';
   for (key in payload) {
+    Vue.set(state.entry, key, payload[key]);
     state.entry[key] = payload[key];
   }
 }

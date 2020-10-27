@@ -78,13 +78,15 @@
     </q-tab-panel>
 
     <q-tab-panel name="edit">
-      <dataset-edit :isLoading="isLoading"/>
+      <dataset-edit :isNew="this.uuid === ''"
+                    :isLoading="isLoading"/>
     </q-tab-panel>
 
   </q-tab-panels>
 
 
-  <log-viewer v-model="showLogs"
+  <log-viewer v-if="'editors' in dataset"
+              v-model="showLogs"
               :dataType="dataType"
               :uuid="uuid" />
 
@@ -153,6 +155,12 @@ export default {
     },
   },
 
+  watch: {
+    $route() {
+      this.loadData();
+    },
+  },
+
   data () {
     return {
       isLoading: true,
@@ -161,7 +169,6 @@ export default {
       showConfirmDelete: false,
       dataType: 'dataset',
       error: false,
-      draggingEditButton: false,
       showOptions: false,
       isSaving: false,
       isDeleting: false,
@@ -205,7 +212,7 @@ export default {
 
     saveEdit (event) {
       event.preventDefault();
-      if (this.dataset.title === '')
+      if (this.dataset.title === '' || this.dataset.order === [])
         return;
       let datasetToSubmit = JSON.parse(JSON.stringify(this.dataset));
       let field = '';
@@ -219,6 +226,8 @@ export default {
       else
         datasetToSubmit.id = ''
       delete datasetToSubmit._id;
+      if (this.uuid !== '')
+        delete datasetToSubmit.order;
       datasetToSubmit.cross_references = datasetToSubmit.crossReferences;
       delete datasetToSubmit.crossReferences;
       datasetToSubmit.tags_standard = datasetToSubmit.tagsStandard;

@@ -127,29 +127,11 @@ const routes = [
     children: [
       {
         path: 'user',
-        component: BaseContainer,
+        component: UserManager,
         meta: {
           'accessReq': ['userManagement'],
         },
-        children: [
-          {
-            path: '',
-            component: UserManager,
-            name: 'Admin User Manager',
-          },
-          {
-            path: 'add',
-            component: UserManager,
-            props: { 'uuid': '' },
-            name: 'Admin User Add'
-          },
-          {
-            path: ':uuid/edit',
-            component: UserManager,
-            props: true,
-            name: 'Admin User Edit'
-          },
-        ]
+        name: 'User Manager',
       },
     ]
   },

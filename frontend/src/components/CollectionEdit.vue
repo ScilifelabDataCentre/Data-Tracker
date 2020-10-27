@@ -45,6 +45,38 @@
     </q-card-section>
   </q-card>
 
+  <q-card class="q-my-sm">
+    <q-card-section>
+      <q-table title="Datasets"
+               :data="onlySelected ? selectedDatasets : datasets"
+               :columns="columns"
+               row-key="_id"
+               :loading="isLoadingDatasets"
+               :filter="filter"
+               selection="multiple"
+               :selected.sync="selectedDatasets"
+               :pagination.sync="pagination"
+               no-data-label="No entries found"
+               :no-results-label="filter + ' does not match any entries'">
+        <template v-slot:top-right>
+          <q-checkbox v-model="onlySelected"
+                      label="Only selected"
+                      class="q-mx-md"/>
+          <q-input rounded
+                   outlined
+                   dense
+                   debounce="300"
+                   v-model="filter"
+                   placeholder="Search">
+            <template v-slot:append>
+              <q-icon name="search" />
+            </template>
+          </q-input>
+        </template>
+      </q-table>
+    </q-card-section>
+  </q-card>
+
   <q-card>
     <q-card-section>
       <tag-editor fieldTitle="Standard Tags"
@@ -96,6 +128,12 @@ export default {
       },
     },
 
+    datasets: {
+      get () {
+        return this.$store.state.entries.entryList;
+      },
+    },
+
     title: {
       get () {
         return this.$store.state.entries.entry.title;
@@ -114,6 +152,18 @@ export default {
       },
     },
 
+    selectedDatasets: {
+      get () {
+        if (this.isLoading)
+          return [];
+        return JSON.parse(JSON.stringify(this.$store.state.entries.entry['datasets']));
+      },
+
+      set (newValue) {
+        this.$store.dispatch('entries/setEntryFields', {'datasets': newValue});
+      }
+    },
+
     currentUser: {
       get () {
         return this.$store.state.currentUser.info;
@@ -129,7 +179,31 @@ export default {
       tagName: '',
       isSending: false,
       isLoadingUsers: false,
-      userList: [],
+      isLoadingDatasets: false,
+      onlySelected: false,
+      filter: '',
+      pagination: {
+        rowsPerPage: 5
+      },
+      columns: [
+        {
+          name: '_id',
+          label: 'UUID',
+          field: '_id',
+          align: 'left',
+          required: true,
+          sortable: true
+        },
+        {
+          title: 'title',
+          label: 'Title',
+          field: 'title',
+          required: true,
+          align: 'left',
+          sortable: true,
+        },
+      ]
+
     }
   },
 
@@ -145,6 +219,13 @@ export default {
     this.$store.dispatch('adminUsers/getUsers')
       .then(() => this.isLoadingUsers = false)
       .catch(() => this.isLoadingUsers = false);
+    this.isLoadingDatasets = true;
+    this.$store.dispatch('entries/resetEntryList')
+      .then(() => {
+        this.$store.dispatch('entries/getEntries', 'dataset')
+          .then(() => this.isLoadingDatasets = false)
+          .catch(() => this.isLoadingDatasets = false);
+      });
   }
 }
 </script>

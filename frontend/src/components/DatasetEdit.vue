@@ -1,8 +1,49 @@
 <template>
 <div>
+  <q-card v-if="isNew && !('order' in dataset)"
+          class="q-my-sm">
+    <q-card-section>
+      <q-table title="Select an order"
+               :data="onlySelected ? selectedOrder : orders"
+               :columns="columns"
+               row-key="_id"
+               :loading="isLoadingOrders"
+               :filter="filter"
+               selection="single"
+               :selected.sync="selectedOrder"
+               :pagination.sync="pagination"
+               no-data-label="No entries found"
+               :no-results-label="filter + ' does not match any entries'">
+        <template v-slot:top-right>
+          <q-checkbox v-model="onlySelected"
+                      label="Only selected"
+                      class="q-mx-md"/>
+          <q-input rounded
+                   outlined
+                   dense
+                   debounce="300"
+                   v-model="filter"
+                   placeholder="Search">
+            <template v-slot:append>
+              <q-icon name="search" />
+            </template>
+          </q-input>
+        </template>
+      </q-table>
+      <q-btn class="q-mt-sm"
+             label="Confirm selected order"
+             color="primary"
+             @click="confirmOrder"
+             :disable="selectedOrder.length === 0"
+             :loading="isLoadingOrderData"/>
+    </q-card-section>
+  </q-card>
+
+  <div v-else>
   <q-card class="q-my-sm">
     <q-card-section>
-      <q-field v-if="dataset._id !== ''"
+      <q-field v-if="!isNew"
+               class="q-my-sm"
                label="UUID"
 	       stack-label
 	       filled>
@@ -11,6 +52,18 @@
         </template>
         <template v-slot:control>
           {{ dataset._id }}
+        </template>
+      </q-field>
+      <q-field class="q-my-sm"
+               v-if="'order' in dataset"
+               label="Order UUID"
+	       stack-label
+	       filled>
+        <template v-slot:prepend>
+          <q-icon name="label_important" />
+        </template>
+        <template v-slot:control>
+          {{ dataset.order }}
         </template>
       </q-field>
     </q-card-section>
@@ -59,11 +112,11 @@
                   :isLoading="isLoading"/>
     </q-card-section>
   </q-card>
+  </div>
 </div>
 </template>
 
 <script>
-import UserSelector from 'components/UserSelector.vue'
 import TagEditor from 'components/TagEditor.vue'
 
 export default {
@@ -77,6 +130,10 @@ export default {
     isLoading: {
       type: Boolean,
       default: true
+    },
+    isNew: {
+      type: Boolean,
+      default: false,
     }
   },
 
@@ -85,6 +142,13 @@ export default {
       get () {
         return this.$store.state.entries.entry;
       },
+    },
+
+    orders: {
+      get () {
+        return this.$store.state.entries.entryList;
+      },
+
     },
 
     title: {
@@ -119,19 +183,68 @@ export default {
       linkDesc: '',
       tagName: '',
       isSending: false,
-      userList: [],
+      selectedOrder: [],
+      isLoadingOrders: false,
+      isLoadingOrderData: false,
+      isLoadingUsers: false,
+      onlySelected: false,
+      filter: '',
+      pagination: {
+        rowsPerPage: 5
+      },
+      columns: [
+        {
+          name: '_id',
+          label: 'UUID',
+          field: '_id',
+          align: 'left',
+          required: true,
+          sortable: true
+        },
+        {
+          title: 'title',
+          label: 'Title',
+          field: 'title',
+          required: true,
+          align: 'left',
+          sortable: true,
+        },
+      ]
     }
   },
 
   methods: {
-    setField(event, data) {
-      event.preventDefault();
-      this.$store.dispatch('entries/setEntryFields', data);
-    },
+    confirmOrder() {
+      this.isLoadingOrderData = true;
+      this.$store.dispatch('entries/setEntryFields',
+                           {'order': this.selectedOrder[0]._id});
+      this.$store.dispatch('entries/getLocalEntry',
+                           {'id': this.selectedOrder[0]._id,
+                            'dataType': 'order'})
+        .then((data) => {
+          this.$store.dispatch('entries/setEntryFields',
+                               {
+                                 'title': data.title,
+                                 'description': data.description,
+                                 'tagsStandard': data.tagsStandard,
+                                 'tagsUser': data.tagsUser,
+                               });
+          this.isLoadingOrderData = false;
+        })
+        .catch(() => this.isLoadingOrders = false);
+    }
   },
 
   mounted () {
-    this.$store.dispatch('adminUsers/getUsers');    
+    if (this.isNew) {
+      this.isLoadingOrders = true;
+      this.$store.dispatch('entries/resetEntryList')
+        .then(() => {
+          this.$store.dispatch('entries/getEntries', 'order')
+            .then(() => this.isLoadingOrders = false)
+            .catch(() => this.isLoadingOrders = false);
+        });
+    }
   }
 }
 </script>

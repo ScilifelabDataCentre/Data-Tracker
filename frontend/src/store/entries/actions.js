@@ -19,6 +19,21 @@ export function getEntry ({ commit, dispatch }, payload) {
 }
 
 
+export function getLocalEntry ({ commit, dispatch }, payload) {
+  // payload: {'id': id, 'dataType': dataType}
+  return new Promise((resolve, reject) => {
+    axios
+      .get('/api/v1/' + payload.dataType + '/' + payload.id + '/')
+      .then((response) => {
+        resolve(response.data[payload.dataType]);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+}
+
+
 export function getEntryLog ({ commit, dispatch }, payload) {
   // payload: {'id': id, 'dataType': dataType}
   return new Promise((resolve, reject) => {
@@ -38,7 +53,7 @@ export function getEntryLog ({ commit, dispatch }, payload) {
 export function getEmptyEntry ({ commit, dispatch }, dataType) {
   return new Promise((resolve, reject) => {
     axios
-      .get('/api/v1/order/structure/')
+      .get('/api/v1/' + dataType + '/structure/')
       .then((response) => {
         commit('UPDATE_ENTRY', response.data[dataType]);
         resolve(response);

@@ -270,18 +270,22 @@ def test_update_user_bad(mdb):
 
 def test_add_user(mdb):
     """Add a user."""
-    indata = {'auth_ids': ['user::added']}
-    responses = make_request_all_roles('/api/v1/user/',
-                                       ret_json=True,
-                                       method='POST',
-                                       data=indata)
-    for response in responses:
-        if response.role in ('users', 'root', 'orders'):
+    indata = {'email': 'new_user@added.example.com'}
+    session = requests.Session()
+    for role in USERS:
+        as_user(session, USERS[role])
+        response = make_request(session,
+                                '/api/v1/user/',
+                                ret_json=True,
+                                method='POST',
+                                data=indata)
+        if role in ('users', 'root', 'orders'):
             assert response.code == 200
             assert '_id' in response.data
             new_user_info = mdb['users'].find_one({'_id': uuid.UUID(response.data['_id'])})
-            assert indata['auth_ids'] == new_user_info['auth_ids']
-        elif response.role == 'no-login':
+            assert indata['email'] == new_user_info['email']
+            indata['email'] = 'new_' + indata['email']
+        elif role == 'no-login':
             assert response.code == 401
             assert not response.data
         else:
@@ -289,11 +293,18 @@ def test_add_user(mdb):
             assert not response.data
 
     indata = {'affiliation': 'Added University',
-              'auth_ids': ['user2::added'],
               'name': 'Added name',
-              'email': 'user2@added.se',
+              'email': 'user2@added.example.com',
               'permissions': ['ORDERS']}
     session = requests.session()
+    as_user(session, USERS['orders'])
+    response = make_request(session,
+                            '/api/v1/user/',
+                            ret_json=True,
+                            method='POST',
+                            data=indata)
+    assert response.code == 403
+
     as_user(session, USERS['root'])
     response = make_request(session,
                             '/api/v1/user/',
@@ -309,9 +320,10 @@ def test_add_user(mdb):
 
 def test_delete_user(mdb):
     """Test deleting users (added when testing to add users)"""
-    re_users = re.compile('::added')
-    users = list(mdb['users'].find({'auth_ids': re_users}, {'_id': 1}))
-
+    re_users = re.compile('@added.example.com')
+    users = list(mdb['users'].find({'email': re_users}, {'_id': 1}))
+    if not users:
+        assert False
     session = requests.Session()
     i = 0
     while i < len(users):

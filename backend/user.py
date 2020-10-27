@@ -14,7 +14,6 @@ Requests
 from itertools import chain
 import functools
 import json
-import logging
 
 import flask
 
@@ -76,6 +75,19 @@ def list_users():
     return utils.response_json({'users': result})
 
 
+@blueprint.route('/structure/', methods=['GET'])
+def get_user_data_structure():
+    """
+    Get an empty user entry.
+
+    Returns:
+        flask.Response: JSON structure with a list of users.
+    """
+    empty_user = structure.user()
+    empty_user['_id'] = ''
+    return utils.response_json({'user': empty_user})
+
+
 # requests
 @blueprint.route('/me/')
 def get_current_user_info():
@@ -135,7 +147,7 @@ def gen_new_api_key(identifier: str = None):
     result = flask.g.db['users'].update_one({'_id': user_data['_id']},
                                             {'$set': new_values})
     if not result.acknowledged:
-        logging.error('Updating API key for user %s failed', user_data['_id'])
+        flask.current_app.logger.error('Updating API key for user %s failed', user_data['_id'])
         flask.Response(status=500)
     else:
         utils.make_log('user', 'edit', 'New API key', user_data)
@@ -166,6 +178,10 @@ def get_user_data(identifier: str):
     if not (user_info := flask.g.db['users'].find_one({'_id': user_uuid})):  # pylint: disable=superfluous-parens
         flask.abort(status=404)
 
+    # The hash and salt should never leave the system
+    del user_info['api_key']
+    del user_info['api_salt']
+
     return utils.response_json({'user': user_info})
 
 
@@ -188,18 +204,31 @@ def add_user():
         flask.abort(status=400)
     validation = utils.basic_check_indata(indata, new_user, ('_id',
                                                              'api_key',
-                                                             'api_salt'))
-    if not validation[0]:
-        flask.abort(status=validation[1])
+                                                             'api_salt',
+                                                             'auth_ids'))
+    if not validation.result:
+        flask.abort(status=validation.status)
 
-    if 'auth_ids' not in indata:
+    if 'email' not in indata:
+        flask.current_app.logger.debug('Email must be set')
         flask.abort(status=400)
+
+    old_user = flask.g.db['users'].find_one({'email': indata['email']})
+    if old_user:
+        flask.current_app.logger.debug('User already exists')
+        flask.abort(status=400)
+
+    if not has_permission('USER_MANAGEMENT') and 'permissions' in indata:
+        flask.current_app.logger.debug('USER_MANAGEMENT required for permissions')
+        flask.abort(403)
 
     new_user.update(indata)
 
+    new_user['auth_ids'] = [f'{new_user["_id"]}::local']
+
     result = flask.g.db['users'].insert_one(new_user)
     if not result.acknowledged:
-        logging.error('User Addition failed: %s', new_user['email'])
+        flask.current_app.logger.error('User Addition failed: %s', new_user['email'])
         flask.Response(status=500)
     else:
         utils.make_log('user', 'add', 'User added by admin', new_user)
@@ -232,7 +261,7 @@ def delete_user(identifier: str):
 
     result = flask.g.db['users'].delete_one({'_id': user_uuid})
     if not result.acknowledged:
-        logging.error('User deletion failed: %s', user_uuid)
+        flask.current_app.logger.error('User deletion failed: %s', user_uuid)
         flask.Response(status=500)
     else:
         utils.make_log('user', 'delete', 'User delete', {'_id': user_uuid})
@@ -269,7 +298,7 @@ def update_current_user_info():
     result = flask.g.db['users'].update_one({'_id': user_data['_id']},
                                             {'$set': user_data})
     if not result.acknowledged:
-        logging.error('User self-update failed: %s', indata)
+        flask.current_app.logger.error('User self-update failed: %s', indata)
         flask.Response(status=500)
     else:
         utils.make_log('user', 'edit', 'User self-updated', user_data)
@@ -306,10 +335,17 @@ def update_user_info(identifier: str):
         flask.abort(status=400)
     validation = utils.basic_check_indata(indata, user_data, ('_id',
                                                               'api_key',
-                                                              'api_salt'))
+                                                              'api_salt',
+                                                              'auth_ids'))
 
-    if not validation[0]:
-        flask.abort(status=validation[1])
+    if not validation.result:
+        flask.abort(status=validation.status)
+
+    if 'email' in indata:
+        old_user = flask.g.db['users'].find_one({'email': indata['email']})
+        if old_user and old_user['_id'] != user_data['_id']:
+            flask.current_app.logger.debug('User already exists')
+            flask.abort(status=400)
 
     # Avoid "updating" and making log if there are no changes
     is_different = False
@@ -322,7 +358,7 @@ def update_user_info(identifier: str):
         result = flask.g.db['users'].update_one({'_id': user_data['_id']},
                                                 {'$set': indata})
         if not result.acknowledged:
-            logging.error('User update failed: %s', indata)
+            flask.current_app.logger.error('User update failed: %s', indata)
             flask.Response(status=500)
         else:
             user_data.update(indata)
@@ -422,12 +458,13 @@ def add_new_user(user_info: dict):
         result = flask.g.db['users'].update_one({'email': user_info['email']},
                                                 {'$set': {'auth_ids': email_user['auth_ids']}})
         if not result.acknowledged:
-            logging.error('Failed to add new auth_id to user with email %s', user_info['email'])
+            flask.current_app.logger.error('Failed to add new auth_id to user with email %s',
+                                           user_info['email'])
             flask.Response(status=500)
         else:
             utils.make_log('user',
                            'edit',
-                           'Edit entry to auth_ids to user from OAuth',
+                           'Add OIDC entry to auth_ids',
                            email_user,
                            no_user=True)
 
@@ -439,7 +476,8 @@ def add_new_user(user_info: dict):
 
         result = flask.g.db['users'].insert_one(new_user)
         if not result.acknowledged:
-            logging.error('Failed to add user with email %s via oidc', user_info['email'])
+            flask.current_app.logger.error('Failed to add user with email %s via oidc',
+                                           user_info['email'])
             flask.Response(status=500)
         else:
             utils.make_log('user', 'add', 'Creating new user from OAuth', new_user, no_user=True)

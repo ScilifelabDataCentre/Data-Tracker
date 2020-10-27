@@ -40,9 +40,6 @@
              :label="'Save settings'"
              @click="saveSettings"
              :loading="userDataSaveWaiting">
-        <template v-slot:loading>
-          <q-spinner-radio />
-        </template>
       </q-btn>
         <span v-show="userDataSaveSuccess" class="text-positive q-ml-md q-mt-md self-center">Settings saved</span>
         <span v-show="userDataSaveError" class="text-negative q-ml-md q-mt-md self-center">Failed to save settings</span>
@@ -82,8 +79,11 @@
     <q-card-section>
       <q-btn color="positive"
              label="Generate new API key"
+             :loading="newApiKeyWaiting"
              @click="generateNewApiKey" />
-      <q-input outlined
+      <span v-if="newApiKeyError" class="text-negative">API key generation failed</span>
+      <q-input v-else
+               outlined
                stack-label
                v-show="newApiKey.length > 0"
                label="New API Key"
@@ -147,14 +147,9 @@ export default {
       this.newApiKeyWaiting = true;
       this.newApiKeyError  = false;
       this.$store.dispatch('currentUser/genApiKey')
-        .then((response) => {
-          this.newApiKey = response.data.key;
-          this.newApiKeyWaiting = false;
-        })
-        .catch(() => {
-          this.newApiKeyError = true
-          this.newApiKeyWaiting = false;
-        });
+        .then((response) => this.newApiKey = response.data.key)
+        .catch(() => this.newApiKeyError = true)
+        .finally(() => this.newApiKeyWaiting = false);
     },
 
     trimUserData () {
