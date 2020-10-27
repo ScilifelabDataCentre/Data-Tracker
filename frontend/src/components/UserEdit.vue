@@ -105,8 +105,12 @@
     </q-card-section>
 
     <q-card-actions align="right">
+      <span v-if="userDataSaveError" class="text-negative q-mr-sm">Save failed</span>
       <q-btn label="Cancel" color="grey-6" v-close-popup />
-      <q-btn label="Save" color="positive" @click="saveUser"/>
+      <q-btn label="Save"
+             color="positive"
+             @click="saveUser"
+             :loading="userDataSaveWaiting"/>
     </q-card-actions>
 
     <q-inner-loading :showing="isLoading">
@@ -133,25 +137,7 @@ export default {
 
   watch: {
     uuid () {
-      this.isLoading = true;
-      this.loadingError = false;
-      if (this.uuid === '') {
-        this.$store.dispatch('entries/resetEntry')
-          .then(() => {
-            this.$store.dispatch('entries/getEmptyEntry', this.dataType)
-              .catch(() => this.loadingError = true)
-              .finally(() => this.isLoading = false);
-          });
-      }
-      else {
-        this.$store.dispatch('entries/resetEntry')
-          .then(() => {
-            this.$store.dispatch('entries/getEntry', {'id': this.uuid,
-                                                      'dataType': this.dataType})
-              .catch(() => this.loadingError = true)
-              .finally(() => this.isLoading = false);
-          });
-      }
+      this.loadData();
     },
     storedUser () {
       this.userData = JSON.parse(JSON.stringify(this.storedUser));
@@ -186,11 +172,33 @@ export default {
       newApiKeyWaiting: false,
       newApiKeyError: false,
       userDataSaveError: false,
-      userDataSaveWaiting: true,
+      userDataSaveWaiting: false,
     }
   },
 
   methods: {
+    loadData () {
+      this.isLoading = true;
+      this.loadingError = false;
+      if (this.uuid === '') {
+        this.$store.dispatch('entries/resetEntry')
+          .then(() => {
+            this.$store.dispatch('entries/getEmptyEntry', this.dataType)
+              .catch(() => this.loadingError = true)
+              .finally(() => this.isLoading = false);
+          });
+      }
+      else {
+        this.$store.dispatch('entries/resetEntry')
+          .then(() => {
+            this.$store.dispatch('entries/getEntry', {'id': this.uuid,
+                                                      'dataType': this.dataType})
+              .catch(() => this.loadingError = true)
+              .finally(() => this.isLoading = false);
+          });
+      }
+    },
+    
     loadPermissions () {
       this.isLoadingPermissions = true;
       this.loadPermissionsError = false;
@@ -226,12 +234,22 @@ export default {
         delete toSubmit.permissions;
       else 
         toSubmit.permissions = Object.keys(this.permissions).filter((key) => this.permissions[key]);
-      console.log(toSubmit);
       this.$store.dispatch('entries/saveEntry', {data: toSubmit,
                                                  dataType: this.dataType})
-        .then(() => this.updateVisibility(false))
+        .then(() => {
+          this.updateVisibility(false);
+          this.loading = true;
+          this.loadingError = false;
+          this.$store.dispatch('entries/getEntries', 'user')
+            .catch(() => this.loadingError = true)
+            .finally(() => this.loading = false);
+        })
         .catch(() => this.userDataSaveError = true)
-        .finally(() => this.userDataSaveWaiting = false);
+        .finally(() => {
+          this.userDataSaveWaiting = false;
+          if (!this.userDataSaveError)
+            this.loadData();
+        });
     },
 
     generateNewApiKey () {
@@ -242,6 +260,10 @@ export default {
         .catch(() => this.newApiKeyError = true)
         .finally(() => this.newApiKeyWaiting = false);
     },
+  },
+
+  mounted () {
+    this.loadData();
   },
 }
 </script>
