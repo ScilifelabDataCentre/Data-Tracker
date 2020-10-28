@@ -116,8 +116,9 @@ def test_delete_dataset(mdb):
 
     uuids = [add_dataset() for _ in range(5)]
 
-    # must be updated if TEST_LABEL is modified
-    datasets = list(mdb['datasets'].find({'tags_user': {'testing': 'true'}}))
+    datasets = list(mdb['datasets'].find(TEST_LABEL))
+    if not datasets:
+        assert False
     i = 0
     while i < len(datasets):
         for role in USERS:

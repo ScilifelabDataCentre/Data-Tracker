@@ -20,7 +20,7 @@ CURR_DIR = os.path.realpath(__file__)
 SETTINGS = json.loads(open(f'{os.path.dirname(CURR_DIR)}/settings_tests.json').read())
 BASE_URL = f'{SETTINGS["host"]}:{SETTINGS["port"]}'
 
-TEST_LABEL = {'tags_user': {'testing': 'true'}}
+TEST_LABEL = {'tags': ['testing']}
 
 USERS = {'no-login': None,
          'base': 'base::testers',

@@ -112,6 +112,11 @@ def add_dataset():  # pylint: disable=too-many-branches
         return flask.abort(status=403)
     del indata['order']
 
+    # properties may only be set by users with DATA_MANAGEMENT
+    if 'properties' in indata:
+        if not user.has_permission('DATA_MANAGEMENT'):
+            flask.abort(403)
+    
     # create new dataset
     dataset = structure.dataset()
     validation = utils.basic_check_indata(indata, dataset, ['_id'])
@@ -233,6 +238,11 @@ def update_dataset(identifier):
     if not validation[0]:
         flask.abort(status=validation[1])
 
+    # properties may only be set by users with DATA_MANAGEMENT
+    if 'properties' in indata:
+        if not user.has_permission('DATA_MANAGEMENT'):
+            flask.abort(403)
+        
     is_different = False
     for field in indata:
         if indata[field] != dataset[field]:

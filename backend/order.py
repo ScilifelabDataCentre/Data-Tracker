@@ -193,6 +193,12 @@ def add_order():
     if not validation.result:
         flask.abort(status=validation.status)
 
+    # properties may only be set by users with DATA_MANAGEMENT
+    if 'properties' in indata:
+        if not user.has_permission('DATA_MANAGEMENT'):
+            flask.abort(403)
+
+    # convert all incoming uuids to uuid.UUID
     for field in ('editors', 'authors', 'generators'):
         if field in indata:
             indata[field] = [utils.str_to_uuid(entry) for entry in indata[field]]
@@ -282,6 +288,11 @@ def update_order(identifier: str):  # pylint: disable=too-many-branches
     validation = utils.basic_check_indata(indata, order, ['_id', 'datasets'])
     if not validation.result:
         flask.abort(status=validation.status)
+
+    # properties may only be set by users with DATA_MANAGEMENT
+    if 'properties' in indata:
+        if not user.has_permission('DATA_MANAGEMENT'):
+            flask.abort(403)
 
     for field in ('editors', 'authors', 'generators'):
         if field in indata:
