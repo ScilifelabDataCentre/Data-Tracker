@@ -231,10 +231,6 @@ export default {
       delete collectionToSubmit._id;
       collectionToSubmit.cross_references = collectionToSubmit.crossReferences;
       delete collectionToSubmit.crossReferences;
-      collectionToSubmit.tags_standard = collectionToSubmit.tagsStandard;
-      delete collectionToSubmit.tagsStandard;
-      collectionToSubmit.tags_user = collectionToSubmit.tagsUser;
-      delete collectionToSubmit.tagsUser;
       this.isSaving = true;
       this.$store.dispatch('entries/saveEntry', {data: collectionToSubmit,
                                                  dataType: this.dataType})

@@ -230,10 +230,6 @@ export default {
         delete datasetToSubmit.order;
       datasetToSubmit.cross_references = datasetToSubmit.crossReferences;
       delete datasetToSubmit.crossReferences;
-      datasetToSubmit.tags_standard = datasetToSubmit.tagsStandard;
-      delete datasetToSubmit.tagsStandard;
-      datasetToSubmit.tags_user = datasetToSubmit.tagsUser;
-      delete datasetToSubmit.tagsUser;
       this.isSaving = true;
       this.$store.dispatch('entries/saveEntry', {data: datasetToSubmit,
                                                  dataType: this.dataType})
