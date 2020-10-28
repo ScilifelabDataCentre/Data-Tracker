@@ -184,9 +184,9 @@ def validate_cross_references(data: list) -> bool:
     return True
 
 
-def validate_tags_std(data: dict) -> bool:
+def validate_properties(data: dict) -> bool:
     """
-    Validate input for the ``tags_standard`` field.
+    Validate input for the ``properties`` field.
 
     It must be a dict.
 
@@ -207,9 +207,9 @@ def validate_tags_std(data: dict) -> bool:
     return True
 
 
-def validate_tags_user(data: dict) -> bool:
+def validate_tags(data: dict) -> bool:
     """
-    Validate input for the ``tags_user`` field.
+    Validate input for the ``tags`` field.
 
     It must be a dict.
 
@@ -347,7 +347,7 @@ VALIDATION_MAPPER = {'affiliation': validate_string,
                      'orcid': validate_string,
                      'organisation': validate_user,
                      'permissions': validate_permissions,
-                     'tags_standard': validate_tags_std,
-                     'tags_user': validate_tags_user,
+                     'properties': validate_properties,
+                     'tags': validate_tags,
                      'title': validate_title,
                      'url': validate_url}

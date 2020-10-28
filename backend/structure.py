@@ -18,8 +18,8 @@ def dataset():
             'description': '',
             'cross_references': [],
             'title': '',
-            'tags_standard': {},
-            'tags_user': {}}
+            'properties': {},
+            'tags': {}}
 
 
 def order():
@@ -37,8 +37,8 @@ def order():
             'organisation': '',
             'editors': [],
             'datasets': [],
-            'tags_standard': {},
-            'tags_user': {}}
+            'properties': {},
+            'tags': {}}
 
 
 def collection():
@@ -49,11 +49,11 @@ def collection():
         dict: The data structure for a project.
     """
     return {'_id': utils.new_uuid(),
+            'cross_references': [],
             'datasets': [],
             'description': '',
-            'tags_standard': {},
-            'tags_user': {},
-            'cross_references': [],
+            'properties': {},
+            'tags': {},
             'editors': [],
             'title': ''}
 
