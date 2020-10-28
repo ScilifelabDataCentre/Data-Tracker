@@ -207,11 +207,11 @@ def validate_properties(data: dict) -> bool:
     return True
 
 
-def validate_tags(data: dict) -> bool:
+def validate_tags(data: Union[tuple, list]) -> bool:
     """
     Validate input for the ``tags`` field.
 
-    It must be a dict.
+    It must be a list or tuple.
 
     Args:
         data (dict): The data to be validated.
@@ -222,11 +222,11 @@ def validate_tags(data: dict) -> bool:
     Raises:
         ValueError: Validation failed.
     """
-    if not isinstance(data, dict):
-        raise ValueError(f'Not a  dict ({data})')
-    for key in data:
-        if not isinstance(key, str) or not isinstance(data[key], str):
-            raise ValueError(f'Keys and values must be strings ({key}, {data[key]})')
+    if not isinstance(data, list) and not isinstance(data, tuple):
+        raise ValueError(f'Not a list ({data})')
+    for value in data:
+        if not isinstance(value, str):
+            raise ValueError(f'All list entries must be str ({value})')
     return True
 
 
@@ -302,7 +302,7 @@ def validate_user(data: str) -> bool:
     return True
 
 
-def validate_user_list(data: Union[str, list]) -> bool:
+def validate_user_list(data: Union[tuple, list]) -> bool:
     """
     Validate input for a field containing a list of user uuid(s).
 
