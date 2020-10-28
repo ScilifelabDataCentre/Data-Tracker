@@ -126,7 +126,7 @@ def add_collection():  # pylint: disable=too-many-branches
     if 'properties' in indata:
         if not user.has_permission('DATA_MANAGEMENT'):
             flask.abort(403)
-        
+
     if 'title' not in indata:
         flask.abort(status=400)
 
@@ -223,7 +223,7 @@ def update_collection(identifier):  # pylint: disable=too-many-branches
     if 'properties' in indata:
         if not user.has_permission('DATA_MANAGEMENT'):
             flask.abort(403)
-        
+
     if 'datasets' in indata:
         indata['datasets'] = [utils.str_to_uuid(value) for value in indata['datasets']]
 
