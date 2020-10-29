@@ -33,7 +33,7 @@ def test_list_info():
                                        ret_json=True)
     for response in responses:
         assert response.code == 200
-        assert len(response.data['user']) == 8
+        assert len(response.data['user']) == 9
         if response.role != 'no-login':
             assert response.data['user']['name'] == f'{response.role.capitalize()}'
 
