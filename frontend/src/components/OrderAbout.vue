@@ -14,20 +14,22 @@
   </q-card>
 
   <q-card class="q-my-md"
-          v-show="Object.keys(order.tagsStandard).length ||
-                  Object.keys(order.tagsUser).length">
+          v-show="Object.keys(order.properties).length ||
+                  order.tags.length">
     <q-card-section class="flex q-ma-sm">
       <q-chip square
               color="grey-3"
-              v-for="field in Object.keys(order.tagsStandard)"
+              v-for="field in Object.keys(order.properties)"
               :key="field">
-        <span class="text-bold text-capitalize text-blue-9 q-mr-sm">{{ field }}</span> {{ order.tagsStandard[field] }}
+        <q-avatar color="text-blue-9" text-color="white">{{ field }}</q-avatar>
+        {{ order.tagsStandard[field] }}
       </q-chip>
       <q-chip square
               color="grey-3"
-              v-for="field in Object.keys(order.tagsUser)"
-              :key="field">
-        <span class="text-bold text-capitalize text-secondary q-mr-sm">{{ field }}</span> {{ order.tagsUser[field] }}
+              v-for="entry in order.tags"
+              :key="entry">
+        <q-avatar color="secondary" text-color="white" icon="fas fa-tag"></q-avatar>
+        {{ entry }}
       </q-chip>
     </q-card-section>
   </q-card>
