@@ -27,7 +27,7 @@
               color="grey-3"
               v-for="entry in order.tags"
               :key="entry">
-        <q-avatar color="secondary" text-color="white" icon="fas fa-tag"></q-avatar>
+        <q-avatar color="secondary" text-color="white" icon="fas fa-tag" />
         {{ entry }}
       </q-chip>
     </q-card-section>
