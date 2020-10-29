@@ -98,7 +98,8 @@ def get_current_user_info():
         flask.Response: json structure for the user
     """
     data = flask.g.current_user
-    outstructure = {'affiliation': '',
+    outstructure = {'_id': '',
+                    'affiliation': '',
                     'auth_ids': [],
                     'email': '',
                     'contact': '',
