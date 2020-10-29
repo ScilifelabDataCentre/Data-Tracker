@@ -19,7 +19,7 @@ def dataset():
             'cross_references': [],
             'title': '',
             'properties': {},
-            'tags': {}}
+            'tags': []}
 
 
 def order():
@@ -38,7 +38,7 @@ def order():
             'editors': [],
             'datasets': [],
             'properties': {},
-            'tags': {}}
+            'tags': []}
 
 
 def collection():
@@ -53,7 +53,7 @@ def collection():
             'datasets': [],
             'description': '',
             'properties': {},
-            'tags': {},
+            'tags': [],
             'editors': [],
             'title': ''}
 
