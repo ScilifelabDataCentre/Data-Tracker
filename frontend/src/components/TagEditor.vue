@@ -25,16 +25,17 @@
            class="col-2"
            flat/>
   </div>
-  <q-list dense>
-    <q-item v-for="tag of value" :key="tag">
-      <q-item-section>
-        {{tag}} <q-icon name="fas fa-minus-circle"
-                        color="negative"
-                        @click="deleteTag(tag)"
-                        class="cursor-pointer" />
-      </q-item-section>
-    </q-item>
-  </q-list>
+  <div class="flex q-ma-sm">
+    <q-chip v-for="tag of value"
+            :key="tag"
+            square
+            removable
+            color="grey-3"
+            @remove="deleteTag(tag)">
+      <q-avatar color="secondary" text-color="white" icon="fas fa-tag" />
+      {{ tag }}
+    </q-chip>
+  </div>
   <q-inner-loading :showing="isLoading">
     <q-spinner-gears size="100px" color="primary" />
   </q-inner-loading>
