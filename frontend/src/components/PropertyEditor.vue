@@ -14,33 +14,33 @@
   <div class="row q-my-md">
     <q-input stack-label
              outlined
-             label="New Tag Name"
+             label="New Property Name"
              v-model="key"
-             @keyup.enter="addTag"
+             @keyup.enter="addProperty"
              class="col-10" />
-    <q-btn icon="fas fa-tag"
+    <q-btn icon="fas fa-property"
            color="positive"
-           @click="addTag"
+           @click="addProperty"
            label="Add"
            class="col-2"
            flat/>
   </div>
   <q-list dense>
-    <q-item v-for="tagKey of Object.keys(fieldEntries)" :key="tagKey">
+    <q-item v-for="propertyKey of Object.keys(fieldEntries)" :key="propertyKey">
       <q-item-section>
         <q-input stack-label
                  outlined
-                 :label="tagKey"
-                 @input="setTag(tagKey, $event)"
-                 :value="fieldEntries[tagKey]">
+                 :label="propertyKey"
+                 @input="setProperty(propertyKey, $event)"
+                 :value="fieldEntries[propertyKey]">
           <template v-slot:append>
             <q-icon name="fas fa-minus-circle"
                     color="negative"
-                    @click="deleteTag(tagKey)"
+                    @click="deleteProperty(propertyKey)"
                     class="cursor-pointer" />
           </template>
           <template v-slot:prepend>
-            <q-icon name="fas fa-tag"
+            <q-icon name="fas fa-property"
                     color="primary"/>
           </template>
         </q-input>
@@ -55,7 +55,7 @@
 
 <script>
 export default {
-  name: 'TagEditor',
+  name: 'PropertyEditor',
 
   computed: {
     fieldEntries: {
@@ -96,27 +96,27 @@ export default {
   },
 
   methods: {
-    addTag(event) {
+    addProperty(event) {
       event.preventDefault();
       if (this.key.length > 0 && !Object.keys(this.fieldEntries).includes(this.key)) {
-        this.$store.dispatch('entries/addTag',
-                             {'tagName': this.fieldDataName,
+        this.$store.dispatch('entries/addProperty',
+                             {'propertyName': this.fieldDataName,
                               'key': this.key});
         this.key = '';
       }
     },
 
-    setTag(keyName, value) {
+    setProperty(keyName, value) {
       let outObject = {};
       outObject[keyName] = value;
-      this.$store.dispatch('entries/setTag',
-                           {'tagName': this.fieldDataName,
+      this.$store.dispatch('entries/setProperty',
+                           {'propertyName': this.fieldDataName,
                             'value': outObject});
     },
 
-    deleteTag(keyName) {
-      this.$store.dispatch('entries/deleteTag',
-                           {'tagName': this.fieldDataName, 'key': keyName});
+    deleteProperty(keyName) {
+      this.$store.dispatch('entries/deleteProperty',
+                           {'propertyName': this.fieldDataName, 'key': keyName});
     },
   },
 }

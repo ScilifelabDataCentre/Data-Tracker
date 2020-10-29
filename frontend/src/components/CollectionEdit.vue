@@ -79,16 +79,14 @@
 
   <q-card>
     <q-card-section>
-      <tag-editor fieldTitle="Standard Tags"
-                  helpText="Set standard tags"
-                  fieldDataName="tagsStandard"
-                  :isLoading="isLoading"/>
+      <property-editor fieldTitle="Properties"
+                       helpText="Set properties"
+                       fieldDataName="properties"
+                       :isLoading="isLoading"/>
     </q-card-section>
     <q-card-section>
-      <tag-editor fieldTitle="User Tags"
-                  helpText="Set user tags"
-                  fieldDataName="tagsUser"
-                  :isLoading="isLoading"/>
+      <tag-editor :isLoading="isLoading"
+                  v-model="tags"/>
     </q-card-section>
   </q-card>
 
@@ -104,6 +102,7 @@
 
 <script>
 import UserSelector from 'components/UserSelector.vue'
+import PropertyEditor from 'components/PropertyEditor.vue'
 import TagEditor from 'components/TagEditor.vue'
 
 export default {
@@ -111,6 +110,7 @@ export default {
 
   components: {
     'user-selector': UserSelector,
+    'property-editor': PropertyEditor,
     'tag-editor': TagEditor,
   },
 
@@ -125,6 +125,15 @@ export default {
     collection: {
       get () {
         return this.$store.state.entries.entry;
+      },
+    },
+
+    tags: {
+      get () {
+        return this.$store.state.entries.entry.tags;
+      },
+      set (newValue) {
+        this.$store.dispatch('entries/setEntryFields', {'tags': newValue});
       },
     },
 

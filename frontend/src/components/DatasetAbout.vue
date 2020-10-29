@@ -14,20 +14,21 @@
   </q-card>
 
   <q-card class="q-my-md"
-          v-show="Object.keys(dataset.tagsStandard).length ||
-                  Object.keys(dataset.tagsUser).length">
+          v-show="Object.keys(dataset.properties).length ||
+                  dataset.tags.length">
     <q-card-section class="flex q-ma-sm">
       <q-chip square
               color="grey-3"
-              v-for="field in Object.keys(dataset.tagsStandard)"
+              v-for="field in Object.keys(dataset.properties)"
               :key="field">
-        <span class="text-bold text-capitalize text-blue-9 q-mr-sm">{{ field }}</span> {{ dataset.tagsStandard[field] }}
+        <span class="text-bold text-capitalize text-blue-9 q-mr-sm">{{ field }}</span> {{ dataset.properties[field] }}
       </q-chip>
       <q-chip square
               color="grey-3"
-              v-for="field in Object.keys(dataset.tagsUser)"
-              :key="field">
-        <span class="text-bold text-capitalize text-secondary q-mr-sm">{{ field }}</span> {{ dataset.tagsUser[field] }}
+              v-for="entry in dataset.tags"
+              :key="entry">
+        <q-avatar color="secondary" text-color="white" icon="fas fa-tag"></q-avatar>
+        {{ entry }}
       </q-chip>
     </q-card-section>
   </q-card>

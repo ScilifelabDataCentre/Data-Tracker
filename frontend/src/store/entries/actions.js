@@ -146,31 +146,30 @@ export function setEntryFields({ commit }, data) {
 }
 
 
-// expects payLoad: {'tagName': tagName, 'key': keyName}
-export function addTag({ commit }, payload) {
+// expects payLoad: {'propertyName': propertyName, 'key': keyName}
+export function addProperty({ commit }, payload) {
   return new Promise((resolve, reject) => {
-    commit('ADD_TAG', payload);
+    commit('ADD_PROPERTY', payload);
     resolve();
   });
 }
 
 
 // expects payLoad: {'tagName': tagName, 'value': {key: value}}
-export function setTag({ commit }, payload) {
+export function setProperty({ commit }, payload) {
   return new Promise((resolve, reject) => {
-    commit('UPDATE_TAG', payload);
+    commit('UPDATE_PROPERTY', payload);
     resolve();
   });
 }
 
-// expects payLoad: {'tagName': tagName, 'key': keyName}
-export function deleteTag({ commit }, payload) {
+// expects payLoad: {'propertyName': propertyName, 'key': keyName}
+export function deleteProperty({ commit }, payload) {
   return new Promise((resolve, reject) => {
-    commit('DELETE_TAG', payload);
+    commit('DELETE_PROPERTY', payload);
     resolve();
   });
 }
-
 
 export function resetEntryList({ commit }) {
   return new Promise((resolve, reject) => {

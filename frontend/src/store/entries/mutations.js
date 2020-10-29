@@ -19,20 +19,20 @@ export function UPDATE_ENTRY_FIELDS (state, payload) {
 }
 
 
-// expects payLoad: {'tagName': tagName, 'key': keyName}
-export function ADD_TAG (state, payload) {
-  Vue.set(state.entry[payload.tagName], payload.key, '');
+// expects payLoad: {'propertyName': propertyName, 'key': keyName}
+export function ADD_PROPERTY (state, payload) {
+  Vue.set(state.entry[payload.propertyName], payload.key, '');
 }
 
-// expects payLoad: {'tagName': tagName, 'value': tagObject}
-export function UPDATE_TAG (state, payload) {
+// expects payLoad: {'propertyName': propertyName, 'value': propertyObject}
+export function UPDATE_PROPERTY (state, payload) {
   let key = Object.keys(payload.value)[0];
-  state.entry[payload.tagName][key] = payload.value[key];
+  state.entry[payload.propertyName][key] = payload.value[key];
 }
 
-// expects payLoad: {'tagName': tagName, 'key': keyName}
-export function DELETE_TAG (state, payload) {
-  Vue.delete(state.entry[payload.tagName], payload.key);
+// expects payLoad: {'propertyName': propertyName, 'key': keyName}
+export function DELETE_PROPERTY (state, payload) {
+  Vue.delete(state.entry[payload.propertyName], payload.key);
 }
 
 

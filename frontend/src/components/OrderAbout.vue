@@ -21,8 +21,7 @@
               color="grey-3"
               v-for="field in Object.keys(order.properties)"
               :key="field">
-        <q-avatar color="text-blue-9" text-color="white">{{ field }}</q-avatar>
-        {{ order.tagsStandard[field] }}
+        <span class="text-bold text-capitalize text-blue-9 q-mr-sm">{{ field }}</span> {{ order.properties[field] }}
       </q-chip>
       <q-chip square
               color="grey-3"
