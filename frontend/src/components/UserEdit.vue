@@ -105,7 +105,15 @@
     </q-card-section>
 
     <q-card-actions align="right">
-      <span v-if="userDataSaveError" class="text-negative q-mr-sm">Save failed</span>
+      <span v-show="userDataSaveError" class="text-negative">Save failed</span>
+    </q-card-actions>
+
+    <q-card-actions align="right">
+      <q-btn label="Delete"
+             color="negative"
+             @click="showConfirmDelete = true"
+             :loading="userDataSaveWaiting"
+             class="text-negative q-mr-xl" />
       <q-btn label="Cancel" color="grey-6" v-close-popup />
       <q-btn label="Save"
              color="positive"
@@ -117,6 +125,25 @@
       <q-spinner-dots size="md" color="primary" />
     </q-inner-loading>
   </q-card>
+
+  <q-dialog v-model="showConfirmDelete">
+    <q-card>
+      <q-card-section class="row items-center">
+        <q-avatar icon="fas fa-trash" color="alert" text-color="primary" />
+        <span class="q-ml-sm">Are you sure you want to delete this {{ dataType }}?</span>
+      </q-card-section>
+
+      <q-card-actions align="right">
+        <q-btn flat label="Cancel" color="grey-7" v-close-popup />
+        <q-btn flat
+               :loading="isDeleting"
+               label="Delete"
+               color="negative"
+               @click="deleteEntry" />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+
 </q-dialog>
 </template>
 
@@ -162,7 +189,10 @@ export default {
   data () {
     return {
       isLoading: false,
+      isDeleting: false,
       loadingError: false,
+      deleteError: false,
+      showConfirmDelete: false,
       userData: {},
       dataType: 'user',
       isLoadingPermissions: false,
@@ -218,6 +248,19 @@ export default {
       this.$emit('input', value)
     },
 
+    deleteEntry() {
+      this.isDeleting = true;
+      this.$store.dispatch('entries/deleteEntry', {'id': this.uuid,
+                                                   'dataType': this.dataType})
+        .then(() => {
+          this.showConfirmDelete = false;
+          this.updateVisibility(false);
+          this.$emit('userChanged', true);
+        })
+        .catch((err) => this.deleteError = true)
+        .finally(() => this.isDeleting = false);
+    },
+
     saveUser () {
       this.userDataSaveError = false;
       this.userDataSaveWaiting = true;
@@ -238,11 +281,7 @@ export default {
                                                  dataType: this.dataType})
         .then(() => {
           this.updateVisibility(false);
-          this.loading = true;
-          this.loadingError = false;
-          this.$store.dispatch('entries/getEntries', 'user')
-            .catch(() => this.loadingError = true)
-            .finally(() => this.loading = false);
+          this.$emit('userChanged', true);
         })
         .catch(() => this.userDataSaveError = true)
         .finally(() => {

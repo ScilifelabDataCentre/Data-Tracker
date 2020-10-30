@@ -37,22 +37,14 @@
                  icon="edit"
                  @click="activateUserEdit(props.row._id)"
                  size="sm" />
-          <q-btn flat
-                 dense
-                 round
-                 icon="pending_actions"
-                 size="sm" />
-          <q-btn flat
-                 dense
-                 round
-                 icon="assessment"
-                 size="sm" />
         </q-td>
       </q-tr>
     </template>
   </q-table>
 
-  <user-edit v-model="showUserEdit" :uuid="userId" />
+  <user-edit v-model="showUserEdit"
+             :uuid="userId"
+             @userChanged="loadData"/>
 
 </q-page>
 </template>
@@ -128,16 +120,20 @@ export default {
       this.userId = uuid;
       this.showUserEdit = true;
     },
+
+    loadData () {
+    this.$store.dispatch('entries/resetEntryList')
+        .then(() => this.loading = true)
+        .then(() => {
+          this.$store.dispatch('entries/getEntries', 'user')
+            .then(() => this.loading = false)
+            .catch(() => this.loading = false)
+        });
+    },
   },
 
   mounted () {
-    this.$store.dispatch('entries/resetEntryList')
-      .then(() => this.loading = true)
-      .then(() => {
-        this.$store.dispatch('entries/getEntries', 'user')
-          .then(() => this.loading = false)
-          .catch(() => this.loading = false)
-      });
+    this.loadData();
   },
 }
 </script>
