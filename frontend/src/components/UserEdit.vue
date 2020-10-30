@@ -180,7 +180,7 @@ export default {
     loadData () {
       this.isLoading = true;
       this.loadingError = false;
-      if (this.uuid === '') {
+      if (this.uuid === '' && this.uuid === 'default') {
         this.$store.dispatch('entries/resetEntry')
           .then(() => {
             this.$store.dispatch('entries/getEmptyEntry', this.dataType)
