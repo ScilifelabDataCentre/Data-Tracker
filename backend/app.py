@@ -12,11 +12,16 @@ import order
 import collection
 import user
 import utils
+import db_management
 
 from authlib.integrations.flask_client import OAuth
 
 app = flask.Flask(__name__)  # pylint: disable=invalid-name
-app.config.update(config.init())
+appconf = config.init()
+db_management.check_db(appconf)
+app.config.update(appconf)
+
+
 
 if app.config['dev_mode']['api']:
     app.register_blueprint(developer.blueprint, url_prefix='/api/v1/developer')
