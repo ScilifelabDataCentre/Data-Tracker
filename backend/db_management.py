@@ -18,10 +18,11 @@ def check_db(config: dict):
         config (dict): Configuration for the data tracker
     """
     db = utils.get_db(utils.get_dbclient(config), config)
-    first_setup = db['db_status'].find_one({'_id': 'init_db'})
-    if not first_setup:
+    db_initialised = db['db_status'].find_one({'_id': 'init_db'})
+    if not db_initialised:
         init_db(db)
-    check_migrations(db)
+    else:
+        check_migrations(db)
 
 
 def init_db(db):
@@ -39,6 +40,9 @@ def init_db(db):
     # Set DB version
     db['db_status'].insert_one({'_id': 'db_version',
                                 'version': DB_VERSION})
+    db['db_status'].update_one({'_id': 'init_db'},
+                               {'$set': {'finished': True}})
+
 
 
 def add_default_user(db):
