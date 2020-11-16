@@ -1,12 +1,14 @@
+---
 language: python
 python:
- - "3.8"
+  - "3.8"
+  - "3.9"
 services:
   - mongodb
 install:
-    - pip install -r backend/requirements.txt
-    - pip install -r test/requirements.txt
+  - pip install -r backend/requirements.txt
+  - pip install -r test/requirements.txt
 before_script:
-- mongo admin --eval 'db.createUser({user:"tracker",pwd:"tracker",roles:["root"]});'
+  - mongo admin --eval 'db.createUser({user:"tracker",pwd:"tracker",roles:["root"]});'
 script:
-    - test/travis_script.sh
+  - test/travis_script.sh
