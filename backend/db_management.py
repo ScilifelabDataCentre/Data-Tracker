@@ -1,4 +1,4 @@
-"""DB initialisation and migration check"""
+"""DB initialisation and migration check."""
 import logging
 import sys
 
@@ -10,7 +10,8 @@ DB_VERSION = 1
 
 def check_db(config: dict):
     """
-    Perform database checks:
+    Perform database checks.
+
     - check if first-time setup has been performed
     - check that the data structure is up to date (migrations)
 
@@ -27,7 +28,8 @@ def check_db(config: dict):
 
 def init_db(db):
     """
-    Do first time-setup for the database:
+    Do first time-setup for the database.
+
     - create a default user
     - set current db_version
     """
