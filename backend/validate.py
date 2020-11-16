@@ -205,7 +205,7 @@ def validate_properties(data: dict) -> bool:
         ValueError: Validation failed.
     """
     if not user.has_permission('DATA_MANAGEMENT'):
-        raise exceptions.AuthError(f'Permission DATA_MANAGEMENT required')
+        raise exceptions.AuthError('Permission DATA_MANAGEMENT required')
     if not isinstance(data, dict):
         raise ValueError(f'Not a  dict ({data})')
     for key in data:
