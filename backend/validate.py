@@ -9,7 +9,9 @@ import uuid
 
 import flask
 
-from user import PERMISSIONS
+import exceptions
+
+import user
 import utils
 
 
@@ -39,6 +41,9 @@ def validate_field(field_key: str, field_value: Any) -> bool:
         return False
     except ValueError as err:
         flask.current_app.logger.debug('Indata validation failed: %s - %s', field_key, err)
+        return False
+    except exceptions.AuthError as err:
+        flask.current_app.logger.debug('Permission failed: %s - %s', field_key, err)
         return False
     return True
 
@@ -133,7 +138,7 @@ def validate_permissions(data: list) -> bool:
     if not isinstance(data, list):
         raise ValueError('Must be a list')
     for entry in data:
-        if entry not in PERMISSIONS:
+        if entry not in user.PERMISSIONS:
             raise ValueError(f'Bad entry ({entry})')
     return True
 
@@ -188,7 +193,7 @@ def validate_properties(data: dict) -> bool:
     """
     Validate input for the ``properties`` field.
 
-    It must be a dict.
+    It must be a dict. The user must have DATA_MANAGEMENT permissions.
 
     Args:
         data (dict): The data to be validated.
@@ -199,6 +204,8 @@ def validate_properties(data: dict) -> bool:
     Raises:
         ValueError: Validation failed.
     """
+    if not user.has_permission('DATA_MANAGEMENT'):
+        raise exceptions.AuthError(f'Permission DATA_MANAGEMENT required')
     if not isinstance(data, dict):
         raise ValueError(f'Not a  dict ({data})')
     for key in data:
