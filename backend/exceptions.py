@@ -1,2 +1,4 @@
+"""Custom exception definitions."""
+
 class AuthError(Exception):
-    """Permission check failed"""
+    """Raised if a permission check fails."""
