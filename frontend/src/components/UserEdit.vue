@@ -15,6 +15,14 @@
           style="width: 400em">
     <q-card-section>
       <q-list>
+        <q-item>
+          <q-item-section>
+            <q-input outlined
+                     label="UUID"
+                     v-model="userData._id"
+                     disable />
+          </q-item-section>
+        </q-item>
         <q-item-label caption>User Data</q-item-label>
         <q-item>
           <q-item-section>
