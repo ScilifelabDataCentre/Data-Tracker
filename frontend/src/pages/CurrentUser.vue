@@ -7,6 +7,13 @@
       <q-input outlined
                filled
                stack-label
+               label="UUID"
+               :value="currentUser._id"
+               class="q-my-sm"
+               disable />
+      <q-input outlined
+               filled
+               stack-label
                label="Email"
                :value="currentUser.email"
                disable />
