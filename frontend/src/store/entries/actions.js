@@ -68,7 +68,7 @@ export function getUserActions ({ commit, dispatch }, payload) {
   return new Promise((resolve, reject) => {
     if (payload !== 'me') {
       axios
-        .get('/api/v1/user/' + payload.id + '/actions/')
+        .get('/api/v1/user/' + payload + '/actions/')
         .then((response) => {
           commit('UPDATE_USER_ACTIONS', response.data.logs);
           resolve(response);

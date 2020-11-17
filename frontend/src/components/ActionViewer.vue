@@ -6,6 +6,9 @@
       User Actions
     </q-card-section>
     <q-card-section>
+      <div v-if="!isLoading && actions.length === 0">
+        No actions logged for user.
+      </div>
       <q-list>
         <q-expansion-item expand-separator
                           v-for="entry in actions"
@@ -32,14 +35,12 @@
                   </q-field>
                 </q-item-section>
               </q-item>
-              <q-item>
+              <q-item v-if="entry.dataType !== 'user'">
                 <q-item-section>
                   <q-btn flat
                          color="primary"
                          :label="'Go to ' + entry.dataType"
-                         :to="entry.dataType === 'user' 
-                              ? { 'name': 'User Manager' } 
-                              : { 'name': capitalize(entry.dataType) + ' About', 'params': { 'uuid': entry.entryId } }" />
+                         :to="{ 'name': capitalize(entry.dataType) + ' About', 'params': { 'uuid': entry.entryId } }" />
                 </q-item-section>
               </q-item>
             </q-list>
