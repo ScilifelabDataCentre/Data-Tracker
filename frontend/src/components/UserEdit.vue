@@ -15,9 +15,11 @@
           style="width: 400em">
     <q-card-section>
       <q-list>
-        <q-item>
+        <q-item v-show="uuid !== ''">
           <q-item-section>
             <q-input outlined
+                     filled
+                     stack-label
                      label="UUID"
                      v-model="userData._id"
                      disable />
@@ -86,8 +88,7 @@
               <q-chip v-for="authId in userData.authIds"
                       :key="authId"
                       :label="authId"
-                      color="primary"
-                      text-color="white"
+                      color="grey-2"
                       square />
             </q-item>
             <q-item-label caption>API Key</q-item-label>
@@ -109,7 +110,23 @@
             </q-item>
           </div>
         </div>
-      </q-list>    
+      </q-list>
+    </q-card-section>
+
+    <q-card-section v-if="currentUser.permissions.includes('USER_MANAGEMENT') && uuid !==''">
+      <q-btn label="Logs"
+             color="primary"
+             class="q-mx-sm"
+             @click="showLogs = true"/>
+      <q-btn label="Actions"
+             color="primary"
+             class="q-mx-sm"
+             @click="showActions = true"/>
+      <log-viewer v-model="showLogs"
+                  dataType="user"
+                  :uuid="uuid"/>
+      <action-viewer v-model="showActions"
+                     :uuid="uuid" />
     </q-card-section>
 
     <q-card-actions align="right">
@@ -151,11 +168,13 @@
       </q-card-actions>
     </q-card>
   </q-dialog>
-
 </q-dialog>
 </template>
 
 <script>
+import LogViewer from 'components/LogViewer.vue'
+import ActionViewer from 'components/ActionViewer.vue'
+
 export default {
   name: 'UserEdit',
 
@@ -179,6 +198,11 @@ export default {
       if (Object.keys(this.userData).length)
         this.loadPermissions();
     }
+  },
+
+  components: {
+    'log-viewer': LogViewer,
+    'action-viewer': ActionViewer,
   },
 
   computed: {
@@ -211,6 +235,8 @@ export default {
       newApiKeyError: false,
       userDataSaveError: false,
       userDataSaveWaiting: false,
+      showActions: false,
+      showLogs: false,
     }
   },
 

@@ -30,7 +30,8 @@
               :props="props">
           {{ col.value }}
         </q-td>
-        <q-td auto-width>
+        <q-td auto-width
+              v-if="currentUser.permissions.includes('USER_MANAGEMENT')">
           <q-btn flat
                  dense
                  round
@@ -108,6 +109,11 @@ export default {
   },
 
   computed: {
+    currentUser: {
+      get () {
+        return this.$store.state.currentUser.info;
+      },
+    },
     userList: {
       get () {
         return this.$store.state.entries.entryList;
