@@ -18,7 +18,7 @@
              v-model="key"
              @keyup.enter="addProperty"
              class="col-10" />
-    <q-btn icon="fas fa-property"
+    <q-btn icon="fas fa-tags"
            color="positive"
            @click="addProperty"
            label="Add"
@@ -40,7 +40,7 @@
                     class="cursor-pointer" />
           </template>
           <template v-slot:prepend>
-            <q-icon name="fas fa-property"
+            <q-icon name="fas fa-tag"
                     color="primary"/>
           </template>
         </q-input>

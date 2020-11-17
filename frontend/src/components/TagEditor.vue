@@ -18,7 +18,7 @@
              v-model="newTag"
              @keyup.enter="addTag"
              class="col-10" />
-    <q-btn icon="fas fa-tag"
+    <q-btn icon="fas fa-tags"
            color="positive"
            @click="addTag"
            label="Add"
