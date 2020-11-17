@@ -289,7 +289,7 @@ export default {
         .then(() => {
           this.showConfirmDelete = false;
           this.updateVisibility(false);
-          this.$emit('userChanged', true);
+          this.$emit('user-changed', true);
         })
         .catch((err) => this.deleteError = true)
         .finally(() => this.isDeleting = false);
@@ -315,7 +315,7 @@ export default {
                                                  dataType: this.dataType})
         .then(() => {
           this.updateVisibility(false);
-          this.$emit('userChanged', true);
+          this.$emit('user-changed', true);
         })
         .catch(() => this.userDataSaveError = true)
         .finally(() => {
