@@ -10,6 +10,11 @@ export function UPDATE_ENTRY_LOG (state, payload) {
 }
 
 
+export function UPDATE_USER_ACTIONS (state, payload) {
+  state.actions = payload;
+}
+
+
 export function UPDATE_ENTRY_FIELDS (state, payload) {
   let key = '';
   for (key in payload) {
@@ -48,6 +53,11 @@ export function RESET_ENTRY (state) {
 
 export function RESET_ENTRY_LOG (state) {
   state.logs = [];
+}
+
+
+export function RESET_USER_ACTIONS (state) {
+  state.actions = [];
 }
 
 
