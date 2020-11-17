@@ -64,7 +64,7 @@ export default {
     },
     uuid: {
       type: String,
-      required: true,
+      default: '',
     },
     value: {
       type: Boolean,
@@ -95,13 +95,12 @@ export default {
   },
 
   mounted () {
-    if (this.uuid !== '') {
+    if (this.uuid !== '' || this.dataType === 'me') {
       this.$store.dispatch('entries/resetEntryLog')
         .then(() => {
           this.$store.dispatch('entries/getEntryLog', {'id': this.uuid,
                                                        'dataType': this.dataType})
-            .then(() => this.isLoading = false)
-            .catch(() => this.isLoading = false);
+            .finally(() => this.isLoading = false);
         });
     }
   },
