@@ -143,7 +143,7 @@ def add_dataset():  # pylint: disable=too-many-branches
             order = flask.g.db['orders'].find_one({'_id': order_uuid})
 
             utils.make_log('order',
-                           'update',
+                           'edit',
                            f'Dataset {result_ds.inserted_id} added for order',
                            order)
 
