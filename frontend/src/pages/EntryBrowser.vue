@@ -46,6 +46,15 @@
               {{ props.row._id }}
             </div>
           </q-card-section>
+          <q-card-section>
+            <q-chip square
+                    color="grey-3"
+                    v-for="entry in props.row.tags"
+                    :key="entry">
+              <q-avatar color="secondary" text-color="white" icon="fas fa-tag" />
+              {{ entry }}
+            </q-chip>
+          </q-card-section>
           <q-card-section class="column justify-end items-center">
             <q-btn
               flat
@@ -133,6 +142,13 @@ export default {
           field: 'title',
           required: true,
           sortable: true
+        },
+        {
+          name: 'tags',
+          label: 'Tags',
+          field: 'tags',
+          required: false,
+          sortable: false
         }
       ]
     }
