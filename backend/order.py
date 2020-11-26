@@ -41,7 +41,8 @@ def list_orders():
     if user.has_permission('DATA_MANAGEMENT'):
         orders = list(flask.g.db['orders'].find(projection={'_id': 1,
                                                             'title': 1,
-                                                            'tags': 1}))
+                                                            'tags': 1,
+                                                            'properties': 1}))
     else:
         orders = list(flask.g.db['orders']
                       .find({'editors': flask.g.current_user['_id']},

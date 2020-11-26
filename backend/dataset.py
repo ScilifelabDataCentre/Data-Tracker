@@ -15,7 +15,8 @@ def list_datasets():
     """Provide a simplified list of all available datasets."""
     results = list(flask.g.db['datasets'].find(projection={'title': 1,
                                                            '_id': 1,
-                                                           'tags': 1}))
+                                                           'tags': 1,
+                                                           'properties': 1}))
     return utils.response_json({'datasets': results})
 
 
