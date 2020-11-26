@@ -466,7 +466,7 @@ def add_new_user(user_info: dict):
             utils.make_log('user',
                            'edit',
                            'Add OIDC entry to auth_ids',
-                           email_user,
+                           db_user,
                            no_user=True)
 
     else:
