@@ -13,7 +13,9 @@ blueprint = flask.Blueprint('collection', __name__)  # pylint: disable=invalid-n
 @blueprint.route('/', methods=['GET'])
 def list_collection():
     """Provide a simplified list of all available collections."""
-    results = list(flask.g.db['collections'].find())
+    results = list(flask.g.db['collections'].find(projection={'title': 1,
+                                                              '_id': 1,
+                                                              'tags': 1}))
     return utils.response_json({'collections': results})
 
 
