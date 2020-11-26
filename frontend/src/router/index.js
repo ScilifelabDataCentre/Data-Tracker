@@ -5,6 +5,8 @@ import routes from './routes'
 
 Vue.use(VueRouter)
 
+import { Cookies } from 'quasar'
+
 /*
  * If not building with SSR mode, you can
  * directly export the Router instantiation;
@@ -24,6 +26,15 @@ export default function (/* { store, ssrContext } */) {
     // quasar.conf.js -> build -> publicPath
     mode: process.env.VUE_ROUTER_MODE,
     base: process.env.VUE_ROUTER_BASE
+  })
+
+  Router.beforeEach((to, from, next) => {
+    if (to.matched.some(record => record.meta.loginRequired) && !Cookies.get('loggedIn')) {
+        next({name: 'Login', params: {origin: {name: to.name, path: to.path}}});
+    }
+    else {
+      next();
+    }
   })
 
   return Router

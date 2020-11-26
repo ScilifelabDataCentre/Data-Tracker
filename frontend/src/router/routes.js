@@ -53,6 +53,9 @@ const routes = [
   {
     path: '/me',
     component:  MainLayout,
+    meta: {
+      'loginRequired': true,
+    },
     children: [
       {
         path: '',
@@ -66,7 +69,8 @@ const routes = [
     path: '/orders',
     component:  MainLayout,
     meta: {
-      'accessReq': ['ordersSelf'],
+      'permissionRequired': ['ORDERS'],
+      'loginRequired': true,
     },
     children: [
       {
@@ -123,7 +127,8 @@ const routes = [
         path: 'user',
         component: UserManager,
         meta: {
-          'accessReq': ['userManagement'],
+          'permissionRequired': ['USER_MANAGEMENT'],
+          'loginRequired': true,
         },
         name: 'User Manager',
       },

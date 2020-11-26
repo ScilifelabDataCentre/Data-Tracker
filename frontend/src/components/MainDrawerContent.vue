@@ -29,7 +29,7 @@
               v-bind="link" />
     <q-item clickable
             tag="a"
-            :href="logoutLink.link">
+            @click="logOut">
       <q-item-section v-if="logoutLink.icon"
                       avatar>
         <q-icon :name="logoutLink.icon" />
@@ -150,6 +150,16 @@ export default {
     drawerOpen: {
       type: Boolean,
       default: true
+    }
+  },
+
+  methods: {
+    logOut () {
+      this.$store.dispatch('currentUser/logOut')
+        .then(() => {
+          this.$router.push({ 'name': 'Home' })
+          this.$store.dispatch('currentUser/getInfo');
+        });
     }
   }
 }

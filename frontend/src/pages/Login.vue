@@ -22,7 +22,7 @@
                 :key="authName">
           <q-btn type="a"
                  class="text-capitalize"
-                 :href="oidcTypes[authName]"
+                 @click="attemptOidcLogin(oidcTypes[authName])"
                  :label="authName"
                  color="primary">
           </q-btn>
@@ -54,9 +54,9 @@
     </q-card-section>
     <q-card-section>
       <q-btn label="Submit"
-             @click="submitLogin"
+             @click="submitKeyLogin"
              color="primary"/>
-      <p v-show="badLogin" class="text-caption text-negative">Bad login credentials</p>
+      <p v-show="badKeyLogin" class="text-caption text-negative">Bad login credentials</p>
     </q-card-section>
   </q-card>
 </q-page>
@@ -68,6 +68,15 @@ import axios from 'axios'
 export default {
   name: 'LoginPage',
 
+  props: {
+    origin: {
+      type: Object,
+      default () {
+        return {name: 'Home', path: '/'}
+      }
+    },
+  },
+
   data() {
     return {
       'oidcTypes': {},
@@ -75,24 +84,36 @@ export default {
         'apiUser': '',
         'apiKey': '',
       },
-      'badLogin': false,
+      'badKeyLogin': false,
+      'badOidcLogin': false,
       'oidcLoading': true,
       'oidcError': false,
     }
   },
 
   methods: {
-    submitLogin(event) {
+    attemptOidcLogin(endpoint) {
+      axios.get(endpoint)
+        .then(() => {
+          this.$router.push({name: this.origin.name});
+          this.$store.dispatch('currentUser/getInfo');
+        })
+        .catch(() => {
+          this.badOidcLogin = true;
+        });
+    },
+
+    submitKeyLogin(event) {
       event.preventDefault();
       let loginData = {'api-key': this.loginInfo.apiKey,
                        'api-user': this.loginInfo.apiUser};
       this.$store.dispatch('currentUser/loginKey', loginData)
         .then(() => {
-          this.$router.push("/");
+          this.$router.push({name: this.origin.name});
           this.$store.dispatch('currentUser/getInfo');
         })
         .catch(() => {
-          this.badLogin = true;
+          this.badKeyLogin = true;
         });
     },
   },
