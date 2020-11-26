@@ -122,7 +122,7 @@ def oidc_authorize(auth_name):
         user.add_new_user(user_info)
         user.do_login(user_info['auth_id'])
 
-    response = flask.redirect('/', code=302)
+    response = flask.Response(status=200)
     response.set_cookie('loggedIn', 'true')
     return flask.redirect('/')
 
@@ -141,7 +141,7 @@ def key_login():
         return flask.Response(status=400)
     utils.verify_api_key(indata['api-user'], indata['api-key'])
     user.do_login(auth_id=indata['api-user'])
-    response = flask.redirect('/', code=302)
+    response = flask.Response(status=200)
     response.set_cookie('loggedIn', 'true')
     return response
 
@@ -150,7 +150,7 @@ def key_login():
 def logout():
     """Log out the current user."""
     flask.session.clear()
-    response = flask.redirect('/', code=302)
+    response = flask.Response(status=200)
     response.set_cookie('_csrf_token', utils.gen_csrf_token(), 0)
     response.set_cookie('loggedIn', 'false', 0)
     return response
