@@ -45,7 +45,7 @@
 
   <user-edit v-model="showUserEdit"
              :uuid="userId"
-             @userChanged="loadData"/>
+             @user-changed="loadData"/>
 
 </q-page>
 </template>
