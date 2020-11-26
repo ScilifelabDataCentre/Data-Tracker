@@ -398,8 +398,7 @@ def test_add_order(mdb):
                 assert order[field] == user_list
             curr_user = db['users'].find_one({'auth_ids': USERS[response.role]})
 
-            assert set(order['editors']) == set([uuid.UUID(entry) for entry in indata[field]] +
-                                                [curr_user['_id']])
+            assert set(order['editors']) == set([uuid.UUID(entry) for entry in indata[field]])
             assert order['organisation'] == uuid.UUID(indata['organisation'])
         elif response.role == 'no-login':
             assert response.code == 401
@@ -783,7 +782,9 @@ def test_list_all_orders(mdb):
             assert response.code == 200
             assert len(response.data['orders']) == nr_orders
             assert set(response.data['orders'][0].keys()) == {'title',
-                                                              '_id'}
+                                                              '_id',
+                                                              'tags',
+                                                              'properties'}
         elif response.role == 'no-login':
             assert response.code == 401
             assert not response.data
