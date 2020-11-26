@@ -227,6 +227,9 @@ def update_collection(identifier):  # pylint: disable=too-many-branches
     if 'datasets' in indata:
         indata['datasets'] = [utils.str_to_uuid(value) for value in indata['datasets']]
 
+    if 'editors' in indata and not indata['editors']:
+        indata['editors'] = [flask.g.current_user['_id']]
+
     is_different = False
     for field in indata:
         if indata[field] != collection[field]:

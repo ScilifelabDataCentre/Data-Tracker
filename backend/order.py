@@ -208,7 +208,7 @@ def add_order():
 
     new_order.update(indata)
 
-    if flask.g.current_user['_id'] not in new_order['editors']:
+    if not new_order['editors']:
         new_order['editors'].append(flask.g.current_user['_id'])
 
     # add to db
@@ -308,6 +308,9 @@ def update_order(identifier: str):  # pylint: disable=too-many-branches
             break
 
     order.update(indata)
+
+    if not order['editors']:
+        order['editors'] = [flask.g.current_user['_id']]
 
     if is_different:
         result = flask.g.db['orders'].update_one({'_id': order['_id']}, {'$set': order})
