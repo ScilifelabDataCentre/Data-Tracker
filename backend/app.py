@@ -152,6 +152,7 @@ def logout():
     flask.session.clear()
     response = flask.redirect('/', code=302)
     response.set_cookie('_csrf_token', utils.gen_csrf_token(), 0)
+    response.set_cookie('loggedIn', 'false', 0)
     return response
 
 
