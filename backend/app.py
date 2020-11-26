@@ -122,6 +122,8 @@ def oidc_authorize(auth_name):
         user.add_new_user(user_info)
         user.do_login(user_info['auth_id'])
 
+    response = flask.redirect('/', code=302)
+    response.set_cookie('loggedIn', 'true')
     return flask.redirect('/')
 
 
@@ -139,7 +141,9 @@ def key_login():
         return flask.Response(status=400)
     utils.verify_api_key(indata['api-user'], indata['api-key'])
     user.do_login(auth_id=indata['api-user'])
-    return flask.Response(status=200)
+    response = flask.redirect('/', code=302)
+    response.set_cookie('loggedIn', 'true')
+    return response
 
 
 @app.route('/api/v1/logout/')

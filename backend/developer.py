@@ -18,7 +18,9 @@ def login(identifier: str):
     """
     res = user.do_login(auth_id=identifier)
     if res:
-        return flask.Response(status=200)
+        response = flask.Response(status=200)
+        response.set_cookie('loggedIn', 'true')
+        return response
     return flask.Response(status=500)
 
 
