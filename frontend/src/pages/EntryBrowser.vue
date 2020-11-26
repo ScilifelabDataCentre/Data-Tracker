@@ -49,6 +49,12 @@
           <q-card-section>
             <q-chip square
                     color="grey-3"
+                    v-for="field in Object.keys(props.row.properties)"
+                    :key="field">
+              <span class="text-bold text-capitalize text-blue-9 q-mr-sm">{{ field }}</span> {{ props.row.properties[field] }}
+            </q-chip>
+            <q-chip square
+                    color="grey-3"
                     v-for="entry in props.row.tags"
                     :key="entry">
               <q-avatar color="secondary" text-color="white" icon="fas fa-tag" />
@@ -136,6 +142,13 @@ export default {
           field: 'title',
           required: true,
           sortable: true
+        },
+        {
+          name: 'properties',
+          label: 'Properties',
+          field: 'properties',
+          required: false,
+          sortable: false
         },
         {
           name: 'tags',
