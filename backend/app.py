@@ -126,7 +126,6 @@ def oidc_authorize(auth_name):
     response = flask.redirect(flask.session['incoming_url'])
     del flask.session['incoming_url']
     response.set_cookie('loggedIn', 'true')
-    flask.session['user_id'] = user_info['_id']
     return response
 
 
