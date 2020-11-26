@@ -4,6 +4,17 @@
 
   <q-card class="q-my-md">
     <q-card-section>
+      <span class="text-h5">User Data</span>
+    </q-card-section>
+
+    <q-card-section>
+      <q-input outlined
+               filled
+               stack-label
+               label="UUID"
+               :value="currentUser._id"
+               class="q-my-sm"
+               disable />
       <q-input outlined
                filled
                stack-label
@@ -49,10 +60,11 @@
 
   <q-card>
     <q-card-section>
-      <span class="text-h4">Permissions</span>
+      <span class="text-h5">Permissions</span>
     </q-card-section>
     <q-card-section class="flex text-bold">
-      <q-chip color="blue-9"
+      <q-chip square
+              color="blue-9"
               text-color="white"
               v-for="perm in currentUser.permissions"
               :key="perm"
@@ -62,20 +74,42 @@
 
   <q-card class="q-my-md">
     <q-card-section>
-      <span class="text-h4">API Key</span>
+      <span class="text-h5">Logs</span>
     </q-card-section>
-    
+    <q-card-section>
+      <q-btn label="Logs"
+             color="primary"
+             class="q-mx-sm"
+             @click="showLogs = true"/>
+      <q-btn label="Actions"
+             color="primary"
+             class="q-mx-sm"
+             @click="showActions = true"/>
+    </q-card-section>
+
+    <log-viewer v-model="showLogs"
+                dataType="me" />
+    <action-viewer v-model="showActions"
+                   uuid="me" />
+  </q-card>
+
+  <q-card class="q-my-md">
+    <q-card-section>
+      <span class="text-h5">API Key</span>
+    </q-card-section>
+
     <q-card-section>
       <span class="text-h6">Available Authentication IDs:</span>
       <q-list>
         <q-item v-for="authId in currentUser.authIds"
                 :key="authId">
-          <q-item-section>
-            {{ authId }}
-          </q-item-section>
+          <q-chip square
+                  color="grey-2"
+                  :label="authId" />
         </q-item>
       </q-list>
     </q-card-section>
+
     <q-card-section>
       <q-btn color="positive"
              label="Generate new API key"
@@ -96,8 +130,8 @@
 </template>
 
 <script>
-import { format } from 'quasar'
-const { capitalize } = format
+import LogViewer from 'components/LogViewer.vue'
+import ActionViewer from 'components/ActionViewer.vue'
 
 export default {
   name: 'CurrentUserInfo',
@@ -110,6 +144,11 @@ export default {
     }
   },
 
+  components: {
+    'log-viewer': LogViewer,
+    'action-viewer': ActionViewer,
+  },
+  
   data () {
     return {
       userData: {},
@@ -122,6 +161,8 @@ export default {
       newApiKey: '',
       newApiKeyError: false,
       newApiKeyWaiting: false,
+      showActions: false,
+      showLogs: false,
     }
   },
 

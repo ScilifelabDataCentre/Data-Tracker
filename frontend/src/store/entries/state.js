@@ -3,5 +3,6 @@ export default function () {
     entry: {},
     entryList: [],
     logs: [],
+    actions: [],
   }
 }

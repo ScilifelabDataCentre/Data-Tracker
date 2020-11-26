@@ -38,7 +38,7 @@ def basic_check_indata(indata: dict,
             values in ``reference_data``. Defaults to ``None``.
 
     Returns:
-        tuple: (``bool``: whether the check passed, ``code``: Suggested http code)
+        namedtuple: (``bool``: whether the check passed, ``code``: Suggested http code)
     """
     if prohibited is None:
         prohibited = []
@@ -56,8 +56,9 @@ def basic_check_indata(indata: dict,
         if key not in reference_data:
             flask.current_app.logger.debug('Bad key (%s)', key)
             return ValidationResult(result=False, status=400)
-        if not validate.validate_field(key, indata[key]):
-            return ValidationResult(result=False, status=400)
+        if indata[key] != reference_data[key]:
+            if not validate.validate_field(key, indata[key]):
+                return ValidationResult(result=False, status=400)
     return ValidationResult(result=True, status=200)
 
 

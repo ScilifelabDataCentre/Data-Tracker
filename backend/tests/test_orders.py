@@ -83,10 +83,6 @@ def test_get_order(mdb):
                 assert len(order[field]) == len(data[field])
                 for ds in order[field]:
                     assert ds in data[field]
-            elif field == 'tags_standard':
-                assert order[field] == data['tagsStandard']
-            elif field == 'tags_user':
-                assert order[field] == data['tagsUser']
             else:
                 assert order[field] == data[field]
 
@@ -99,10 +95,6 @@ def test_get_order_structure():
 
     reference = structure.order()
     reference['_id'] = ''
-    reference['tagsStandard'] = reference['tags_standard']
-    del reference['tags_standard']
-    reference['tagsUser'] = reference['tags_user']
-    del reference['tags_user']
 
     response = make_request(session, '/api/v1/order/base/')
     assert response.code == 200
@@ -385,7 +377,6 @@ def test_add_order(mdb):
               'editors': [str(orders_user['_id'])],
               'generators': [str(orders_user['_id'])],
               'organisation': str(orders_user['_id']),
-              'tags_standard': {'collection': 'testing'},
               'title': 'Test title'}
     indata.update(TEST_LABEL)
 
@@ -401,14 +392,13 @@ def test_add_order(mdb):
             order = db['orders'].find_one({'_id': uuid.UUID(response.data['_id'])})
 
             user_list = [orders_user['_id']]
-            for field in ('description', 'title', 'tags_standard', 'tags_user'):
+            for field in ('description', 'title'):
                 assert order[field] == indata[field]
             for field in ('authors', 'generators'):
                 assert order[field] == user_list
             curr_user = db['users'].find_one({'auth_ids': USERS[response.role]})
 
-            assert set(order['editors']) == set([uuid.UUID(entry) for entry in indata[field]] +
-                                                [curr_user['_id']])
+            assert set(order['editors']) == set([uuid.UUID(entry) for entry in indata[field]])
             assert order['organisation'] == uuid.UUID(indata['organisation'])
         elif response.role == 'no-login':
             assert response.code == 401
@@ -569,9 +559,8 @@ def test_update_order_data(mdb):
     as_user(session, USERS['orders'])
     for order in orders:
         indata = {'title': 'Test title - updated by orders user',
-                  'description': 'Test description - updated by orders user',
-                  'tags_user': {'updated': 'yes'}}
-        indata['tags_user'].update(TEST_LABEL['tags_user'])
+                  'description': 'Test description - updated by orders user'}
+        indata.update(TEST_LABEL)
 
         response = make_request(session,
                                 f'/api/v1/order/{order["_id"]}/',
@@ -709,8 +698,9 @@ def test_delete_order(mdb):
 
     orders_user = db['users'].find_one({'auth_ids': USERS['orders']})
 
-    # must be updated if TEST_LABEL is modified
-    orders = list(db['orders'].find({'tags_user.testing': 'true'}))
+    orders = list(db['orders'].find(TEST_LABEL))
+    if not orders:
+        assert False
     i = 0
     while i < len(orders):
         for role in USERS:
@@ -792,7 +782,9 @@ def test_list_all_orders(mdb):
             assert response.code == 200
             assert len(response.data['orders']) == nr_orders
             assert set(response.data['orders'][0].keys()) == {'title',
-                                                              '_id'}
+                                                              '_id',
+                                                              'tags',
+                                                              'properties'}
         elif response.role == 'no-login':
             assert response.code == 401
             assert not response.data

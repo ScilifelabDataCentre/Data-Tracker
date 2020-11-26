@@ -40,7 +40,9 @@ def list_orders():
     """
     if user.has_permission('DATA_MANAGEMENT'):
         orders = list(flask.g.db['orders'].find(projection={'_id': 1,
-                                                            'title': 1}))
+                                                            'title': 1,
+                                                            'tags': 1,
+                                                            'properties': 1}))
     else:
         orders = list(flask.g.db['orders']
                       .find({'editors': flask.g.current_user['_id']},
@@ -193,6 +195,12 @@ def add_order():
     if not validation.result:
         flask.abort(status=validation.status)
 
+    # properties may only be set by users with DATA_MANAGEMENT
+    if 'properties' in indata:
+        if not user.has_permission('DATA_MANAGEMENT'):
+            flask.abort(403)
+
+    # convert all incoming uuids to uuid.UUID
     for field in ('editors', 'authors', 'generators'):
         if field in indata:
             indata[field] = [utils.str_to_uuid(entry) for entry in indata[field]]
@@ -202,7 +210,7 @@ def add_order():
 
     new_order.update(indata)
 
-    if flask.g.current_user['_id'] not in new_order['editors']:
+    if not new_order['editors']:
         new_order['editors'].append(flask.g.current_user['_id'])
 
     # add to db
@@ -283,6 +291,11 @@ def update_order(identifier: str):  # pylint: disable=too-many-branches
     if not validation.result:
         flask.abort(status=validation.status)
 
+    # properties may only be set by users with DATA_MANAGEMENT
+    if 'properties' in indata:
+        if not user.has_permission('DATA_MANAGEMENT'):
+            flask.abort(403)
+
     for field in ('editors', 'authors', 'generators'):
         if field in indata:
             indata[field] = [utils.str_to_uuid(entry) for entry in indata[field]]
@@ -297,6 +310,9 @@ def update_order(identifier: str):  # pylint: disable=too-many-branches
             break
 
     order.update(indata)
+
+    if not order['editors']:
+        order['editors'] = [flask.g.current_user['_id']]
 
     if is_different:
         result = flask.g.db['orders'].update_one({'_id': order['_id']}, {'$set': order})

@@ -3,12 +3,15 @@
           @input="updateVisibility">
   <q-card>
     <q-card-section class="text-h5 text-center">
-      Entry History
+      User Actions
     </q-card-section>
     <q-card-section>
+      <div v-if="!isLoading && actions.length === 0">
+        No actions logged for user.
+      </div>
       <q-list>
         <q-expansion-item expand-separator
-                          v-for="entry in logs"
+                          v-for="entry in actions"
                           :key="entry._id"
                           :label="capitalize(entry.comment) + ' (' + entry.action.toUpperCase() + ')'"
                           :caption="entry.timestamp">
@@ -17,21 +20,28 @@
               <q-item>
                 <q-item-section>
                   <q-field stack-label
-                           label="User">
-                    {{ entry.user }}
+                           label="Data Type"
+                           outlined>
+                    {{ capitalize(entry.dataType) }}
                   </q-field>
                 </q-item-section>
               </q-item>
-              <q-item-label header>
-                Changes
-              </q-item-label>
-              <q-item v-for="key in Object.keys(entry.data)" :key="key">
+              <q-item>
                 <q-item-section>
                   <q-field stack-label
-                           :label="key">
-                    {{ entry.data[key] }}
+                           label="Entry UUID"
+                           outlined>
+                    {{ entry.entryId }}
                   </q-field>
-                  </q-item-section>
+                </q-item-section>
+              </q-item>
+              <q-item v-if="entry.dataType !== 'user'">
+                <q-item-section>
+                  <q-btn flat
+                         color="primary"
+                         :label="'Go to ' + entry.dataType"
+                         :to="{ 'name': capitalize(entry.dataType) + ' About', 'params': { 'uuid': entry.entryId } }" />
+                </q-item-section>
               </q-item>
             </q-list>
           </q-card>
@@ -55,16 +65,12 @@ import { format } from 'quasar'
 const { capitalize } = format
 
 export default {
-  name: 'LogViewer',
+  name: 'ActionViewer',
 
   props: {
-    dataType: {
-      type: String,
-      required: true
-    },
     uuid: {
       type: String,
-      default: '',
+      required: true,
     },
     value: {
       type: Boolean,
@@ -73,9 +79,9 @@ export default {
   },
 
   computed: {
-    logs: {
+    actions: {
       get () {
-        return this.$store.state.entries.logs;
+        return this.$store.state.entries.actions;
       },
     },
   },
@@ -95,11 +101,10 @@ export default {
   },
 
   mounted () {
-    if (this.uuid !== '' || this.dataType === 'me') {
-      this.$store.dispatch('entries/resetEntryLog')
+    if (this.uuid !== '') {
+      this.$store.dispatch('entries/resetUserActions')
         .then(() => {
-          this.$store.dispatch('entries/getEntryLog', {'id': this.uuid,
-                                                       'dataType': this.dataType})
+          this.$store.dispatch('entries/getUserActions', this.uuid)
             .finally(() => this.isLoading = false);
         });
     }

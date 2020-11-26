@@ -100,16 +100,14 @@
 
   <q-card>
     <q-card-section>
-      <tag-editor fieldTitle="Standard Tags"
-                  helpText="Set standard tags"
-                  fieldDataName="tagsStandard"
-                  :isLoading="isLoading"/>
+      <property-editor fieldTitle="Properties"
+                       helpText="Set properties"
+                       fieldDataName="properties"
+                       :isLoading="isLoading"/>
     </q-card-section>
     <q-card-section>
-      <tag-editor fieldTitle="User Tags"
-                  helpText="Set user tags"
-                  fieldDataName="tagsUser"
-                  :isLoading="isLoading"/>
+      <tag-editor :isLoading="isLoading"
+                  v-model="tags"/>
     </q-card-section>
   </q-card>
   </div>
@@ -117,12 +115,14 @@
 </template>
 
 <script>
+import PropertyEditor from 'components/PropertyEditor.vue'
 import TagEditor from 'components/TagEditor.vue'
 
 export default {
   name: 'DatasetEdit',
 
   components: {
+    'property-editor': PropertyEditor,
     'tag-editor': TagEditor,
   },
 
@@ -141,6 +141,15 @@ export default {
     dataset: {
       get () {
         return this.$store.state.entries.entry;
+      },
+    },
+
+    tags: {
+      get () {
+        return this.$store.state.entries.entry.tags;
+      },
+      set (newValue) {
+        this.$store.dispatch('entries/setEntryFields', {'tags': newValue});
       },
     },
 

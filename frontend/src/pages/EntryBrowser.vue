@@ -37,7 +37,7 @@
 
     <template v-slot:item="props">
       <div class="col-xs-12 col-md-6 col-lg-4 col-xl-3 row self-stretch">
-        <q-card class="q-ma-xs bg-grey-2 col">
+        <q-card class="q-ma-xs bg-grey-2 col" @click="gotoEntry(props.row._id)">
           <q-card-section class="text-center">
             <div class="text-h6 bg-grey-4 q-mb-xs q-pa-xs">
               {{ props.row.title }}
@@ -46,11 +46,20 @@
               {{ props.row._id }}
             </div>
           </q-card-section>
-          <q-card-section class="column justify-end items-center">
-            <q-btn
-              flat
-              label="More"
-              :to="{ name: pageAbout, params: { 'uuid': props.row._id } }" />
+          <q-card-section>
+            <q-chip square
+                    color="grey-3"
+                    v-for="field in Object.keys(props.row.properties)"
+                    :key="field">
+              <span class="text-bold text-capitalize text-blue-9 q-mr-sm">{{ field }}</span> {{ props.row.properties[field] }}
+            </q-chip>
+            <q-chip square
+                    color="grey-3"
+                    v-for="entry in props.row.tags"
+                    :key="entry">
+              <q-avatar color="secondary" text-color="white" icon="fas fa-tag" />
+              {{ entry }}
+            </q-chip>
           </q-card-section>
         </q-card>
       </div>
@@ -133,12 +142,29 @@ export default {
           field: 'title',
           required: true,
           sortable: true
+        },
+        {
+          name: 'properties',
+          label: 'Properties',
+          field: 'properties',
+          required: false,
+          sortable: false
+        },
+        {
+          name: 'tags',
+          label: 'Tags',
+          field: 'tags',
+          required: false,
+          sortable: false
         }
       ]
     }
   },
 
   methods: {
+    gotoEntry (uuid) {
+      this.$router.push({ name: this.pageAbout, params: { 'uuid': uuid } });
+    },
     loadData () {
       this.$store.dispatch('entries/resetEntryList')
         .then(() => this.loading = true)

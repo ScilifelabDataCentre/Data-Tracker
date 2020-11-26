@@ -25,6 +25,7 @@ services:
       dockerfile: Dockerfile-frontend
     ports:
       - 127.0.0.1:8080:8080
+    restart: on-failure
     volumes:
       - type: bind
         source: ./frontend/src

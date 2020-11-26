@@ -13,7 +13,10 @@ blueprint = flask.Blueprint('collection', __name__)  # pylint: disable=invalid-n
 @blueprint.route('/', methods=['GET'])
 def list_collection():
     """Provide a simplified list of all available collections."""
-    results = list(flask.g.db['collections'].find())
+    results = list(flask.g.db['collections'].find(projection={'title': 1,
+                                                              '_id': 1,
+                                                              'tags': 1,
+                                                              'properties': 1}))
     return utils.response_json({'collections': results})
 
 
@@ -122,6 +125,11 @@ def add_collection():  # pylint: disable=too-many-branches
     if not validation[0]:
         flask.abort(status=validation[1])
 
+    # properties may only be set by users with DATA_MANAGEMENT
+    if 'properties' in indata:
+        if not user.has_permission('DATA_MANAGEMENT'):
+            flask.abort(403)
+
     if 'title' not in indata:
         flask.abort(status=400)
 
@@ -214,8 +222,16 @@ def update_collection(identifier):  # pylint: disable=too-many-branches
     if not validation[0]:
         flask.abort(status=validation[1])
 
+    # properties may only be set by users with DATA_MANAGEMENT
+    if 'properties' in indata:
+        if not user.has_permission('DATA_MANAGEMENT'):
+            flask.abort(403)
+
     if 'datasets' in indata:
         indata['datasets'] = [utils.str_to_uuid(value) for value in indata['datasets']]
+
+    if 'editors' in indata and not indata['editors']:
+        indata['editors'] = [flask.g.current_user['_id']]
 
     is_different = False
     for field in indata:

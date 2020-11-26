@@ -15,6 +15,16 @@
           style="width: 400em">
     <q-card-section>
       <q-list>
+        <q-item v-show="uuid !== ''">
+          <q-item-section>
+            <q-input outlined
+                     filled
+                     stack-label
+                     label="UUID"
+                     v-model="userData._id"
+                     disable />
+          </q-item-section>
+        </q-item>
         <q-item-label caption>User Data</q-item-label>
         <q-item>
           <q-item-section>
@@ -78,8 +88,7 @@
               <q-chip v-for="authId in userData.authIds"
                       :key="authId"
                       :label="authId"
-                      color="primary"
-                      text-color="white"
+                      color="grey-2"
                       square />
             </q-item>
             <q-item-label caption>API Key</q-item-label>
@@ -101,11 +110,35 @@
             </q-item>
           </div>
         </div>
-      </q-list>    
+      </q-list>
+    </q-card-section>
+
+    <q-card-section v-if="currentUser.permissions.includes('USER_MANAGEMENT') && uuid !==''">
+      <q-btn label="Logs"
+             color="primary"
+             class="q-mx-sm"
+             @click="showLogs = true"/>
+      <q-btn label="Actions"
+             color="primary"
+             class="q-mx-sm"
+             @click="showActions = true"/>
+      <log-viewer v-model="showLogs"
+                  dataType="user"
+                  :uuid="uuid"/>
+      <action-viewer v-model="showActions"
+                     :uuid="uuid" />
     </q-card-section>
 
     <q-card-actions align="right">
-      <span v-if="userDataSaveError" class="text-negative q-mr-sm">Save failed</span>
+      <span v-show="userDataSaveError" class="text-negative">Save failed</span>
+    </q-card-actions>
+
+    <q-card-actions align="right">
+      <q-btn label="Delete"
+             color="negative"
+             @click="showConfirmDelete = true"
+             :loading="userDataSaveWaiting"
+             class="text-negative q-mr-xl" />
       <q-btn label="Cancel" color="grey-6" v-close-popup />
       <q-btn label="Save"
              color="positive"
@@ -117,10 +150,31 @@
       <q-spinner-dots size="md" color="primary" />
     </q-inner-loading>
   </q-card>
+
+  <q-dialog v-model="showConfirmDelete">
+    <q-card>
+      <q-card-section class="row items-center">
+        <q-avatar icon="fas fa-trash" color="alert" text-color="primary" />
+        <span class="q-ml-sm">Are you sure you want to delete this {{ dataType }}?</span>
+      </q-card-section>
+
+      <q-card-actions align="right">
+        <q-btn flat label="Cancel" color="grey-7" v-close-popup />
+        <q-btn flat
+               :loading="isDeleting"
+               label="Delete"
+               color="negative"
+               @click="deleteEntry" />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
 </q-dialog>
 </template>
 
 <script>
+import LogViewer from 'components/LogViewer.vue'
+import ActionViewer from 'components/ActionViewer.vue'
+
 export default {
   name: 'UserEdit',
 
@@ -146,6 +200,11 @@ export default {
     }
   },
 
+  components: {
+    'log-viewer': LogViewer,
+    'action-viewer': ActionViewer,
+  },
+
   computed: {
     storedUser: {
       get () {
@@ -162,7 +221,10 @@ export default {
   data () {
     return {
       isLoading: false,
+      isDeleting: false,
       loadingError: false,
+      deleteError: false,
+      showConfirmDelete: false,
       userData: {},
       dataType: 'user',
       isLoadingPermissions: false,
@@ -173,6 +235,8 @@ export default {
       newApiKeyError: false,
       userDataSaveError: false,
       userDataSaveWaiting: false,
+      showActions: false,
+      showLogs: false,
     }
   },
 
@@ -180,7 +244,7 @@ export default {
     loadData () {
       this.isLoading = true;
       this.loadingError = false;
-      if (this.uuid === '') {
+      if (this.uuid === '' && this.uuid === 'default') {
         this.$store.dispatch('entries/resetEntry')
           .then(() => {
             this.$store.dispatch('entries/getEmptyEntry', this.dataType)
@@ -218,6 +282,19 @@ export default {
       this.$emit('input', value)
     },
 
+    deleteEntry() {
+      this.isDeleting = true;
+      this.$store.dispatch('entries/deleteEntry', {'id': this.uuid,
+                                                   'dataType': this.dataType})
+        .then(() => {
+          this.showConfirmDelete = false;
+          this.updateVisibility(false);
+          this.$emit('user-changed', true);
+        })
+        .catch((err) => this.deleteError = true)
+        .finally(() => this.isDeleting = false);
+    },
+
     saveUser () {
       this.userDataSaveError = false;
       this.userDataSaveWaiting = true;
@@ -238,11 +315,7 @@ export default {
                                                  dataType: this.dataType})
         .then(() => {
           this.updateVisibility(false);
-          this.loading = true;
-          this.loadingError = false;
-          this.$store.dispatch('entries/getEntries', 'user')
-            .catch(() => this.loadingError = true)
-            .finally(() => this.loading = false);
+          this.$emit('user-changed', true);
         })
         .catch(() => this.userDataSaveError = true)
         .finally(() => {

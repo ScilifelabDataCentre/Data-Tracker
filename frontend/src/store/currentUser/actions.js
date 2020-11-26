@@ -34,7 +34,6 @@ export function genApiKey() {
   
 export function loginKey (context, payload) {
   return new Promise((resolve, reject) => {
-    console.log('was here');
     axios
       .post('/api/v1/login/apikey/',
             payload,
@@ -42,14 +41,16 @@ export function loginKey (context, payload) {
               headers: getCsrfHeader(),
             })
       .then((response) => {
-        console.log('success');
         resolve(response);
       })
       .catch((err) => {
-        console.log('failure');
         reject(err);
       });
   });
+}
+
+export function logOut (context) {
+  return axios.get('/api/v1/logout')
 }
 
 export function getOrders ({ commit }) {

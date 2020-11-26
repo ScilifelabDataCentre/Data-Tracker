@@ -98,7 +98,8 @@ def get_current_user_info():
         flask.Response: json structure for the user
     """
     data = flask.g.current_user
-    outstructure = {'affiliation': '',
+    outstructure = {'_id': '',
+                    'affiliation': '',
                     'auth_ids': [],
                     'email': '',
                     'contact': '',
@@ -452,11 +453,11 @@ def add_new_user(user_info: dict):
     Args:
         user_info (dict): Information about the user
     """
-    email_user = flask.g.db['users'].find_one({'email': user_info['email']})
-    if email_user:
-        email_user['auth_ids'].append(user_info['auth_id'])
+    db_user = flask.g.db['users'].find_one({'email': user_info['email']})
+    if db_user:
+        db_user['auth_ids'].append(user_info['auth_id'])
         result = flask.g.db['users'].update_one({'email': user_info['email']},
-                                                {'$set': {'auth_ids': email_user['auth_ids']}})
+                                                {'$set': {'auth_ids': db_user['auth_ids']}})
         if not result.acknowledged:
             flask.current_app.logger.error('Failed to add new auth_id to user with email %s',
                                            user_info['email'])
@@ -465,7 +466,7 @@ def add_new_user(user_info: dict):
             utils.make_log('user',
                            'edit',
                            'Add OIDC entry to auth_ids',
-                           email_user,
+                           db_user,
                            no_user=True)
 
     else:

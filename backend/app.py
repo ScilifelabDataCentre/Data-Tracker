@@ -12,11 +12,16 @@ import order
 import collection
 import user
 import utils
+import db_management
 
 from authlib.integrations.flask_client import OAuth
 
 app = flask.Flask(__name__)  # pylint: disable=invalid-name
-app.config.update(config.init())
+appconf = config.init()
+db_management.check_db(appconf)
+app.config.update(appconf)
+
+
 
 if app.config['dev_mode']['api']:
     app.register_blueprint(developer.blueprint, url_prefix='/api/v1/developer')
@@ -95,6 +100,7 @@ def oidc_login(auth_name):
     redirect_uri = flask.url_for('oidc_authorize',
                                  auth_name=auth_name,
                                  _external=True)
+    flask.session['incoming_url'] = flask.request.args.get('origin') or '/'
     return client.authorize_redirect(redirect_uri)
 
 
@@ -117,7 +123,10 @@ def oidc_authorize(auth_name):
         user.add_new_user(user_info)
         user.do_login(user_info['auth_id'])
 
-    return flask.redirect('/')
+    response = flask.redirect(flask.session['incoming_url'])
+    del flask.session['incoming_url']
+    response.set_cookie('loggedIn', 'true')
+    return response
 
 
 # requests
@@ -134,15 +143,18 @@ def key_login():
         return flask.Response(status=400)
     utils.verify_api_key(indata['api-user'], indata['api-key'])
     user.do_login(auth_id=indata['api-user'])
-    return flask.Response(status=200)
+    response = flask.Response(status=200)
+    response.set_cookie('loggedIn', 'true')
+    return response
 
 
 @app.route('/api/v1/logout/')
 def logout():
     """Log out the current user."""
     flask.session.clear()
-    response = flask.redirect('/', code=302)
+    response = flask.Response(status=200)
     response.set_cookie('_csrf_token', utils.gen_csrf_token(), 0)
+    response.set_cookie('loggedIn', 'false', 0)
     return response
 
 

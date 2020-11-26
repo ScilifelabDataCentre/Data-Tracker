@@ -15,38 +15,27 @@
     <q-input stack-label
              outlined
              label="New Tag Name"
-             v-model="key"
+             v-model="newTag"
              @keyup.enter="addTag"
              class="col-10" />
-    <q-btn icon="fas fa-tag"
+    <q-btn icon="fas fa-tags"
            color="positive"
            @click="addTag"
            label="Add"
            class="col-2"
            flat/>
   </div>
-  <q-list dense>
-    <q-item v-for="tagKey of Object.keys(fieldEntries)" :key="tagKey">
-      <q-item-section>
-        <q-input stack-label
-                 outlined
-                 :label="tagKey"
-                 @input="setTag(tagKey, $event)"
-                 :value="fieldEntries[tagKey]">
-          <template v-slot:append>
-            <q-icon name="fas fa-minus-circle"
-                    color="negative"
-                    @click="deleteTag(tagKey)"
-                    class="cursor-pointer" />
-          </template>
-          <template v-slot:prepend>
-            <q-icon name="fas fa-tag"
-                    color="primary"/>
-          </template>
-        </q-input>
-      </q-item-section>
-    </q-item>
-  </q-list>
+  <div class="flex q-ma-sm">
+    <q-chip v-for="tag of value"
+            :key="tag"
+            square
+            removable
+            color="grey-3"
+            @remove="deleteTag(tag)">
+      <q-avatar color="secondary" text-color="white" icon="fas fa-tag" />
+      {{ tag }}
+    </q-chip>
+  </div>
   <q-inner-loading :showing="isLoading">
     <q-spinner-gears size="100px" color="primary" />
   </q-inner-loading>
@@ -57,66 +46,40 @@
 export default {
   name: 'TagEditor',
 
-  computed: {
-    fieldEntries: {
-      get () {
-        if (!this.isLoading)
-          return this.$store.state.entries.entry[this.fieldDataName];
-        return {}
-      }
-    },
-  },
-
   props: {
-    fieldTitle: {
-      type: String,
-      required: true,
-    },
-
-    fieldDataName: {
-      type: String,
-      required: true,
-    },
-
-    helpText: {
-      type: String,
-      default: '',
-    },
-
     isLoading: {
       type: Boolean,
-      default: true
-    }
+      default: false,
+    },
+
+    value: {
+      type: Array,
+      required: true,
+    },
   },
 
   data () {
     return {
-      key: '',
+      newTag: '',
+      helpText: 'Add and remove tags',
+      fieldTitle: 'Tags',
+      tagExistsError: false,
     }
   },
 
   methods: {
-    addTag(event) {
-      event.preventDefault();
-      if (this.key.length > 0 && !Object.keys(this.fieldEntries).includes(this.key)) {
-        this.$store.dispatch('entries/addTag',
-                             {'tagName': this.fieldDataName,
-                              'key': this.key});
-        this.key = '';
+    addTag() {
+      this.tagExistsError = false;
+      if (!this.value.includes(this.newTag)) {
+        this.$emit('input', this.value.concat(this.newTag))
+        this.newTag = '';
       }
+      else
+        this.tagExistsError = true;
     },
 
-    setTag(keyName, value) {
-      let outObject = {};
-      outObject[keyName] = value;
-      this.$store.dispatch('entries/setTag',
-                           {'tagName': this.fieldDataName,
-                            'value': outObject});
-    },
-
-    deleteTag(keyName) {
-      this.$store.dispatch('entries/deleteTag',
-                           {'tagName': this.fieldDataName, 'key': keyName});
+    deleteTag(tagName) {
+      this.$emit('input', this.value.filter((entry) => entry !== tagName))
     },
   },
 }

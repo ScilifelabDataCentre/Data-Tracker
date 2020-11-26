@@ -37,15 +37,57 @@ export function getLocalEntry ({ commit, dispatch }, payload) {
 export function getEntryLog ({ commit, dispatch }, payload) {
   // payload: {'id': id, 'dataType': dataType}
   return new Promise((resolve, reject) => {
-    axios
-      .get('/api/v1/' + payload.dataType + '/' + payload.id + '/log/')
-      .then((response) => {
-        commit('UPDATE_ENTRY_LOG', response.data.logs);
-        resolve(response);
-      })
-      .catch((err) => {
-        reject(err);
-      });
+    if (payload.dataType !== 'me') {
+      axios
+        .get('/api/v1/' + payload.dataType + '/' + payload.id + '/log/')
+        .then((response) => {
+          commit('UPDATE_ENTRY_LOG', response.data.logs);
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    }
+    else {
+      axios
+        .get('/api/v1/user/me/log/')
+        .then((response) => {
+          commit('UPDATE_ENTRY_LOG', response.data.logs);
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    }
+  });
+}
+
+
+export function getUserActions ({ commit, dispatch }, payload) {
+  // payload: uuid or 'me'
+  return new Promise((resolve, reject) => {
+    if (payload !== 'me') {
+      axios
+        .get('/api/v1/user/' + payload + '/actions/')
+        .then((response) => {
+          commit('UPDATE_USER_ACTIONS', response.data.logs);
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    }
+    else {
+      axios
+        .get('/api/v1/user/me/actions/')
+        .then((response) => {
+          commit('UPDATE_USER_ACTIONS', response.data.logs);
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    }
   });
 }
 
@@ -146,31 +188,30 @@ export function setEntryFields({ commit }, data) {
 }
 
 
-// expects payLoad: {'tagName': tagName, 'key': keyName}
-export function addTag({ commit }, payload) {
+// expects payLoad: {'propertyName': propertyName, 'key': keyName}
+export function addProperty({ commit }, payload) {
   return new Promise((resolve, reject) => {
-    commit('ADD_TAG', payload);
+    commit('ADD_PROPERTY', payload);
     resolve();
   });
 }
 
 
 // expects payLoad: {'tagName': tagName, 'value': {key: value}}
-export function setTag({ commit }, payload) {
+export function setProperty({ commit }, payload) {
   return new Promise((resolve, reject) => {
-    commit('UPDATE_TAG', payload);
+    commit('UPDATE_PROPERTY', payload);
     resolve();
   });
 }
 
-// expects payLoad: {'tagName': tagName, 'key': keyName}
-export function deleteTag({ commit }, payload) {
+// expects payLoad: {'propertyName': propertyName, 'key': keyName}
+export function deleteProperty({ commit }, payload) {
   return new Promise((resolve, reject) => {
-    commit('DELETE_TAG', payload);
+    commit('DELETE_PROPERTY', payload);
     resolve();
   });
 }
-
 
 export function resetEntryList({ commit }) {
   return new Promise((resolve, reject) => {
@@ -191,6 +232,14 @@ export function resetEntry({ commit }) {
 export function resetEntryLog({ commit }) {
   return new Promise((resolve, reject) => {
     commit('RESET_ENTRY_LOG');
+    resolve();
+  });
+}
+
+
+export function resetUserActions({ commit }) {
+  return new Promise((resolve, reject) => {
+    commit('RESET_USER_ACTIONS');
     resolve();
   });
 }

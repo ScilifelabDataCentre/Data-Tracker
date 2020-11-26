@@ -229,10 +229,6 @@ export default {
       else
         orderToSubmit.id = ''
       delete orderToSubmit._id;
-      orderToSubmit.tags_standard = orderToSubmit.tagsStandard;
-      orderToSubmit.tags_user = orderToSubmit.tagsUser;
-      delete orderToSubmit.tagsStandard;
-      delete orderToSubmit.tagsUser;
       delete orderToSubmit.datasets;
       this.isSaving = true;
       this.$store.dispatch('entries/saveEntry', {data: orderToSubmit,

@@ -2,22 +2,16 @@ import MainLayout from 'layouts/MainLayout.vue'
 
 const Index = () => import(/* webpackChunkName: "base" */ 'pages/Index.vue')
 const About = () => import(/* webpackChunkName: "base" */ 'pages/About.vue')
+const UserGuide = () => import(/* webpackChunkName: "base" */ 'pages/UserGuide.vue')
+const Login = () => import(/* webpackChunkName: "base" */ 'pages/Login.vue')
+const CurrentUser = () => import(/* webpackChunkName: "base" */ 'pages/CurrentUser.vue')
 
-const Login = () => import(/* webpackChunkName: "user" */ 'pages/Login.vue')
-
-const BaseContainer = () => import(/* webpackChunkName: "base" */ 'pages/BaseContainer.vue')
-
-const CollectionInfo = () => import(/* webpackChunkName: "collection" */ 'pages/CollectionInfo.vue')
-
-const DatasetInfo = () => import(/* webpackChunkName: "dataset" */ 'pages/DatasetInfo.vue')
-
-const OrderInfo = () => import(/* webpackChunkName: "order" */ 'pages/OrderInfo.vue')
-
-const EntryBrowser = () => import(/* webpackChunkName: "browser" */ 'pages/EntryBrowser.vue')
+const CollectionInfo = () => import(/* webpackChunkName: "data" */ 'pages/CollectionInfo.vue')
+const DatasetInfo = () => import(/* webpackChunkName: "data" */ 'pages/DatasetInfo.vue')
+const OrderInfo = () => import(/* webpackChunkName: "data" */ 'pages/OrderInfo.vue')
+const EntryBrowser = () => import(/* webpackChunkName: "data" */ 'pages/EntryBrowser.vue')
 
 const UserManager = () => import(/* webpackChunkName: "admin" */ 'pages/UserManager.vue')
-
-const CurrentUser = () => import(/* webpackChunkName: "current" */ 'pages/CurrentUser.vue')
 
 const routes = [
   {
@@ -26,8 +20,13 @@ const routes = [
     children: [
       { path: '', component: Index, name: 'Home'},
       { path: 'about', component: About, name: 'About' },
-      { path: 'guide', component: About, name: 'User Guide' },
-      { path: 'login', component: Login, name: 'Login' },
+      { path: 'guide', component: UserGuide, name: 'User Guide' },
+      {
+        path: 'login',
+        component: Login,
+        name: 'Login',
+        props: true
+      },
     ]
   },
 
@@ -59,6 +58,9 @@ const routes = [
   {
     path: '/me',
     component:  MainLayout,
+    meta: {
+      'loginRequired': true,
+    },
     children: [
       {
         path: '',
@@ -72,7 +74,8 @@ const routes = [
     path: '/orders',
     component:  MainLayout,
     meta: {
-      'accessReq': ['ordersSelf'],
+      'permissionRequired': ['ORDERS'],
+      'loginRequired': true,
     },
     children: [
       {
@@ -129,7 +132,8 @@ const routes = [
         path: 'user',
         component: UserManager,
         meta: {
-          'accessReq': ['userManagement'],
+          'permissionRequired': ['USER_MANAGEMENT'],
+          'loginRequired': true,
         },
         name: 'User Manager',
       },
