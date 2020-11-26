@@ -37,7 +37,7 @@
 
     <template v-slot:item="props">
       <div class="col-xs-12 col-md-6 col-lg-4 col-xl-3 row self-stretch">
-        <q-card class="q-ma-xs bg-grey-2 col">
+        <q-card class="q-ma-xs bg-grey-2 col" @click="gotoEntry(props.row._id)">
           <q-card-section class="text-center">
             <div class="text-h6 bg-grey-4 q-mb-xs q-pa-xs">
               {{ props.row.title }}
@@ -54,12 +54,6 @@
               <q-avatar color="secondary" text-color="white" icon="fas fa-tag" />
               {{ entry }}
             </q-chip>
-          </q-card-section>
-          <q-card-section class="column justify-end items-center">
-            <q-btn
-              flat
-              label="More"
-              :to="{ name: pageAbout, params: { 'uuid': props.row._id } }" />
           </q-card-section>
         </q-card>
       </div>
@@ -155,6 +149,9 @@ export default {
   },
 
   methods: {
+    gotoEntry (uuid) {
+      this.$router.push({ name: this.pageAbout, params: { 'uuid': uuid } });
+    },
     loadData () {
       this.$store.dispatch('entries/resetEntryList')
         .then(() => this.loading = true)
