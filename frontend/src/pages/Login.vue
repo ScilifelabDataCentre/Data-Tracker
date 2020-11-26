@@ -22,7 +22,7 @@
                 :key="authName">
           <q-btn type="a"
                  class="text-capitalize"
-                 @click="attemptOidcLogin(oidcTypes[authName])"
+                 :href="oidcTypes[authName] + '?origin=' + origin.path"
                  :label="authName"
                  color="primary">
           </q-btn>

@@ -100,6 +100,7 @@ def oidc_login(auth_name):
     redirect_uri = flask.url_for('oidc_authorize',
                                  auth_name=auth_name,
                                  _external=True)
+    flask.session['incoming_url'] = flask.Request.args.get('origin') or '/'
     return client.authorize_redirect(redirect_uri)
 
 
@@ -122,9 +123,11 @@ def oidc_authorize(auth_name):
         user.add_new_user(user_info)
         user.do_login(user_info['auth_id'])
 
-    response = flask.Response(status=200)
+    response = flask.redirect(flask.session['incoming_url'])
+    del flask.session['incoming_url']
     response.set_cookie('loggedIn', 'true')
-    return flask.redirect('/')
+    flask.session['user_id'] = user['_id']
+    return response
 
 
 # requests

@@ -21,7 +21,12 @@ const routes = [
       { path: '', component: Index, name: 'Home'},
       { path: 'about', component: About, name: 'About' },
       { path: 'guide', component: UserGuide, name: 'User Guide' },
-      { path: 'login', component: Login, name: 'Login' },
+      {
+        path: 'login',
+        component: Login,
+        name: 'Login',
+        props: true
+      },
     ]
   },
 
