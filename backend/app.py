@@ -1,6 +1,7 @@
 """Main app for the Data Tracker."""
 
 import json
+import datetime
 import logging
 
 import flask
@@ -20,7 +21,7 @@ app = flask.Flask(__name__)  # pylint: disable=invalid-name
 appconf = config.init()
 db_management.check_db(appconf)
 app.config.update(appconf)
-
+app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(days=31)
 
 
 if app.config['dev_mode']['api']:
@@ -125,7 +126,7 @@ def oidc_authorize(auth_name):
 
     response = flask.redirect(flask.session['incoming_url'])
     del flask.session['incoming_url']
-    response.set_cookie('loggedIn', 'true')
+    response.set_cookie('loggedIn', 'true', max_age=datetime.timedelta(days=31))
     return response
 
 
@@ -144,7 +145,7 @@ def key_login():
     utils.verify_api_key(indata['api-user'], indata['api-key'])
     user.do_login(auth_id=indata['api-user'])
     response = flask.Response(status=200)
-    response.set_cookie('loggedIn', 'true')
+    response.set_cookie('loggedIn', 'true', max_age=datetime.timedelta(days=31))
     return response
 
 

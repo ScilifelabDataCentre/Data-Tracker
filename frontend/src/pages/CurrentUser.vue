@@ -172,6 +172,7 @@ export default {
       this.userDataSaveError = false;
       this.userDataSaveWaiting = true;
       let toSubmit = JSON.parse(JSON.stringify(this.userData));
+      delete toSubmit._id;
       this.$store.dispatch('currentUser/updateInfo', toSubmit)
         .then(() => {
           this.$store.dispatch('currentUser/getInfo');
