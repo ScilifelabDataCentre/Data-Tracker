@@ -235,8 +235,8 @@ export default {
                                {
                                  'title': data.title,
                                  'description': data.description,
-                                 'tagsStandard': data.tagsStandard,
-                                 'tagsUser': data.tagsUser,
+                                 'properties': data.properties,
+                                 'tags': data.tags,
                                });
           this.isLoadingOrderData = false;
         })
