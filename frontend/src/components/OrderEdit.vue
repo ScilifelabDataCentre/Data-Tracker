@@ -111,12 +111,6 @@ export default {
     }
   },
 
-  watch: {
-    order (newValue) {
-      this.tags = newValue;
-    }
-  },
-  
   computed: {
     order: {
       get () {
