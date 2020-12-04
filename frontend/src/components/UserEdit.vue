@@ -299,14 +299,18 @@ export default {
       this.userDataSaveError = false;
       this.userDataSaveWaiting = true;
       let toSubmit = JSON.parse(JSON.stringify(this.userData));
-      toSubmit.id = toSubmit._id;
+      if (this.uuid == '') {
+        toSubmit.id = '';
+      }
+      else {
+        toSubmit.id = toSubmit._id;
+      }
       delete toSubmit._id;
       delete toSubmit.authIds;
       if (this.uuid === '') {
         delete toSubmit.apiKey;
         delete toSubmit.apiSalt;
       }
-      console.log(!this.currentUser.permissions.includes('USER_MANAGEMENT'));
       if (!this.currentUser.permissions.includes('USER_MANAGEMENT'))
         delete toSubmit.permissions;
       else 
