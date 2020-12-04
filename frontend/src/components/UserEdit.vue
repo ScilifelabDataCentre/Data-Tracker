@@ -184,6 +184,7 @@ export default {
       required: true,
     },
     value: {
+      // visibility for v-model
       type: Boolean,
       required: true,
     },
@@ -195,8 +196,7 @@ export default {
     },
     storedUser () {
       this.userData = JSON.parse(JSON.stringify(this.storedUser));
-      if (Object.keys(this.userData).length)
-        this.loadPermissions();
+      this.loadPermissions();
     }
   },
 
@@ -268,12 +268,21 @@ export default {
       this.loadPermissionsError = false;
       this.$store.dispatch('adminUsers/getPermissionTypes')
         .then((data) => {
-          let key;
-          for (key of data) {
-            this.$set(this.permissions, key,
-                      this.userData.permissions.includes(key));
+          if (this.uuid !== '' && this.uuid !== 'default') {
+            let key;
+            for (key of data) {
+              this.$set(this.permissions, key,
+                        this.userData.permissions.includes(key));
+            }
           }
-        })
+          else {
+            let key;
+            for (key of data) {
+              this.$set(this.permissions, key,
+                        false);
+            }
+          }
+          })
         .catch((err) => this.loadPermissionsError = true)
         .finally(() => this.isLoadingPermissions = false);
     },
@@ -299,14 +308,18 @@ export default {
       this.userDataSaveError = false;
       this.userDataSaveWaiting = true;
       let toSubmit = JSON.parse(JSON.stringify(this.userData));
-      toSubmit.id = toSubmit._id;
+      if (this.uuid == '') {
+        toSubmit.id = '';
+      }
+      else {
+        toSubmit.id = toSubmit._id;
+      }
       delete toSubmit._id;
       delete toSubmit.authIds;
       if (this.uuid === '') {
         delete toSubmit.apiKey;
         delete toSubmit.apiSalt;
       }
-      console.log(!this.currentUser.permissions.includes('USER_MANAGEMENT'));
       if (!this.currentUser.permissions.includes('USER_MANAGEMENT'))
         delete toSubmit.permissions;
       else 

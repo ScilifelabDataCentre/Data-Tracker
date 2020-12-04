@@ -139,7 +139,7 @@ export default {
         {
           title: 'User guide',
           caption: 'How to use the Data Tracker',
-          icon: 'info',
+          icon: 'fas fa-map-signs',
           link:  { 'name': 'User Guide'}
         }
       ]
