@@ -1,5 +1,6 @@
 """Routes and functions intended to aid development and testing."""
 import copy
+import datetime
 
 import flask
 
@@ -19,7 +20,7 @@ def login(identifier: str):
     res = user.do_login(auth_id=identifier)
     if res:
         response = flask.Response(status=200)
-        response.set_cookie('loggedIn', 'true')
+        response.set_cookie('loggedIn', 'true', max_age=datetime.timedelta(days=31))
         return response
     return flask.Response(status=500)
 
