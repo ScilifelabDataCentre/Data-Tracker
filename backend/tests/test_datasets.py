@@ -11,30 +11,82 @@ from helpers import make_request, as_user, make_request_all_roles,\
     add_dataset, delete_dataset, USER_RE
 
 
-def test_list_user_datasets(mdb):
+def test_list_datasets(mdb):
     """
-    Choose a few users.
+    Confirm that listing datasets work as intended.
 
-    Compare the ids of datasets from the request to a db query.
+    Tests:
+
+      * Confirm all datasets in the database are listed.
+      * Confirm that the correct fields are included
+    """
+    responses = make_request_all_roles('/api/v1/dataset/', ret_json=True)
+    expected_fields = {'title', '_id', 'tags', 'properties'}
+    for response in responses:
+        assert response.code == 200
+        assert len(response.data['datasets']) == mdb['datasets'].count_documents({})
+        assert set(response.data['datasets'][0].keys()) == expected_fields
+
+
+def test_list_user_datasets_permissions():
+    """
+    Confirm that users get the correct status code response.
+
+    Tests:
+
+      * Confirm that non-logged in users get 401, logged in users 200
+    """
+    responses = make_request_all_roles('/api/v1/dataset/user/')
+    for response in responses:
+        if response.role == 'no-login':
+            assert response.code == 401
+        else:
+            assert response.code == 200
+
+
+def test_list_user_datasets_with_datasets(mdb):
+    """
+    Confirm that users get the correct datasets.
+
+    Tests:
+
+      * Select a few users, confirm that the returned datasets are correct
+      * Confirm that the included fields are the intended ones
     """
     session = requests.Session()
-    users = mdb['users'].aggregate([{'$sample': {'size': 5}},
-                                    {'$match': {'auth_ids': USER_RE}}])
+    orders = mdb['orders'].aggregate([{'$match': {'datasets': {'$not': {'$size': 0}}}},
+                                      {'$sample': {'size': 2}}])
+    user_uuids = list(itertools.chain.from_iterable(order['editors']
+                                                    for order in orders))
+    users = mdb['users'].find({'_id': {'$in': list(user_uuids)}})
     for user in users:
-        user_orders = list(mdb['orders'].find({'$or': [{'editors': user['_id']},
-                                                       {'receivers': user['_id']}],
-                                               'datasets': {'$not': {'$size': 0}}},
+        user_orders = list(mdb['orders'].find({'editors': user['_id']},
                                               {'datasets': 1}))
         user_datasets = list(itertools.chain.from_iterable(order['datasets']
-                                                           for order in user_orders))
+                                                           for order
+                                                           in user_orders))
         user_datasets = [str(uuid) for uuid in user_datasets]
 
         as_user(session, user['auth_ids'][0])
         response = make_request(session, '/api/v1/dataset/user/')
         assert response.code == 200
         assert len(user_datasets) == len(response.data['datasets'])
-        for dset in response.data['datasets']:
-            assert dset['_id'] in user_datasets
+        assert set(entry['_id'] for entry in response.data['datasets']) == set(user_datasets)
+
+
+def test_list_user_datasets_no_datasets():
+    """
+    Confirm that users with no datasets get the correct response.
+
+    Tests:
+
+      * Select a few users, confirm that no datasets are returned as intended
+    """
+    # *::testers should have no datasets
+    responses = make_request_all_roles('/api/v1/dataset/user/', ret_json=True)
+    for response in responses:
+        if response.role != 'no-login':
+            assert len(response.data['datasets']) == 0
 
 
 def test_random_dataset():
@@ -306,18 +358,6 @@ def test_dataset_update_bad(dataset_for_tests):
     assert not response.data
 
 
-def test_list_datasets(mdb):
-    """
-    Request a list of all datasets.
-
-    Should also test e.g. pagination once implemented.
-    """
-    responses = make_request_all_roles('/api/v1/dataset/', ret_json=True)
-    for response in responses:
-        assert response.code == 200
-        assert len(response.data['datasets']) == mdb['datasets'].count_documents({})
-
-
 def test_get_dataset_logs_permissions(mdb):
     """
     Get dataset logs.
@@ -384,7 +424,7 @@ def test_add_dataset_permissions(mdb):
                   'order': str(order['_id'])}
         indata.update(TEST_LABEL)
 
-        responses = make_request_all_roles(f'/api/v1/dataset/',
+        responses = make_request_all_roles('/api/v1/dataset/',
                                            method='POST',
                                            data=indata,
                                            ret_json=True)
@@ -404,7 +444,7 @@ def test_add_dataset_permissions(mdb):
         owner = db['users'].find_one({'_id': order['editors'][0]})
         as_user(session, owner['auth_ids'][0])
         response = make_request(session,
-                                f'/api/v1/dataset/',
+                                '/api/v1/dataset/',
                                 method='POST',
                                 data=indata)
         assert response.code == 200
@@ -428,7 +468,7 @@ def test_add_dataset(mdb):
     as_user(session, USERS['data'])
 
     response = make_request(session,
-                            f'/api/v1/dataset/',
+                            '/api/v1/dataset/',
                             method='POST',
                             data=indata,
                             ret_json=True)
@@ -464,7 +504,7 @@ def test_add_dataset_log(mdb):
     order_logs = list(mdb['logs'].find({'data_type': 'order', 'data._id': order['_id']}))
 
     response = make_request(session,
-                            f'/api/v1/dataset/',
+                            '/api/v1/dataset/',
                             method='POST',
                             data=indata,
                             ret_json=True)
@@ -487,9 +527,9 @@ def test_add_dataset_bad_fields(mdb):
 
     indata = {'_id': 'asd',
               'title': 'test title',
-              'order': str(order["_id"]),}
+              'order': str(order['_id']),}
     response = make_request(session,
-                            f'/api/v1/dataset/',
+                            '/api/v1/dataset/',
                             method='POST',
                             data=indata)
     assert response.code == 403
@@ -498,7 +538,7 @@ def test_add_dataset_bad_fields(mdb):
     indata = {'timestamp': 'asd',
               'title': 'test title'}
     response = make_request(session,
-                            f'/api/v1/dataset/',
+                            '/api/v1/dataset/',
                             method='POST',
                             data=indata)
     assert response.code == 400
@@ -507,7 +547,7 @@ def test_add_dataset_bad_fields(mdb):
     indata = {'extra': [{'asd': 123}],
               'title': 'test title'}
     response = make_request(session,
-                            f'/api/v1/dataset/',
+                            '/api/v1/dataset/',
                             method='POST',
                             data=indata)
     assert response.code == 400
@@ -516,7 +556,7 @@ def test_add_dataset_bad_fields(mdb):
     indata = {'links': [{'asd': 123}],
               'title': 'test title'}
     response = make_request(session,
-                            f'/api/v1/dataset/',
+                            '/api/v1/dataset/',
                             method='POST',
                             data=indata)
     assert response.code == 400
@@ -525,7 +565,7 @@ def test_add_dataset_bad_fields(mdb):
     indata = {'links': 'Some text',
               'title': 'test title'}
     response = make_request(session,
-                            f'/api/v1/dataset/',
+                            '/api/v1/dataset/',
                             method='POST',
                             data=indata)
     assert response.code == 400
