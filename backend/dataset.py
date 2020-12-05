@@ -24,8 +24,7 @@ def list_datasets():
 @user.login_required
 def list_user_data():
     """List all datasets belonging to current user."""
-    user_orders = list(flask.g.db['orders'].find({'$or': [{'receivers': flask.session['user_id']},
-                                                          {'editors': flask.session['user_id']}]},
+    user_orders = list(flask.g.db['orders'].find({'editors': flask.session['user_id']},
                                                  {'datasets': 1}))
     uuids = list(ds for entry in user_orders for ds in entry['datasets'])
     user_datasets = list(flask.g.db['datasets'].find({'_id': {'$in': uuids}}))
