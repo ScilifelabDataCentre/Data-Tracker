@@ -8,6 +8,7 @@ import re
 import secrets
 import uuid
 
+import argon2
 import bson
 import flask
 import pymongo
@@ -109,8 +110,8 @@ def gen_api_key_hash(api_key: str, salt: str):
     Returns:
         str: SHA512 hash as hex.
     """
-    ct_bytes = bytes.fromhex(api_key + salt)
-    return hashlib.sha512(ct_bytes).hexdigest()
+    ph = argon2.PasswordHasher()
+    return ph.hash(api_key + salt)
 
 
 def verify_api_key(username: str, api_key: str):
@@ -123,17 +124,12 @@ def verify_api_key(username: str, api_key: str):
         username (str): The username to check.
         api_key (str): The received API key (hex).
     """
+    ph = argon2.PasswordHasher()
     user_info = flask.g.db['users'].find_one({'auth_ids': username})
     if not user_info:
         flask.current_app.logger.warning('API key verification failed (bad username)')
         flask.abort(status=401)
-    try:
-        ct_bytes = bytes.fromhex(api_key + user_info['api_salt'])
-    except ValueError:
-        flask.current_app.logger.warning('Non-hex API key provided')
-        flask.abort(status=401)
-    new_hash = hashlib.sha512(ct_bytes).hexdigest()
-    if not new_hash == user_info['api_key']:
+    if not ph.verify(user_info['api_key'], api_key + user_info['salt']):
         flask.current_app.logger.warning('API key verification failed (bad hash)')
         flask.abort(status=401)
 
