@@ -43,11 +43,12 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">import</span> <span class="nn">datetime</span>
 <span class="kn">import</span> <span class="nn">hashlib</span>
-<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">html</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">secrets</span>
 <span class="kn">import</span> <span class="nn">uuid</span>
 
+<span class="kn">import</span> <span class="nn">argon2</span>
 <span class="kn">import</span> <span class="nn">bson</span>
 <span class="kn">import</span> <span class="nn">flask</span>
 <span class="kn">import</span> <span class="nn">pymongo</span>
@@ -59,7 +60,7 @@
 <span class="n">ValidationResult</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;ValidationResult&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;result&#39;</span><span class="p">,</span> <span class="s1">&#39;status&#39;</span><span class="p">])</span>
 
 
-<div class="viewcode-block" id="basic_check_indata"><a class="viewcode-back" href="../code.utils.html#utils.basic_check_indata">[docs]</a><span class="k">def</span> <span class="nf">basic_check_indata</span><span class="p">(</span><span class="n">indata</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+<div class="viewcode-block" id="basic_check_indata"><a class="viewcode-back" href="../utils.html#utils.basic_check_indata">[docs]</a><span class="k">def</span> <span class="nf">basic_check_indata</span><span class="p">(</span><span class="n">indata</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
                        <span class="n">reference_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
                        <span class="n">prohibited</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -78,7 +79,7 @@
 <span class="sd">            values in ``reference_data``. Defaults to ``None``.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        tuple: (``bool``: whether the check passed, ``code``: Suggested http code)</span>
+<span class="sd">        namedtuple: (``bool``: whether the check passed, ``code``: Suggested http code)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">prohibited</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">prohibited</span> <span class="o">=</span> <span class="p">[]</span>
@@ -86,23 +87,36 @@
     <span class="k">if</span> <span class="s1">&#39;title&#39;</span> <span class="ow">in</span> <span class="n">reference_data</span> <span class="ow">and</span> \
        <span class="ow">not</span> <span class="n">reference_data</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]</span> <span class="ow">and</span> \
        <span class="ow">not</span> <span class="n">indata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;title&#39;</span><span class="p">):</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Title empty&#39;</span><span class="p">)</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Title empty&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ValidationResult</span><span class="p">(</span><span class="n">result</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">indata</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">prohibited</span> <span class="ow">and</span> <span class="n">indata</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">!=</span> <span class="n">reference_data</span><span class="p">[</span><span class="n">key</span><span class="p">]:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Prohibited key (</span><span class="si">%s</span><span class="s1">) with new value&#39;</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+            <span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Prohibited key (</span><span class="si">%s</span><span class="s1">) with new value&#39;</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">ValidationResult</span><span class="p">(</span><span class="n">result</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">403</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">reference_data</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Bad key (</span><span class="si">%s</span><span class="s1">)&#39;</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+            <span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Bad key (</span><span class="si">%s</span><span class="s1">)&#39;</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">ValidationResult</span><span class="p">(</span><span class="n">result</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">validate</span><span class="o">.</span><span class="n">validate_field</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">indata</span><span class="p">[</span><span class="n">key</span><span class="p">]):</span>
-            <span class="k">return</span> <span class="n">ValidationResult</span><span class="p">(</span><span class="n">result</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">indata</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">!=</span> <span class="n">reference_data</span><span class="p">[</span><span class="n">key</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">validate</span><span class="o">.</span><span class="n">validate_field</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">indata</span><span class="p">[</span><span class="n">key</span><span class="p">]):</span>
+                <span class="k">return</span> <span class="n">ValidationResult</span><span class="p">(</span><span class="n">result</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">ValidationResult</span><span class="p">(</span><span class="n">result</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="escape_html"><a class="viewcode-back" href="../utils.html#utils.escape_html">[docs]</a><span class="k">def</span> <span class="nf">escape_html</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Escape e.g. html tags for the provided text.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data (str): The text to escape.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: The escaped text.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+
 <span class="c1"># csrf</span>
-<div class="viewcode-block" id="verify_csrf_token"><a class="viewcode-back" href="../code.utils.html#utils.verify_csrf_token">[docs]</a><span class="k">def</span> <span class="nf">verify_csrf_token</span><span class="p">():</span>
+<div class="viewcode-block" id="verify_csrf_token"><a class="viewcode-back" href="../utils.html#utils.verify_csrf_token">[docs]</a><span class="k">def</span> <span class="nf">verify_csrf_token</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compare the csrf token from the request (header) with the one in the cookie.session.</span>
 
@@ -110,11 +124,11 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">token</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;X-CSRFToken&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">token</span> <span class="ow">or</span> <span class="p">(</span><span class="n">token</span> <span class="o">!=</span> <span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">cookies</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;_csrf_token&#39;</span><span class="p">)):</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Bad csrf token received&#39;</span><span class="p">)</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Bad csrf token received&#39;</span><span class="p">)</span>
         <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="gen_csrf_token"><a class="viewcode-back" href="../code.utils.html#utils.gen_csrf_token">[docs]</a><span class="k">def</span> <span class="nf">gen_csrf_token</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="gen_csrf_token"><a class="viewcode-back" href="../utils.html#utils.gen_csrf_token">[docs]</a><span class="k">def</span> <span class="nf">gen_csrf_token</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generate a csrf token.</span>
 
@@ -125,7 +139,7 @@
 
 
 <span class="c1"># API key</span>
-<div class="viewcode-block" id="gen_api_key"><a class="viewcode-back" href="../code.utils.html#utils.gen_api_key">[docs]</a><span class="k">def</span> <span class="nf">gen_api_key</span><span class="p">():</span>
+<div class="viewcode-block" id="gen_api_key"><a class="viewcode-back" href="../utils.html#utils.gen_api_key">[docs]</a><span class="k">def</span> <span class="nf">gen_api_key</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generate an API key with salt.</span>
 
@@ -137,7 +151,7 @@
                   <span class="n">salt</span><span class="o">=</span><span class="n">secrets</span><span class="o">.</span><span class="n">token_hex</span><span class="p">(</span><span class="mi">32</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="gen_api_key_hash"><a class="viewcode-back" href="../code.utils.html#utils.gen_api_key_hash">[docs]</a><span class="k">def</span> <span class="nf">gen_api_key_hash</span><span class="p">(</span><span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">salt</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="gen_api_key_hash"><a class="viewcode-back" href="../utils.html#utils.gen_api_key_hash">[docs]</a><span class="k">def</span> <span class="nf">gen_api_key_hash</span><span class="p">(</span><span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">salt</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generate a hash of the api_key for storing/comparing to db.</span>
 
@@ -148,11 +162,11 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        str: SHA512 hash as hex.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">ct_bytes</span> <span class="o">=</span> <span class="nb">bytes</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="n">api_key</span> <span class="o">+</span> <span class="n">salt</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha512</span><span class="p">(</span><span class="n">ct_bytes</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span></div>
+    <span class="n">ph</span> <span class="o">=</span> <span class="n">argon2</span><span class="o">.</span><span class="n">PasswordHasher</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">ph</span><span class="o">.</span><span class="n">hash</span><span class="p">(</span><span class="n">api_key</span> <span class="o">+</span> <span class="n">salt</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="verify_api_key"><a class="viewcode-back" href="../code.utils.html#utils.verify_api_key">[docs]</a><span class="k">def</span> <span class="nf">verify_api_key</span><span class="p">(</span><span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="verify_api_key"><a class="viewcode-back" href="../utils.html#utils.verify_api_key">[docs]</a><span class="k">def</span> <span class="nf">verify_api_key</span><span class="p">(</span><span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Verify an API key against the value in the database.</span>
 
@@ -162,22 +176,17 @@
 <span class="sd">        username (str): The username to check.</span>
 <span class="sd">        api_key (str): The received API key (hex).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ph</span> <span class="o">=</span> <span class="n">argon2</span><span class="o">.</span><span class="n">PasswordHasher</span><span class="p">()</span>
     <span class="n">user_info</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;users&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;auth_ids&#39;</span><span class="p">:</span> <span class="n">username</span><span class="p">})</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">user_info</span><span class="p">:</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;API key verification failed (bad username)&#39;</span><span class="p">)</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;API key verification failed (bad username)&#39;</span><span class="p">)</span>
         <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">401</span><span class="p">)</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">ct_bytes</span> <span class="o">=</span> <span class="nb">bytes</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="n">api_key</span> <span class="o">+</span> <span class="n">user_info</span><span class="p">[</span><span class="s1">&#39;api_salt&#39;</span><span class="p">])</span>
-    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Non-hex API key provided&#39;</span><span class="p">)</span>
-        <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">401</span><span class="p">)</span>
-    <span class="n">new_hash</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha512</span><span class="p">(</span><span class="n">ct_bytes</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">new_hash</span> <span class="o">==</span> <span class="n">user_info</span><span class="p">[</span><span class="s1">&#39;api_key&#39;</span><span class="p">]:</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;API key verification failed (bad hash)&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">ph</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="n">user_info</span><span class="p">[</span><span class="s1">&#39;api_key&#39;</span><span class="p">],</span> <span class="n">api_key</span> <span class="o">+</span> <span class="n">user_info</span><span class="p">[</span><span class="s1">&#39;salt&#39;</span><span class="p">]):</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;API key verification failed (bad hash)&#39;</span><span class="p">)</span>
         <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">401</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="get_dbclient"><a class="viewcode-back" href="../code.utils.html#utils.get_dbclient">[docs]</a><span class="k">def</span> <span class="nf">get_dbclient</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">mongo_client</span><span class="o">.</span><span class="n">MongoClient</span><span class="p">:</span>
+<div class="viewcode-block" id="get_dbclient"><a class="viewcode-back" href="../utils.html#utils.get_dbclient">[docs]</a><span class="k">def</span> <span class="nf">get_dbclient</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">mongo_client</span><span class="o">.</span><span class="n">MongoClient</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the connection to the MongoDB database server.</span>
 
@@ -193,7 +202,7 @@
                                <span class="n">password</span><span class="o">=</span><span class="n">conf</span><span class="p">[</span><span class="s1">&#39;mongo&#39;</span><span class="p">][</span><span class="s1">&#39;password&#39;</span><span class="p">])</span></div>
 
 
-<div class="viewcode-block" id="get_db"><a class="viewcode-back" href="../code.utils.html#utils.get_db">[docs]</a><span class="k">def</span> <span class="nf">get_db</span><span class="p">(</span><span class="n">dbserver</span><span class="p">:</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">mongo_client</span><span class="o">.</span><span class="n">MongoClient</span><span class="p">,</span> <span class="n">conf</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">database</span><span class="o">.</span><span class="n">Database</span><span class="p">:</span>
+<div class="viewcode-block" id="get_db"><a class="viewcode-back" href="../utils.html#utils.get_db">[docs]</a><span class="k">def</span> <span class="nf">get_db</span><span class="p">(</span><span class="n">dbserver</span><span class="p">:</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">mongo_client</span><span class="o">.</span><span class="n">MongoClient</span><span class="p">,</span> <span class="n">conf</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">database</span><span class="o">.</span><span class="n">Database</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the connection to the MongoDB database.</span>
 
@@ -209,7 +218,7 @@
                                  <span class="n">codec_options</span><span class="o">=</span><span class="p">(</span><span class="n">codec_options</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="new_uuid"><a class="viewcode-back" href="../code.utils.html#utils.new_uuid">[docs]</a><span class="k">def</span> <span class="nf">new_uuid</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">:</span>
+<div class="viewcode-block" id="new_uuid"><a class="viewcode-back" href="../utils.html#utils.new_uuid">[docs]</a><span class="k">def</span> <span class="nf">new_uuid</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generate a uuid for a field in a MongoDB document.</span>
 
@@ -219,7 +228,7 @@
     <span class="k">return</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="str_to_uuid"><a class="viewcode-back" href="../code.utils.html#utils.str_to_uuid">[docs]</a><span class="k">def</span> <span class="nf">str_to_uuid</span><span class="p">(</span><span class="n">in_uuid</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">:</span>
+<div class="viewcode-block" id="str_to_uuid"><a class="viewcode-back" href="../utils.html#utils.str_to_uuid">[docs]</a><span class="k">def</span> <span class="nf">str_to_uuid</span><span class="p">(</span><span class="n">in_uuid</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert str uuid to uuid.UUID.</span>
 
@@ -237,7 +246,7 @@
 
 
 <span class="c1"># misc</span>
-<div class="viewcode-block" id="convert_keys_to_camel"><a class="viewcode-back" href="../code.utils.html#utils.convert_keys_to_camel">[docs]</a><span class="k">def</span> <span class="nf">convert_keys_to_camel</span><span class="p">(</span><span class="n">chunk</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<div class="viewcode-block" id="convert_keys_to_camel"><a class="viewcode-back" href="../utils.html#utils.convert_keys_to_camel">[docs]</a><span class="k">def</span> <span class="nf">convert_keys_to_camel</span><span class="p">(</span><span class="n">chunk</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert keys given in snake_case to camelCase.</span>
 
@@ -269,7 +278,7 @@
 <span class="n">REGEX</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;.*@.*\..*&#39;</span><span class="p">)}</span>
 
 
-<div class="viewcode-block" id="is_email"><a class="viewcode-back" href="../code.utils.html#utils.is_email">[docs]</a><span class="k">def</span> <span class="nf">is_email</span><span class="p">(</span><span class="n">indata</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="is_email"><a class="viewcode-back" href="../utils.html#utils.is_email">[docs]</a><span class="k">def</span> <span class="nf">is_email</span><span class="p">(</span><span class="n">indata</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check whether a string seems to be an email address or not.</span>
 
@@ -284,7 +293,7 @@
     <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">REGEX</span><span class="p">[</span><span class="s1">&#39;email&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">indata</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="response_json"><a class="viewcode-back" href="../code.utils.html#utils.response_json">[docs]</a><span class="k">def</span> <span class="nf">response_json</span><span class="p">(</span><span class="n">json_structure</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<div class="viewcode-block" id="response_json"><a class="viewcode-back" href="../utils.html#utils.response_json">[docs]</a><span class="k">def</span> <span class="nf">response_json</span><span class="p">(</span><span class="n">json_structure</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert keys to camelCase and run ``flask.jsonify()``.</span>
 
@@ -298,7 +307,7 @@
     <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="make_timestamp"><a class="viewcode-back" href="../code.utils.html#utils.make_timestamp">[docs]</a><span class="k">def</span> <span class="nf">make_timestamp</span><span class="p">():</span>
+<div class="viewcode-block" id="make_timestamp"><a class="viewcode-back" href="../utils.html#utils.make_timestamp">[docs]</a><span class="k">def</span> <span class="nf">make_timestamp</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generate a timestamp of the current time.</span>
 
@@ -309,7 +318,7 @@
 
 
 <span class="c1"># pylint: disable=too-many-arguments</span>
-<div class="viewcode-block" id="make_log"><a class="viewcode-back" href="../code.utils.html#utils.make_log">[docs]</a><span class="k">def</span> <span class="nf">make_log</span><span class="p">(</span><span class="n">data_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<div class="viewcode-block" id="make_log"><a class="viewcode-back" href="../utils.html#utils.make_log">[docs]</a><span class="k">def</span> <span class="nf">make_log</span><span class="p">(</span><span class="n">data_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
              <span class="n">action</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
              <span class="n">comment</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
              <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -349,12 +358,12 @@
                 <span class="s1">&#39;user&#39;</span><span class="p">:</span> <span class="n">active_user</span><span class="p">})</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;logs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">log</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">dbsession</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">acknowledged</span><span class="p">:</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Log failed: A:</span><span class="si">{action}</span><span class="s1"> C:</span><span class="si">{comment}</span><span class="s1"> D:</span><span class="si">{data}</span><span class="s1"> &#39;</span> <span class="o">+</span>
-                      <span class="sa">f</span><span class="s1">&#39;DT: </span><span class="si">{data_type}</span><span class="s1"> U: </span><span class="si">{flask.g.current_user[&quot;_id&quot;]}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Log failed: A:</span><span class="si">{</span><span class="n">action</span><span class="si">}</span><span class="s1"> C:</span><span class="si">{</span><span class="n">comment</span><span class="si">}</span><span class="s1"> D:</span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s1"> &#39;</span> <span class="o">+</span>
+                      <span class="sa">f</span><span class="s1">&#39;DT: </span><span class="si">{</span><span class="n">data_type</span><span class="si">}</span><span class="s1"> U: </span><span class="si">{</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">acknowledged</span></div>
 
 
-<div class="viewcode-block" id="incremental_logs"><a class="viewcode-back" href="../code.utils.html#utils.incremental_logs">[docs]</a><span class="k">def</span> <span class="nf">incremental_logs</span><span class="p">(</span><span class="n">logs</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+<div class="viewcode-block" id="incremental_logs"><a class="viewcode-back" href="../utils.html#utils.incremental_logs">[docs]</a><span class="k">def</span> <span class="nf">incremental_logs</span><span class="p">(</span><span class="n">logs</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Make an incremental log.</span>
 
@@ -373,7 +382,7 @@
             <span class="k">del</span> <span class="n">logs</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;data&#39;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="check_email_uuid"><a class="viewcode-back" href="../code.utils.html#utils.check_email_uuid">[docs]</a><span class="k">def</span> <span class="nf">check_email_uuid</span><span class="p">(</span><span class="n">user_identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">]:</span>
+<div class="viewcode-block" id="check_email_uuid"><a class="viewcode-back" href="../utils.html#utils.check_email_uuid">[docs]</a><span class="k">def</span> <span class="nf">check_email_uuid</span><span class="p">(</span><span class="n">user_identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if the provided user is found in the db as email or _id.</span>
 
@@ -405,7 +414,7 @@
     <span class="k">return</span> <span class="s1">&#39;&#39;</span></div>
 
 
-<div class="viewcode-block" id="user_uuid_data"><a class="viewcode-back" href="../code.utils.html#utils.user_uuid_data">[docs]</a><span class="k">def</span> <span class="nf">user_uuid_data</span><span class="p">(</span><span class="n">user_ids</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">],</span>
+<div class="viewcode-block" id="user_uuid_data"><a class="viewcode-back" href="../utils.html#utils.user_uuid_data">[docs]</a><span class="k">def</span> <span class="nf">user_uuid_data</span><span class="p">(</span><span class="n">user_ids</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">],</span>
                    <span class="n">mongodb</span><span class="p">:</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">database</span><span class="o">.</span><span class="n">Database</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Retrieve some extra information about a user using a uuid as input.</span>
@@ -473,7 +482,7 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2019-2020, SciLifeLab Data Centre.
+        &#169; Copyright 2019-2021, SciLifeLab Data Centre.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>

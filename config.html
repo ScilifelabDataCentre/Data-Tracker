@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Code reference &#8212; Data Tracker  documentation</title>
+    <title>config module &#8212; Data Tracker  documentation</title>
     <link rel="stylesheet" href="static/nature.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="static/documentation_options.js"></script>
@@ -14,9 +14,7 @@
     <script src="static/doctools.js"></script>
     <script src="static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="app.py" href="code.app.html" />
-    <link rel="prev" title="System for development" href="development.quick_environment.html" /> 
+    <link rel="search" title="Search" href="search.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -27,15 +25,8 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="right" >
-          <a href="code.app.html" title="app.py"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
-          <a href="development.quick_environment.html" title="System for development"
-             accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">Data Tracker  documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="development.html" accesskey="U">Development</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Code reference</a></li> 
+        <li class="nav-item nav-item-this"><a href="">config module</a></li> 
       </ul>
     </div>  
 
@@ -44,22 +35,45 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="code-reference">
-<h1>Code reference<a class="headerlink" href="#code-reference" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="code.app.html">app.py</a></li>
-<li class="toctree-l1"><a class="reference internal" href="code.config.html">config.py</a></li>
-<li class="toctree-l1"><a class="reference internal" href="code.dataset.html">dataset.py</a></li>
-<li class="toctree-l1"><a class="reference internal" href="code.developer.html">developer.py</a></li>
-<li class="toctree-l1"><a class="reference internal" href="code.order.html">order.py</a></li>
-<li class="toctree-l1"><a class="reference internal" href="code.collection.html">collection.py</a></li>
-<li class="toctree-l1"><a class="reference internal" href="code.structure.html">structure.py</a></li>
-<li class="toctree-l1"><a class="reference internal" href="code.user.html">user.py</a></li>
-<li class="toctree-l1"><a class="reference internal" href="code.utils.html">utils.py</a></li>
-<li class="toctree-l1"><a class="reference internal" href="code.validate.html">validate.py</a></li>
-</ul>
-</div>
+  <div class="section" id="module-config">
+<span id="config-module"></span><h1>config module<a class="headerlink" href="#module-config" title="Permalink to this headline">¶</a></h1>
+<p>Settings manager for the data tracker.</p>
+<p>Read settings from <cite>./config.yaml</cite>, <cite>../config.yaml</cite> or from the provided path.</p>
+<dl class="py function">
+<dt id="config.init">
+<code class="sig-prename descclassname">config.</code><code class="sig-name descname">init</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="modules/config.html#init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#config.init" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read the config from a config.yaml file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The config.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="config.read_config">
+<code class="sig-prename descclassname">config.</code><code class="sig-name descname">read_config</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">''</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/config.html#read_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#config.read_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Look for settings.yaml and parse the settings from there.</p>
+<p>The file is expected to be found in the current, parent or provided folder.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – The yaml file to use</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The loaded settings</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>FileNotFoundError</strong> – No settings file found</p>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 
 
@@ -72,16 +86,10 @@
             <p class="logo"><a href="index.html">
               <img class="logo" src="static/data-centre-logo.svg" alt="Logo"/>
             </a></p>
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="development.quick_environment.html"
-                        title="previous chapter">System for development</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="code.app.html"
-                        title="next chapter">app.py</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="sources/modules.rst.txt"
+      <li><a href="sources/config.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -108,15 +116,8 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="right" >
-          <a href="code.app.html" title="app.py"
-             >next</a> |</li>
-        <li class="right" >
-          <a href="development.quick_environment.html" title="System for development"
-             >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">Data Tracker  documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="development.html" >Development</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Code reference</a></li> 
+        <li class="nav-item nav-item-this"><a href="">config module</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

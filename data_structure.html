@@ -135,22 +135,17 @@
 <td><p>Entry creator</p></td>
 <td><p>Hidden</p></td>
 </tr>
-<tr class="row-odd"><td><p>receivers</p></td>
-<td><p>List of users who received data from facility</p></td>
-<td><p>Empty</p></td>
-<td><p>Hidden</p></td>
-</tr>
-<tr class="row-even"><td><p>datasets</p></td>
+<tr class="row-odd"><td><p>datasets</p></td>
 <td><p>List of associated datasets</p></td>
 <td><p>Empty</p></td>
 <td><p>Visible (via dataset)</p></td>
 </tr>
-<tr class="row-odd"><td><p>tags_standard</p></td>
+<tr class="row-even"><td><p>tags_standard</p></td>
 <td><p>Tags defined in the system</p></td>
 <td><p>Empty</p></td>
 <td><p>Hidden</p></td>
 </tr>
-<tr class="row-even"><td><p>tags_user</p></td>
+<tr class="row-odd"><td><p>tags_user</p></td>
 <td><p>Tags defined by the users</p></td>
 <td><p>Empty</p></td>
 <td><p>Hidden</p></td>
@@ -217,28 +212,21 @@
 <li><p><strong>Default:</strong> The user that created the entry.</p></li>
 </ul>
 </dd>
-<dt class="field-even">receivers</dt>
+<dt class="field-even">datasets</dt>
 <dd class="field-even"><ul class="simple">
-<li><p>List of <code class="docutils literal notranslate"><span class="pre">users</span></code>.</p></li>
-<li><p>Corresponds to the users who received the data from the facility</p></li>
-<li><p><strong>Default:</strong> Empty</p></li>
-</ul>
-</dd>
-<dt class="field-odd">datasets</dt>
-<dd class="field-odd"><ul class="simple">
 <li><p>List of datasets associated to the order.</p></li>
 <li><p>Cannot be modified directly but must be modified through specialised means.</p></li>
 <li><p><strong>Default:</strong> Empty</p></li>
 </ul>
 </dd>
-<dt class="field-even">tags_standard</dt>
-<dd class="field-even"><ul class="simple">
+<dt class="field-odd">tags_standard</dt>
+<dd class="field-odd"><ul class="simple">
 <li><p>A standard set of tags that are defined by the system.</p></li>
 <li><p><strong>Default:</strong> Empty</p></li>
 </ul>
 </dd>
-<dt class="field-odd">tags_user</dt>
-<dd class="field-odd"><ul class="simple">
+<dt class="field-even">tags_user</dt>
+<dd class="field-even"><ul class="simple">
 <li><p>User-defined tags for the system.</p></li>
 <li><p><strong>Default:</strong> Empty</p></li>
 </ul>
@@ -264,7 +252,6 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">authors</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">organisation</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">editors</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">receivers</span></code></p></li>
 </ul>
 </li>
 </ul>
@@ -892,7 +879,7 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2019-2020, SciLifeLab Data Centre.
+        &#169; Copyright 2019-2021, SciLifeLab Data Centre.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>

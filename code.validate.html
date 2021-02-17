@@ -47,6 +47,27 @@
 <p>Indata can be sent to <code class="docutils literal notranslate"><span class="pre">validate_field</span></code>, which will use the corresponding
 functions to check each field.</p>
 <dl class="py function">
+<dt id="validate.validate_cross_references">
+<code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_cross_references</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span><span class="p">:</span> <span class="n">list</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_cross_references"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_cross_references" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate input for the <code class="docutils literal notranslate"><span class="pre">cross_references</span></code> field.</p>
+<p>It must be a list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>dict</em>) – The data to be validated.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Validation passed.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – Validation failed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="validate.validate_datasets">
 <code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_datasets</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span><span class="p">:</span> <span class="n">list</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_datasets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_datasets" title="Permalink to this definition">¶</a></dt>
 <dd><p>Validate input for the <code class="docutils literal notranslate"><span class="pre">datasets</span></code> field.</p>
@@ -155,6 +176,27 @@ for the entry must be performed separately.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt id="validate.validate_properties">
+<code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_properties</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span><span class="p">:</span> <span class="n">dict</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_properties"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_properties" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate input for the <code class="docutils literal notranslate"><span class="pre">properties</span></code> field.</p>
+<p>It must be a dict. The user must have DATA_MANAGEMENT permissions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>dict</em>) – The data to be validated.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Validation passed.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – Validation failed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="validate.validate_string">
 <code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_string</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_string" title="Permalink to this definition">¶</a></dt>
 <dd><p>Validate input for field that must have a <code class="docutils literal notranslate"><span class="pre">str</span></code> value.</p>
@@ -175,31 +217,10 @@ for the entry must be performed separately.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="validate.validate_tags_std">
-<code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_tags_std</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span><span class="p">:</span> <span class="n">dict</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_tags_std"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_tags_std" title="Permalink to this definition">¶</a></dt>
-<dd><p>Validate input for the <code class="docutils literal notranslate"><span class="pre">tags_standard</span></code> field.</p>
-<p>It must be a dict.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>data</strong> (<em>dict</em>) – The data to be validated.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Validation passed.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>bool</p>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><p><strong>ValueError</strong> – Validation failed.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="validate.validate_tags_user">
-<code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_tags_user</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span><span class="p">:</span> <span class="n">dict</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_tags_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_tags_user" title="Permalink to this definition">¶</a></dt>
-<dd><p>Validate input for the <code class="docutils literal notranslate"><span class="pre">tags_user</span></code> field.</p>
-<p>It must be a dict.</p>
+<dt id="validate.validate_tags">
+<code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_tags</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>tuple<span class="p">, </span>list<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_tags"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_tags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate input for the <code class="docutils literal notranslate"><span class="pre">tags</span></code> field.</p>
+<p>It must be a list or tuple.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>data</strong> (<em>dict</em>) – The data to be validated.</p>
@@ -281,7 +302,7 @@ for the entry must be performed separately.</p>
 
 <dl class="py function">
 <dt id="validate.validate_user_list">
-<code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_user_list</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>str<span class="p">, </span>list<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_user_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_user_list" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">validate.</code><code class="sig-name descname">validate_user_list</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>tuple<span class="p">, </span>list<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="modules/validate.html#validate_user_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#validate.validate_user_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Validate input for a field containing a list of user uuid(s).</p>
 <p>For compatibility, the input may be UUIDs as either string (single user) or
 a list (single or multiple users).</p>
@@ -357,7 +378,7 @@ a list (single or multiple users).</p>
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2019-2020, SciLifeLab Data Centre.
+        &#169; Copyright 2019-2021, SciLifeLab Data Centre.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
