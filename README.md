@@ -18,6 +18,14 @@ The backend requires a `config.yaml` file to be mounted to `/config.yaml`.
 The frontend assumes that the backend is available at `/api`.
 
 
+## Code
+
+`backend`: python3, flask
+
+`frontend`: Quasar (Vue)
+
+`docs`: Sphinx
+
 
 [travis-badge]: https://api.travis-ci.com/ScilifelabDataCentre/Data-Tracker.svg?branch=develop
 [travis-link]: https://travis-ci.com/ScilifelabDataCentre/Data-Tracker
