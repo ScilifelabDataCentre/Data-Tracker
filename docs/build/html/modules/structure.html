@@ -46,7 +46,7 @@
 <span class="kn">import</span> <span class="nn">utils</span>
 
 
-<div class="viewcode-block" id="dataset"><a class="viewcode-back" href="../code.structure.html#structure.dataset">[docs]</a><span class="k">def</span> <span class="nf">dataset</span><span class="p">():</span>
+<div class="viewcode-block" id="dataset"><a class="viewcode-back" href="../structure.html#structure.dataset">[docs]</a><span class="k">def</span> <span class="nf">dataset</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Provide a basic data structure for a dataset document.</span>
 
@@ -57,11 +57,11 @@
             <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
             <span class="s1">&#39;cross_references&#39;</span><span class="p">:</span> <span class="p">[],</span>
             <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;tags_standard&#39;</span><span class="p">:</span> <span class="p">{},</span>
-            <span class="s1">&#39;tags_user&#39;</span><span class="p">:</span> <span class="p">{}}</span></div>
+            <span class="s1">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="s1">&#39;tags&#39;</span><span class="p">:</span> <span class="p">[]}</span></div>
 
 
-<div class="viewcode-block" id="order"><a class="viewcode-back" href="../code.structure.html#structure.order">[docs]</a><span class="k">def</span> <span class="nf">order</span><span class="p">():</span>
+<div class="viewcode-block" id="order"><a class="viewcode-back" href="../structure.html#structure.order">[docs]</a><span class="k">def</span> <span class="nf">order</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Provide a basic data structure for an order document.</span>
 
@@ -76,11 +76,11 @@
             <span class="s1">&#39;organisation&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
             <span class="s1">&#39;editors&#39;</span><span class="p">:</span> <span class="p">[],</span>
             <span class="s1">&#39;datasets&#39;</span><span class="p">:</span> <span class="p">[],</span>
-            <span class="s1">&#39;tags_standard&#39;</span><span class="p">:</span> <span class="p">{},</span>
-            <span class="s1">&#39;tags_user&#39;</span><span class="p">:</span> <span class="p">{}}</span></div>
+            <span class="s1">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="s1">&#39;tags&#39;</span><span class="p">:</span> <span class="p">[]}</span></div>
 
 
-<div class="viewcode-block" id="collection"><a class="viewcode-back" href="../code.structure.html#structure.collection">[docs]</a><span class="k">def</span> <span class="nf">collection</span><span class="p">():</span>
+<div class="viewcode-block" id="collection"><a class="viewcode-back" href="../structure.html#structure.collection">[docs]</a><span class="k">def</span> <span class="nf">collection</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Provide a basic data structure for a project document.</span>
 
@@ -88,16 +88,16 @@
 <span class="sd">        dict: The data structure for a project.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">utils</span><span class="o">.</span><span class="n">new_uuid</span><span class="p">(),</span>
+            <span class="s1">&#39;cross_references&#39;</span><span class="p">:</span> <span class="p">[],</span>
             <span class="s1">&#39;datasets&#39;</span><span class="p">:</span> <span class="p">[],</span>
             <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;tags_standard&#39;</span><span class="p">:</span> <span class="p">{},</span>
-            <span class="s1">&#39;tags_user&#39;</span><span class="p">:</span> <span class="p">{},</span>
-            <span class="s1">&#39;cross_references&#39;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s1">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="s1">&#39;tags&#39;</span><span class="p">:</span> <span class="p">[],</span>
             <span class="s1">&#39;editors&#39;</span><span class="p">:</span> <span class="p">[],</span>
             <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">}</span></div>
 
 
-<div class="viewcode-block" id="user"><a class="viewcode-back" href="../code.structure.html#structure.user">[docs]</a><span class="k">def</span> <span class="nf">user</span><span class="p">():</span>
+<div class="viewcode-block" id="user"><a class="viewcode-back" href="../structure.html#structure.user">[docs]</a><span class="k">def</span> <span class="nf">user</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Provide a basic data structure for a user document.</span>
 
@@ -117,7 +117,7 @@
             <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">}</span></div>
 
 
-<div class="viewcode-block" id="log"><a class="viewcode-back" href="../code.structure.html#structure.log">[docs]</a><span class="k">def</span> <span class="nf">log</span><span class="p">():</span>
+<div class="viewcode-block" id="log"><a class="viewcode-back" href="../structure.html#structure.log">[docs]</a><span class="k">def</span> <span class="nf">log</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Provide a basic data structure for a log document.</span>
 
@@ -171,7 +171,7 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2019-2020, SciLifeLab Data Centre.
+        &#169; Copyright 2019-2021, SciLifeLab Data Centre.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>

@@ -39,6 +39,7 @@
   <h1>Source code for developer</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Routes and functions intended to aid development and testing.&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
 
 <span class="kn">import</span> <span class="nn">flask</span>
 
@@ -47,7 +48,7 @@
 <span class="n">blueprint</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">Blueprint</span><span class="p">(</span><span class="s1">&#39;developer&#39;</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">)</span>  <span class="c1"># pylint: disable=invalid-name</span>
 
 
-<div class="viewcode-block" id="login"><a class="viewcode-back" href="../code.developer.html#developer.login">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/login/&lt;identifier&gt;&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="login"><a class="viewcode-back" href="../developer.html#developer.login">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/login/&lt;identifier&gt;&#39;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">login</span><span class="p">(</span><span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Log in without password.</span>
@@ -57,24 +58,26 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">res</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">do_login</span><span class="p">(</span><span class="n">auth_id</span><span class="o">=</span><span class="n">identifier</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">res</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">set_cookie</span><span class="p">(</span><span class="s1">&#39;loggedIn&#39;</span><span class="p">,</span> <span class="s1">&#39;true&#39;</span><span class="p">,</span> <span class="n">max_age</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">31</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">response</span>
     <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="api_hello"><a class="viewcode-back" href="../code.developer.html#developer.api_hello">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/hello&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="api_hello"><a class="viewcode-back" href="../developer.html#developer.api_hello">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/hello&#39;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">api_hello</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;Test request.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">({</span><span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="s1">&#39;success&#39;</span><span class="p">})</span></div>
 
 
-<div class="viewcode-block" id="login_hello"><a class="viewcode-back" href="../code.developer.html#developer.login_hello">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/loginhello&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="login_hello"><a class="viewcode-back" href="../developer.html#developer.login_hello">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/loginhello&#39;</span><span class="p">)</span>
 <span class="nd">@user</span><span class="o">.</span><span class="n">login_required</span>
 <span class="k">def</span> <span class="nf">login_hello</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;Test request requiring login.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">({</span><span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="s1">&#39;success&#39;</span><span class="p">})</span></div>
 
 
-<div class="viewcode-block" id="permission_hello"><a class="viewcode-back" href="../code.developer.html#developer.permission_hello">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/hello/&lt;permission&gt;&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="permission_hello"><a class="viewcode-back" href="../developer.html#developer.permission_hello">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/hello/&lt;permission&gt;&#39;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">permission_hello</span><span class="p">(</span><span class="n">permission</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test request requiring the given permission.</span>
@@ -88,13 +91,13 @@
     <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">({</span><span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="s1">&#39;success&#39;</span><span class="p">})</span></div>
 
 
-<div class="viewcode-block" id="csrf_test"><a class="viewcode-back" href="../code.developer.html#developer.csrf_test">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/csrftest&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">,</span> <span class="s1">&#39;PATCH&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">,</span> <span class="s1">&#39;DELETE&#39;</span><span class="p">])</span>
+<div class="viewcode-block" id="csrf_test"><a class="viewcode-back" href="../developer.html#developer.csrf_test">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/csrftest&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">,</span> <span class="s1">&#39;PATCH&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">,</span> <span class="s1">&#39;DELETE&#39;</span><span class="p">])</span>
 <span class="k">def</span> <span class="nf">csrf_test</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;Test csrf tokens.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">({</span><span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="s1">&#39;success&#39;</span><span class="p">})</span></div>
 
 
-<div class="viewcode-block" id="get_added_ds"><a class="viewcode-back" href="../code.developer.html#developer.get_added_ds">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/test_datasets&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="get_added_ds"><a class="viewcode-back" href="../developer.html#developer.get_added_ds">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/test_datasets&#39;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">get_added_ds</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;Get datasets added during testing.&quot;&quot;&quot;</span>
     <span class="n">added</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;datasets&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;Test dataset&#39;</span><span class="p">},</span>
@@ -102,7 +105,7 @@
     <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">({</span><span class="s1">&#39;datasets&#39;</span><span class="p">:</span> <span class="n">added</span><span class="p">})</span></div>
 
 
-<div class="viewcode-block" id="list_session"><a class="viewcode-back" href="../code.developer.html#developer.list_session">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/session&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="list_session"><a class="viewcode-back" href="../developer.html#developer.list_session">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/session&#39;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">list_session</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;List all session variables.&quot;&quot;&quot;</span>
     <span class="n">session</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
@@ -111,7 +114,7 @@
     <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">(</span><span class="n">session</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="list_current_user"><a class="viewcode-back" href="../code.developer.html#developer.list_current_user">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/user/me&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="list_current_user"><a class="viewcode-back" href="../developer.html#developer.list_current_user">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/user/me&#39;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">list_current_user</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;List all session variables.&quot;&quot;&quot;</span>
     <span class="n">current_user</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span>
@@ -120,7 +123,7 @@
     <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">(</span><span class="n">current_user</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="list_config"><a class="viewcode-back" href="../code.developer.html#developer.list_config">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/config&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="list_config"><a class="viewcode-back" href="../developer.html#developer.list_config">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/config&#39;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">list_config</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;List all session variables.&quot;&quot;&quot;</span>
     <span class="n">config</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
@@ -129,7 +132,7 @@
     <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">(</span><span class="n">config</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="stop_server"><a class="viewcode-back" href="../code.developer.html#developer.stop_server">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/quit&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="stop_server"><a class="viewcode-back" href="../developer.html#developer.stop_server">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/quit&#39;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">stop_server</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;Shutdown the flask server.&quot;&quot;&quot;</span>
     <span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;werkzeug.server.shutdown&#39;</span><span class="p">)()</span>
@@ -174,7 +177,7 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2019-2020, SciLifeLab Data Centre.
+        &#169; Copyright 2019-2021, SciLifeLab Data Centre.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>

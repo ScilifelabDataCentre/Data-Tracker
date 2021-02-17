@@ -59,8 +59,6 @@ Summary
 +---------------+-----------------------------------------------------+-------------------+-----------------------+
 | editors       | List of users who can edit the order and datasets   | Entry creator     | Hidden                |
 +---------------+-----------------------------------------------------+-------------------+-----------------------+
-| receivers     | List of users who received data from facility       | Empty             | Hidden                |
-+---------------+-----------------------------------------------------+-------------------+-----------------------+
 | datasets      | List of associated datasets                         | Empty             | Visible (via dataset) |
 +---------------+-----------------------------------------------------+-------------------+-----------------------+
 | tags_standard | Tags defined in the system                          | Empty             | Hidden                |
@@ -109,10 +107,6 @@ Fields
     * List of ``users``.
     * Users that may edit the order and dataset entries. May add datasets to an order.
     * **Default:** The user that created the entry.
-:receivers:
-    * List of ``users``.
-    * Corresponds to the users who received the data from the facility
-    * **Default:** Empty
 :datasets:
     * List of datasets associated to the order.
     * Cannot be modified directly but must be modified through specialised means.
@@ -143,7 +137,6 @@ Dataset
   - ``authors``
   - ``organisation``
   - ``editors``
-  - ``receivers``
 
 Summary
 -------
