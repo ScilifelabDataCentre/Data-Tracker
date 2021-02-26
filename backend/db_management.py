@@ -75,7 +75,10 @@ def add_default_user(db):
     result = db.users.insert_one(new_user)
     db['db_status'].update_one({'_id': 'init_db'},
                                {'$set': {'user_added': True}})
-    logging.info('Default user added')
+    if result.acknowledged:
+        logging.info('Default user added')
+    else:
+        logging.error('Failed to add default user')
 
 
 def check_migrations(db):
