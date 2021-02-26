@@ -3,6 +3,7 @@
 from collections import abc, namedtuple
 from typing import Any, Union
 import datetime
+import html
 import re
 import secrets
 import uuid
@@ -60,6 +61,22 @@ def basic_check_indata(indata: dict,
             if not validate.validate_field(key, indata[key]):
                 return ValidationResult(result=False, status=400)
     return ValidationResult(result=True, status=200)
+
+
+def secure_description(data: str):
+    """
+    Process the description to make sure it does not contain dangerous data.
+
+    Current checks:
+    * Escape HTML
+
+    Args:
+        data: The description to process.
+
+    Returns:
+        str: The processed description.
+    """
+    return html.escape(data)
 
 
 # csrf

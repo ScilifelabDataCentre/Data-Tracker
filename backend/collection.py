@@ -139,6 +139,7 @@ def add_collection():  # pylint: disable=too-many-branches
     if 'datasets' in indata:
         indata['datasets'] = [utils.str_to_uuid(value) for value in indata['datasets']]
     collection.update(indata)
+    collection['description'] = utils.secure_description(collection['description'])
 
     # add to db
     result = flask.g.db['collections'].insert_one(collection)
@@ -232,6 +233,9 @@ def update_collection(identifier):  # pylint: disable=too-many-branches
 
     if 'editors' in indata and not indata['editors']:
         indata['editors'] = [flask.g.current_user['_id']]
+
+    if 'description' in indata:
+        indata['description'] = utils.secure_description(indata['description'])
 
     is_different = False
     for field in indata:

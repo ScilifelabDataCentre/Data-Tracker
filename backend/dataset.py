@@ -125,6 +125,8 @@ def add_dataset():  # pylint: disable=too-many-branches
         flask.abort(status=validation.status)
     dataset.update(indata)
 
+    dataset['description'] = utils.secure_description(dataset['description'])
+
     # add to db
     result_ds = flask.g.db['datasets'].insert_one(dataset)
     if not result_ds.acknowledged:
@@ -216,7 +218,6 @@ def update_dataset(identifier):
 
     Returns:
         flask.Response: success: 200, failure: 400
-
     """
     try:
         ds_uuid = utils.str_to_uuid(identifier)
@@ -243,6 +244,9 @@ def update_dataset(identifier):
     if 'properties' in indata:
         if not user.has_permission('DATA_MANAGEMENT'):
             flask.abort(403)
+
+    if 'description' in indata:
+        indata['description'] = utils.secure_description(indata['description'])
 
     is_different = False
     for field in indata:

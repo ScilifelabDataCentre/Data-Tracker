@@ -209,6 +209,7 @@ def add_order():
             indata['organisation'] = utils.str_to_uuid(indata['organisation'])
 
     new_order.update(indata)
+    new_order['description'] = utils.secure_description(new_order['description'])
 
     if not new_order['editors']:
         new_order['editors'].append(flask.g.current_user['_id'])
@@ -302,6 +303,9 @@ def update_order(identifier: str):  # pylint: disable=too-many-branches
     if 'organisation' in indata:
         if indata['organisation']:
             indata['organisation'] = utils.str_to_uuid(indata['organisation'])
+
+    if 'description' in indata:
+        indata['description'] = utils.secure_description(indata['description'])
 
     is_different = False
     for field in indata:
