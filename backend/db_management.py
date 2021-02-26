@@ -73,7 +73,6 @@ def add_default_user(db):
                      'auth_ids': ['default::default']})
 
     result = db.users.insert_one(new_user)
-    print(result)
     db['db_status'].update_one({'_id': 'init_db'},
                                {'$set': {'user_added': True}})
     logging.info('Default user added')
