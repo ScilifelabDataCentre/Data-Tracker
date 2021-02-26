@@ -58,4 +58,4 @@ def test_list_oidc_types():
     responses = helpers.make_request_all_roles('/api/v1/login/oidc/', ret_json=True)
     for response in responses:
         assert response.code == 200
-        assert response.data == {'oidcserver': '/api/v1/login/oidc/oidcserver/login/'}
+        assert response.data == {'entry': '/api/v1/login/oidc/entry/login/'}
