@@ -95,7 +95,7 @@ def gen_api_key():
         APIkey: The API key with salt.
     """
     ApiKey = namedtuple('ApiKey', ['key', 'salt'])
-    return ApiKey(key=secrets.token_hex(48),
+    return ApiKey(key=secrets.token_urlsafe(64),
                   salt=secrets.token_hex(32))
 
 
@@ -127,10 +127,12 @@ def verify_api_key(username: str, api_key: str):
     ph = argon2.PasswordHasher()
     user_info = flask.g.db['users'].find_one({'auth_ids': username})
     if not user_info:
-        flask.current_app.logger.warning('API key verification failed (bad username)')
+        flask.current_app.logger.info('API key verification failed (bad username)')
         flask.abort(status=401)
-    if not ph.verify(user_info['api_key'], api_key + user_info['salt']):
-        flask.current_app.logger.warning('API key verification failed (bad hash)')
+    try:
+        ph.verify(user_info['api_key'], api_key + user_info['api_salt'])
+    except argon2.exceptions.VerifyMismatchError:
+        flask.current_app.logger.info('API key verification failed (bad hash)')
         flask.abort(status=401)
 
 
