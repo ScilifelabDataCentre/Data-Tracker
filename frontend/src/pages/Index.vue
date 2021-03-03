@@ -8,35 +8,22 @@
   </div>
   <div class="row flex flex-center">
     <div class="col-md-4 col-lg-4 col-xs-10 col-sm-10">
-      <q-card class="q-pa-lg text-center box-shadow q-ma-md">
+      <q-card class="q-pa-lg text-center box-shadow q-ma-md"
+              @click="$router.push({ name: 'Dataset Browser' })">
 	<q-card-section>
           <q-icon size="150px" name="fas fa-chart-area" style="color: #045C64;"/>
           <div class="text-h5 text-weight-bold">Datasets</div>
         </q-card-section>
-	<q-card-section class="q-pt-none">
-	  <q-btn
-            flat
-            dense
-	    to="/datasets"
-            label="Browse Datasets" />
-	</q-card-section>
       </q-card>
     </div>
     <div class="col-md-4 col-lg-4 col-xs-10 col-sm-10">
-      <q-card class="q-pa-lg text-center box-shadow q-ma-md">
+      <q-card class="q-pa-lg text-center box-shadow q-ma-md"
+              @click="$router.push({ name: 'Collection Browser' })">
 	<q-card-section>
           <q-icon size="150px" name="fas fa-layer-group" style="color: #045C64;" />
 
           <div class="text-h5 text-weight-bold">Collections</div>
         </q-card-section>
-	<q-card-section class="q-pt-none">
-	  <q-btn
-            flat
-            dense
-	    to="/collections"
-            label="Browse Collections" />
-	</q-card-section>
-
       </q-card>
     </div>
   </div>
