@@ -12,7 +12,7 @@
               @click="$router.push({ name: 'Dataset Browser' })">
 	<q-card-section>
           <q-icon size="150px" name="fas fa-chart-area" style="color: #045C64;"/>
-          <div class="text-h5 text-weight-bold">Datasets</div>
+          <div class="q-mt-lg text-h5 text-weight-bold">Datasets</div>
         </q-card-section>
       </q-card>
     </div>
@@ -22,7 +22,7 @@
 	<q-card-section>
           <q-icon size="150px" name="fas fa-layer-group" style="color: #045C64;" />
 
-          <div class="text-h5 text-weight-bold">Collections</div>
+          <div class="q-mt-lg text-h5 text-weight-bold">Collections</div>
         </q-card-section>
       </q-card>
     </div>
