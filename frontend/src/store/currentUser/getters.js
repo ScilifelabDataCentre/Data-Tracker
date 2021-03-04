@@ -13,3 +13,11 @@ export function datasets (state) {
 export function collections (state) {
   return state.collections;
 }
+
+export function isLoggedIn (state) {
+  return state.info._id !== ''
+}
+
+export function infoLoaded (state) {
+  return state.infoLoaded
+}
