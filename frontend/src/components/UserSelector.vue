@@ -195,15 +195,12 @@ export default {
     },
 
     loadData() {
-      console.log('load data');
       this.$store.dispatch('entries/resetEntryList')
         .then(() => {
           this.loading = true
           this.$store.dispatch('entries/getEntries', 'user')
-            .catch((err) => console.log('error'))
             .finally(() => this.loading = false)
         })
-        .catch(() => console.log('failed'));
     },
 
   },
