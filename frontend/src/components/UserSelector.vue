@@ -1,4 +1,5 @@
 <template>
+<div>
 <q-table
   :title="fieldTitle"
   :data="onlySelected ? selected : users"
@@ -39,13 +40,33 @@
         <q-icon name="search" />
       </template>
     </q-input>
+    <q-btn round
+           flat
+           color="primary"
+           icon="add"
+           @click="showAddUserDialog" />
+    <q-btn round
+           flat
+           color="primary"
+           icon="cached"
+           @click="loadData" />
   </template>
 </q-table>
+  <user-edit v-model="showAddUser"
+             uuid=""
+             @user-changed="loadData"/>
+</div>
 </template>
 
 <script>
+import UserEdit from 'components/UserEdit.vue'
+
 export default {
   name: 'UserSelector',
+
+  components: {
+    'user-edit': UserEdit,
+  },
 
   computed: {
     selected: {
@@ -57,7 +78,6 @@ export default {
             data = [data];
         return JSON.parse(JSON.stringify(data));
       },
-
       set (newValue) {
         let data = {};
         data[this.fieldDataName] = newValue;
@@ -83,22 +103,18 @@ export default {
       type: String,
       required: true,
     },
-
     fieldDataName: {
       type: String,
       required: true,
     },
-
     selectType: {
       type: String,
       default: 'multiple',
     },
-
     helpText: {
       type: String,
       default: '',
     },
-
     isLoading: {
       type: Boolean,
       default: true
@@ -109,13 +125,13 @@ export default {
     },
   },
 
-  
   data () {
     return {
+      showAddUser: false,
       onlySelected: false,
       filter: '',
       pagination: {
-        rowsPerPage: 5
+        rowsPerPage: 10
       },
       columns: [
         {
@@ -156,11 +172,16 @@ export default {
   },
 
   methods: {
+    showAddUserDialog (event) {
+      event.preventDefault();
+      this.showAddUser = true;
+    },
+
     updateSelection(event, selectedArray) {
       event.preventDefault();
       this.$emit('input', selectedArray);
     },
-    
+
     deleteUserTag(event, keyName) {
       event.preventDefault();
       this.$delete(this.newEntry.extra, keyName);
@@ -172,6 +193,19 @@ export default {
         
         this.$store.dispatch('entries/setEntryFields', data);
     },
+
+    loadData() {
+      console.log('load data');
+      this.$store.dispatch('entries/resetEntryList')
+        .then(() => {
+          this.loading = true
+          this.$store.dispatch('entries/getEntries', 'user')
+            .catch((err) => console.log('error'))
+            .finally(() => this.loading = false)
+        })
+        .catch(() => console.log('failed'));
+    },
+
   },
 }
 </script>
