@@ -126,7 +126,6 @@ def oidc_authorize(auth_name):
 
     response = flask.redirect(flask.session['incoming_url'])
     del flask.session['incoming_url']
-    response.set_cookie('loggedIn', 'true', max_age=datetime.timedelta(days=31))
     return response
 
 
@@ -145,7 +144,6 @@ def key_login():
     utils.verify_api_key(indata['api-user'], indata['api-key'])
     user.do_login(auth_id=indata['api-user'])
     response = flask.Response(status=200)
-    response.set_cookie('loggedIn', 'true', max_age=datetime.timedelta(days=31))
     return response
 
 
@@ -155,7 +153,6 @@ def logout():
     flask.session.clear()
     response = flask.Response(status=200)
     response.set_cookie('_csrf_token', utils.gen_csrf_token(), 0)
-    response.set_cookie('loggedIn', 'false', 0)
     return response
 
 
