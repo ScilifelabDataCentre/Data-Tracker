@@ -42,11 +42,13 @@
     </q-input>
     <q-btn round
            flat
+           dense
            color="primary"
            icon="add"
            @click="showAddUserDialog" />
     <q-btn round
            flat
+           dense
            color="primary"
            icon="cached"
            @click="loadData" />
