@@ -1,7 +1,7 @@
 <template>
 <q-page padding>
   <div class="flex">
-    <q-btn-dropdown v-show="'editors' in collection"
+    <q-btn-dropdown v-show="uuid !== '' && 'editors' in collection"
                     class="q-mr-sm"
                     color="secondary"
                     icon="fas fa-cog"

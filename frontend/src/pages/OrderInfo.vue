@@ -1,7 +1,8 @@
 <template>
 <q-page padding>
   <div class="flex">
-    <q-btn-dropdown class="q-mr-sm"
+    <q-btn-dropdown v-show="uuid !== ''"
+                    class="q-mr-sm"
                     color="secondary"
                     icon="fas fa-cog"
                     label="Options">

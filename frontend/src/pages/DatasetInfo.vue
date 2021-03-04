@@ -1,7 +1,7 @@
 <template>
 <q-page padding>
   <div class="flex">
-    <q-btn-dropdown v-show="'editors' in dataset"
+    <q-btn-dropdown v-show="uuid !== '' && 'editors' in dataset"
                     class="q-mr-sm"
                     color="secondary"
                     icon="fas fa-cog"
