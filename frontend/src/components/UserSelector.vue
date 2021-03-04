@@ -67,14 +67,8 @@ export default {
     
     users: {
       get () {
-        return this.$store.state.adminUsers.userList;
+        return this.$store.state.entries.entryList;
       },
-    },
-
-    orderData: {
-      get () {
-        return this.$store.state.entries.entry;
-      }
     },
 
     currentUser: {

@@ -225,7 +225,7 @@ export default {
 
   mounted () {
     this.isLoadingUsers = true;
-    this.$store.dispatch('adminUsers/getUsers')
+    this.$store.dispatch('entries/getEntryList', 'user')
       .then(() => this.isLoadingUsers = false)
       .catch(() => this.isLoadingUsers = false);
     this.isLoadingDatasets = true;
