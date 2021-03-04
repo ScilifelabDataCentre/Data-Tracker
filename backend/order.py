@@ -247,7 +247,7 @@ def delete_order(identifier: str):
         result = flask.g.db['datasets'].delete_one({'_id': dataset_uuid})
         if not result.acknowledged:
             flask.current_app.logger.error('Dataset %s delete failed (order %s deletion):',
-                          dataset_uuid, order_uuid)
+                                           dataset_uuid, order_uuid)
             flask.abort(status=500)
         else:
             utils.make_log('dataset', 'delete', 'Deleting order', {'_id': dataset_uuid})

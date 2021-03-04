@@ -325,7 +325,7 @@ def make_log(data_type: str,
     result = flask.g.db['logs'].insert_one(log, session=dbsession)
     if not result.acknowledged:
         flask.current_app.logger.error(f'Log failed: A:{action} C:{comment} D:{data} ' +
-                      f'DT: {data_type} U: {flask.g.current_user["_id"]}')
+                                       f'DT: {data_type} U: {flask.g.current_user["_id"]}')
     return result.acknowledged
 
 

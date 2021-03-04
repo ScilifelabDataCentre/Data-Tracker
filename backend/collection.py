@@ -214,8 +214,8 @@ def update_collection(identifier):  # pylint: disable=too-many-branches
        flask.g.current_user['_id'] not in collection['editors'] and\
        flask.g.current_user['email'] not in collection['editors']:
         flask.current_app.logger.debug('Unauthorized update attempt (collection %s, user %s)',
-                      collection_uuid,
-                      flask.g.current_user['_id'])
+                                       collection_uuid,
+                                       flask.g.current_user['_id'])
         flask.abort(status=403)
 
     # indata validation
