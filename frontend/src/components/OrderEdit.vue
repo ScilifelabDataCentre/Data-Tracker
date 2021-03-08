@@ -46,6 +46,18 @@
           class="q-my-lg">
     <q-expansion-item expand-separator
                       icon="fas fa-tags"
+                      label="Tags"
+                      caption="Set labels (tags)">
+      <q-card>
+        <q-card-section>
+          <tag-editor :isLoading="isLoading"
+                      v-model="tags"/>
+        </q-card-section>
+      </q-card>
+    </q-expansion-item>
+
+    <q-expansion-item expand-separator
+                      icon="fas fa-tags"
                       label="Properties"
                       caption="Set properties (key: value)">
       <q-card>
@@ -57,17 +69,7 @@
         </q-card-section>
       </q-card>
     </q-expansion-item>
-    <q-expansion-item expand-separator
-                      icon="fas fa-tags"
-                      label="Tags"
-                      caption="Set labels (tags)">
-      <q-card>
-        <q-card-section>
-          <tag-editor :isLoading="isLoading"
-                      v-model="tags"/>
-        </q-card-section>
-      </q-card>
-    </q-expansion-item>
+
     <q-expansion-item expand-separator
                       icon="far fa-user"
                       label="Authors"
