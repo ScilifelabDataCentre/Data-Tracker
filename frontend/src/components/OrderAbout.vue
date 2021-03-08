@@ -7,9 +7,8 @@
     </div>
   </div>
 
-  <div class="q-ma-sm"
-       v-show="Object.keys(order.properties).length ||
-               order.tags.length">
+  <div class="q-my-sm q-mx-sm"
+       v-show="order.tags.length">
     <q-chip square
             color="grey-3"
             v-for="entry in order.tags"
@@ -19,19 +18,18 @@
     </q-chip>
   </div>
   
-  <div class="q-my-md" v-show="order.description.length">
-    <q-markdown :src="order.description" />
-  </div>
-
-  <div class="q-my-md"
-          v-show="Object.keys(order.properties).length ||
-                  order.tags.length">
+  <div class="q-my-md q-mx-sm"
+       v-show="Object.keys(order.properties).length">
       <q-chip square
               color="grey-3"
               v-for="field in Object.keys(order.properties)"
               :key="field">
         <span class="text-bold text-capitalize text-blue-9 q-mr-sm">{{ field }}</span> {{ order.properties[field] }}
       </q-chip>
+  </div>
+
+  <div class="q-my-md" v-show="order.description.length">
+    <q-markdown :src="order.description" />
   </div>
 
   <div class="q-my-md"
