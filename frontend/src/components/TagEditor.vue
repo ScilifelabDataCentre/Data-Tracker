@@ -1,16 +1,5 @@
 <template>
 <div>
-  <span class="text-h6">
-    {{ fieldTitle }}
-    <q-icon size="xs"
-            color="primary"
-            name="info"
-            v-if="helpText.length > 0">
-      <q-tooltip>
-        {{ helpText }}
-      </q-tooltip>
-    </q-icon>
-  </span>
   <div class="row q-my-md">
     <q-input stack-label
              outlined
@@ -61,8 +50,6 @@ export default {
   data () {
     return {
       newTag: '',
-      helpText: 'Add and remove tags',
-      fieldTitle: 'Tags',
       tagExistsError: false,
     }
   },
