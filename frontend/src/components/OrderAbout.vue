@@ -7,62 +7,58 @@
     </div>
   </div>
 
-  <q-card class="q-my-md" v-show="order.description.length">
-    <q-card-section>
-      <q-markdown :src="order.description" />
-    </q-card-section>
-  </q-card>
+  <div class="q-ma-sm"
+       v-show="Object.keys(order.properties).length ||
+               order.tags.length">
+    <q-chip square
+            color="grey-3"
+            v-for="entry in order.tags"
+            :key="entry">
+      <q-avatar color="secondary" text-color="white" icon="fas fa-tag" />
+      {{ entry }}
+    </q-chip>
+  </div>
+  
+  <div class="q-my-md" v-show="order.description.length">
+    <q-markdown :src="order.description" />
+  </div>
 
-  <q-card class="q-my-md"
+  <div class="q-my-md"
           v-show="Object.keys(order.properties).length ||
                   order.tags.length">
-    <q-card-section class="flex q-ma-sm">
       <q-chip square
               color="grey-3"
               v-for="field in Object.keys(order.properties)"
               :key="field">
         <span class="text-bold text-capitalize text-blue-9 q-mr-sm">{{ field }}</span> {{ order.properties[field] }}
       </q-chip>
-      <q-chip square
-              color="grey-3"
-              v-for="entry in order.tags"
-              :key="entry">
-        <q-avatar color="secondary" text-color="white" icon="fas fa-tag" />
-        {{ entry }}
-      </q-chip>
-    </q-card-section>
-  </q-card>
+  </div>
 
-  <q-card class="q-my-md"
-          v-show="order.datasets.length > 0">
-    <q-card-section>
-      <q-list dense>
-        <list-header title="Datasets"
-                     explanation="Datasets generated from this order" />
-        <q-item v-for="dataset in order.datasets" :key="dataset._id">
-          <q-item-section avatar>
-            <q-btn flat
-                   dense
-                   round
-                   icon="link"
-                   :to="{ 'name': 'Dataset About', 
-                          'params': { 'uuid': dataset._id } }" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>
-              {{ dataset.title }}
-            </q-item-label>
-            <q-item-label caption>
-              {{ dataset._id }}
-            </q-item-label>
-          </q-item-section>
-        </q-item>
-      </q-list>
-    </q-card-section>
-  </q-card>
+  <div class="q-my-md"
+       v-show="order.datasets.length > 0">
+    <q-list>
+      <list-header title="Datasets"
+                   explanation="Datasets generated from this order" />
+      <q-item clickable
+              v-for="dataset in order.datasets"
+              :key="dataset._id"
+              @click="$router.push({ 'name': 'Dataset About', 'params': { 'uuid': dataset._id } })">
+        <q-item-section avatar>
+          <q-icon name="fas fa-chart-area" />
+        </q-item-section>
+        <q-item-section>
+          <q-item-label>
+            {{ dataset.title }}
+          </q-item-label>
+          <q-item-label caption>
+            {{ dataset._id }}
+          </q-item-label>
+        </q-item-section>
+      </q-item>
+    </q-list>
+  </div>
 
-  <q-card class="q-my-md">
-    <q-card-section>
+  <div class="q-my-md">
       <q-list dense>
         <div v-show="order.authors.length">
           <list-header title="Authors"
@@ -94,8 +90,7 @@
                       v-bind="entry" />
         </div>
       </q-list>
-    </q-card-section>
-  </q-card>
+  </div>
 </div>
 </template>
 
