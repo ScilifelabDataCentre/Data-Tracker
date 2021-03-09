@@ -8,6 +8,7 @@ import structure
 
 DB_VERSION = 1
 
+
 def check_db(config: dict):
     """
     Perform database checks.
@@ -19,7 +20,7 @@ def check_db(config: dict):
         config (dict): Configuration for the data tracker
     """
     db = utils.get_db(utils.get_dbclient(config), config)
-    db_initialised = db['db_status'].find_one({'_id': 'init_db'})
+    db_initialised = db["db_status"].find_one({"_id": "init_db"})
     if not db_initialised:
         init_db(db)
     else:
@@ -33,18 +34,14 @@ def init_db(db):
     - create a default user
     - set current db_version
     """
-    db['db_status'].insert_one({'_id': 'init_db',
-                                'started': True,
-                                'user_added': False,
-                                'finished': False})
+    db["db_status"].insert_one(
+        {"_id": "init_db", "started": True, "user_added": False, "finished": False}
+    )
     add_default_user(db)
 
     # Set DB version
-    db['db_status'].insert_one({'_id': 'db_version',
-                                'version': DB_VERSION})
-    db['db_status'].update_one({'_id': 'init_db'},
-                               {'$set': {'finished': True}})
-
+    db["db_status"].insert_one({"_id": "db_version", "version": DB_VERSION})
+    db["db_status"].update_one({"_id": "init_db"}, {"$set": {"finished": True}})
 
 
 def add_default_user(db):
@@ -62,23 +59,26 @@ def add_default_user(db):
     Api_key: 1234
     Auth_id: default::default
     """
-    logging.info('Attempting to add default user')
+    logging.info("Attempting to add default user")
     new_user = structure.user()
-    api_salt = 'fedcba09'
-    new_user.update({'name': 'Default User',
-                     'email': 'default_user@example.com',
-                     'permissions': ['USER_MANAGEMENT'],
-                     'api_key': utils.gen_api_key_hash('1234', api_salt),
-                     'api_salt': api_salt,
-                     'auth_ids': ['default::default']})
+    api_salt = "fedcba09"
+    new_user.update(
+        {
+            "name": "Default User",
+            "email": "default_user@example.com",
+            "permissions": ["USER_MANAGEMENT"],
+            "api_key": utils.gen_api_key_hash("1234", api_salt),
+            "api_salt": api_salt,
+            "auth_ids": ["default::default"],
+        }
+    )
 
     result = db.users.insert_one(new_user)
-    db['db_status'].update_one({'_id': 'init_db'},
-                               {'$set': {'user_added': True}})
+    db["db_status"].update_one({"_id": "init_db"}, {"$set": {"user_added": True}})
     if result.acknowledged:
-        logging.info('Default user added')
+        logging.info("Default user added")
     else:
-        logging.error('Failed to add default user')
+        logging.error("Failed to add default user")
 
 
 def check_migrations(db):
@@ -88,13 +88,13 @@ def check_migrations(db):
     Args:
         config (dict): Configuration for the data tracker
     """
-    db_version = db['db_status'].find_one({'_id': 'db_version'})
-    if db_version['version'] > DB_VERSION:
-        logging.critical('The database is newer than the software')
+    db_version = db["db_status"].find_one({"_id": "db_version"})
+    if db_version["version"] > DB_VERSION:
+        logging.critical("The database is newer than the software")
         sys.exit(1)
-    elif db_version['version'] == DB_VERSION:
-        logging.info('The database is up-to-date')
+    elif db_version["version"] == DB_VERSION:
+        logging.info("The database is up-to-date")
 
-    for i in range(db_version['version'], DB_VERSION):
-        logging.info('Database migration for version %d to %d starting', i, i+1)
+    for i in range(db_version["version"], DB_VERSION):
+        logging.info("Database migration for version %d to %d starting", i, i + 1)
         MIGRATIONS[i](db)

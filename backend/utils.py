@@ -17,12 +17,12 @@ import structure
 import validate
 
 
-ValidationResult = namedtuple('ValidationResult', ['result', 'status'])
+ValidationResult = namedtuple("ValidationResult", ["result", "status"])
 
 
-def basic_check_indata(indata: dict,
-                       reference_data: dict,
-                       prohibited: Union[tuple, list]) -> tuple:
+def basic_check_indata(
+    indata: dict, reference_data: dict, prohibited: Union[tuple, list]
+) -> tuple:
     """
     Perform basic checks of indata.
 
@@ -44,18 +44,20 @@ def basic_check_indata(indata: dict,
     if prohibited is None:
         prohibited = []
 
-    if 'title' in reference_data and \
-       not reference_data['title'] and \
-       not indata.get('title'):
-        flask.current_app.logger.debug('Title empty')
+    if (
+        "title" in reference_data
+        and not reference_data["title"]
+        and not indata.get("title")
+    ):
+        flask.current_app.logger.debug("Title empty")
         return ValidationResult(result=False, status=400)
 
     for key in indata:
         if key in prohibited and indata[key] != reference_data[key]:
-            flask.current_app.logger.debug('Prohibited key (%s) with new value', key)
+            flask.current_app.logger.debug("Prohibited key (%s) with new value", key)
             return ValidationResult(result=False, status=403)
         if key not in reference_data:
-            flask.current_app.logger.debug('Bad key (%s)', key)
+            flask.current_app.logger.debug("Bad key (%s)", key)
             return ValidationResult(result=False, status=400)
         if indata[key] != reference_data[key]:
             if not validate.validate_field(key, indata[key]):
@@ -86,9 +88,9 @@ def verify_csrf_token():
 
     Aborts with status 400 if the verification fails.
     """
-    token = flask.request.headers.get('X-CSRFToken')
-    if not token or (token != flask.request.cookies.get('_csrf_token')):
-        flask.current_app.logger.warning('Bad csrf token received')
+    token = flask.request.headers.get("X-CSRFToken")
+    if not token or (token != flask.request.cookies.get("_csrf_token")):
+        flask.current_app.logger.warning("Bad csrf token received")
         flask.abort(status=400)
 
 
@@ -110,9 +112,8 @@ def gen_api_key():
     Returns:
         APIkey: The API key with salt.
     """
-    ApiKey = namedtuple('ApiKey', ['key', 'salt'])
-    return ApiKey(key=secrets.token_urlsafe(64),
-                  salt=secrets.token_hex(32))
+    ApiKey = namedtuple("ApiKey", ["key", "salt"])
+    return ApiKey(key=secrets.token_urlsafe(64), salt=secrets.token_hex(32))
 
 
 def gen_api_key_hash(api_key: str, salt: str):
@@ -141,14 +142,14 @@ def verify_api_key(username: str, api_key: str):
         api_key (str): The received API key (hex).
     """
     ph = argon2.PasswordHasher()
-    user_info = flask.g.db['users'].find_one({'auth_ids': username})
+    user_info = flask.g.db["users"].find_one({"auth_ids": username})
     if not user_info:
-        flask.current_app.logger.info('API key verification failed (bad username)')
+        flask.current_app.logger.info("API key verification failed (bad username)")
         flask.abort(status=401)
     try:
-        ph.verify(user_info['api_key'], api_key + user_info['api_salt'])
+        ph.verify(user_info["api_key"], api_key + user_info["api_salt"])
     except argon2.exceptions.VerifyMismatchError:
-        flask.current_app.logger.info('API key verification failed (bad hash)')
+        flask.current_app.logger.info("API key verification failed (bad hash)")
         flask.abort(status=401)
 
 
@@ -162,13 +163,17 @@ def get_dbclient(conf) -> pymongo.mongo_client.MongoClient:
     Returns:
         pymongo.mongo_client.MongoClient: The client connection.
     """
-    return pymongo.MongoClient(host=conf['mongo']['host'],
-                               port=conf['mongo']['port'],
-                               username=conf['mongo']['user'],
-                               password=conf['mongo']['password'])
+    return pymongo.MongoClient(
+        host=conf["mongo"]["host"],
+        port=conf["mongo"]["port"],
+        username=conf["mongo"]["user"],
+        password=conf["mongo"]["password"],
+    )
 
 
-def get_db(dbserver: pymongo.mongo_client.MongoClient, conf) -> pymongo.database.Database:
+def get_db(
+    dbserver: pymongo.mongo_client.MongoClient, conf
+) -> pymongo.database.Database:
     """
     Get the connection to the MongoDB database.
 
@@ -179,9 +184,10 @@ def get_db(dbserver: pymongo.mongo_client.MongoClient, conf) -> pymongo.database
     Returns:
         pymongo.database.Database: The database connection.
     """
-    codec_options = bson.codec_options.CodecOptions(uuid_representation=bson.binary.STANDARD)
-    return dbserver.get_database(conf['mongo']['db'],
-                                 codec_options=(codec_options))
+    codec_options = bson.codec_options.CodecOptions(
+        uuid_representation=bson.binary.STANDARD
+    )
+    return dbserver.get_database(conf["mongo"]["db"], codec_options=(codec_options))
 
 
 def new_uuid() -> uuid.UUID:
@@ -232,16 +238,16 @@ def convert_keys_to_camel(chunk: Any) -> Any:
 
     new_chunk = {}
     for key, value in chunk.items():
-        if key == '_id':
+        if key == "_id":
             new_chunk[key] = value
             continue
         # First character should be the same as in the original string
-        new_key = key[0] + ''.join([a[0].upper() + a[1:] for a in key.split('_')])[1:]
+        new_key = key[0] + "".join([a[0].upper() + a[1:] for a in key.split("_")])[1:]
         new_chunk[new_key] = convert_keys_to_camel(value)
     return new_chunk
 
 
-REGEX = {'email': re.compile(r'.*@.*\..*')}
+REGEX = {"email": re.compile(r".*@.*\..*")}
 
 
 def is_email(indata: str):
@@ -256,7 +262,7 @@ def is_email(indata: str):
     """
     if not isinstance(indata, str):
         return False
-    return bool(REGEX['email'].search(indata))
+    return bool(REGEX["email"].search(indata))
 
 
 def response_json(json_structure: dict):
@@ -284,12 +290,14 @@ def make_timestamp():
 
 
 # pylint: disable=too-many-arguments
-def make_log(data_type: str,
-             action: str,
-             comment: str,
-             data: dict = None,
-             no_user: bool = False,
-             dbsession=None):
+def make_log(
+    data_type: str,
+    action: str,
+    comment: str,
+    data: dict = None,
+    no_user: bool = False,
+    dbsession=None,
+):
     """
     Log a change in the system.
 
@@ -313,19 +321,25 @@ def make_log(data_type: str,
     """
     log = structure.log()
     if no_user:
-        active_user = 'system'
+        active_user = "system"
     else:
-        active_user = flask.g.current_user['_id']
+        active_user = flask.g.current_user["_id"]
 
-    log.update({'action': action,
-                'comment': comment,
-                'data_type': data_type,
-                'data': data,
-                'user': active_user})
-    result = flask.g.db['logs'].insert_one(log, session=dbsession)
+    log.update(
+        {
+            "action": action,
+            "comment": comment,
+            "data_type": data_type,
+            "data": data,
+            "user": active_user,
+        }
+    )
+    result = flask.g.db["logs"].insert_one(log, session=dbsession)
     if not result.acknowledged:
-        flask.current_app.logger.error(f'Log failed: A:{action} C:{comment} D:{data} ' +
-                                       f'DT: {data_type} U: {flask.g.current_user["_id"]}')
+        flask.current_app.logger.error(
+            f"Log failed: A:{action} C:{comment} D:{data} "
+            + f'DT: {data_type} U: {flask.g.current_user["_id"]}'
+        )
     return result.acknowledged
 
 
@@ -338,14 +352,14 @@ def incremental_logs(logs: list):
 
     ``logs`` is changed in-place.
     """
-    logs.sort(key=lambda x: x['timestamp'])
-    for i in range(len(logs)-1, 0, -1):
+    logs.sort(key=lambda x: x["timestamp"])
+    for i in range(len(logs) - 1, 0, -1):
         del_keys = []
-        for key in logs[i]['data']:
-            if logs[i]['data'][key] == logs[i-1]['data'][key]:
+        for key in logs[i]["data"]:
+            if logs[i]["data"][key] == logs[i - 1]["data"][key]:
                 del_keys.append(key)
         for key in del_keys:
-            del logs[i]['data'][key]
+            del logs[i]["data"][key]
 
 
 def check_email_uuid(user_identifier: str) -> Union[str, uuid.UUID]:
@@ -366,22 +380,23 @@ def check_email_uuid(user_identifier: str) -> Union[str, uuid.UUID]:
         Union[str, uuid.UUID]: The new value for the field.
     """
     if is_email(user_identifier):
-        user_entry = flask.g.db['users'].find_one({'email': user_identifier})
+        user_entry = flask.g.db["users"].find_one({"email": user_identifier})
         if user_entry:
-            return user_entry['_id']
+            return user_entry["_id"]
         return user_identifier
     try:
         user_uuid = str_to_uuid(user_identifier)
     except ValueError:
-        return ''
-    user_entry = flask.g.db['users'].find_one({'_id': user_uuid})
+        return ""
+    user_entry = flask.g.db["users"].find_one({"_id": user_uuid})
     if user_entry:
-        return user_entry['_id']
-    return ''
+        return user_entry["_id"]
+    return ""
 
 
-def user_uuid_data(user_ids: Union[str, list, uuid.UUID],
-                   mongodb: pymongo.database.Database) -> list:
+def user_uuid_data(
+    user_ids: Union[str, list, uuid.UUID], mongodb: pymongo.database.Database
+) -> list:
     """
     Retrieve some extra information about a user using a uuid as input.
 
@@ -400,11 +415,15 @@ def user_uuid_data(user_ids: Union[str, list, uuid.UUID],
         user_uuids = [str_to_uuid(entry) for entry in user_ids]
     else:
         user_uuids = [user_ids]
-    data = mongodb['users'].find({'_id': {'$in': user_uuids}})
-    return [{'_id': str(entry['_id']),
-             'affiliation': entry['affiliation'],
-             'name': entry['name'],
-             'contact': entry['contact'],
-             'url': entry['url'],
-             'orcid': entry['orcid']}
-            for entry in data]
+    data = mongodb["users"].find({"_id": {"$in": user_uuids}})
+    return [
+        {
+            "_id": str(entry["_id"]),
+            "affiliation": entry["affiliation"],
+            "name": entry["name"],
+            "contact": entry["contact"],
+            "url": entry["url"],
+            "orcid": entry["orcid"],
+        }
+        for entry in data
+    ]

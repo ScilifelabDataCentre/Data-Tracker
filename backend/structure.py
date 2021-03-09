@@ -14,12 +14,14 @@ def dataset():
     Returns:
         dict: The data structure for a dataset.
     """
-    return {'_id': utils.new_uuid(),
-            'description': '',
-            'cross_references': [],
-            'title': '',
-            'properties': {},
-            'tags': []}
+    return {
+        "_id": utils.new_uuid(),
+        "description": "",
+        "cross_references": [],
+        "title": "",
+        "properties": {},
+        "tags": [],
+    }
 
 
 def order():
@@ -29,16 +31,18 @@ def order():
     Returns:
         dict: The data structure for an order.
     """
-    return {'_id': utils.new_uuid(),
-            'title': '',
-            'description': '',
-            'authors': [],
-            'generators': [],
-            'organisation': '',
-            'editors': [],
-            'datasets': [],
-            'properties': {},
-            'tags': []}
+    return {
+        "_id": utils.new_uuid(),
+        "title": "",
+        "description": "",
+        "authors": [],
+        "generators": [],
+        "organisation": "",
+        "editors": [],
+        "datasets": [],
+        "properties": {},
+        "tags": [],
+    }
 
 
 def collection():
@@ -48,14 +52,16 @@ def collection():
     Returns:
         dict: The data structure for a project.
     """
-    return {'_id': utils.new_uuid(),
-            'cross_references': [],
-            'datasets': [],
-            'description': '',
-            'properties': {},
-            'tags': [],
-            'editors': [],
-            'title': ''}
+    return {
+        "_id": utils.new_uuid(),
+        "cross_references": [],
+        "datasets": [],
+        "description": "",
+        "properties": {},
+        "tags": [],
+        "editors": [],
+        "title": "",
+    }
 
 
 def user():
@@ -65,17 +71,19 @@ def user():
     Returns:
         dict: The data structure for a user.
     """
-    return {'_id': utils.new_uuid(),
-            'affiliation': '',
-            'api_key': '',
-            'api_salt': '',
-            'auth_ids': [],
-            'email': '',
-            'contact': '',
-            'name': '',
-            'orcid': '',
-            'permissions': [],
-            'url': ''}
+    return {
+        "_id": utils.new_uuid(),
+        "affiliation": "",
+        "api_key": "",
+        "api_salt": "",
+        "auth_ids": [],
+        "email": "",
+        "contact": "",
+        "name": "",
+        "orcid": "",
+        "permissions": [],
+        "url": "",
+    }
 
 
 def log():
@@ -85,10 +93,12 @@ def log():
     Returns:
         dict: The data structure for a log.
     """
-    return {'_id': utils.new_uuid(),
-            'action': '',
-            'comment': '',
-            'data_type': '',
-            'data': '',
-            'timestamp': utils.make_timestamp(),
-            'user': ''}
+    return {
+        "_id": utils.new_uuid(),
+        "action": "",
+        "comment": "",
+        "data_type": "",
+        "data": "",
+        "timestamp": utils.make_timestamp(),
+        "user": "",
+    }

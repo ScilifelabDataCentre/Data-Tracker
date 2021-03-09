@@ -5,10 +5,10 @@ import flask
 
 import user
 
-blueprint = flask.Blueprint('developer', __name__)  # pylint: disable=invalid-name
+blueprint = flask.Blueprint("developer", __name__)  # pylint: disable=invalid-name
 
 
-@blueprint.route('/login/<identifier>')
+@blueprint.route("/login/<identifier>")
 def login(identifier: str):
     """
     Log in without password.
@@ -23,20 +23,20 @@ def login(identifier: str):
     return flask.Response(status=500)
 
 
-@blueprint.route('/hello')
+@blueprint.route("/hello")
 def api_hello():
     """Test request."""
-    return flask.jsonify({'test': 'success'})
+    return flask.jsonify({"test": "success"})
 
 
-@blueprint.route('/loginhello')
+@blueprint.route("/loginhello")
 @user.login_required
 def login_hello():
     """Test request requiring login."""
-    return flask.jsonify({'test': 'success'})
+    return flask.jsonify({"test": "success"})
 
 
-@blueprint.route('/hello/<permission>')
+@blueprint.route("/hello/<permission>")
 def permission_hello(permission: str):
     """
     Test request requiring the given permission.
@@ -47,24 +47,25 @@ def permission_hello(permission: str):
     if not user.has_permission(permission):
         flask.abort(status=403)
 
-    return flask.jsonify({'test': 'success'})
+    return flask.jsonify({"test": "success"})
 
 
-@blueprint.route('/csrftest', methods=['POST', 'PATCH', 'POST', 'DELETE'])
+@blueprint.route("/csrftest", methods=["POST", "PATCH", "POST", "DELETE"])
 def csrf_test():
     """Test csrf tokens."""
-    return flask.jsonify({'test': 'success'})
+    return flask.jsonify({"test": "success"})
 
 
-@blueprint.route('/test_datasets')
+@blueprint.route("/test_datasets")
 def get_added_ds():
     """Get datasets added during testing."""
-    added = list(flask.g.db['datasets'].find({'description': 'Test dataset'},
-                                             {'_id': 1}))
-    return flask.jsonify({'datasets': added})
+    added = list(
+        flask.g.db["datasets"].find({"description": "Test dataset"}, {"_id": 1})
+    )
+    return flask.jsonify({"datasets": added})
 
 
-@blueprint.route('/session')
+@blueprint.route("/session")
 def list_session():
     """List all session variables."""
     session = copy.deepcopy(flask.session)
@@ -73,7 +74,7 @@ def list_session():
     return flask.jsonify(session)
 
 
-@blueprint.route('/user/me')
+@blueprint.route("/user/me")
 def list_current_user():
     """List all session variables."""
     current_user = flask.g.current_user
@@ -82,7 +83,7 @@ def list_current_user():
     return flask.jsonify(current_user)
 
 
-@blueprint.route('/config')
+@blueprint.route("/config")
 def list_config():
     """List all session variables."""
     config = copy.deepcopy(flask.current_app.config)
@@ -91,8 +92,8 @@ def list_config():
     return flask.jsonify(config)
 
 
-@blueprint.route('/quit')
+@blueprint.route("/quit")
 def stop_server():
     """Shutdown the flask server."""
-    flask.request.environ.get('werkzeug.server.shutdown')()
+    flask.request.environ.get("werkzeug.server.shutdown")()
     return flask.Response(status=200)
