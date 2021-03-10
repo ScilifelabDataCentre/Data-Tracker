@@ -1,16 +1,5 @@
 <template>
 <div>
-  <span class="text-h6">
-    {{ fieldTitle }}
-    <q-icon size="xs"
-            color="primary"
-            name="info"
-            v-if="helpText.length > 0">
-      <q-tooltip>
-        {{ helpText }}
-      </q-tooltip>
-    </q-icon>
-  </span>
   <div class="row q-my-md">
     <q-input stack-label
              outlined
@@ -68,21 +57,10 @@ export default {
   },
 
   props: {
-    fieldTitle: {
-      type: String,
-      required: true,
-    },
-
     fieldDataName: {
       type: String,
       required: true,
     },
-
-    helpText: {
-      type: String,
-      default: '',
-    },
-
     isLoading: {
       type: Boolean,
       default: true

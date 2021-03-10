@@ -1,53 +1,80 @@
 <template>
 <div>
-  <q-card class="q-my-sm">
-    <q-card-section>
-      <q-field v-if="collection._id !== ''"
-               label="UUID"
-	       stack-label
-	       filled>
-        <template v-slot:prepend>
-          <q-icon name="label_important" />
-        </template>
-        <template v-slot:control>
-          {{ collection._id }}
-        </template>
-      </q-field>
-    </q-card-section>
-  
-    <q-card-section>
-      <q-input id="collection-title"
-               label="Title"
-               v-model="title"
-               outlined>
-        <template v-slot:prepend>
-          <q-icon name="title" />
-        </template>
-      </q-input>
-    </q-card-section>
-    <q-card-section>
-      <q-input id="collection-description"
-               type="textarea"
-               label="Description"
-               v-model="description"
-               autogrow
-               outlined
-               bottom-slots>
-        <template v-slot:prepend>
-          <q-icon name="description" />
-        </template>
-        <template v-slot:hint>
-          Use <a class="std-link"
-                 href="https://www.markdownguide.org/cheat-sheet/"
-                 target="_blank">Markdown</a> to format the description.
-        </template>
-      </q-input>
-    </q-card-section>
-  </q-card>
+  <q-field v-if="collection._id !== ''"
+           label="UUID"
+           class="q-mb-lg"
+	   stack-label
+	   filled>
+    <template v-slot:prepend>
+      <q-icon name="label_important" />
+    </template>
+    <template v-slot:control>
+      {{ collection._id }}
+    </template>
+  </q-field>
 
-  <q-card class="q-my-sm">
-    <q-card-section>
-      <q-table title="Datasets"
+  <q-input id="collection-title"
+           class="q-my-md"
+           label="Title"
+           v-model="title"
+           outlined>
+    <template v-slot:prepend>
+      <q-icon name="title" />
+    </template>
+  </q-input>
+
+  <div class="q-my-md">
+    <q-input id="collection-description"
+             type="textarea"
+             label="Description"
+             v-model="description"
+             autogrow
+             outlined
+             bottom-slots>
+      <template v-slot:prepend>
+        <q-icon name="description" />
+      </template>
+      <template v-slot:hint>
+        Use <a class="std-link"
+               href="https://www.markdownguide.org/cheat-sheet/"
+               target="_blank">Markdown</a> to format the description.
+      </template>
+    </q-input>
+  </div>
+
+  <q-list bordered
+          class="q-my-lg">
+    <q-expansion-item expand-separator
+                      icon="fas fa-tags"
+                      label="Tags"
+                      caption="Set labels (tags)">
+      <q-card>
+        <q-card-section>
+          <tag-editor :isLoading="isLoading"
+                      v-model="tags"/>
+        </q-card-section>
+      </q-card>
+    </q-expansion-item>
+
+    <q-expansion-item expand-separator
+                      icon="fas fa-tags"
+                      label="Properties"
+                      caption="Set properties (key: value)">
+      <q-card>
+        <q-card-section>
+          <property-editor fieldTitle="Properties"
+                           helpText="Set properties"
+                           fieldDataName="properties"
+                           :isLoading="isLoading"/>
+        </q-card-section>
+      </q-card>
+    </q-expansion-item>
+
+    <q-expansion-item expand-separator
+                      icon="fas fa-chart-area"
+                      label="Datasets"
+                      caption="Datasets to include in the collection">
+      <q-table flat
                :data="onlySelected ? selectedDatasets : datasets"
                :columns="columns"
                row-key="_id"
@@ -58,45 +85,41 @@
                :pagination.sync="pagination"
                no-data-label="No entries found"
                :no-results-label="filter + ' does not match any entries'">
-        <template v-slot:top-right>
-          <q-checkbox v-model="onlySelected"
-                      label="Only selected"
-                      class="q-mx-md"/>
-          <q-input rounded
-                   outlined
-                   dense
-                   debounce="300"
-                   v-model="filter"
-                   placeholder="Search">
-            <template v-slot:append>
-              <q-icon name="search" />
-            </template>
-          </q-input>
+        <template v-slot:top-left>
+          <div class="row">
+            <q-input rounded
+                     outlined
+                     dense
+                     debounce="300"
+                     v-model="filter"
+                     placeholder="Search">
+              <template v-slot:append>
+                <q-icon name="search" />
+              </template>
+            </q-input>
+            <q-toggle class="q-mx-sm"
+                      left-label
+                      v-model="onlySelected"
+                      label="Show selected only"
+                      color="primary"/>
+          </div>
         </template>
       </q-table>
-    </q-card-section>
-  </q-card>
+    </q-expansion-item>
 
-  <q-card>
-    <q-card-section>
-      <property-editor fieldTitle="Properties"
-                       helpText="Set properties"
-                       fieldDataName="properties"
-                       :isLoading="isLoading"/>
-    </q-card-section>
-    <q-card-section>
-      <tag-editor :isLoading="isLoading"
-                  v-model="tags"/>
-    </q-card-section>
-  </q-card>
-
-  <user-selector fieldTitle="Editors"
-                 fieldDataName="editors"
-                 class="q-my-sm"
-                 helpText="Users who may edit this collection and the associated datasets"
-                 value="collection.editors"
-                 :isLoadingUsers="isLoadingUsers"
-                 :isLoading="isLoading"/>
+    <q-expansion-item expand-separator
+                      icon="far fa-user"
+                      label="Editors"
+                      caption="Users who may edit this collection and the associated datasets">
+      <user-selector fieldTitle="Editors"
+                     fieldDataName="editors"
+                     class="q-my-sm"
+                     helpText="Users who may edit this collection and the associated datasets"
+                     value="collection.editors"
+                     :isLoadingUsers="isLoadingUsers"
+                     :isLoading="isLoading"/>
+    </q-expansion-item>
+  </q-list>
 </div>
 </template>
 
@@ -134,12 +157,6 @@ export default {
       },
       set (newValue) {
         this.$store.dispatch('entries/setEntryFields', {'tags': newValue});
-      },
-    },
-
-    datasets: {
-      get () {
-        return this.$store.state.entries.entryList;
       },
     },
 
@@ -190,19 +207,12 @@ export default {
       isLoadingUsers: false,
       isLoadingDatasets: false,
       onlySelected: false,
+      datasets: [],
       filter: '',
       pagination: {
-        rowsPerPage: 5
+        rowsPerPage: 10
       },
       columns: [
-        {
-          name: '_id',
-          label: 'UUID',
-          field: '_id',
-          align: 'left',
-          required: true,
-          sortable: true
-        },
         {
           title: 'title',
           label: 'Title',
@@ -210,6 +220,14 @@ export default {
           required: true,
           align: 'left',
           sortable: true,
+        },
+        {
+          name: '_id',
+          label: 'UUID',
+          field: '_id',
+          align: 'left',
+          required: true,
+          sortable: true
         },
       ]
 
@@ -225,15 +243,14 @@ export default {
 
   mounted () {
     this.isLoadingUsers = true;
-    this.$store.dispatch('entries/getEntryList', 'user')
-      .then(() => this.isLoadingUsers = false)
-      .catch(() => this.isLoadingUsers = false);
+    this.$store.dispatch('entries/getEntries', 'user')
+      .finally(() => this.isLoadingUsers = false);
     this.isLoadingDatasets = true;
     this.$store.dispatch('entries/resetEntryList')
       .then(() => {
-        this.$store.dispatch('entries/getEntries', 'dataset')
-          .then(() => this.isLoadingDatasets = false)
-          .catch(() => this.isLoadingDatasets = false);
+        this.$store.dispatch('entries/getLocalEntries', 'dataset')
+          .then((datasets) => this.datasets = datasets)
+          .finally(() => this.isLoadingDatasets = false);
       });
   }
 }

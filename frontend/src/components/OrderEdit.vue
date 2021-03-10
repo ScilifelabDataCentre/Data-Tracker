@@ -1,92 +1,125 @@
 <template>
 <div>
-  <q-card class="q-my-sm">
-    <q-card-section>
-      <q-field v-if="order._id !== ''"
-               label="UUID"
-	       stack-label
-	       filled>
-        <template v-slot:prepend>
-          <q-icon name="label_important" />
-        </template>
-        <template v-slot:control>
-          {{ order._id }}
-        </template>
-      </q-field>
-    </q-card-section>
-  
-    <q-card-section>
-      <q-input id="order-title"
-               label="Title"
-               v-model="title"
-               outlined>
-        <template v-slot:prepend>
-          <q-icon name="title" />
-        </template>
-      </q-input>
-    </q-card-section>
-    <q-card-section>
-      <q-input id="order-description"
-               type="textarea"
-               label="Description"
-               v-model="description"
-               autogrow
-               outlined
-               bottom-slots>
-        <template v-slot:prepend>
-          <q-icon name="description" />
-        </template>
-        <template v-slot:hint>
-          Use <a class="std-link"
-                 href="https://www.markdownguide.org/cheat-sheet/"
-                 target="_blank">Markdown</a> to format the description.
-        </template>
-      </q-input>
-    </q-card-section>
-  </q-card>
+  <q-field v-if="order._id !== ''"
+           label="UUID"
+           class="q-mb-lg"
+	   stack-label
+	   filled>
+    <template v-slot:prepend>
+      <q-icon name="label_important" />
+    </template>
+    <template v-slot:control>
+      {{ order._id }}
+    </template>
+  </q-field>
 
-  <q-card>
-    <q-card-section>
-      <property-editor fieldTitle="Properties"
-                       helpText="Set properties"
-                       fieldDataName="properties"
-                       :isLoading="isLoading"/>
-    </q-card-section>
-    <q-card-section>
-      <tag-editor :isLoading="isLoading"
-                  v-model="tags"/>
-    </q-card-section>
-  </q-card>
+  <q-input id="order-title"
+           class="q-my-md"
+           label="Title"
+           v-model="title"
+           outlined>
+    <template v-slot:prepend>
+      <q-icon name="title" />
+    </template>
+  </q-input>
 
-  <user-selector fieldTitle="Authors"
-                 fieldDataName="authors"
-                 class="q-my-sm"
-                 helpText="The ones who own the sample (e.g. PI)"
-                 :isLoadingUsers="isLoadingUsers"
-                 :isLoading="isLoading"/>
+  <div class="q-my-md">
+    <q-input id="order-description"
+             type="textarea"
+             label="Description"
+             v-model="description"
+             autogrow
+             outlined
+             bottom-slots>
+      <template v-slot:prepend>
+        <q-icon name="description" />
+      </template>
+      <template v-slot:hint>
+        Use <a class="std-link"
+               href="https://www.markdownguide.org/cheat-sheet/"
+               target="_blank">Markdown</a> to format the description.
+      </template>
+    </q-input>
+  </div>
 
-  <user-selector fieldTitle="Generators"
-                 fieldDataName="generators"
-                 class="q-my-sm"
-                 helpText="The ones who generated the data (e.g. Facility)"
-                 :isLoadingUsers="isLoadingUsers"
-                 :isLoading="isLoading"/>
+  <q-list bordered
+          class="q-my-lg">
+    <q-expansion-item expand-separator
+                      icon="fas fa-tags"
+                      label="Tags"
+                      caption="Set labels (tags)">
+      <q-card>
+        <q-card-section>
+          <tag-editor :isLoading="isLoading"
+                      v-model="tags"/>
+        </q-card-section>
+      </q-card>
+    </q-expansion-item>
 
-  <user-selector fieldTitle="Organisation"
-                 fieldDataName="organisation"
-                 selectType="single"
-                 class="q-my-sm"
-                 helpText="The data controller (e.g. university)"
-                 :isLoadingUsers="isLoadingUsers"
-                 :isLoading="isLoading"/>
+    <q-expansion-item expand-separator
+                      icon="fas fa-tags"
+                      label="Properties"
+                      caption="Set properties (key: value)">
+      <q-card>
+        <q-card-section>
+          <property-editor fieldTitle="Properties"
+                           helpText="Set properties"
+                           fieldDataName="properties"
+                           :isLoading="isLoading"/>
+        </q-card-section>
+      </q-card>
+    </q-expansion-item>
 
-  <user-selector fieldTitle="Editors"
-                 fieldDataName="editors"
-                 class="q-my-sm"
-                 helpText="Users who may edit this order and the associated datasets"
-                 value="order.editors"
-                 :isLoadingUsers="isLoadingUsers"
-                 :isLoading="isLoading"/>
+    <q-expansion-item expand-separator
+                      icon="far fa-user"
+                      label="Authors"
+                      caption="The ones who own the sample (e.g. PI)">
+      <user-selector fieldTitle="Authors"
+                     fieldDataName="authors"
+                     class="q-my-sm"
+                     helpText="The ones who own the sample (e.g. PI)"
+                     :isLoadingUsers="isLoadingUsers"
+                     :isLoading="isLoading"/>
+    </q-expansion-item>
+
+    <q-expansion-item expand-separator
+                      icon="far fa-user"
+                      label="Generators"
+                      caption="The ones who generated the data (e.g. Facility)">
+      <user-selector fieldTitle="Generators"
+                     fieldDataName="generators"
+                     class="q-my-sm"
+                     helpText="The ones who generated the data (e.g. Facility)"
+                     :isLoadingUsers="isLoadingUsers"
+                     :isLoading="isLoading"/>
+    </q-expansion-item>
+
+    <q-expansion-item expand-separator
+                      icon="far fa-user"
+                      label="Organisation"
+                      caption="The data controller (e.g. university)">
+      <user-selector fieldTitle="Organisation"
+                     fieldDataName="organisation"
+                     selectType="single"
+                     class="q-my-sm"
+                     helpText="The data controller (e.g. university)"
+                     :isLoadingUsers="isLoadingUsers"
+                     :isLoading="isLoading"/>
+    </q-expansion-item>
+
+    <q-expansion-item expand-separator
+                      icon="far fa-user"
+                      label="Editors"
+                      caption="Users who may edit this order and the associated datasets">
+      <user-selector fieldTitle="Editors"
+                     fieldDataName="editors"
+                     class="q-my-sm"
+                     helpText="Users who may edit this order and the associated datasets"
+                     value="order.editors"
+                     :isLoadingUsers="isLoadingUsers"
+                     :isLoading="isLoading"/>
+    </q-expansion-item>
+  </q-list>
 </div>
 </template>
 
