@@ -7,15 +7,14 @@
     </div>
   </div>
 
-  
   <div class="q-my-md q-mx-sm"
        v-show="Object.keys(order.properties).length">
-      <q-chip square
-              color="grey-3"
-              v-for="field in Object.keys(order.properties)"
-              :key="field">
-        <span class="text-bold text-capitalize text-blue-9 q-mr-sm">{{ field }}</span> {{ order.properties[field] }}
-      </q-chip>
+    <q-chip square
+            color="grey-3"
+            v-for="field in Object.keys(order.properties)"
+            :key="field">
+      <span class="text-bold text-capitalize text-blue-9 q-mr-sm">{{ field }}</span> {{ order.properties[field] }}
+    </q-chip>
   </div>
 
   <div class="q-my-sm q-mx-sm"
@@ -58,37 +57,34 @@
   </div>
 
   <div class="q-my-md">
-      <q-list dense>
-        <div v-show="order.authors.length">
-          <list-header title="Authors"
-                       explanation="The ones who provided the sample, e.g. a researcher" />
-          <user-entry v-for="author in order.authors"
-                      :key="author._id"
-                      v-bind="author" />
-        </div>
-
-        <div v-show="order.generators.length">
-          <list-header title="Generators"
-                       explanation="The ones who generated the data, e.g. a facility" />
-          <user-entry v-for="generator in order.generators"
-                      :key="generator._id"
-                      v-bind="generator" />
-        </div>
-
-        <div v-if="Object.keys(order.organisation).length">
-          <list-header title="Organisation"
-                       explanation="The data owner, e.g. a university" />
-          <user-entry v-bind="order.organisation" />
-        </div>
-
-        <div v-show="order.editors.length">
-          <list-header title="Editors"
-                       explanation="Users that may edit this order" />
-          <user-entry v-for="entry in order.editors"
-                      :key="entry._id"
-                      v-bind="entry" />
-        </div>
-      </q-list>
+    <q-list dense>
+      <div v-show="order.authors.length">
+        <list-header title="Authors"
+                     explanation="The ones who provided the sample, e.g. a researcher" />
+        <user-entry v-for="author in order.authors"
+                    :key="author._id"
+                    v-bind="author" />
+      </div>
+      <div v-show="order.generators.length">
+        <list-header title="Generators"
+                     explanation="The ones who generated the data, e.g. a facility" />
+        <user-entry v-for="generator in order.generators"
+                    :key="generator._id"
+                    v-bind="generator" />
+      </div>
+      <div v-if="Object.keys(order.organisation).length">
+        <list-header title="Organisation"
+                     explanation="The data owner, e.g. a university" />
+        <user-entry v-bind="order.organisation" />
+      </div>
+      <div v-show="order.editors.length">
+        <list-header title="Editors"
+                     explanation="Users that may edit this order" />
+        <user-entry v-for="entry in order.editors"
+                    :key="entry._id"
+                    v-bind="entry" />
+      </div>
+    </q-list>
   </div>
 </div>
 </template>
