@@ -16,9 +16,9 @@
 
     <template v-slot:top-left>
       <q-btn v-show="showAdd"
-             round
              color="primary"
              icon="add"
+             :label="'Add ' + entryType"
              :to="{ 'name': pageNew }" />
     </template>
 
