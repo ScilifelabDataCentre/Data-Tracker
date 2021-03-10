@@ -51,7 +51,6 @@
 </template>
 
 <script>
-import LogViewer from 'components/LogViewer.vue'
 import UserEdit from 'components/UserEdit.vue'
 
 export default {
