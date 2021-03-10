@@ -42,7 +42,7 @@
     </q-input>
   </div>
 
-  <q-list bcollectioned
+  <q-list bordered
           class="q-my-lg">
     <q-expansion-item expand-separator
                       icon="fas fa-tags"
