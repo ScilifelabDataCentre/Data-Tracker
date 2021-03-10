@@ -24,32 +24,17 @@
         <q-icon name="search" />
       </template>
     </q-input>
-    <q-btn-dropdown dense
-                    flat
-                    class="q-mx-sm"
-                    color="primary"
-                    icon="fas fa-cog"
-                    label="Options">
-      <q-list dense>
-        <q-item>
-          <q-item-section>
-            <q-item-label>Show selected only</q-item-label>
-          </q-item-section>
-          <q-item-section side>
-            <q-toggle v-model="onlySelected"
-                      color="primary"/>
-          </q-item-section>
-        </q-item>
-        <q-item clickable
-                v-close-popup
-                @click="showAddUser = true">
-          <q-item-section>
-            <q-item-label>Add User</q-item-label>
-          </q-item-section>
-        </q-item>
-        </q-list>
-      </q-btn-dropdown>
-
+    <q-toggle class="q-mx-sm"
+              left-label
+              v-model="onlySelected"
+              label="Show selected only"
+              color="primary"/>
+    <q-btn flat
+           no-caps
+           icon="fas fa-user-plus"
+           color="primary"
+           @click="showAddUser = true"
+           label="Add User" />
     </div>
   </template>
   <template v-slot:top-right>
