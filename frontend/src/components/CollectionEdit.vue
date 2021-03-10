@@ -74,7 +74,8 @@
                       icon="fas fa-chart-area"
                       label="Datasets"
                       caption="Datasets to include in the collection">
-      <q-table :data="onlySelected ? selectedDatasets : datasets"
+      <q-table flat
+               :data="onlySelected ? selectedDatasets : datasets"
                :columns="columns"
                row-key="_id"
                :loading="isLoadingDatasets"
