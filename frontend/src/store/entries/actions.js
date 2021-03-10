@@ -272,3 +272,17 @@ export function getEntries ({ commit, dispatch }, dataType) {
       });
   });
 }
+
+
+export function getLocalEntries ({ commit, dispatch }, dataType) {
+  return new Promise((resolve, reject) => {
+    axios
+      .get('/api/v1/' + dataType + '/')
+      .then((response) => {
+        resolve(response.data[dataType + 's']);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+}
