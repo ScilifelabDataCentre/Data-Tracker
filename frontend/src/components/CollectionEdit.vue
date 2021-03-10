@@ -243,8 +243,7 @@ export default {
   mounted () {
     this.isLoadingUsers = true;
     this.$store.dispatch('entries/getEntries', 'user')
-      .then(() => this.isLoadingUsers = false)
-      .catch(() => this.isLoadingUsers = false);
+      .finally(() => this.isLoadingUsers = false);
     this.isLoadingDatasets = true;
     this.$store.dispatch('entries/resetEntryList')
       .then(() => {
