@@ -5,8 +5,6 @@ import routes from './routes'
 
 Vue.use(VueRouter)
 
-import { Cookies } from 'quasar'
-
 export default function (store /*, ssrContext } */) {
   const Router = new VueRouter({
     scrollBehavior: () => ({ x: 0, y: 0 }),
