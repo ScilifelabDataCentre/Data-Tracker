@@ -7,15 +7,14 @@
     </div>
   </div>
 
-
   <div class="q-my-md q-mx-sm"
        v-show="Object.keys(collection.properties).length">
-      <q-chip square
-              color="grey-3"
-              v-for="field in Object.keys(collection.properties)"
-              :key="field">
-        <span class="text-bold text-capitalize text-blue-9 q-mr-sm">{{ field }}</span> {{ collection.properties[field] }}
-      </q-chip>
+    <q-chip square
+            color="grey-3"
+            v-for="field in Object.keys(collection.properties)"
+            :key="field">
+      <span class="text-bold text-capitalize text-blue-9 q-mr-sm">{{ field }}</span> {{ collection.properties[field] }}
+    </q-chip>
   </div>
 
   <div class="q-my-sm q-mx-sm"
