@@ -7,16 +7,6 @@
     </div>
   </div>
 
-  <div class="q-my-sm q-mx-sm"
-       v-show="order.tags.length">
-    <q-chip square
-            color="grey-3"
-            v-for="entry in order.tags"
-            :key="entry">
-      <q-avatar color="secondary" text-color="white" icon="fas fa-tag" />
-      {{ entry }}
-    </q-chip>
-  </div>
   
   <div class="q-my-md q-mx-sm"
        v-show="Object.keys(order.properties).length">
@@ -26,6 +16,17 @@
               :key="field">
         <span class="text-bold text-capitalize text-blue-9 q-mr-sm">{{ field }}</span> {{ order.properties[field] }}
       </q-chip>
+  </div>
+
+  <div class="q-my-sm q-mx-sm"
+       v-show="order.tags.length">
+    <q-chip square
+            color="grey-3"
+            v-for="entry in order.tags"
+            :key="entry">
+      <q-avatar color="secondary" text-color="white" icon="fas fa-tag" />
+      {{ entry }}
+    </q-chip>
   </div>
 
   <div class="q-my-md" v-show="order.description.length">
