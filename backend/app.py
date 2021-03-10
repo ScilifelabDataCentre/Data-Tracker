@@ -21,8 +21,6 @@ app = flask.Flask(__name__)  # pylint: disable=invalid-name
 appconf = config.init()
 db_management.check_db(appconf)
 app.config.update(appconf)
-app.config["PERMANENT_SESSION_LIFETIME"] = datetime.timedelta(days=31)
-
 
 if app.config["dev_mode"]["api"]:
     app.register_blueprint(developer.blueprint, url_prefix="/api/v1/developer")
