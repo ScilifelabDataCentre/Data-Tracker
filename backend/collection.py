@@ -133,9 +133,8 @@ def add_collection():  # pylint: disable=too-many-branches
         flask.abort(status=validation[1])
 
     # properties may only be set by users with DATA_MANAGEMENT
-    if "properties" in indata:
-        if not user.has_permission("DATA_MANAGEMENT"):
-            flask.abort(403)
+    if "properties" in indata and not user.has_permission("DATA_MANAGEMENT"):
+        flask.abort(403)
 
     if "title" not in indata:
         flask.abort(status=400)
