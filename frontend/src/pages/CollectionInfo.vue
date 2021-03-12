@@ -2,7 +2,7 @@
 <q-page padding>
   <div v-if="badEntry">
     <q-banner>
-      The entry {{ uuid }} could not be found.
+      The entry <span class="text-negative text-weight-medium">{{ uuid }}</span> could not be found.
     </q-banner>
     <q-btn class="q-my-md"
            color="primary"
