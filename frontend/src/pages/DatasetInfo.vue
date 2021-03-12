@@ -1,5 +1,15 @@
 <template>
 <q-page padding>
+  <div v-if="badEntry">
+    <q-banner>
+      The entry {{ uuid }} could not be found.
+    </q-banner>
+    <q-btn class="q-my-md"
+           color="primary"
+           :to="{ 'name': 'Dataset Browser' }"
+           label="Back to dataset browser" />
+  </div>
+  <div v-else>
   <div class="row justify-between">
     <div class="flex">
       <q-btn-dropdown v-show="uuid !== '' && 'editors' in dataset"
@@ -122,7 +132,7 @@
       </q-card-actions>
     </q-card>
   </q-dialog>
-
+  </div>
   <q-inner-loading :showing="isLoading">
     <q-spinner-gears size="100px" color="primary" />
   </q-inner-loading>
@@ -166,6 +176,7 @@ export default {
 
   data () {
     return {
+      badEntry: false,
       isLoading: true,
       currentTab: 'preview',
       editMode: false,
@@ -190,7 +201,7 @@ export default {
 
     cancelEdit () {
       if (this.uuid === '') {
-          this.$router.push({ 'name': 'Dataset Browser' });
+        this.$router.push({ 'name': 'Dataset Browser' });
       }
       this.editMode = false;
       this.loadData();
@@ -205,7 +216,7 @@ export default {
     deleteEntry(event) {
       event.preventDefault();
       this.$store.dispatch('entries/deleteEntry', {'id': this.uuid,
-                                                'dataType': this.dataType})
+                                                   'dataType': this.dataType})
         .then(() => {
           this.$router.push({ 'name': 'Dataset Browser' });
           this.showConfirmDelete = false;
@@ -256,16 +267,18 @@ export default {
       this.isLoading = true;
       if (this.uuid === '') {
         this.$store.dispatch('entries/getEmptyEntry', this.dataType)
-          .then(() => this.isLoading = false)
-          .catch(() => this.isLoading = false);
+              .finally(() => this.isLoading = false);
       }
       else {
         this.$store.dispatch('entries/resetEntry')
           .then(() => {
             this.$store.dispatch('entries/getEntry', {'id': this.uuid,
                                                       'dataType': this.dataType})
-              .then(() => this.isLoading = false)
-              .catch(() => this.isLoading = false);
+              .catch((err) => {
+                if (err.response.status === 404)
+                  this.badEntry = true;
+              })
+              .finally(() => this.isLoading = false);
           });
       }
     }
