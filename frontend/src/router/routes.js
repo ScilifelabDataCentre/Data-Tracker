@@ -41,7 +41,7 @@ const routes = [
         props: { 'entryType': 'dataset'}
       },
       {
-        path: ':uuid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})',
+        path: ':uuid',
         component: DatasetInfo,
         props: true,
         name: 'Dataset About'
@@ -85,7 +85,7 @@ const routes = [
         props: { 'entryType': 'order'}
       },
       {
-        path: ':uuid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})',
+        path: ':uuid',
         component: OrderInfo,
         props: true,
         name: 'Order About'
@@ -110,7 +110,7 @@ const routes = [
         props: { 'entryType': 'collection'}
       },
       {
-        path: ':uuid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})',
+        path: ':uuid',
         component: CollectionInfo,
         props: true,
         name: 'Collection About'

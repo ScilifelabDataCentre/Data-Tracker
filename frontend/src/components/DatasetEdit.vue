@@ -1,47 +1,45 @@
 <template>
 <div>
-  <q-card v-if="isNew && !('order' in dataset)"
-          class="q-my-sm">
-    <q-card-section>
-      <q-table title="Select an order"
-               :data="onlySelected ? selectedOrder : orders"
-               :columns="columns"
-               row-key="_id"
-               :loading="isLoadingOrders"
-               :filter="filter"
-               selection="single"
-               :selected.sync="selectedOrder"
-               :pagination.sync="pagination"
-               no-data-label="No entries found"
-               :no-results-label="filter + ' does not match any entries'">
-        <template v-slot:top-right>
-          <q-checkbox v-model="onlySelected"
-                      label="Only selected"
-                      class="q-mx-md"/>
-          <q-input rounded
-                   outlined
-                   dense
-                   debounce="300"
-                   v-model="filter"
-                   placeholder="Search">
-            <template v-slot:append>
-              <q-icon name="search" />
-            </template>
-          </q-input>
-        </template>
-      </q-table>
-      <q-btn class="q-mt-sm"
-             label="Confirm selected order"
-             color="primary"
-             @click="confirmOrder"
-             :disable="selectedOrder.length === 0"
-             :loading="isLoadingOrderData"/>
-    </q-card-section>
-  </q-card>
+  <div v-if="isNew && !('order' in dataset)"
+       class="q-my-sm">
+    <q-table flat
+             title="Select an order"
+             :data="onlySelected ? selectedOrder : orders"
+             :columns="columns"
+             row-key="_id"
+             :loading="isLoadingOrders"
+             :filter="filter"
+             selection="single"
+             :selected.sync="selectedOrder"
+             :pagination.sync="pagination"
+             no-data-label="No entries found"
+             :no-results-label="filter + ' does not match any entries'">
+      <template v-slot:top-right>
+        <q-checkbox v-model="onlySelected"
+                    label="Only selected"
+                    class="q-mx-md"/>
+        <q-input rounded
+                 outlined
+                 dense
+                 debounce="300"
+                 v-model="filter"
+                 placeholder="Search">
+          <template v-slot:append>
+            <q-icon name="search" />
+          </template>
+        </q-input>
+      </template>
+    </q-table>
+    <q-btn class="q-mt-sm"
+           label="Confirm selected order"
+           color="primary"
+           @click="confirmOrder"
+           :disable="selectedOrder.length === 0"
+           :loading="isLoadingOrderData"/>
+  </div>
 
   <div v-else>
-  <q-card class="q-my-sm">
-    <q-card-section>
+    <div class="q-my-lg">
       <q-field v-if="!isNew"
                class="q-my-sm"
                label="UUID"
@@ -66,50 +64,63 @@
           {{ dataset.order }}
         </template>
       </q-field>
-    </q-card-section>
-  
-    <q-card-section>
-      <q-input id="dataset-title"
-               label="Title"
-               v-model="title"
-               outlined>
-        <template v-slot:prepend>
-          <q-icon name="title" />
-        </template>
-      </q-input>
-    </q-card-section>
-    <q-card-section>
-      <q-input id="dataset-description"
-               type="textarea"
-               label="Description"
-               v-model="description"
-               autogrow
-               outlined
-               bottom-slots>
-        <template v-slot:prepend>
-          <q-icon name="description" />
-        </template>
-        <template v-slot:hint>
-          Use <a class="std-link"
-                 href="https://www.markdownguide.org/cheat-sheet/"
-                 target="_blank">Markdown</a> to format the description.
-        </template>
-      </q-input>
-    </q-card-section>
-  </q-card>
+    </div>
 
-  <q-card>
-    <q-card-section>
-      <property-editor fieldTitle="Properties"
-                       helpText="Set properties"
-                       fieldDataName="properties"
-                       :isLoading="isLoading"/>
-    </q-card-section>
-    <q-card-section>
-      <tag-editor :isLoading="isLoading"
-                  v-model="tags"/>
-    </q-card-section>
-  </q-card>
+    <q-input id="dataset-title"
+             class="q-my-md"
+             label="Title"
+             v-model="title"
+             outlined>
+      <template v-slot:prepend>
+        <q-icon name="title" />
+      </template>
+    </q-input>
+    <q-input id="dataset-description"
+             class="q-my-md"
+             type="textarea"
+             label="Description"
+             v-model="description"
+             autogrow
+             outlined
+             bottom-slots>
+      <template v-slot:prepend>
+        <q-icon name="description" />
+      </template>
+      <template v-slot:hint>
+        Use <a class="std-link"
+               href="https://www.markdownguide.org/cheat-sheet/"
+               target="_blank">Markdown</a> to format the description.
+      </template>
+    </q-input>
+
+    <q-list bordered
+            class="q-my-lg">
+      <q-expansion-item expand-separator
+                        icon="fas fa-tags"
+                        label="Tags"
+                        caption="Set labels (tags)">
+        <q-card>
+          <q-card-section>
+            <tag-editor :isLoading="isLoading"
+                        v-model="tags"/>
+          </q-card-section>
+        </q-card>
+      </q-expansion-item>
+
+      <q-expansion-item expand-separator
+                        icon="fas fa-tags"
+                        label="Properties"
+                        caption="Set properties (key: value)">
+        <q-card>
+          <q-card-section>
+            <property-editor fieldTitle="Properties"
+                             helpText="Set properties"
+                             fieldDataName="properties"
+                             :isLoading="isLoading"/>
+          </q-card-section>
+      </q-card>
+    </q-expansion-item>
+  </q-list>
   </div>
 </div>
 </template>

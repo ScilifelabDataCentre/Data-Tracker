@@ -49,6 +49,17 @@
 <span id="dataset-py"></span><h1>dataset.py<a class="headerlink" href="#module-dataset" title="Permalink to this headline">¶</a></h1>
 <p>Dataset requests.</p>
 <dl class="py function">
+<dt id="dataset.add_dataset">
+<code class="sig-prename descclassname">dataset.</code><code class="sig-name descname">add_dataset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/dataset.html#add_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataset.add_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a dataset to the given order.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>identifier</strong> (<em>str</em>) – The order to add the dataset to.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="dataset.build_dataset_info">
 <code class="sig-prename descclassname">dataset.</code><code class="sig-name descname">build_dataset_info</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">identifier</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/dataset.html#build_dataset_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataset.build_dataset_info" title="Permalink to this definition">¶</a></dt>
 <dd><p>Query for a dataset from the database.</p>
@@ -90,6 +101,20 @@
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>flask.Response</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dataset.get_dataset_data_structure">
+<code class="sig-prename descclassname">dataset.</code><code class="sig-name descname">get_dataset_data_structure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/dataset.html#get_dataset_data_structure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataset.get_dataset_data_structure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get an empty dataset entry.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>JSON structure with a list of datasets.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>flask.Response</p>
 </dd>
 </dl>
 </dd></dl>
@@ -219,7 +244,7 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2019-2020, SciLifeLab Data Centre.
+        &#169; Copyright 2019-2021, SciLifeLab Data Centre.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>

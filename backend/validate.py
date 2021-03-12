@@ -37,13 +37,15 @@ def validate_field(field_key: str, field_value: Any) -> bool:
     try:
         VALIDATION_MAPPER[field_key](field_value)
     except KeyError:
-        flask.current_app.logger.debug('Unknown key: %s', field_key)
+        flask.current_app.logger.debug("Unknown key: %s", field_key)
         return False
     except ValueError as err:
-        flask.current_app.logger.debug('Indata validation failed: %s - %s', field_key, err)
+        flask.current_app.logger.debug(
+            "Indata validation failed: %s - %s", field_key, err
+        )
         return False
     except exceptions.AuthError as err:
-        flask.current_app.logger.debug('Permission failed: %s - %s', field_key, err)
+        flask.current_app.logger.debug("Permission failed: %s - %s", field_key, err)
         return False
     return True
 
@@ -64,16 +66,16 @@ def validate_datasets(data: list) -> bool:
         ValueError: Validation failed.
     """
     if not isinstance(data, list):
-        raise ValueError(f'Must be list ({data})')
+        raise ValueError(f"Must be list ({data})")
     for ds_entry in data:
         if not isinstance(ds_entry, str):
-            raise ValueError(f'Must be str ({ds_entry})')
+            raise ValueError(f"Must be str ({ds_entry})")
         try:
             ds_uuid = uuid.UUID(ds_entry)
         except ValueError as err:
-            raise ValueError(f'Not a valid uuid ({data})') from err
-        if not flask.g.db['datasets'].find_one({'_id': ds_uuid}):
-            raise ValueError(f'Uuid not in db ({data})')
+            raise ValueError(f"Not a valid uuid ({data})") from err
+        if not flask.g.db["datasets"].find_one({"_id": ds_uuid}):
+            raise ValueError(f"Uuid not in db ({data})")
         return True
 
 
@@ -93,9 +95,9 @@ def validate_email(data) -> bool:
         ValueError: Validation failed.
     """
     if not isinstance(data, str):
-        raise ValueError(f'Not a string ({data})')
+        raise ValueError(f"Not a string ({data})")
     if not utils.is_email(data):
-        raise ValueError(f'Not a valid email address ({data})')
+        raise ValueError(f"Not a valid email address ({data})")
     return True
 
 
@@ -113,10 +115,10 @@ def validate_list_of_strings(data: list) -> bool:
         ValueError: Validation failed.
     """
     if not isinstance(data, list):
-        raise ValueError(f'Not a list ({data})')
+        raise ValueError(f"Not a list ({data})")
     for entry in data:
         if not isinstance(entry, str):
-            raise ValueError(f'Not a string ({entry})')
+            raise ValueError(f"Not a string ({entry})")
     return True
 
 
@@ -136,10 +138,10 @@ def validate_permissions(data: list) -> bool:
         ValueError: Validation failed.
     """
     if not isinstance(data, list):
-        raise ValueError('Must be a list')
+        raise ValueError("Must be a list")
     for entry in data:
         if entry not in user.PERMISSIONS:
-            raise ValueError(f'Bad entry ({entry})')
+            raise ValueError(f"Bad entry ({entry})")
     return True
 
 
@@ -157,7 +159,7 @@ def validate_string(data: str) -> bool:
         ValueError: Validation failed.
     """
     if not isinstance(data, str):
-        raise ValueError(f'Not a string ({data})')
+        raise ValueError(f"Not a string ({data})")
     return True
 
 
@@ -177,15 +179,14 @@ def validate_cross_references(data: list) -> bool:
         ValueError: Validation failed.
     """
     if not isinstance(data, list):
-        raise ValueError(f'Not a  list ({data})')
+        raise ValueError(f"Not a  list ({data})")
     for entry in data:
         if not isinstance(entry, dict):
-            raise ValueError(f'List entries must be dicts ({entry})')
-        if list(entry.keys()) != ['title', 'value']:
-            raise KeyError(f'Incorrect keys ({entry.keys})')
-        if not isinstance(entry['title'], str) or \
-           not isinstance(entry['value'], str):
-            raise ValueError(f'Values must be strings ({entry.values()})')
+            raise ValueError(f"List entries must be dicts ({entry})")
+        if list(entry.keys()) != ["title", "value"]:
+            raise KeyError(f"Incorrect keys ({entry.keys})")
+        if not isinstance(entry["title"], str) or not isinstance(entry["value"], str):
+            raise ValueError(f"Values must be strings ({entry.values()})")
     return True
 
 
@@ -204,13 +205,13 @@ def validate_properties(data: dict) -> bool:
     Raises:
         ValueError: Validation failed.
     """
-    if not user.has_permission('DATA_MANAGEMENT'):
-        raise exceptions.AuthError('Permission DATA_MANAGEMENT required')
+    if not user.has_permission("DATA_MANAGEMENT"):
+        raise exceptions.AuthError("Permission DATA_MANAGEMENT required")
     if not isinstance(data, dict):
-        raise ValueError(f'Not a  dict ({data})')
+        raise ValueError(f"Not a  dict ({data})")
     for key in data:
         if not isinstance(key, str) or not isinstance(data[key], str):
-            raise ValueError(f'Keys and values must be strings ({key}, {data[key]})')
+            raise ValueError(f"Keys and values must be strings ({key}, {data[key]})")
     return True
 
 
@@ -230,10 +231,10 @@ def validate_tags(data: Union[tuple, list]) -> bool:
         ValueError: Validation failed.
     """
     if not isinstance(data, list) and not isinstance(data, tuple):
-        raise ValueError(f'Not a list ({data})')
+        raise ValueError(f"Not a list ({data})")
     for value in data:
         if not isinstance(value, str):
-            raise ValueError(f'All list entries must be str ({value})')
+            raise ValueError(f"All list entries must be str ({value})")
     return True
 
 
@@ -253,7 +254,7 @@ def validate_title(data: str) -> bool:
         ValueError: Validation failed.
     """
     if validate_string(data) and not data:
-        raise ValueError('Must not be empty')
+        raise ValueError("Must not be empty")
     return True
 
 
@@ -273,9 +274,9 @@ def validate_url(data: str) -> bool:
         ValueError: Validation failed.
     """
     if not isinstance(data, str):
-        raise ValueError('Must be a string')
-    if data and not data.startswith('http://') and not data.startswith('https://'):
-        raise ValueError('URLs must start with http(s)://')
+        raise ValueError("Must be a string")
+    if data and not data.startswith("http://") and not data.startswith("https://"):
+        raise ValueError("URLs must start with http(s)://")
     return True
 
 
@@ -295,7 +296,7 @@ def validate_user(data: str) -> bool:
         ValueError: Validation failed.
     """
     if not isinstance(data, str):
-        raise ValueError(f'Bad data type (must be str): {data}')
+        raise ValueError(f"Bad data type (must be str): {data}")
 
     if not data:
         return True
@@ -303,9 +304,9 @@ def validate_user(data: str) -> bool:
     try:
         user_uuid = uuid.UUID(data)
     except ValueError as err:
-        raise ValueError(f'Not a valid uuid ({data})') from err
-    if not flask.g.db['users'].find_one({'_id': user_uuid}):
-        raise ValueError(f'Uuid not in db ({data})')
+        raise ValueError(f"Not a valid uuid ({data})") from err
+    if not flask.g.db["users"].find_one({"_id": user_uuid}):
+        raise ValueError(f"Uuid not in db ({data})")
     return True
 
 
@@ -328,33 +329,35 @@ def validate_user_list(data: Union[tuple, list]) -> bool:
         ValueError: Validation failed.
     """
     if not isinstance(data, list):
-        raise ValueError(f'Bad data type (must be list): {data}')
+        raise ValueError(f"Bad data type (must be list): {data}")
 
     for u_uuid in data:
         try:
             user_uuid = uuid.UUID(u_uuid)
         except ValueError as err:
-            raise ValueError(f'Not a valid uuid ({data})') from err
-        if not flask.g.db['users'].find_one({'_id': user_uuid}):
-            raise ValueError(f'Uuid not in db ({data})')
+            raise ValueError(f"Not a valid uuid ({data})") from err
+        if not flask.g.db["users"].find_one({"_id": user_uuid}):
+            raise ValueError(f"Uuid not in db ({data})")
     return True
 
 
-VALIDATION_MAPPER = {'affiliation': validate_string,
-                     'auth_ids': validate_list_of_strings,
-                     'authors': validate_user_list,
-                     'contact': validate_string,
-                     'cross_references': validate_cross_references,
-                     'description': validate_string,
-                     'datasets': validate_datasets,
-                     'editors': validate_user_list,
-                     'email': validate_email,
-                     'generators': validate_user_list,
-                     'name': validate_string,
-                     'orcid': validate_string,
-                     'organisation': validate_user,
-                     'permissions': validate_permissions,
-                     'properties': validate_properties,
-                     'tags': validate_tags,
-                     'title': validate_title,
-                     'url': validate_url}
+VALIDATION_MAPPER = {
+    "affiliation": validate_string,
+    "auth_ids": validate_list_of_strings,
+    "authors": validate_user_list,
+    "contact": validate_string,
+    "cross_references": validate_cross_references,
+    "description": validate_string,
+    "datasets": validate_datasets,
+    "editors": validate_user_list,
+    "email": validate_email,
+    "generators": validate_user_list,
+    "name": validate_string,
+    "orcid": validate_string,
+    "organisation": validate_user,
+    "permissions": validate_permissions,
+    "properties": validate_properties,
+    "tags": validate_tags,
+    "title": validate_title,
+    "url": validate_url,
+}

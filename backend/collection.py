@@ -7,21 +7,22 @@ import structure
 import user
 import utils
 
-blueprint = flask.Blueprint('collection', __name__)  # pylint: disable=invalid-name
+blueprint = flask.Blueprint("collection", __name__)  # pylint: disable=invalid-name
 
 
-@blueprint.route('/', methods=['GET'])
+@blueprint.route("/", methods=["GET"])
 def list_collection():
     """Provide a simplified list of all available collections."""
-    results = list(flask.g.db['collections'].find(projection={'title': 1,
-                                                              '_id': 1,
-                                                              'tags': 1,
-                                                              'properties': 1}))
-    return utils.response_json({'collections': results})
+    results = list(
+        flask.g.db["collections"].find(
+            projection={"title": 1, "_id": 1, "tags": 1, "properties": 1}
+        )
+    )
+    return utils.response_json({"collections": results})
 
 
-@blueprint.route('/random/', methods=['GET'])
-@blueprint.route('/random/<int:amount>', methods=['GET'])
+@blueprint.route("/random/", methods=["GET"])
+@blueprint.route("/random/<int:amount>", methods=["GET"])
 def get_random(amount: int = 1):
     """
     Retrieve random collection(s).
@@ -33,25 +34,28 @@ def get_random(amount: int = 1):
         flask.Request: json structure for the collection(s)
 
     """
-    results = list(flask.g.db['collections'].aggregate([{'$sample': {'size': amount}}]))
+    results = list(flask.g.db["collections"].aggregate([{"$sample": {"size": amount}}]))
 
     for result in results:
         # only show editors if editor/admin
-        if not flask.g.current_user or\
-           (not user.has_permission('DATA_MANAGEMENT') or
-            flask.g.current_user['_id'] not in result['editors']):
-            flask.current_app.logger.debug('Not allowed to access editors field %s',
-                                           flask.g.current_user)
-            del result['editors']
+        if not flask.g.current_user or (
+            not user.has_permission("DATA_MANAGEMENT")
+            or flask.g.current_user["_id"] not in result["editors"]
+        ):
+            flask.current_app.logger.debug(
+                "Not allowed to access editors field %s", flask.g.current_user
+            )
+            del result["editors"]
 
             # return {_id, _title} for datasets
-            result['datasets'] = [flask.g.db.datasets.find_one({'_id': dataset},
-                                                               {'title': 1})
-                                  for dataset in result['datasets']]
-    return utils.response_json({'collections': results})
+            result["datasets"] = [
+                flask.g.db.datasets.find_one({"_id": dataset}, {"title": 1})
+                for dataset in result["datasets"]
+            ]
+    return utils.response_json({"collections": results})
 
 
-@blueprint.route('/<identifier>/', methods=['GET'])
+@blueprint.route("/<identifier>/", methods=["GET"])
 def get_collection(identifier):
     """
     Retrieve the collection with uuid <identifier>.
@@ -68,29 +72,32 @@ def get_collection(identifier):
     except ValueError:
         flask.abort(status=404)
 
-    result = flask.g.db['collections'].find_one({'_id': uuid})
+    result = flask.g.db["collections"].find_one({"_id": uuid})
     if not result:
         return flask.Response(status=404)
 
     # only show owner if owner/admin
-    if not flask.g.current_user or\
-       (not user.has_permission('DATA_MANAGEMENT') and
-        flask.g.current_user['_id'] not in result['editors']):
-        flask.current_app.logger.debug('Not allowed to access editors field %s',
-                                       flask.g.current_user)
-        del result['editors']
+    if not flask.g.current_user or (
+        not user.has_permission("DATA_MANAGEMENT")
+        and flask.g.current_user["_id"] not in result["editors"]
+    ):
+        flask.current_app.logger.debug(
+            "Not allowed to access editors field %s", flask.g.current_user
+        )
+        del result["editors"]
     else:
-        result['editors'] = utils.user_uuid_data(result['editors'], flask.g.db)
+        result["editors"] = utils.user_uuid_data(result["editors"], flask.g.db)
 
     # return {_id, _title} for datasets
-    result['datasets'] = [flask.g.db.datasets.find_one({'_id': dataset},
-                                                       {'title': 1})
-                          for dataset in result['datasets']]
+    result["datasets"] = [
+        flask.g.db.datasets.find_one({"_id": dataset}, {"title": 1})
+        for dataset in result["datasets"]
+    ]
 
-    return utils.response_json({'collection': result})
+    return utils.response_json({"collection": result})
 
 
-@blueprint.route('/structure/', methods=['GET'])
+@blueprint.route("/structure/", methods=["GET"])
 def get_collection_data_structure():
     """
     Get an empty collection entry.
@@ -99,11 +106,11 @@ def get_collection_data_structure():
         flask.Response: JSON structure with a list of collections.
     """
     empty_collection = structure.collection()
-    empty_collection['_id'] = ''
-    return utils.response_json({'collection': empty_collection})
+    empty_collection["_id"] = ""
+    return utils.response_json({"collection": empty_collection})
 
 
-@blueprint.route('/', methods=['POST'])
+@blueprint.route("/", methods=["POST"])
 @user.login_required
 def add_collection():  # pylint: disable=too-many-branches
     """
@@ -121,36 +128,32 @@ def add_collection():  # pylint: disable=too-many-branches
         flask.abort(status=400)
 
     # indata validation
-    validation = utils.basic_check_indata(indata, collection, prohibited=['_id'])
+    validation = utils.basic_check_indata(indata, collection, prohibited=["_id"])
     if not validation[0]:
         flask.abort(status=validation[1])
 
-    # properties may only be set by users with DATA_MANAGEMENT
-    if 'properties' in indata:
-        if not user.has_permission('DATA_MANAGEMENT'):
-            flask.abort(403)
-
-    if 'title' not in indata:
+    if "title" not in indata:
         flask.abort(status=400)
 
-    if not indata.get('editors'):
-        indata['editors'] = [flask.g.current_user['_id']]
+    if not indata.get("editors"):
+        indata["editors"] = [flask.g.current_user["_id"]]
 
-    if 'datasets' in indata:
-        indata['datasets'] = [utils.str_to_uuid(value) for value in indata['datasets']]
+    if "datasets" in indata:
+        indata["datasets"] = [utils.str_to_uuid(value) for value in indata["datasets"]]
     collection.update(indata)
+    collection["description"] = utils.secure_description(collection["description"])
 
     # add to db
-    result = flask.g.db['collections'].insert_one(collection)
+    result = flask.g.db["collections"].insert_one(collection)
     if not result.acknowledged:
-        flask.current_app.logger.error('Collection insert failed: %s', collection)
+        flask.current_app.logger.error("Collection insert failed: %s", collection)
     else:
-        utils.make_log('collection', 'add', 'Collection added', collection)
+        utils.make_log("collection", "add", "Collection added", collection)
 
-    return utils.response_json({'_id': result.inserted_id})
+    return utils.response_json({"_id": result.inserted_id})
 
 
-@blueprint.route('/<identifier>/', methods=['DELETE'])
+@blueprint.route("/<identifier>/", methods=["DELETE"])
 @user.login_required
 def delete_collection(identifier: str):
     """
@@ -165,25 +168,27 @@ def delete_collection(identifier: str):
         ds_uuid = utils.str_to_uuid(identifier)
     except ValueError:
         return flask.abort(status=404)
-    collection = flask.g.db['collections'].find_one({'_id': ds_uuid})
+    collection = flask.g.db["collections"].find_one({"_id": ds_uuid})
     if not collection:
         flask.abort(status=404)
 
     # permission check
-    if not user.has_permission('DATA_MANAGEMENT') and \
-       flask.g.current_user['_id'] not in collection['editors']:
+    if (
+        not user.has_permission("DATA_MANAGEMENT")
+        and flask.g.current_user["_id"] not in collection["editors"]
+    ):
         flask.abort(status=403)
 
-    result = flask.g.db['collections'].delete_one({'_id': ds_uuid})
+    result = flask.g.db["collections"].delete_one({"_id": ds_uuid})
     if not result.acknowledged:
-        flask.current_app.logger.error('Failed to delete collection %s', ds_uuid)
+        flask.current_app.logger.error("Failed to delete collection %s", ds_uuid)
         return flask.Response(status=500)
-    utils.make_log('collection', 'delete', 'Deleted collection', data={'_id': ds_uuid})
+    utils.make_log("collection", "delete", "Deleted collection", data={"_id": ds_uuid})
 
     return flask.Response(status=200)
 
 
-@blueprint.route('/<identifier>/', methods=['PATCH'])
+@blueprint.route("/<identifier>/", methods=["PATCH"])
 @user.login_required
 def update_collection(identifier):  # pylint: disable=too-many-branches
     """
@@ -199,7 +204,7 @@ def update_collection(identifier):  # pylint: disable=too-many-branches
         collection_uuid = utils.str_to_uuid(identifier)
     except ValueError:
         return flask.abort(status=404)
-    collection = flask.g.db['collections'].find_one({'_id': collection_uuid})
+    collection = flask.g.db["collections"].find_one({"_id": collection_uuid})
     if not collection:
         flask.abort(status=404)
 
@@ -209,29 +214,31 @@ def update_collection(identifier):  # pylint: disable=too-many-branches
         flask.abort(status=400)
 
     # permission check
-    if not user.has_permission('DATA_MANAGEMENT') and \
-       flask.g.current_user['_id'] not in collection['editors'] and\
-       flask.g.current_user['email'] not in collection['editors']:
-        flask.current_app.logger.debug('Unauthorized update attempt (collection %s, user %s)',
-                      collection_uuid,
-                      flask.g.current_user['_id'])
+    if (
+        not user.has_permission("DATA_MANAGEMENT")
+        and flask.g.current_user["_id"] not in collection["editors"]
+        and flask.g.current_user["email"] not in collection["editors"]
+    ):
+        flask.current_app.logger.debug(
+            "Unauthorized update attempt (collection %s, user %s)",
+            collection_uuid,
+            flask.g.current_user["_id"],
+        )
         flask.abort(status=403)
 
     # indata validation
-    validation = utils.basic_check_indata(indata, collection, prohibited=('_id'))
+    validation = utils.basic_check_indata(indata, collection, prohibited=("_id"))
     if not validation[0]:
         flask.abort(status=validation[1])
 
-    # properties may only be set by users with DATA_MANAGEMENT
-    if 'properties' in indata:
-        if not user.has_permission('DATA_MANAGEMENT'):
-            flask.abort(403)
+    if "datasets" in indata:
+        indata["datasets"] = [utils.str_to_uuid(value) for value in indata["datasets"]]
 
-    if 'datasets' in indata:
-        indata['datasets'] = [utils.str_to_uuid(value) for value in indata['datasets']]
+    if "editors" in indata and not indata["editors"]:
+        indata["editors"] = [flask.g.current_user["_id"]]
 
-    if 'editors' in indata and not indata['editors']:
-        indata['editors'] = [flask.g.current_user['_id']]
+    if "description" in indata:
+        indata["description"] = utils.secure_description(indata["description"])
 
     is_different = False
     for field in indata:
@@ -240,17 +247,19 @@ def update_collection(identifier):  # pylint: disable=too-many-branches
             break
 
     if indata and is_different:
-        result = flask.g.db['collections'].update_one({'_id': collection['_id']}, {'$set': indata})
+        result = flask.g.db["collections"].update_one(
+            {"_id": collection["_id"]}, {"$set": indata}
+        )
         if not result.acknowledged:
-            flask.current_app.logger.error('Collection update failed: %s', indata)
+            flask.current_app.logger.error("Collection update failed: %s", indata)
         else:
             collection.update(indata)
-            utils.make_log('collection', 'edit', 'Collection updated', collection)
+            utils.make_log("collection", "edit", "Collection updated", collection)
 
     return flask.Response(status=200)
 
 
-@blueprint.route('/user/', methods=['GET'])
+@blueprint.route("/user/", methods=["GET"])
 @user.login_required
 def list_user_collections():  # pylint: disable=too-many-branches
     """
@@ -259,12 +268,13 @@ def list_user_collections():  # pylint: disable=too-many-branches
     Returns:
         flask.Response: JSON structure.
     """
-    results = list(flask.g.db['collections']
-                   .find({'editors': flask.g.current_user['_id']}))
-    return utils.response_json({'collections': results})
+    results = list(
+        flask.g.db["collections"].find({"editors": flask.g.current_user["_id"]})
+    )
+    return utils.response_json({"collections": results})
 
 
-@blueprint.route('/<identifier>/log/', methods=['GET'])
+@blueprint.route("/<identifier>/log/", methods=["GET"])
 @user.login_required
 def get_collection_log(identifier: str = None):
     """
@@ -283,21 +293,28 @@ def get_collection_log(identifier: str = None):
     except ValueError:
         flask.abort(status=404)
 
-    if not user.has_permission('DATA_MANAGEMENT'):
-        collection_data = flask.g.db['collections'].find_one({'_id': collection_uuid})
+    if not user.has_permission("DATA_MANAGEMENT"):
+        collection_data = flask.g.db["collections"].find_one({"_id": collection_uuid})
         if not collection_data:
             flask.abort(403)
-        if flask.g.current_user['_id'] not in collection_data['editors']:
+        if flask.g.current_user["_id"] not in collection_data["editors"]:
             flask.abort(403)
 
-    collection_logs = list(flask.g.db['logs'].find({'data_type': 'collection',
-                                                    'data._id': collection_uuid}))
+    collection_logs = list(
+        flask.g.db["logs"].find(
+            {"data_type": "collection", "data._id": collection_uuid}
+        )
+    )
 
     for log in collection_logs:
-        del log['data_type']
+        del log["data_type"]
 
     utils.incremental_logs(collection_logs)
 
-    return utils.response_json({'entry_id': collection_uuid,
-                                'data_type': 'collection',
-                                'logs': collection_logs})
+    return utils.response_json(
+        {
+            "entry_id": collection_uuid,
+            "data_type": "collection",
+            "logs": collection_logs,
+        }
+    )

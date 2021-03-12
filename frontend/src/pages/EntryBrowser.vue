@@ -16,9 +16,9 @@
 
     <template v-slot:top-left>
       <q-btn v-show="showAdd"
-             round
              color="primary"
              icon="add"
+             :label="'Add ' + entryType"
              :to="{ 'name': pageNew }" />
     </template>
 
@@ -87,9 +87,7 @@ export default {
     showAdd: {
       get () {
         let passed = false;
-        if (this.entryType === 'datasets' && this.currentUser.permissions.includes('ORDERS'))
-          passed = true;
-        else if (this.currentUser.email !== '')
+        if (this.entryType === 'datasets' && this.currentUser.permissions.includes('ORDERS') || this.currentUser.email !== '')
           passed = true;
         return passed;
       }

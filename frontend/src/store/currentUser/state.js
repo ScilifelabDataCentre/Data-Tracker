@@ -9,6 +9,7 @@ export default function () {
       orcid: '',
       permissions: [],
     },
+    infoLoaded: false,
     datasets: [],
     orders: [],
     collections: [],

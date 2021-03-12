@@ -1,5 +1,6 @@
 export function setInfo (state, payload) {
   state.info = payload;
+  state.infoLoaded = true;
 }
 
 export function setDatasets (state, payload) {

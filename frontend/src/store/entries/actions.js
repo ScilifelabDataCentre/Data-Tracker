@@ -107,6 +107,20 @@ export function getEmptyEntry ({ commit, dispatch }, dataType) {
 }
 
 
+export function getLocalEmptyEntry ({ commit, dispatch }, dataType) {
+  return new Promise((resolve, reject) => {
+    axios
+      .get('/api/v1/' + dataType + '/structure/')
+      .then((response) => {
+        resolve(response.data[dataType]);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+}
+
+
 export function deleteEntry (context, payload) {
   // payload: {'id': id, 'dataType': dataType}
   return new Promise((resolve, reject) => {
@@ -252,6 +266,20 @@ export function getEntries ({ commit, dispatch }, dataType) {
       .then((response) => {
         commit('UPDATE_ENTRY_LIST', response.data[dataType + 's']);
         resolve(response);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+}
+
+
+export function getLocalEntries ({ commit, dispatch }, dataType) {
+  return new Promise((resolve, reject) => {
+    axios
+      .get('/api/v1/' + dataType + '/')
+      .then((response) => {
+        resolve(response.data[dataType + 's']);
       })
       .catch((err) => {
         reject(err);

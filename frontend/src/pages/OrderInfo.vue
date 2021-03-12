@@ -1,76 +1,93 @@
 <template>
 <q-page padding>
-  <div class="flex">
-    <q-btn-dropdown class="q-mr-sm"
-                    color="secondary"
-                    icon="fas fa-cog"
-                    label="Options">
-      <q-list dense>
-        <q-item :disable="editMode"
-                v-close-popup
-                clickable
-                @click="toggleEditMode">
-          <q-item-section avatar>
-            <q-avatar icon="edit"
-                      text-color="primary" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Edit</q-item-label>
-          </q-item-section>
-        </q-item>
+  <div v-if="badEntry">
+    <q-banner>
+      The entry <span class="text-negative text-weight-medium">{{ uuid }}</span> could not be found.
+    </q-banner>
+    <q-btn class="q-my-md"
+           color="primary"
+           :to="{ 'name': 'Order Browser' }"
+           label="Back to order browser" />
+  </div>
+  <div v-else>
+  <div class="row justify-between">
+    <div class="flex">
+      <q-btn-dropdown v-show="uuid !== ''"
+                      class="q-mr-sm"
+                      color="secondary"
+                      icon="fas fa-cog"
+                      label="Options">
+        <q-list dense>
+          <q-item :disable="editMode"
+                  v-close-popup
+                  clickable
+                  @click="toggleEditMode">
+            <q-item-section avatar>
+              <q-avatar icon="edit"
+                        text-color="primary" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Edit</q-item-label>
+            </q-item-section>
+          </q-item>
 
-        <q-item clickable
-                :disable="uuid === ''"
-                v-close-popup
-                @click="confirmDelete">
-          <q-item-section avatar>
-            <q-avatar icon="fas fa-trash" text-color="negative" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Delete</q-item-label>
-          </q-item-section>
-        </q-item>
+          <q-item clickable
+                  :disable="uuid === ''"
+                  v-close-popup
+                  @click="confirmDelete">
+            <q-item-section avatar>
+              <q-avatar icon="fas fa-trash" text-color="negative" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Delete</q-item-label>
+            </q-item-section>
+          </q-item>
 
-        <q-item clickable
-                :disable="uuid === ''"
-                v-close-popup
-                @click="showLogs = true">
-          <q-item-section avatar>
-            <q-avatar icon="fas fa-history" text-color="secondary" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Entry History</q-item-label>
-          </q-item-section>
-        </q-item>
-      </q-list>
-    </q-btn-dropdown>
+          <q-item clickable
+                  :disable="uuid === ''"
+                  v-close-popup
+                  @click="showLogs = true">
+            <q-item-section avatar>
+              <q-avatar icon="fas fa-history" text-color="secondary" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Entry History</q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </q-btn-dropdown>
 
-    <q-btn class="q-mx-sm"
-           v-show="editMode"
-           icon="cancel"
-           label="Cancel"
-           color="grey-6"
-           @click="cancelEdit" />
+      <q-btn class="q-mx-sm"
+             v-show="editMode"
+             icon="cancel"
+             label="Cancel"
+             color="grey-6"
+             @click="cancelEdit" />
 
-    <q-btn class="q-ml-sm q-mr-lg"
-           v-show="editMode"
-           icon="save"
-           label="Save"
-           color="positive"
-           :loading="isSaving"
-           @click="saveEdit" />
+      <q-btn class="q-ml-sm q-mr-lg"
+             v-show="editMode"
+             icon="save"
+             label="Save"
+             color="positive"
+             :loading="isSaving"
+             @click="saveEdit" />
 
-    <q-tabs v-show="editMode"
-            v-model="currentTab"
-            dense
-            class="text-grey-8"
-            active-color="primary"
-            indicator-color="primary"
-            align="center"
-            narrow-indicator>
-      <q-tab name="edit" label="Edit" />
-      <q-tab name="preview" label="Preview" />
-    </q-tabs>
+      <q-tabs v-show="editMode"
+              v-model="currentTab"
+              dense
+              class="text-grey-8"
+              active-color="primary"
+              indicator-color="primary"
+              align="center"
+              narrow-indicator>
+        <q-tab name="edit" label="Edit" />
+        <q-tab name="preview" label="Preview" />
+      </q-tabs>
+    </div>
+    <q-btn type="a"
+           :href="'/api/v1/order/' + uuid + '/'"
+           color="primary"
+           label="JSON (API)" />
   </div>
 
   <q-tab-panels v-model="currentTab">
@@ -121,6 +138,7 @@
   <q-inner-loading :showing="isLoading">
     <q-spinner-gears size="100px" color="primary" />
   </q-inner-loading>
+  </div>
 </q-page>
 </template>
 
@@ -162,6 +180,7 @@ export default {
 
   data () {
     return {
+      badEntry: false,
       isLoading: true,
       currentTab: 'preview',
       editMode: false,
@@ -255,8 +274,7 @@ export default {
         this.$store.dispatch('entries/resetEntry')
           .then(() => {
             this.$store.dispatch('entries/getEmptyEntry', this.dataType)
-              .then(() => this.isLoading = false)
-              .catch(() => this.isLoading = false);
+              .finally(() => this.isLoading = false);
           });
       }
       else {
@@ -264,8 +282,11 @@ export default {
           .then(() => {
             this.$store.dispatch('entries/getEntry', {'id': this.uuid,
                                                       'dataType': this.dataType})
-              .then(() => this.isLoading = false)
-              .catch(() => this.isLoading = false);
+              .catch((err) => {
+                if (err.response.status === 404)
+                  this.badEntry = true;
+              })
+              .finally(() => this.isLoading = false);
           });
       }
     }

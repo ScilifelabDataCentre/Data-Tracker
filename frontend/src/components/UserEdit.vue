@@ -134,7 +134,8 @@
     </q-card-actions>
 
     <q-card-actions align="right">
-      <q-btn label="Delete"
+      <q-btn v-show="uuid !== ''"
+             label="Delete"
              color="negative"
              @click="showConfirmDelete = true"
              :loading="userDataSaveWaiting"
@@ -194,10 +195,6 @@ export default {
     uuid () {
       this.loadData();
     },
-    storedUser () {
-      this.userData = JSON.parse(JSON.stringify(this.storedUser));
-      this.loadPermissions();
-    }
   },
 
   components: {
@@ -206,11 +203,6 @@ export default {
   },
 
   computed: {
-    storedUser: {
-      get () {
-        return this.$store.state.entries.entry;
-      },
-    },
     currentUser: {
       get () {
         return this.$store.state.currentUser.info;
@@ -244,22 +236,20 @@ export default {
     loadData () {
       this.isLoading = true;
       this.loadingError = false;
-      if (this.uuid === '' && this.uuid === 'default') {
-        this.$store.dispatch('entries/resetEntry')
-          .then(() => {
-            this.$store.dispatch('entries/getEmptyEntry', this.dataType)
-              .catch(() => this.loadingError = true)
-              .finally(() => this.isLoading = false);
-          });
+      if (this.uuid === '' || this.uuid === 'default') {
+        this.userData = {};
+        this.$store.dispatch('entries/getLocalEmptyEntry', this.dataType)
+          .then((data) => this.userData = data)
+          .catch(() => this.loadingError = true)
+          .finally(() => this.isLoading = false);
       }
+
       else {
-        this.$store.dispatch('entries/resetEntry')
-          .then(() => {
-            this.$store.dispatch('entries/getEntry', {'id': this.uuid,
-                                                      'dataType': this.dataType})
-              .catch(() => this.loadingError = true)
-              .finally(() => this.isLoading = false);
-          });
+        this.$store.dispatch('entries/getLocalEntry', {'id': this.uuid,
+                                                       'dataType': this.dataType})
+          .then((data) => this.userData = data)
+          .catch(() => this.loadingError = true)
+          .finally(() => this.isLoading = false);
       }
     },
     
@@ -308,6 +298,7 @@ export default {
       this.userDataSaveError = false;
       this.userDataSaveWaiting = true;
       let toSubmit = JSON.parse(JSON.stringify(this.userData));
+
       if (this.uuid == '') {
         toSubmit.id = '';
       }
@@ -316,26 +307,26 @@ export default {
       }
       delete toSubmit._id;
       delete toSubmit.authIds;
+
       if (this.uuid === '') {
         delete toSubmit.apiKey;
         delete toSubmit.apiSalt;
       }
+
       if (!this.currentUser.permissions.includes('USER_MANAGEMENT'))
         delete toSubmit.permissions;
       else 
         toSubmit.permissions = Object.keys(this.permissions).filter((key) => this.permissions[key]);
+
       this.$store.dispatch('entries/saveEntry', {data: toSubmit,
                                                  dataType: this.dataType})
         .then(() => {
           this.updateVisibility(false);
           this.$emit('user-changed', true);
+          this.loadData();
         })
         .catch(() => this.userDataSaveError = true)
-        .finally(() => {
-          this.userDataSaveWaiting = false;
-          if (!this.userDataSaveError)
-            this.loadData();
-        });
+        .finally(() => this.userDataSaveWaiting = false);
     },
 
     generateNewApiKey () {

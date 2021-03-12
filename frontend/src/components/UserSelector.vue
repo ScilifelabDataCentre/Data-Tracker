@@ -1,6 +1,7 @@
 <template>
-<q-table
-  :title="fieldTitle"
+<div>
+  <q-table
+    flat
   :data="onlySelected ? selected : users"
   :columns="columns"
   row-key="_id"
@@ -12,23 +13,7 @@
   no-data-label="No entries found"
   :no-results-label="filter + ' does not match any entries'">
   <template v-slot:top-left>
-    <div class="q-table__title">
-      {{ fieldTitle }}
-      <q-icon size="xs"
-              color="primary"
-              name="info"
-              v-if="helpText.length > 0">
-        <q-tooltip>
-          {{ helpText }}
-        </q-tooltip>
-      </q-icon>
-    </div>
-  </template>
-
-  <template v-slot:top-right>
-    <q-checkbox v-model="onlySelected"
-                label="Only selected"
-                class="q-mx-md"/>
+    <div class="row">
     <q-input rounded
              outlined
              dense
@@ -39,13 +24,43 @@
         <q-icon name="search" />
       </template>
     </q-input>
+    <q-toggle class="q-mx-sm"
+              left-label
+              v-model="onlySelected"
+              label="Show selected only"
+              color="primary"/>
+    <q-btn flat
+           no-caps
+           icon="fas fa-user-plus"
+           color="primary"
+           @click="showAddUser = true"
+           label="Add User" />
+    </div>
+  </template>
+  <template v-slot:top-right>
+    <q-btn round
+           flat
+           dense
+           color="primary"
+           icon="cached"
+           @click="loadData" />
   </template>
 </q-table>
+  <user-edit v-model="showAddUser"
+             uuid=""
+             @user-changed="loadData"/>
+</div>
 </template>
 
 <script>
+import UserEdit from 'components/UserEdit.vue'
+
 export default {
   name: 'UserSelector',
+
+  components: {
+    'user-edit': UserEdit,
+  },
 
   computed: {
     selected: {
@@ -57,7 +72,6 @@ export default {
             data = [data];
         return JSON.parse(JSON.stringify(data));
       },
-
       set (newValue) {
         let data = {};
         data[this.fieldDataName] = newValue;
@@ -67,14 +81,8 @@ export default {
     
     users: {
       get () {
-        return this.$store.state.adminUsers.userList;
+        return this.$store.state.entries.entryList;
       },
-    },
-
-    orderData: {
-      get () {
-        return this.$store.state.entries.entry;
-      }
     },
 
     currentUser: {
@@ -89,22 +97,18 @@ export default {
       type: String,
       required: true,
     },
-
     fieldDataName: {
       type: String,
       required: true,
     },
-
     selectType: {
       type: String,
       default: 'multiple',
     },
-
     helpText: {
       type: String,
       default: '',
     },
-
     isLoading: {
       type: Boolean,
       default: true
@@ -115,13 +119,13 @@ export default {
     },
   },
 
-  
   data () {
     return {
+      showAddUser: false,
       onlySelected: false,
       filter: '',
       pagination: {
-        rowsPerPage: 5
+        rowsPerPage: 10
       },
       columns: [
         {
@@ -162,11 +166,16 @@ export default {
   },
 
   methods: {
+    showAddUserDialog (event) {
+      event.preventDefault();
+      this.showAddUser = true;
+    },
+
     updateSelection(event, selectedArray) {
       event.preventDefault();
       this.$emit('input', selectedArray);
     },
-    
+
     deleteUserTag(event, keyName) {
       event.preventDefault();
       this.$delete(this.newEntry.extra, keyName);
@@ -178,6 +187,16 @@ export default {
         
         this.$store.dispatch('entries/setEntryFields', data);
     },
+
+    loadData() {
+      this.$store.dispatch('entries/resetEntryList')
+        .then(() => {
+          this.loading = true
+          this.$store.dispatch('entries/getEntries', 'user')
+            .finally(() => this.loading = false)
+        })
+    },
+
   },
 }
 </script>

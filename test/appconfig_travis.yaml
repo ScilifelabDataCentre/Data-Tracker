@@ -14,7 +14,7 @@ dev_mode:
   testing: false
 
 oidc:
-  oidcserver:
+  entry:
     client_secret: "a secret"
     client_id: "an id"
     server_metadata_url: "https://example.com" # openid config url

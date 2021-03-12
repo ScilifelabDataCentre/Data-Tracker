@@ -1,77 +1,92 @@
 <template>
 <q-page padding>
-  <div class="flex">
-    <q-btn-dropdown v-show="'editors' in dataset"
-                    class="q-mr-sm"
-                    color="secondary"
-                    icon="fas fa-cog"
-                    label="Options">
-      <q-list dense>
-        <q-item :disable="editMode"
-                v-close-popup
-                clickable
-                @click="toggleEditMode">
-          <q-item-section avatar>
-            <q-avatar icon="edit"
-                      text-color="primary" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Edit</q-item-label>
-          </q-item-section>
-        </q-item>
-
-        <q-item clickable
-                v-close-popup
-                @click="confirmDelete">
-          <q-item-section avatar>
-            <q-avatar icon="fas fa-trash" text-color="negative" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Delete</q-item-label>
-          </q-item-section>
-        </q-item>
-
-        <q-item clickable
-                v-close-popup
-                @click="showLogs = true">
-          <q-item-section avatar>
-            <q-avatar icon="fas fa-history" text-color="secondary" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Entry History</q-item-label>
-          </q-item-section>
-        </q-item>
-      </q-list>
-    </q-btn-dropdown>
-
-    <q-btn class="q-mx-sm"
-           v-show="editMode"
-           icon="cancel"
-           label="Cancel"
-           color="grey-6"
-           @click="cancelEdit" />
-
-    <q-btn class="q-ml-sm q-mr-lg"
-           v-show="editMode"
-           icon="save"
-           label="Save"
-           color="positive"
-           :loading="isSaving"
-           @click="saveEdit" />
-
-    <q-tabs v-show="editMode"
-            v-model="currentTab"
-            dense
-            class="text-grey-8"
-            active-color="primary"
-            indicator-color="primary"
-            align="center"
-            narrow-indicator>
-      <q-tab name="edit" label="Edit" />
-      <q-tab name="preview" label="Preview" />
-    </q-tabs>
+  <div v-if="badEntry">
+    <q-banner>
+      The entry <span class="text-negative text-weight-medium">{{ uuid }}</span> could not be found.
+    </q-banner>
+    <q-btn class="q-my-md"
+           color="primary"
+           :to="{ 'name': 'Dataset Browser' }"
+           label="Back to dataset browser" />
   </div>
+  <div v-else>
+  <div class="row justify-between">
+    <div class="flex">
+      <q-btn-dropdown v-show="uuid !== '' && 'editors' in dataset"
+                      class="q-mr-sm"
+                      color="secondary"
+                      icon="fas fa-cog"
+                      label="Options">
+        <q-list dense>
+          <q-item :disable="editMode"
+                  v-close-popup
+                  clickable
+                  @click="toggleEditMode">
+            <q-item-section avatar>
+              <q-avatar icon="edit"
+                        text-color="primary" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Edit</q-item-label>
+            </q-item-section>
+          </q-item>
 
+          <q-item clickable
+                  v-close-popup
+                  @click="confirmDelete">
+            <q-item-section avatar>
+              <q-avatar icon="fas fa-trash" text-color="negative" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Delete</q-item-label>
+            </q-item-section>
+          </q-item>
+
+          <q-item clickable
+                  v-close-popup
+                  @click="showLogs = true">
+            <q-item-section avatar>
+              <q-avatar icon="fas fa-history" text-color="secondary" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Entry History</q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </q-btn-dropdown>
+
+      <q-btn class="q-mx-sm"
+             v-show="editMode"
+             icon="cancel"
+             label="Cancel"
+             color="grey-6"
+             @click="cancelEdit" />
+
+      <q-btn class="q-ml-sm q-mr-lg"
+             v-show="editMode"
+             icon="save"
+             label="Save"
+             color="positive"
+             :loading="isSaving"
+             @click="saveEdit" />
+
+      <q-tabs v-show="editMode"
+              v-model="currentTab"
+              dense
+              class="text-grey-8"
+              active-color="primary"
+              indicator-color="primary"
+              align="center"
+              narrow-indicator>
+        <q-tab name="edit" label="Edit" />
+        <q-tab name="preview" label="Preview" />
+      </q-tabs>
+    </div>
+    <q-btn type="a"
+           :href="'/api/v1/dataset/' + uuid + '/'"
+           color="primary"
+           label="JSON (API)" />
+  </div>
   <q-tab-panels v-model="currentTab">
     <q-tab-panel name="preview">
       <dataset-about />
@@ -81,9 +96,7 @@
       <dataset-edit :isNew="this.uuid === ''"
                     :isLoading="isLoading"/>
     </q-tab-panel>
-
   </q-tab-panels>
-
 
   <log-viewer v-if="'editors' in dataset"
               v-model="showLogs"
@@ -119,7 +132,7 @@
       </q-card-actions>
     </q-card>
   </q-dialog>
-
+  </div>
   <q-inner-loading :showing="isLoading">
     <q-spinner-gears size="100px" color="primary" />
   </q-inner-loading>
@@ -163,6 +176,7 @@ export default {
 
   data () {
     return {
+      badEntry: false,
       isLoading: true,
       currentTab: 'preview',
       editMode: false,
@@ -187,7 +201,7 @@ export default {
 
     cancelEdit () {
       if (this.uuid === '') {
-          this.$router.push({ 'name': 'Dataset Browser' });
+        this.$router.push({ 'name': 'Dataset Browser' });
       }
       this.editMode = false;
       this.loadData();
@@ -202,7 +216,7 @@ export default {
     deleteEntry(event) {
       event.preventDefault();
       this.$store.dispatch('entries/deleteEntry', {'id': this.uuid,
-                                                'dataType': this.dataType})
+                                                   'dataType': this.dataType})
         .then(() => {
           this.$router.push({ 'name': 'Dataset Browser' });
           this.showConfirmDelete = false;
@@ -253,16 +267,18 @@ export default {
       this.isLoading = true;
       if (this.uuid === '') {
         this.$store.dispatch('entries/getEmptyEntry', this.dataType)
-          .then(() => this.isLoading = false)
-          .catch(() => this.isLoading = false);
+              .finally(() => this.isLoading = false);
       }
       else {
         this.$store.dispatch('entries/resetEntry')
           .then(() => {
             this.$store.dispatch('entries/getEntry', {'id': this.uuid,
                                                       'dataType': this.dataType})
-              .then(() => this.isLoading = false)
-              .catch(() => this.isLoading = false);
+              .catch((err) => {
+                if (err.response.status === 404)
+                  this.badEntry = true;
+              })
+              .finally(() => this.isLoading = false);
           });
       }
     }

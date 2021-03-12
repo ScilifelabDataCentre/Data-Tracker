@@ -90,7 +90,7 @@ values in <code class="docutils literal notranslate"><span class="pre">reference
 <dd class="field-even"><p>(<code class="docutils literal notranslate"><span class="pre">bool</span></code>: whether the check passed, <code class="docutils literal notranslate"><span class="pre">code</span></code>: Suggested http code)</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>tuple</p>
+<dd class="field-odd"><p>namedtuple</p>
 </dd>
 </dl>
 </dd></dl>
@@ -131,6 +131,23 @@ If the identifier is an email, return the email.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="utils.escape_html">
+<code class="sig-prename descclassname">utils.</code><code class="sig-name descname">escape_html</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="modules/utils.html#escape_html"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.escape_html" title="Permalink to this definition">¶</a></dt>
+<dd><p>Escape e.g. html tags for the provided text.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>str</em>) – The text to escape.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The escaped text.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
 </dd>
 </dl>
 </dd></dl>
@@ -444,7 +461,7 @@ e.g. <code class="docutils literal notranslate"><span class="pre">data</span></c
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2019-2020, SciLifeLab Data Centre.
+        &#169; Copyright 2019-2021, SciLifeLab Data Centre.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
