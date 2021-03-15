@@ -5,6 +5,7 @@ const About = () => import(/* webpackChunkName: "base" */ 'pages/About.vue')
 const UserGuide = () => import(/* webpackChunkName: "base" */ 'pages/UserGuide.vue')
 const Login = () => import(/* webpackChunkName: "base" */ 'pages/Login.vue')
 const CurrentUser = () => import(/* webpackChunkName: "base" */ 'pages/CurrentUser.vue')
+const Page404 = () => import(/* webpackChunkName: "base" */ 'pages/Error404.vue')
 
 const CollectionInfo = () => import(/* webpackChunkName: "data" */ 'pages/CollectionInfo.vue')
 const DatasetInfo = () => import(/* webpackChunkName: "data" */ 'pages/DatasetInfo.vue')
@@ -27,6 +28,7 @@ const routes = [
         name: 'Login',
         props: true
       },
+      { path: '*', component: Page404, name: '404' }
     ]
   },
 
@@ -139,11 +141,6 @@ const routes = [
       },
     ]
   },
-
-  {
-    path: '*',
-    component: () => import('pages/Error404.vue'),
-  }
 ]
 
 export default routes
