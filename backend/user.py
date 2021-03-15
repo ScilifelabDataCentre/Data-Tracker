@@ -109,7 +109,7 @@ def get_current_user_info():
         "contact": "",
         "name": "",
         "orcid": "",
-        "permissions": "",
+        "permissions": [],
         "url": "",
     }
     if data:
