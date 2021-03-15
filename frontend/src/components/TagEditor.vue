@@ -8,6 +8,7 @@
              @keyup.enter="addTag"
              class="col-10" />
     <q-btn icon="fas fa-tags"
+           :disable="newTag.length === 0"
            color="positive"
            @click="addTag"
            label="Add"
