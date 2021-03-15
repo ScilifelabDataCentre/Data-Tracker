@@ -1,18 +1,16 @@
 <template>
 <q-page padding>
   <h2 class="text-capitalize">{{ entryType + 's' }}</h2>
-  <q-card>
-    <q-card-section>
-  <q-table
-    :data="entries"
-    :columns="columns"
-    row-key="id"
-    :pagination.sync="pagination"
-    :filter="filter"
-    grid
-    :loading="loading"
-    no-data-label="No entries found"
-    :no-results-label="filter + ' does not match any entries'">
+  <q-table flat
+           :data="entries"
+           :columns="columns"
+           row-key="id"
+           :pagination.sync="pagination"
+           :filter="filter"
+           grid
+           :loading="loading"
+           no-data-label="No entries found"
+           :no-results-label="filter + ' does not match any entries'">
 
     <template v-slot:top-left>
       <q-btn v-show="showAdd"
@@ -37,36 +35,38 @@
 
     <template v-slot:item="props">
       <div class="col-xs-12 col-md-6 col-lg-4 col-xl-3 row self-stretch">
-        <q-card class="q-ma-xs bg-grey-2 col" @click="gotoEntry(props.row._id)">
+        <q-card class="q-ma-xs bg-grey-1 col" @click="gotoEntry(props.row._id)">
           <q-card-section class="text-center">
             <div class="text-h6 bg-grey-4 q-mb-xs q-pa-xs">
               {{ props.row.title }}
             </div>
-            <div class="text-caption">
+            <div class="text-caption text-italic">
               {{ props.row._id }}
             </div>
           </q-card-section>
           <q-card-section>
-            <q-chip square
-                    color="grey-3"
-                    v-for="field in Object.keys(props.row.properties)"
-                    :key="field">
-              <span class="text-bold text-capitalize text-blue-9 q-mr-sm">{{ field }}</span> {{ props.row.properties[field] }}
-            </q-chip>
-            <q-chip square
-                    color="grey-3"
-                    v-for="entry in props.row.tags"
-                    :key="entry">
-              <q-avatar color="secondary" text-color="white" icon="fas fa-tag" />
-              {{ entry }}
-            </q-chip>
+            <div class="row">
+              <q-chip square
+                      dense
+                      v-for="field in Object.keys(props.row.properties)"
+                      :key="field">
+                <span class="text-bold text-capitalize text-blue-9 q-mr-sm">{{ field }}</span> {{ props.row.properties[field] }}
+              </q-chip>
+            </div>
+            <div class="row">
+              <q-chip square
+                      dense
+                      v-for="entry in props.row.tags"
+                      :key="entry">
+                <q-avatar color="secondary" text-color="white" icon="fas fa-tag" />
+                {{ entry }}
+              </q-chip>
+            </div>
           </q-card-section>
         </q-card>
       </div>
     </template>
   </q-table>
-    </q-card-section>
-  </q-card>
 </q-page>
 </template>
 
