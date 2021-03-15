@@ -29,7 +29,8 @@
   </div>
 
   <div class="q-my-md" v-show="order.description.length">
-    <q-markdown :src="order.description" />
+    <q-markdown no-html
+                :src="order.description" />
   </div>
 
   <div class="q-my-md"
@@ -57,7 +58,7 @@
   </div>
 
   <div class="q-my-md">
-    <q-list dense>
+    <q-list dense bordered>
       <div v-show="order.authors.length">
         <list-header title="Authors"
                      explanation="The ones who provided the sample, e.g. a researcher" />
