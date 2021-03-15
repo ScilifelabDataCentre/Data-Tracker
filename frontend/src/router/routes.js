@@ -17,7 +17,7 @@ const UserManager = () => import(/* webpackChunkName: "admin" */ 'pages/UserMana
 const routes = [
   {
     path: '/',
-    component:  MainLayout,
+    component: MainLayout,
     children: [
       { path: '', component: Index, name: 'Home'},
       { path: 'about', component: About, name: 'About' },
@@ -28,13 +28,12 @@ const routes = [
         name: 'Login',
         props: true
       },
-      { path: '*', component: Page404, name: '404' }
     ]
   },
 
   {
     path: '/datasets',
-    component:  MainLayout,
+    component: MainLayout,
     children: [
       {
         path: '',
@@ -59,7 +58,7 @@ const routes = [
 
   {
     path: '/me',
-    component:  MainLayout,
+    component: MainLayout,
     meta: {
       'loginRequired': true,
     },
@@ -74,7 +73,7 @@ const routes = [
   
   {
     path: '/orders',
-    component:  MainLayout,
+    component: MainLayout,
     meta: {
       'permissionRequired': ['ORDERS'],
       'loginRequired': true,
@@ -103,7 +102,7 @@ const routes = [
 
   {
     path: '/collections',
-    component:  MainLayout,
+    component: MainLayout,
     children: [
       {
         path: '',
@@ -141,6 +140,14 @@ const routes = [
       },
     ]
   },
+
+  {
+    path: '*',
+    component: MainLayout,
+    children: [
+      { path: '', component: Page404, name: '404' }
+    ]
+  }
 ]
 
 export default routes
