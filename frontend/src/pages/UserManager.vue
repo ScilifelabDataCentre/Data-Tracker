@@ -2,6 +2,7 @@
 <q-page padding>
   <h2 class="text-capitalize">Users</h2>
   <q-table
+    flat
     :data="userList"
     :columns="columns"
     row-key="id"
@@ -11,9 +12,9 @@
     no-data-label="No entries found"
     :no-results-label="filter + ' does not match any entries'">
     <template v-slot:top-left>
-      <q-btn round
-             color="primary"
+      <q-btn color="primary"
              icon="add"
+             label="Add user"
              @click="activateUserEdit('')" />
     </template>
     <template v-slot:top-right>
