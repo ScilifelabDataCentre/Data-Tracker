@@ -12,6 +12,7 @@
            @click="addProperty"
            label="Add"
            class="col-2"
+           :disable="key.length === 0"
            flat/>
   </div>
   <q-list dense>
