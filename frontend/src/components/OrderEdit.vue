@@ -70,6 +70,8 @@
       </q-card>
     </q-expansion-item>
 
+    <q-separator />
+    
     <q-expansion-item expand-separator
                       icon="far fa-user"
                       label="Authors"
