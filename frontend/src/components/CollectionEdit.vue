@@ -71,7 +71,7 @@
     </q-expansion-item>
 
     <q-separator />
-    
+
     <q-expansion-item expand-separator
                       icon="fas fa-chart-area"
                       label="Datasets"
