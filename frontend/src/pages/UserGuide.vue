@@ -3,7 +3,7 @@
   <h2>User Guide </h2>
   <q-card class="q-my-md">
     <q-card-section>
-      The SciLifeLab Data Tracker tracks data generated from facilities in SciLifeLab. It only contains information about the generated data, not the data itself.
+      The SciLifeLab Data Tracker tracks data generated from the facilities in SciLifeLab. It only contains information about the generated data, that is the metadata, not the data itself.
     </q-card-section>
   </q-card>
   <q-card class="q-my-md">
@@ -17,7 +17,7 @@
       <h4>Orders</h4>
       <ul>
         <li>An order is intended to correspond to an order made to a facility</li>
-        <li>Orders are intended as a way to group data releases (datasets) that originate from the same source together</li>
+        <li>Orders are intended as a way to group data releases (datasets) that originate from the same ordering body together</li>
         <li>Orders are considered to be "internal" data, and will thus only be visible to the users listed as `editors` for the order</li>
         <li>For more information, e.g. what fields are available, see the <a class="text-link" href="https://scilifelabdatacentre.github.io/Data-Tracker/data_structure.html#order">documentation</a></li>
       </ul>
@@ -26,7 +26,7 @@
     <q-card-section>
       <h4>Datasets</h4>
       <ul>
-        <li>A dataset is a data release from an order, i.e. one dataset belong to <span class="text-italic">one</span> order</li>
+        <li>A dataset is a data released from an order, i.e. one dataset belongs to <span class="text-italic">one</span> order</li>
         <li>As the dataset is connected to one order, it will share the same authors, data generators, and organisation (and internally, editors as well)</li>
         <li>For more information, e.g. what fields are available, see the <a class="text-link" href="https://scilifelabdatacentre.github.io/Data-Tracker/data_structure.html#dataset">documentation</a></li>
       </ul>
@@ -35,7 +35,7 @@
     <q-card-section>
       <h4>Collections</h4>
       <ul>
-        <li>Collections are intended to link together data from different orders, e.g. if the same project has received data from multiple facilities</li>
+        <li>Collections are intended to link together datasets from different orders, e.g. if the same project has received data from multiple facilities</li>
         <li>Any logged in user can associate any dataset with the collections they manage</li>
         <li>For more information, e.g. what fields are available, see the <a class="text-link" href="https://scilifelabdatacentre.github.io/Data-Tracker/data_structure.html#collection">documentation</a></li>
       </ul>
@@ -87,7 +87,7 @@
           <li>Desciption will be rendered as markdown</li>
           <li>Authors, generators, organisation, and editors are selected from lists of all users</li>
           <ul>
-            <li>New users are added in the <router-link class="text-link" :to="{name: 'User Manager'}">User Manager</router-link></li>
+            <li>New users are added in the <router-link class="text-link" :to="{name: 'User Manager'}">User Manager</router-link> or by clicking the add user </li>
             <li>If no editors are selected, the current user will become the sole editor</li>
           </ul>
         </ul>
@@ -103,7 +103,7 @@
         <ul>
           <li>When creating a dataset, start by selecting an order to connect the new dataset to in the order list</li>
           <ul>
-            <li>If you have no orders, you won't be able add datasets</li>
+            <li> To be able add datasets, you need to have an order </li>
             <li>After selecting an order, the title, description, tags etc will be copied to the dataset entry</li>
           </ul>
         </ul>
@@ -116,7 +116,7 @@
         <li>Editing a dataset:</li>
         <ul>
           <li>The preview tab shows how the order will be presented with the edited data</li>
-          <li>Title may not be empty</li>
+          <li>Title field cannot be empty</li>
           <li>Desciption will be rendered as markdown</li>
           <li>Authors, generators, organisation, and editors are inherited from the order and cannot be set for the individual dataset</li>
         </ul>
@@ -155,7 +155,7 @@
         <ul>
           <li>New users can be created by clicking "+"</li>
           <li>Click on the pen for a user to access more information (requires USER_MANAGEMENT)
-          <li>Email must be set for all users</li>
+          <li>Email must be provided for all added users</li>
           <li>Only users with USER_MANAGEMENT can set permissions</li>
         </ul>
       </ul>
