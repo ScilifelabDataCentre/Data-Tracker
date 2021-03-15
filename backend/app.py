@@ -153,7 +153,7 @@ def logout():
     """Log out the current user."""
     flask.session.clear()
     response = flask.Response(status=200)
-    response.set_cookie("_csrf_token", utils.gen_csrf_token(), 0)
+    response.delete_cookie("_csrf_token")
     return response
 
 
