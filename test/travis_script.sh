@@ -44,7 +44,7 @@ COVERAGE_FILE=.coverage_pytest PYTHONPATH=$PYTHONPATH:backend/ py.test backend/ 
 echo '>>> Test 3: Code evaluation'
 black --check backend/*py
 pydocstyle backend/*py
-#flake8 backend/*py
+flake8 backend/*py
 
 echo '>>> Finalising: Stop the backend'
 
