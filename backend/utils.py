@@ -59,7 +59,9 @@ def basic_check_indata(
         if key not in reference_data:
             flask.current_app.logger.debug("Bad key (%s)", key)
             return ValidationResult(result=False, status=400)
-        if indata[key] != reference_data[key] and not validate.validate_field(key, indata[key]):
+        if indata[key] != reference_data[key] and not validate.validate_field(
+            key, indata[key]
+        ):
             return ValidationResult(result=False, status=400)
     return ValidationResult(result=True, status=200)
 
