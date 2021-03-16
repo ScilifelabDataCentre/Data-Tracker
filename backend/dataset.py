@@ -1,6 +1,4 @@
 """Dataset requests."""
-import json
-
 import flask
 
 import structure
@@ -100,10 +98,7 @@ def add_dataset():  # pylint: disable=too-many-branches
         identifier (str): The order to add the dataset to.
     """
     # permissions
-    try:
-        indata = flask.json.loads(flask.request.data)
-    except json.decoder.JSONDecodeError:
-        flask.abort(status=400)
+    indata = flask.request.json
     if not "order" in indata:
         flask.current_app.logger.debug("Order field missing")
         flask.abort(status=400)
@@ -248,10 +243,8 @@ def update_dataset(identifier):
     ):
         flask.abort(status=403)
 
-    try:
-        indata = flask.json.loads(flask.request.data)
-    except json.decoder.JSONDecodeError:
-        flask.abort(status=400)
+    indata = flask.request.json
+
     validation = utils.basic_check_indata(indata, dataset, prohibited=("_id"))
     if not validation[0]:
         flask.abort(status=validation[1])

@@ -6,8 +6,6 @@ Special permissions are required to access orders:
 * If you have permission ``ORDERS`` you have CRUD access to your own orders.
 * If you have permission ``DATA_MANAGER`` you have CRUD access to any orders.
 """
-import json
-
 import flask
 
 import structure
@@ -194,11 +192,8 @@ def add_order():
     """
     # create new order
     new_order = structure.order()
-    try:
-        indata = flask.json.loads(flask.request.data)
-    except json.decoder.JSONDecodeError:
-        flask.current_app.logger.debug("Bad json")
-        flask.abort(status=400)
+
+    indata = flask.request.json
 
     validation = utils.basic_check_indata(indata, new_order, ["_id", "datasets"])
     if not validation.result:
@@ -294,10 +289,7 @@ def update_order(identifier: str):  # pylint: disable=too-many-branches
     ):
         return flask.abort(status=403)
 
-    try:
-        indata = flask.json.loads(flask.request.data)
-    except json.decoder.JSONDecodeError:
-        flask.abort(status=400)
+    indata = flask.request.json
     validation = utils.basic_check_indata(indata, order, ["_id", "datasets"])
     if not validation.result:
         flask.abort(status=validation.status)

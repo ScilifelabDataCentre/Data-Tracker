@@ -1,6 +1,4 @@
 """Collection requests."""
-import json
-
 import flask
 
 import structure
@@ -122,10 +120,7 @@ def add_collection():  # pylint: disable=too-many-branches
     # create new collection
     collection = structure.collection()
 
-    try:
-        indata = flask.json.loads(flask.request.data)
-    except json.decoder.JSONDecodeError:
-        flask.abort(status=400)
+    indata = flask.request.json
 
     # indata validation
     validation = utils.basic_check_indata(indata, collection, prohibited=["_id"])
@@ -208,10 +203,7 @@ def update_collection(identifier):  # pylint: disable=too-many-branches
     if not collection:
         flask.abort(status=404)
 
-    try:
-        indata = flask.json.loads(flask.request.data)
-    except json.decoder.JSONDecodeError:
-        flask.abort(status=400)
+    indata = flask.request.json
 
     # permission check
     if (
