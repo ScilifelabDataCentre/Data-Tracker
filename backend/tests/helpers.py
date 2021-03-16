@@ -163,14 +163,24 @@ def make_request(
     Returns:
         tuple: (data: dict, status_code: int)
     """
+    if data:
+        data = json.dumps(data)
+        headers = {"Content-Type": "application/json"}
+
     if method == "GET":
         response = session.get(f"{BASE_URL}{url}")
     elif method == "POST":
-        response = session.post(f"{BASE_URL}{url}", data=json.dumps(data))
+        response = session.post(
+            f"{BASE_URL}{url}", data=json.dumps(data), headers=headers
+        )
     elif method == "PATCH":
-        response = session.patch(f"{BASE_URL}{url}", data=json.dumps(data))
+        response = session.patch(
+            f"{BASE_URL}{url}", data=json.dumps(data), headers=headers
+        )
     elif method == "PUT":
-        response = session.put(f"{BASE_URL}{url}", data=json.dumps(data))
+        response = session.put(
+            f"{BASE_URL}{url}", data=json.dumps(data), headers=headers
+        )
     elif method == "DELETE":
         response = session.delete(f"{BASE_URL}{url}")
     else:
