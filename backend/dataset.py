@@ -99,7 +99,7 @@ def add_dataset():  # pylint: disable=too-many-branches
     """
     # permissions
     indata = flask.request.json
-    if not "order" in indata:
+    if "order" not in indata:
         flask.current_app.logger.debug("Order field missing")
         flask.abort(status=400)
     try:
