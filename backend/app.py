@@ -1,7 +1,6 @@
 """Main app for the Data Tracker."""
 
 import json
-import datetime
 import logging
 
 import flask
