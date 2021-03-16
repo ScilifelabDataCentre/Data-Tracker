@@ -38,6 +38,7 @@
       <template v-slot:hint>
         Use <a class="std-link"
                href="https://www.markdownguide.org/cheat-sheet/"
+               rel="noopener"
                target="_blank">Markdown</a> to format the description.
       </template>
     </q-input>
