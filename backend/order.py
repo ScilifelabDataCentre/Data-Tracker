@@ -208,9 +208,8 @@ def add_order():
     for field in ("editors", "authors", "generators"):
         if field in indata:
             indata[field] = [utils.str_to_uuid(entry) for entry in indata[field]]
-    if "organisation" in indata:
-        if indata["organisation"]:
-            indata["organisation"] = utils.str_to_uuid(indata["organisation"])
+    if "organisation" in indata and indata["organisation"]:
+        indata["organisation"] = utils.str_to_uuid(indata["organisation"])
 
     new_order.update(indata)
     new_order["description"] = utils.secure_description(new_order["description"])
