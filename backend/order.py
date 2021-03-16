@@ -208,7 +208,7 @@ def add_order():
     for field in ("editors", "authors", "generators"):
         if field in indata:
             indata[field] = [utils.str_to_uuid(entry) for entry in indata[field]]
-    if "organisation" in indata and indata["organisation"]:
+    if indata.get("organisation"):
         indata["organisation"] = utils.str_to_uuid(indata["organisation"])
 
     new_order.update(indata)
@@ -305,9 +305,8 @@ def update_order(identifier: str):  # pylint: disable=too-many-branches
     for field in ("editors", "authors", "generators"):
         if field in indata:
             indata[field] = [utils.str_to_uuid(entry) for entry in indata[field]]
-    if "organisation" in indata:
-        if indata["organisation"]:
-            indata["organisation"] = utils.str_to_uuid(indata["organisation"])
+    if indata.get("organisation"):
+        indata["organisation"] = utils.str_to_uuid(indata["organisation"])
 
     if "description" in indata:
         indata["description"] = utils.secure_description(indata["description"])
