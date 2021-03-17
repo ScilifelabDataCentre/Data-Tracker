@@ -16,7 +16,7 @@
     <q-card-section>
       <h4>Orders</h4>
       <ul>
-        <li>An order is intended to correspond to an order made to a facility</li>
+        <li>An order is intended to correspond to an order made to a facility1</li>
         <li>Orders are intended as a way to group data releases (datasets) that originate from the same ordering body together</li>
         <li>Orders are considered to be "internal" data, and will thus only be visible to the users listed as `editors` for the order</li>
         <li>For more information, e.g. what fields are available, see the <a class="text-link" href="https://scilifelabdatacentre.github.io/Data-Tracker/data_structure.html#order">documentation</a></li>
