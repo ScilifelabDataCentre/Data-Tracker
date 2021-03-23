@@ -42,16 +42,16 @@ const routes = [
         props: { 'entryType': 'dataset'}
       },
       {
-        path: ':uuid',
-        component: DatasetInfo,
-        props: true,
-        name: 'Dataset About'
-      },
-      {
         path: 'new',
         component: DatasetInfo,
         props: {'uuid': ''},
         name: 'Dataset New'
+      },
+      {
+        path: ':uuid',
+        component: DatasetInfo,
+        props: true,
+        name: 'Dataset About'
       },
     ]
   },
@@ -86,17 +86,18 @@ const routes = [
         props: { 'entryType': 'order'}
       },
       {
-        path: ':uuid',
-        component: OrderInfo,
-        props: true,
-        name: 'Order About'
-      },
-      {
         path: 'new',
         component: OrderInfo,
         props: {'uuid': ''},
         name: 'Order New'
       },
+      {
+        path: ':uuid',
+        component: OrderInfo,
+        props: true,
+        name: 'Order About'
+      },
+
     ]
   },
 
@@ -111,16 +112,16 @@ const routes = [
         props: { 'entryType': 'collection'}
       },
       {
-        path: ':uuid',
-        component: CollectionInfo,
-        props: true,
-        name: 'Collection About'
-      },
-      {
         path: 'new',
         component: CollectionInfo,
         props: {'uuid': ''},
         name: 'Collection New'
+      },
+      {
+        path: ':uuid',
+        component: CollectionInfo,
+        props: true,
+        name: 'Collection About'
       },
     ]
   },
