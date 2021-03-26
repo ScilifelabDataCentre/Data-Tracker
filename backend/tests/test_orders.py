@@ -124,7 +124,7 @@ def test_get_order_bad():
     for _ in range(2):
         responses = make_request_all_roles(f"/api/v1/order/{uuid.uuid4()}/")
         for response in responses:
-            if response.role in ("orders", "data", "root"):
+            if response.role in ("edit", "data", "root"):
                 assert response.code == 404
             elif response.role == "no-login":
                 assert response.code == 401
@@ -135,7 +135,7 @@ def test_get_order_bad():
     for _ in range(2):
         responses = make_request_all_roles(f"/api/v1/order/{random_string()}/")
         for response in responses:
-            if response.role in ("orders", "data", "root"):
+            if response.role in ("edit", "data", "root"):
                 assert response.code == 404
             elif response.role == "no-login":
                 assert response.code == 401
@@ -236,7 +236,7 @@ def test_list_user_orders_permissions(mdb):
     for user in users:
         responses = make_request_all_roles("/api/v1/order/user/", ret_json=True)
         for response in responses:
-            if response.role in ("orders", "data", "root"):
+            if response.role in ("edit", "data", "root"):
                 assert response.code == 200
                 assert len(response.data["orders"]) == 0
             elif response.role == "no-login":
@@ -353,7 +353,7 @@ def test_add_order_permissions():
         "/api/v1/order/", method="POST", data=indata, ret_json=True
     )
     for response in responses:
-        if response.role in ("orders", "data", "root"):
+        if response.role in ("edit", "data", "root"):
             assert response.code == 200
             assert "_id" in response.data
             assert len(response.data["_id"]) == 36
@@ -380,7 +380,7 @@ def test_add_order(mdb):
         "/api/v1/order/", method="POST", data=indata, ret_json=True
     )
     for response in responses:
-        if response.role in ("orders", "data", "root"):
+        if response.role in ("edit", "data", "root"):
             assert response.code == 200
             assert "_id" in response.data
             assert len(response.data["_id"]) == 36
@@ -396,13 +396,13 @@ def test_add_order(mdb):
             assert response.code == 403
             assert not response.data
 
-    orders_user = db["users"].find_one({"auth_ids": USERS["orders"]})
+    edit_user = db["users"].find_one({"auth_ids": USERS["edit"]})
     indata = {
         "description": "Test description",
-        "authors": [str(orders_user["_id"])],
-        "editors": [str(orders_user["_id"])],
-        "generators": [str(orders_user["_id"])],
-        "organisation": str(orders_user["_id"]),
+        "authors": [str(edit_user["_id"])],
+        "editors": [str(edit_user["_id"])],
+        "generators": [str(edit_user["_id"])],
+        "organisation": str(edit_user["_id"]),
         "title": "Test title",
     }
     indata.update(TEST_LABEL)
@@ -411,13 +411,13 @@ def test_add_order(mdb):
         "/api/v1/order/", method="POST", data=indata, ret_json=True
     )
     for response in responses:
-        if response.role in ("orders", "data", "root"):
+        if response.role in ("edit", "data", "root"):
             assert response.code == 200
             assert "_id" in response.data
             assert len(response.data["_id"]) == 36
             order = db["orders"].find_one({"_id": uuid.UUID(response.data["_id"])})
 
-            user_list = [orders_user["_id"]]
+            user_list = [edit_user["_id"]]
             for field in ("description", "title"):
                 assert order[field] == indata[field]
             for field in ("authors", "generators"):
@@ -451,7 +451,7 @@ def test_add_order_log(mdb):
         "/api/v1/order/", method="POST", data=indata, ret_json=True
     )
     for response in responses:
-        if response.role in ("orders", "data", "root"):
+        if response.role in ("edit", "data", "root"):
             assert response.code == 200
             assert "_id" in response.data
             assert len(response.data["_id"]) == 36
@@ -489,7 +489,7 @@ def test_add_order_bad():
         "/api/v1/order/", method="POST", data=indata, ret_json=True
     )
     for response in responses:
-        if response.role in ("orders", "data", "root"):
+        if response.role in ("edit", "data", "root"):
             assert response.code == 400
         elif response.role == "no-login":
             assert response.code == 401
@@ -509,7 +509,7 @@ def test_add_order_bad():
         "/api/v1/order/", method="POST", data=indata, ret_json=True
     )
     for response in responses:
-        if response.role in ("orders", "data", "root"):
+        if response.role in ("edit", "data", "root"):
             assert response.code == 400
         elif response.role == "no-login":
             assert response.code == 401
@@ -539,11 +539,11 @@ def test_update_order_permissions(mdb):
 
     db = mdb
 
-    orders_user = db["users"].find_one({"auth_ids": USERS["orders"]})
+    edit_user = db["users"].find_one({"auth_ids": USERS["edit"]})
 
     orders = list(
         db["orders"].aggregate(
-            [{"$match": {"editors": orders_user["_id"]}}, {"$sample": {"size": 3}}]
+            [{"$match": {"editors": edit_user["_id"]}}, {"$sample": {"size": 3}}]
         )
     )
 
@@ -558,7 +558,7 @@ def test_update_order_permissions(mdb):
                 data=indata,
                 ret_json=True,
             )
-            if role in ("orders", "data", "root"):
+            if role in ("edit", "data", "root"):
                 assert response.code == 200
                 assert not response.data
                 new_order = db["orders"].find_one({"_id": order["_id"]})
@@ -582,21 +582,21 @@ def test_update_order_data(mdb):
 
     db = mdb
 
-    orders_user = db["users"].find_one({"auth_ids": USERS["orders"]})
+    edit_user = db["users"].find_one({"auth_ids": USERS["edit"]})
 
     orders = list(
         db["orders"].aggregate(
-            [{"$match": {"editors": orders_user["_id"]}}, {"$sample": {"size": 2}}]
+            [{"$match": {"editors": edit_user["_id"]}}, {"$sample": {"size": 2}}]
         )
     )
 
     assert len(orders) > 0
 
-    as_user(session, USERS["orders"])
+    as_user(session, USERS["edit"])
     for order in orders:
         indata = {
-            "title": "Test title - updated by orders user",
-            "description": "Test description - updated by orders user",
+            "title": "Test title - updated by edit user",
+            "description": "Test description - updated by edit user",
         }
         indata.update(TEST_LABEL)
 
@@ -623,7 +623,7 @@ def test_update_order_data(mdb):
                     "data._id": order["_id"],
                     "action": "edit",
                     "data_type": "order",
-                    "user": orders_user["_id"],
+                    "user": edit_user["_id"],
                 }
             )
 
@@ -636,10 +636,10 @@ def test_update_order_bad(mdb):
     """
     db = mdb
 
-    orders_user = db["users"].find_one({"auth_ids": USERS["orders"]})
+    edit_user = db["users"].find_one({"auth_ids": USERS["edit"]})
     orders = list(
         db["orders"].aggregate(
-            [{"$match": {"editors": orders_user["_id"]}}, {"$sample": {"size": 2}}]
+            [{"$match": {"editors": edit_user["_id"]}}, {"$sample": {"size": 2}}]
         )
     )
 
@@ -655,7 +655,7 @@ def test_update_order_bad(mdb):
             f'/api/v1/order/{order["_id"]}/', method="PATCH", data=indata, ret_json=True
         )
         for response in responses:
-            if response.role in ("orders", "data", "root"):
+            if response.role in ("edit", "data", "root"):
                 assert response.code == 400
             elif response.role == "no-login":
                 assert response.code == 401
@@ -666,14 +666,14 @@ def test_update_order_bad(mdb):
 
         indata = {
             "description": "Test description",
-            "editors": str(orders_user["_id"]),
+            "editors": str(edit_user["_id"]),
             "title": "Test title",
         }
         responses = make_request_all_roles(
             f'/api/v1/order/{order["_id"]}/', method="PATCH", data=indata, ret_json=True
         )
         for response in responses:
-            if response.role in ("orders", "data", "root"):
+            if response.role in ("edit", "data", "root"):
                 assert response.code == 400
             elif response.role == "no-login":
                 assert response.code == 401
@@ -691,7 +691,7 @@ def test_update_order_bad(mdb):
             f'/api/v1/order/{order["_id"]}/', method="PATCH", data=indata, ret_json=True
         )
         for response in responses:
-            if response.role in ("orders", "data", "root"):
+            if response.role in ("edit", "data", "root"):
                 assert response.code == 400
             elif response.role == "no-login":
                 assert response.code == 401
@@ -706,7 +706,7 @@ def test_update_order_bad(mdb):
             f"/api/v1/order/{uuid.uuid4()}/", method="PATCH", data=indata, ret_json=True
         )
         for response in responses:
-            if response.role in ("orders", "data", "root"):
+            if response.role in ("edit", "data", "root"):
                 assert response.code == 404
             elif response.role == "no-login":
                 assert response.code == 401
@@ -723,7 +723,7 @@ def test_update_order_bad(mdb):
             ret_json=True,
         )
         for response in responses:
-            if response.role in ("orders", "data", "root"):
+            if response.role in ("edit", "data", "root"):
                 assert response.code == 404
             elif response.role == "no-login":
                 assert response.code == 401
@@ -746,7 +746,7 @@ def test_delete_order(mdb):
 
     db = mdb
 
-    orders_user = db["users"].find_one({"auth_ids": USERS["orders"]})
+    edit_user = db["users"].find_one({"auth_ids": USERS["edit"]})
 
     orders = list(db["orders"].find(TEST_LABEL))
     if not orders:
@@ -758,8 +758,8 @@ def test_delete_order(mdb):
             response = make_request(
                 session, f'/api/v1/order/{orders[i]["_id"]}/', method="DELETE"
             )
-            if role in ("orders", "data", "root"):
-                if role != "orders" or orders_user["_id"] in orders[i]["editors"]:
+            if role in ("edit", "data", "root"):
+                if role != "edit" or edit_user["_id"] in orders[i]["editors"]:
                     assert response.code == 200
                     assert not response.data
                     assert not db["orders"].find_one({"_id": orders[i]["_id"]})
@@ -792,7 +792,7 @@ def test_delete_order(mdb):
                 assert response.code == 403
                 assert not response.data
 
-    as_user(session, USERS["orders"])
+    as_user(session, USERS["edit"])
     response = make_request(
         session, "/api/v1/order/", data={"title": "tmp"}, method="POST"
     )
@@ -848,7 +848,7 @@ def test_list_all_orders(mdb):
             assert response.code == 401
             assert not response.data
 
-        elif response.role == "orders":
+        elif response.role == "edit":
             assert response.code == 200
             assert len(response.data["orders"]) == 0
 
