@@ -57,18 +57,18 @@
 
       <q-btn class="q-mx-sm"
              v-show="editMode"
-             icon="cancel"
-             label="Cancel"
-             color="grey-6"
-             @click="cancelEdit" />
-
-      <q-btn class="q-ml-sm q-mr-lg"
-             v-show="editMode"
              icon="save"
              label="Save"
              color="positive"
              :loading="isSaving"
              @click="saveEdit" />
+
+      <q-btn class="q-ml-sm q-mr-lg"
+             v-show="editMode"
+             icon="cancel"
+             label="Cancel"
+             color="grey-6"
+             @click="cancelEdit" />
 
       <q-tabs v-show="editMode"
               v-model="currentTab"
@@ -111,11 +111,12 @@
       </q-card-section>
 
       <q-card-actions align="right">
-        <q-btn flat label="Cancel" color="grey-7" v-close-popup />
-        <q-btn flat label="Delete" color="negative" @click="deleteEntry" />
         <q-spinner v-show="isDeleting"
                    color="negative"
-                   size="1.5em" />
+                   size="1.5em"
+                   class="q-mr-sm" />
+        <q-btn flat label="Delete" color="negative" @click="deleteEntry" />
+        <q-btn flat label="Cancel" color="grey-7" v-close-popup />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -222,13 +223,15 @@ export default {
 
     deleteEntry(event) {
       event.preventDefault();
+      this.isDeleting =  true;
       this.$store.dispatch('entries/deleteEntry', {'id': this.uuid,
                                                 'dataType': this.dataType})
         .then(() => {
           this.$router.push({ 'name': 'Collection Browser' });
           this.showConfirmDelete = false;
         })
-        .catch((err) => this.error = true);
+        .catch((err) => this.error = true)
+        .finally(() => this.isDeleting = false);
     },
 
     saveEdit (event) {
