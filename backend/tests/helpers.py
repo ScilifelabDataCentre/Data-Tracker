@@ -25,7 +25,7 @@ TEST_LABEL = {"tags": ["testing"]}
 USERS = {
     "no-login": None,
     "base": "base::testers",
-    "orders": "orders::testers",
+    "edit": "edit::testers",
     "owners": "owners::testers",
     "users": "users::testers",
     "data": "data::testers",
