@@ -6,34 +6,28 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>user &#8212; Data Tracker  documentation</title>
-    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Data Tracker  documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">user</a></li> 
-      </ul>
-    </div>  
+  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
+          
+
           <div class="body" role="main">
             
   <h1>Source code for user</h1><div class="highlight"><pre>
@@ -59,39 +53,43 @@
 <span class="kn">import</span> <span class="nn">structure</span>
 <span class="kn">import</span> <span class="nn">utils</span>
 
-<span class="n">blueprint</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">Blueprint</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">)</span>  <span class="c1"># pylint: disable=invalid-name</span>
+<span class="n">blueprint</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">Blueprint</span><span class="p">(</span><span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">)</span>  <span class="c1"># pylint: disable=invalid-name</span>
 
-<span class="n">PERMISSIONS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;ORDERS&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;ORDERS&#39;</span><span class="p">,</span> <span class="s1">&#39;USER_ADD&#39;</span><span class="p">,</span> <span class="s1">&#39;USER_SEARCH&#39;</span><span class="p">),</span>
-               <span class="s1">&#39;OWNERS_READ&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;OWNERS_READ&#39;</span><span class="p">,),</span>
-               <span class="s1">&#39;USER_ADD&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;USER_ADD&#39;</span><span class="p">,),</span>
-               <span class="s1">&#39;USER_SEARCH&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;USER_SEARCH&#39;</span><span class="p">,),</span>
-               <span class="s1">&#39;USER_MANAGEMENT&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;USER_MANAGEMENT&#39;</span><span class="p">,</span> <span class="s1">&#39;USER_ADD&#39;</span><span class="p">,</span> <span class="s1">&#39;USER_SEARCH&#39;</span><span class="p">),</span>
-               <span class="s1">&#39;DATA_MANAGEMENT&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;ORDERS&#39;</span><span class="p">,</span> <span class="s1">&#39;OWNERS_READ&#39;</span><span class="p">,</span> <span class="s1">&#39;DATA_MANAGEMENT&#39;</span><span class="p">)}</span>
+<span class="n">PERMISSIONS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;ORDERS&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;ORDERS&quot;</span><span class="p">,</span> <span class="s2">&quot;USER_ADD&quot;</span><span class="p">,</span> <span class="s2">&quot;USER_SEARCH&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;OWNERS_READ&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;OWNERS_READ&quot;</span><span class="p">,),</span>
+    <span class="s2">&quot;USER_ADD&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;USER_ADD&quot;</span><span class="p">,),</span>
+    <span class="s2">&quot;USER_SEARCH&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;USER_SEARCH&quot;</span><span class="p">,),</span>
+    <span class="s2">&quot;USER_MANAGEMENT&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;USER_MANAGEMENT&quot;</span><span class="p">,</span> <span class="s2">&quot;USER_ADD&quot;</span><span class="p">,</span> <span class="s2">&quot;USER_SEARCH&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;DATA_MANAGEMENT&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;ORDERS&quot;</span><span class="p">,</span> <span class="s2">&quot;OWNERS_READ&quot;</span><span class="p">,</span> <span class="s2">&quot;DATA_MANAGEMENT&quot;</span><span class="p">),</span>
+<span class="p">}</span>
 
 
 <span class="c1"># Decorators</span>
-<div class="viewcode-block" id="login_required"><a class="viewcode-back" href="../user.html#user.login_required">[docs]</a><span class="k">def</span> <span class="nf">login_required</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+<div class="viewcode-block" id="login_required"><a class="viewcode-back" href="../code.user.html#user.login_required">[docs]</a><span class="k">def</span> <span class="nf">login_required</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Confirm that the user is logged in.</span>
 
 <span class="sd">    Otherwise abort with status 401 Unauthorized.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">wrap</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span><span class="p">:</span>
             <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">401</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="n">wrap</span></div>
 
 
 <span class="c1"># requests</span>
-<div class="viewcode-block" id="get_permission_info"><a class="viewcode-back" href="../user.html#user.get_permission_info">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/permissions/&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="get_permission_info"><a class="viewcode-back" href="../code.user.html#user.get_permission_info">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/permissions/&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">get_permission_info</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;Get a list of all permission types.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">response_json</span><span class="p">({</span><span class="s1">&#39;permissions&#39;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">PERMISSIONS</span><span class="o">.</span><span class="n">keys</span><span class="p">())})</span></div>
+    <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">response_json</span><span class="p">({</span><span class="s2">&quot;permissions&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">PERMISSIONS</span><span class="o">.</span><span class="n">keys</span><span class="p">())})</span></div>
 
 
-<div class="viewcode-block" id="list_users"><a class="viewcode-back" href="../user.html#user.list_users">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="list_users"><a class="viewcode-back" href="../code.user.html#user.list_users">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
 <span class="nd">@login_required</span>
 <span class="k">def</span> <span class="nf">list_users</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -99,22 +97,21 @@
 
 <span class="sd">    Admin access should be required.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">has_permission</span><span class="p">(</span><span class="s1">&#39;USER_SEARCH&#39;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">has_permission</span><span class="p">(</span><span class="s2">&quot;USER_SEARCH&quot;</span><span class="p">):</span>
         <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="mi">403</span><span class="p">)</span>
 
-    <span class="n">fields</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;api_key&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-              <span class="s1">&#39;api_salt&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+    <span class="n">fields</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;api_key&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;api_salt&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">has_permission</span><span class="p">(</span><span class="s1">&#39;USER_MANAGEMENT&#39;</span><span class="p">):</span>
-        <span class="n">fields</span><span class="p">[</span><span class="s1">&#39;auth_ids&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">fields</span><span class="p">[</span><span class="s1">&#39;permissions&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">has_permission</span><span class="p">(</span><span class="s2">&quot;USER_MANAGEMENT&quot;</span><span class="p">):</span>
+        <span class="n">fields</span><span class="p">[</span><span class="s2">&quot;auth_ids&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">fields</span><span class="p">[</span><span class="s2">&quot;permissions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
 
-    <span class="n">result</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;users&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="n">fields</span><span class="p">))</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;users&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="n">fields</span><span class="p">))</span>
 
-    <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">response_json</span><span class="p">({</span><span class="s1">&#39;users&#39;</span><span class="p">:</span> <span class="n">result</span><span class="p">})</span></div>
+    <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">response_json</span><span class="p">({</span><span class="s2">&quot;users&quot;</span><span class="p">:</span> <span class="n">result</span><span class="p">})</span></div>
 
 
-<div class="viewcode-block" id="get_user_data_structure"><a class="viewcode-back" href="../user.html#user.get_user_data_structure">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/structure/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+<div class="viewcode-block" id="get_user_data_structure"><a class="viewcode-back" href="../code.user.html#user.get_user_data_structure">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/structure/&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">])</span>
 <span class="k">def</span> <span class="nf">get_user_data_structure</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get an empty user entry.</span>
@@ -123,12 +120,12 @@
 <span class="sd">        flask.Response: JSON structure with a list of users.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">empty_user</span> <span class="o">=</span> <span class="n">structure</span><span class="o">.</span><span class="n">user</span><span class="p">()</span>
-    <span class="n">empty_user</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-    <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">response_json</span><span class="p">({</span><span class="s1">&#39;user&#39;</span><span class="p">:</span> <span class="n">empty_user</span><span class="p">})</span></div>
+    <span class="n">empty_user</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">response_json</span><span class="p">({</span><span class="s2">&quot;user&quot;</span><span class="p">:</span> <span class="n">empty_user</span><span class="p">})</span></div>
 
 
 <span class="c1"># requests</span>
-<div class="viewcode-block" id="get_current_user_info"><a class="viewcode-back" href="../user.html#user.get_current_user_info">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/me/&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="get_current_user_info"><a class="viewcode-back" href="../code.user.html#user.get_current_user_info">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/me/&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">get_current_user_info</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    List basic information about the current user.</span>
@@ -137,25 +134,27 @@
 <span class="sd">        flask.Response: json structure for the user</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span>
-    <span class="n">outstructure</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-                    <span class="s1">&#39;affiliation&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-                    <span class="s1">&#39;auth_ids&#39;</span><span class="p">:</span> <span class="p">[],</span>
-                    <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-                    <span class="s1">&#39;contact&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-                    <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-                    <span class="s1">&#39;orcid&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-                    <span class="s1">&#39;permissions&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-                    <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">}</span>
+    <span class="n">outstructure</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;affiliation&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;auth_ids&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;contact&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;orcid&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;permissions&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
     <span class="k">if</span> <span class="n">data</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">outstructure</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
                 <span class="n">outstructure</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">field</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">response_json</span><span class="p">({</span><span class="s1">&#39;user&#39;</span><span class="p">:</span> <span class="n">outstructure</span><span class="p">})</span></div>
+    <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">response_json</span><span class="p">({</span><span class="s2">&quot;user&quot;</span><span class="p">:</span> <span class="n">outstructure</span><span class="p">})</span></div>
 
 
 <span class="c1"># requests</span>
-<div class="viewcode-block" id="gen_new_api_key"><a class="viewcode-back" href="../user.html#user.gen_new_api_key">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/me/apikey/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>
-<span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;identifier&gt;/apikey/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<div class="viewcode-block" id="gen_new_api_key"><a class="viewcode-back" href="../code.user.html#user.gen_new_api_key">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/me/apikey/&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;POST&quot;</span><span class="p">])</span>
+<span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/&lt;identifier&gt;/apikey/&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;POST&quot;</span><span class="p">])</span>
 <span class="nd">@login_required</span>
 <span class="k">def</span> <span class="nf">gen_new_api_key</span><span class="p">(</span><span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -170,32 +169,37 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">identifier</span><span class="p">:</span>
         <span class="n">user_data</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">has_permission</span><span class="p">(</span><span class="s1">&#39;USER_MANAGEMENT&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">has_permission</span><span class="p">(</span><span class="s2">&quot;USER_MANAGEMENT&quot;</span><span class="p">):</span>
             <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="mi">403</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">user_uuid</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">str_to_uuid</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
             <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">404</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">user_data</span> <span class="o">:=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;users&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">user_uuid</span><span class="p">})):</span>  <span class="c1"># pylint: disable=superfluous-parens</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
+            <span class="n">user_data</span> <span class="o">:=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;users&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">user_uuid</span><span class="p">})</span>
+        <span class="p">):</span>  <span class="c1"># pylint: disable=superfluous-parens</span>
             <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">404</span><span class="p">)</span>
 
     <span class="n">apikey</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">gen_api_key</span><span class="p">()</span>
     <span class="n">new_hash</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">gen_api_key_hash</span><span class="p">(</span><span class="n">apikey</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">apikey</span><span class="o">.</span><span class="n">salt</span><span class="p">)</span>
-    <span class="n">new_values</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;api_key&#39;</span><span class="p">:</span> <span class="n">new_hash</span><span class="p">,</span> <span class="s1">&#39;api_salt&#39;</span><span class="p">:</span> <span class="n">apikey</span><span class="o">.</span><span class="n">salt</span><span class="p">}</span>
+    <span class="n">new_values</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;api_key&quot;</span><span class="p">:</span> <span class="n">new_hash</span><span class="p">,</span> <span class="s2">&quot;api_salt&quot;</span><span class="p">:</span> <span class="n">apikey</span><span class="o">.</span><span class="n">salt</span><span class="p">}</span>
     <span class="n">user_data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">new_values</span><span class="p">)</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;users&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">user_data</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]},</span>
-                                            <span class="p">{</span><span class="s1">&#39;$set&#39;</span><span class="p">:</span> <span class="n">new_values</span><span class="p">})</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;users&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
+        <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">user_data</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="n">new_values</span><span class="p">}</span>
+    <span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">acknowledged</span><span class="p">:</span>
-        <span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Updating API key for user </span><span class="si">%s</span><span class="s1"> failed&#39;</span><span class="p">,</span> <span class="n">user_data</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">])</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="s2">&quot;Updating API key for user </span><span class="si">%s</span><span class="s2"> failed&quot;</span><span class="p">,</span> <span class="n">user_data</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
         <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">utils</span><span class="o">.</span><span class="n">make_log</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="s1">&#39;edit&#39;</span><span class="p">,</span> <span class="s1">&#39;New API key&#39;</span><span class="p">,</span> <span class="n">user_data</span><span class="p">)</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">make_log</span><span class="p">(</span><span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;edit&quot;</span><span class="p">,</span> <span class="s2">&quot;New API key&quot;</span><span class="p">,</span> <span class="n">user_data</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">response_json</span><span class="p">({</span><span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="n">apikey</span><span class="o">.</span><span class="n">key</span><span class="p">})</span></div>
+    <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">response_json</span><span class="p">({</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="n">apikey</span><span class="o">.</span><span class="n">key</span><span class="p">})</span></div>
 
 
-<div class="viewcode-block" id="get_user_data"><a class="viewcode-back" href="../user.html#user.get_user_data">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;identifier&gt;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+<div class="viewcode-block" id="get_user_data"><a class="viewcode-back" href="../code.user.html#user.get_user_data">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/&lt;identifier&gt;/&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">])</span>
 <span class="nd">@login_required</span>
 <span class="k">def</span> <span class="nf">get_user_data</span><span class="p">(</span><span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -207,7 +211,7 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        flask.Response: Information about the user as json.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">has_permission</span><span class="p">(</span><span class="s1">&#39;USER_MANAGEMENT&#39;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">has_permission</span><span class="p">(</span><span class="s2">&quot;USER_MANAGEMENT&quot;</span><span class="p">):</span>
         <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="mi">403</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>
@@ -215,17 +219,19 @@
     <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
         <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">404</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">user_info</span> <span class="o">:=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;users&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">user_uuid</span><span class="p">})):</span>  <span class="c1"># pylint: disable=superfluous-parens</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
+        <span class="n">user_info</span> <span class="o">:=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;users&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">user_uuid</span><span class="p">})</span>
+    <span class="p">):</span>  <span class="c1"># pylint: disable=superfluous-parens</span>
         <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">404</span><span class="p">)</span>
 
     <span class="c1"># The hash and salt should never leave the system</span>
-    <span class="k">del</span> <span class="n">user_info</span><span class="p">[</span><span class="s1">&#39;api_key&#39;</span><span class="p">]</span>
-    <span class="k">del</span> <span class="n">user_info</span><span class="p">[</span><span class="s1">&#39;api_salt&#39;</span><span class="p">]</span>
+    <span class="k">del</span> <span class="n">user_info</span><span class="p">[</span><span class="s2">&quot;api_key&quot;</span><span class="p">]</span>
+    <span class="k">del</span> <span class="n">user_info</span><span class="p">[</span><span class="s2">&quot;api_salt&quot;</span><span class="p">]</span>
 
-    <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">response_json</span><span class="p">({</span><span class="s1">&#39;user&#39;</span><span class="p">:</span> <span class="n">user_info</span><span class="p">})</span></div>
+    <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">response_json</span><span class="p">({</span><span class="s2">&quot;user&quot;</span><span class="p">:</span> <span class="n">user_info</span><span class="p">})</span></div>
 
 
-<div class="viewcode-block" id="add_user"><a class="viewcode-back" href="../user.html#user.add_user">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<div class="viewcode-block" id="add_user"><a class="viewcode-back" href="../code.user.html#user.add_user">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;POST&quot;</span><span class="p">])</span>
 <span class="nd">@login_required</span>
 <span class="k">def</span> <span class="nf">add_user</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -234,7 +240,7 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        flask.Response: Information about the user as json.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">has_permission</span><span class="p">(</span><span class="s1">&#39;USER_ADD&#39;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">has_permission</span><span class="p">(</span><span class="s2">&quot;USER_ADD&quot;</span><span class="p">):</span>
         <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="mi">403</span><span class="p">)</span>
 
     <span class="n">new_user</span> <span class="o">=</span> <span class="n">structure</span><span class="o">.</span><span class="n">user</span><span class="p">()</span>
@@ -242,41 +248,40 @@
         <span class="n">indata</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">decoder</span><span class="o">.</span><span class="n">JSONDecodeError</span><span class="p">:</span>
         <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
-    <span class="n">validation</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">basic_check_indata</span><span class="p">(</span><span class="n">indata</span><span class="p">,</span> <span class="n">new_user</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;_id&#39;</span><span class="p">,</span>
-                                                             <span class="s1">&#39;api_key&#39;</span><span class="p">,</span>
-                                                             <span class="s1">&#39;api_salt&#39;</span><span class="p">,</span>
-                                                             <span class="s1">&#39;auth_ids&#39;</span><span class="p">))</span>
+    <span class="n">validation</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">basic_check_indata</span><span class="p">(</span>
+        <span class="n">indata</span><span class="p">,</span> <span class="n">new_user</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">,</span> <span class="s2">&quot;api_key&quot;</span><span class="p">,</span> <span class="s2">&quot;api_salt&quot;</span><span class="p">,</span> <span class="s2">&quot;auth_ids&quot;</span><span class="p">)</span>
+    <span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">validation</span><span class="o">.</span><span class="n">result</span><span class="p">:</span>
         <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="n">validation</span><span class="o">.</span><span class="n">status</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="s1">&#39;email&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">indata</span><span class="p">:</span>
-        <span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Email must be set&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;email&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">indata</span><span class="p">:</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Email must be set&quot;</span><span class="p">)</span>
         <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
 
-    <span class="n">old_user</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;users&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">indata</span><span class="p">[</span><span class="s1">&#39;email&#39;</span><span class="p">]})</span>
+    <span class="n">old_user</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;users&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="n">indata</span><span class="p">[</span><span class="s2">&quot;email&quot;</span><span class="p">]})</span>
     <span class="k">if</span> <span class="n">old_user</span><span class="p">:</span>
-        <span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;User already exists&#39;</span><span class="p">)</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;User already exists&quot;</span><span class="p">)</span>
         <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">has_permission</span><span class="p">(</span><span class="s1">&#39;USER_MANAGEMENT&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="s1">&#39;permissions&#39;</span> <span class="ow">in</span> <span class="n">indata</span><span class="p">:</span>
-        <span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;USER_MANAGEMENT required for permissions&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">has_permission</span><span class="p">(</span><span class="s2">&quot;USER_MANAGEMENT&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;permissions&quot;</span> <span class="ow">in</span> <span class="n">indata</span><span class="p">:</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;USER_MANAGEMENT required for permissions&quot;</span><span class="p">)</span>
         <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="mi">403</span><span class="p">)</span>
 
     <span class="n">new_user</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">indata</span><span class="p">)</span>
 
-    <span class="n">new_user</span><span class="p">[</span><span class="s1">&#39;auth_ids&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">new_user</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">::local&#39;</span><span class="p">]</span>
+    <span class="n">new_user</span><span class="p">[</span><span class="s2">&quot;auth_ids&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">new_user</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">::local&#39;</span><span class="p">]</span>
 
-    <span class="n">result</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;users&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">new_user</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;users&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">new_user</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">acknowledged</span><span class="p">:</span>
-        <span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;User Addition failed: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">new_user</span><span class="p">[</span><span class="s1">&#39;email&#39;</span><span class="p">])</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;User Addition failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">new_user</span><span class="p">[</span><span class="s2">&quot;email&quot;</span><span class="p">])</span>
         <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">utils</span><span class="o">.</span><span class="n">make_log</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="s1">&#39;User added by admin&#39;</span><span class="p">,</span> <span class="n">new_user</span><span class="p">)</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">make_log</span><span class="p">(</span><span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;add&quot;</span><span class="p">,</span> <span class="s2">&quot;User added by admin&quot;</span><span class="p">,</span> <span class="n">new_user</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">response_json</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">result</span><span class="o">.</span><span class="n">inserted_id</span><span class="p">})</span></div>
+    <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">response_json</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">result</span><span class="o">.</span><span class="n">inserted_id</span><span class="p">})</span></div>
 
 
-<div class="viewcode-block" id="delete_user"><a class="viewcode-back" href="../user.html#user.delete_user">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;identifier&gt;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;DELETE&#39;</span><span class="p">])</span>
+<div class="viewcode-block" id="delete_user"><a class="viewcode-back" href="../code.user.html#user.delete_user">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/&lt;identifier&gt;/&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;DELETE&quot;</span><span class="p">])</span>
 <span class="nd">@login_required</span>
 <span class="k">def</span> <span class="nf">delete_user</span><span class="p">(</span><span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -288,7 +293,7 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        flask.Response: Response code.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">has_permission</span><span class="p">(</span><span class="s1">&#39;USER_MANAGEMENT&#39;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">has_permission</span><span class="p">(</span><span class="s2">&quot;USER_MANAGEMENT&quot;</span><span class="p">):</span>
         <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="mi">403</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>
@@ -296,20 +301,20 @@
     <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
         <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">404</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;users&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">user_uuid</span><span class="p">}):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;users&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">user_uuid</span><span class="p">}):</span>
         <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">404</span><span class="p">)</span>
 
-    <span class="n">result</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;users&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">delete_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">user_uuid</span><span class="p">})</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;users&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">delete_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">user_uuid</span><span class="p">})</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">acknowledged</span><span class="p">:</span>
-        <span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;User deletion failed: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">user_uuid</span><span class="p">)</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;User deletion failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">user_uuid</span><span class="p">)</span>
         <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">utils</span><span class="o">.</span><span class="n">make_log</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="s1">&#39;delete&#39;</span><span class="p">,</span> <span class="s1">&#39;User delete&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">user_uuid</span><span class="p">})</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">make_log</span><span class="p">(</span><span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">,</span> <span class="s2">&quot;User delete&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">user_uuid</span><span class="p">})</span>
 
     <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="update_current_user_info"><a class="viewcode-back" href="../user.html#user.update_current_user_info">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/me/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;PATCH&#39;</span><span class="p">])</span>
+<div class="viewcode-block" id="update_current_user_info"><a class="viewcode-back" href="../code.user.html#user.update_current_user_info">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/me/&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;PATCH&quot;</span><span class="p">])</span>
 <span class="nd">@login_required</span>
 <span class="k">def</span> <span class="nf">update_current_user_info</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -324,29 +329,29 @@
         <span class="n">indata</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">decoder</span><span class="o">.</span><span class="n">JSONDecodeError</span><span class="p">:</span>
         <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
-    <span class="n">validation</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">basic_check_indata</span><span class="p">(</span><span class="n">indata</span><span class="p">,</span> <span class="n">user_data</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;_id&#39;</span><span class="p">,</span>
-                                                              <span class="s1">&#39;api_key&#39;</span><span class="p">,</span>
-                                                              <span class="s1">&#39;api_salt&#39;</span><span class="p">,</span>
-                                                              <span class="s1">&#39;auth_ids&#39;</span><span class="p">,</span>
-                                                              <span class="s1">&#39;email&#39;</span><span class="p">,</span>
-                                                              <span class="s1">&#39;permissions&#39;</span><span class="p">))</span>
+    <span class="n">validation</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">basic_check_indata</span><span class="p">(</span>
+        <span class="n">indata</span><span class="p">,</span>
+        <span class="n">user_data</span><span class="p">,</span>
+        <span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">,</span> <span class="s2">&quot;api_key&quot;</span><span class="p">,</span> <span class="s2">&quot;api_salt&quot;</span><span class="p">,</span> <span class="s2">&quot;auth_ids&quot;</span><span class="p">,</span> <span class="s2">&quot;email&quot;</span><span class="p">,</span> <span class="s2">&quot;permissions&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">validation</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
         <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="n">validation</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
     <span class="n">user_data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">indata</span><span class="p">)</span>
 
-    <span class="n">result</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;users&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">user_data</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]},</span>
-                                            <span class="p">{</span><span class="s1">&#39;$set&#39;</span><span class="p">:</span> <span class="n">user_data</span><span class="p">})</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;users&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
+        <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">user_data</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="n">user_data</span><span class="p">}</span>
+    <span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">acknowledged</span><span class="p">:</span>
-        <span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;User self-update failed: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">indata</span><span class="p">)</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;User self-update failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">indata</span><span class="p">)</span>
         <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">utils</span><span class="o">.</span><span class="n">make_log</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="s1">&#39;edit&#39;</span><span class="p">,</span> <span class="s1">&#39;User self-updated&#39;</span><span class="p">,</span> <span class="n">user_data</span><span class="p">)</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">make_log</span><span class="p">(</span><span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;edit&quot;</span><span class="p">,</span> <span class="s2">&quot;User self-updated&quot;</span><span class="p">,</span> <span class="n">user_data</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="update_user_info"><a class="viewcode-back" href="../user.html#user.update_user_info">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;identifier&gt;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;PATCH&#39;</span><span class="p">])</span>
+<div class="viewcode-block" id="update_user_info"><a class="viewcode-back" href="../code.user.html#user.update_user_info">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/&lt;identifier&gt;/&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;PATCH&quot;</span><span class="p">])</span>
 <span class="nd">@login_required</span>
 <span class="k">def</span> <span class="nf">update_user_info</span><span class="p">(</span><span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -358,7 +363,7 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        flask.Response: Response code.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">has_permission</span><span class="p">(</span><span class="s1">&#39;USER_MANAGEMENT&#39;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">has_permission</span><span class="p">(</span><span class="s2">&quot;USER_MANAGEMENT&quot;</span><span class="p">):</span>
         <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="mi">403</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>
@@ -366,25 +371,26 @@
     <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
         <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">404</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">user_data</span> <span class="o">:=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;users&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">user_uuid</span><span class="p">})):</span>  <span class="c1"># pylint: disable=superfluous-parens</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
+        <span class="n">user_data</span> <span class="o">:=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;users&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">user_uuid</span><span class="p">})</span>
+    <span class="p">):</span>  <span class="c1"># pylint: disable=superfluous-parens</span>
         <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">404</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="n">indata</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">decoder</span><span class="o">.</span><span class="n">JSONDecodeError</span><span class="p">:</span>
         <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
-    <span class="n">validation</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">basic_check_indata</span><span class="p">(</span><span class="n">indata</span><span class="p">,</span> <span class="n">user_data</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;_id&#39;</span><span class="p">,</span>
-                                                              <span class="s1">&#39;api_key&#39;</span><span class="p">,</span>
-                                                              <span class="s1">&#39;api_salt&#39;</span><span class="p">,</span>
-                                                              <span class="s1">&#39;auth_ids&#39;</span><span class="p">))</span>
+    <span class="n">validation</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">basic_check_indata</span><span class="p">(</span>
+        <span class="n">indata</span><span class="p">,</span> <span class="n">user_data</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">,</span> <span class="s2">&quot;api_key&quot;</span><span class="p">,</span> <span class="s2">&quot;api_salt&quot;</span><span class="p">,</span> <span class="s2">&quot;auth_ids&quot;</span><span class="p">)</span>
+    <span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">validation</span><span class="o">.</span><span class="n">result</span><span class="p">:</span>
         <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="n">validation</span><span class="o">.</span><span class="n">status</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="s1">&#39;email&#39;</span> <span class="ow">in</span> <span class="n">indata</span><span class="p">:</span>
-        <span class="n">old_user</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;users&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">indata</span><span class="p">[</span><span class="s1">&#39;email&#39;</span><span class="p">]})</span>
-        <span class="k">if</span> <span class="n">old_user</span> <span class="ow">and</span> <span class="n">old_user</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">user_data</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]:</span>
-            <span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;User already exists&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;email&quot;</span> <span class="ow">in</span> <span class="n">indata</span><span class="p">:</span>
+        <span class="n">old_user</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;users&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="n">indata</span><span class="p">[</span><span class="s2">&quot;email&quot;</span><span class="p">]})</span>
+        <span class="k">if</span> <span class="n">old_user</span> <span class="ow">and</span> <span class="n">old_user</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">user_data</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]:</span>
+            <span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;User already exists&quot;</span><span class="p">)</span>
             <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
 
     <span class="c1"># Avoid &quot;updating&quot; and making log if there are no changes</span>
@@ -395,20 +401,21 @@
             <span class="k">break</span>
 
     <span class="k">if</span> <span class="n">indata</span> <span class="ow">and</span> <span class="n">is_different</span><span class="p">:</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;users&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">user_data</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]},</span>
-                                                <span class="p">{</span><span class="s1">&#39;$set&#39;</span><span class="p">:</span> <span class="n">indata</span><span class="p">})</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;users&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">user_data</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="n">indata</span><span class="p">}</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">acknowledged</span><span class="p">:</span>
-            <span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;User update failed: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">indata</span><span class="p">)</span>
+            <span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;User update failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">indata</span><span class="p">)</span>
             <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">user_data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">indata</span><span class="p">)</span>
-            <span class="n">utils</span><span class="o">.</span><span class="n">make_log</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="s1">&#39;edit&#39;</span><span class="p">,</span> <span class="s1">&#39;User updated&#39;</span><span class="p">,</span> <span class="n">user_data</span><span class="p">)</span>
+            <span class="n">utils</span><span class="o">.</span><span class="n">make_log</span><span class="p">(</span><span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;edit&quot;</span><span class="p">,</span> <span class="s2">&quot;User updated&quot;</span><span class="p">,</span> <span class="n">user_data</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="get_user_log"><a class="viewcode-back" href="../user.html#user.get_user_log">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/me/log/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
-<span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;identifier&gt;/log/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+<div class="viewcode-block" id="get_user_log"><a class="viewcode-back" href="../code.user.html#user.get_user_log">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/me/log/&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">])</span>
+<span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/&lt;identifier&gt;/log/&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">])</span>
 <span class="nd">@login_required</span>
 <span class="k">def</span> <span class="nf">get_user_log</span><span class="p">(</span><span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -423,9 +430,11 @@
 <span class="sd">        flask.Response: Information about the user as json.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">identifier</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">identifier</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">])</span>
+        <span class="n">identifier</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">])</span>
 
-    <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">])</span> <span class="o">!=</span> <span class="n">identifier</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">has_permission</span><span class="p">(</span><span class="s1">&#39;USER_MANAGEMENT&#39;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">])</span> <span class="o">!=</span> <span class="n">identifier</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">has_permission</span><span class="p">(</span>
+        <span class="s2">&quot;USER_MANAGEMENT&quot;</span>
+    <span class="p">):</span>
         <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="mi">403</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>
@@ -433,20 +442,22 @@
     <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
         <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">404</span><span class="p">)</span>
 
-    <span class="n">user_logs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;logs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s1">&#39;data_type&#39;</span><span class="p">:</span> <span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="s1">&#39;data._id&#39;</span><span class="p">:</span> <span class="n">user_uuid</span><span class="p">}))</span>
+    <span class="n">user_logs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;logs&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">&quot;data_type&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;data._id&quot;</span><span class="p">:</span> <span class="n">user_uuid</span><span class="p">})</span>
+    <span class="p">)</span>
 
     <span class="k">for</span> <span class="n">log</span> <span class="ow">in</span> <span class="n">user_logs</span><span class="p">:</span>
-        <span class="k">del</span> <span class="n">log</span><span class="p">[</span><span class="s1">&#39;data_type&#39;</span><span class="p">]</span>
+        <span class="k">del</span> <span class="n">log</span><span class="p">[</span><span class="s2">&quot;data_type&quot;</span><span class="p">]</span>
 
     <span class="n">utils</span><span class="o">.</span><span class="n">incremental_logs</span><span class="p">(</span><span class="n">user_logs</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">response_json</span><span class="p">({</span><span class="s1">&#39;entry_id&#39;</span><span class="p">:</span> <span class="n">user_uuid</span><span class="p">,</span>
-                                <span class="s1">&#39;data_type&#39;</span><span class="p">:</span> <span class="s1">&#39;user&#39;</span><span class="p">,</span>
-                                <span class="s1">&#39;logs&#39;</span><span class="p">:</span> <span class="n">user_logs</span><span class="p">})</span></div>
+    <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">response_json</span><span class="p">(</span>
+        <span class="p">{</span><span class="s2">&quot;entry_id&quot;</span><span class="p">:</span> <span class="n">user_uuid</span><span class="p">,</span> <span class="s2">&quot;data_type&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;logs&quot;</span><span class="p">:</span> <span class="n">user_logs</span><span class="p">}</span>
+    <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="get_user_actions"><a class="viewcode-back" href="../user.html#user.get_user_actions">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/me/actions/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
-<span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;identifier&gt;/actions/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+<div class="viewcode-block" id="get_user_actions"><a class="viewcode-back" href="../code.user.html#user.get_user_actions">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/me/actions/&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">])</span>
+<span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/&lt;identifier&gt;/actions/&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">])</span>
 <span class="nd">@login_required</span>
 <span class="k">def</span> <span class="nf">get_user_actions</span><span class="p">(</span><span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -461,9 +472,11 @@
 <span class="sd">        flask.Response: Information about the user as json.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">identifier</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">identifier</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">])</span>
+        <span class="n">identifier</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">])</span>
 
-    <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">])</span> <span class="o">!=</span> <span class="n">identifier</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">has_permission</span><span class="p">(</span><span class="s1">&#39;USER_MANAGEMENT&#39;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">])</span> <span class="o">!=</span> <span class="n">identifier</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">has_permission</span><span class="p">(</span>
+        <span class="s2">&quot;USER_MANAGEMENT&quot;</span>
+    <span class="p">):</span>
         <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="mi">403</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>
@@ -472,17 +485,17 @@
         <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">404</span><span class="p">)</span>
 
     <span class="c1"># only report a list of actions, not the actual data</span>
-    <span class="n">user_logs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;logs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s1">&#39;user&#39;</span><span class="p">:</span> <span class="n">user_uuid</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;user&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}))</span>
+    <span class="n">user_logs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;logs&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">&quot;user&quot;</span><span class="p">:</span> <span class="n">user_uuid</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;user&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}))</span>
 
     <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">user_logs</span><span class="p">:</span>
-        <span class="n">entry</span><span class="p">[</span><span class="s1">&#39;entry_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">entry</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">][</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span>
-        <span class="k">del</span> <span class="n">entry</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span>
+        <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;entry_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">][</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span>
+        <span class="k">del</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
 
-    <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">response_json</span><span class="p">({</span><span class="s1">&#39;logs&#39;</span><span class="p">:</span> <span class="n">user_logs</span><span class="p">})</span></div>
+    <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">response_json</span><span class="p">({</span><span class="s2">&quot;logs&quot;</span><span class="p">:</span> <span class="n">user_logs</span><span class="p">})</span></div>
 
 
 <span class="c1"># helper functions</span>
-<div class="viewcode-block" id="add_new_user"><a class="viewcode-back" href="../user.html#user.add_new_user">[docs]</a><span class="k">def</span> <span class="nf">add_new_user</span><span class="p">(</span><span class="n">user_info</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<div class="viewcode-block" id="add_new_user"><a class="viewcode-back" href="../code.user.html#user.add_new_user">[docs]</a><span class="k">def</span> <span class="nf">add_new_user</span><span class="p">(</span><span class="n">user_info</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Add a new user to the database from first oidc login.</span>
 
@@ -492,38 +505,41 @@
 <span class="sd">    Args:</span>
 <span class="sd">        user_info (dict): Information about the user</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">db_user</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;users&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">user_info</span><span class="p">[</span><span class="s1">&#39;email&#39;</span><span class="p">]})</span>
+    <span class="n">db_user</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;users&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="n">user_info</span><span class="p">[</span><span class="s2">&quot;email&quot;</span><span class="p">]})</span>
     <span class="k">if</span> <span class="n">db_user</span><span class="p">:</span>
-        <span class="n">db_user</span><span class="p">[</span><span class="s1">&#39;auth_ids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">user_info</span><span class="p">[</span><span class="s1">&#39;auth_id&#39;</span><span class="p">])</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;users&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">user_info</span><span class="p">[</span><span class="s1">&#39;email&#39;</span><span class="p">]},</span>
-                                                <span class="p">{</span><span class="s1">&#39;$set&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;auth_ids&#39;</span><span class="p">:</span> <span class="n">db_user</span><span class="p">[</span><span class="s1">&#39;auth_ids&#39;</span><span class="p">]}})</span>
+        <span class="n">db_user</span><span class="p">[</span><span class="s2">&quot;auth_ids&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">user_info</span><span class="p">[</span><span class="s2">&quot;auth_id&quot;</span><span class="p">])</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;users&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="n">user_info</span><span class="p">[</span><span class="s2">&quot;email&quot;</span><span class="p">]},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;auth_ids&quot;</span><span class="p">:</span> <span class="n">db_user</span><span class="p">[</span><span class="s2">&quot;auth_ids&quot;</span><span class="p">]}}</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">acknowledged</span><span class="p">:</span>
-            <span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Failed to add new auth_id to user with email </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span>
-                                           <span class="n">user_info</span><span class="p">[</span><span class="s1">&#39;email&#39;</span><span class="p">])</span>
+            <span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;Failed to add new auth_id to user with email </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">user_info</span><span class="p">[</span><span class="s2">&quot;email&quot;</span><span class="p">]</span>
+            <span class="p">)</span>
             <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">utils</span><span class="o">.</span><span class="n">make_log</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">,</span>
-                           <span class="s1">&#39;edit&#39;</span><span class="p">,</span>
-                           <span class="s1">&#39;Add OIDC entry to auth_ids&#39;</span><span class="p">,</span>
-                           <span class="n">db_user</span><span class="p">,</span>
-                           <span class="n">no_user</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">utils</span><span class="o">.</span><span class="n">make_log</span><span class="p">(</span>
+                <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;edit&quot;</span><span class="p">,</span> <span class="s2">&quot;Add OIDC entry to auth_ids&quot;</span><span class="p">,</span> <span class="n">db_user</span><span class="p">,</span> <span class="n">no_user</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
 
     <span class="k">else</span><span class="p">:</span>
         <span class="n">new_user</span> <span class="o">=</span> <span class="n">structure</span><span class="o">.</span><span class="n">user</span><span class="p">()</span>
-        <span class="n">new_user</span><span class="p">[</span><span class="s1">&#39;email&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">user_info</span><span class="p">[</span><span class="s1">&#39;email&#39;</span><span class="p">]</span>
-        <span class="n">new_user</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">user_info</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
-        <span class="n">new_user</span><span class="p">[</span><span class="s1">&#39;auth_ids&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">user_info</span><span class="p">[</span><span class="s1">&#39;auth_id&#39;</span><span class="p">]]</span>
+        <span class="n">new_user</span><span class="p">[</span><span class="s2">&quot;email&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">user_info</span><span class="p">[</span><span class="s2">&quot;email&quot;</span><span class="p">]</span>
+        <span class="n">new_user</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">user_info</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+        <span class="n">new_user</span><span class="p">[</span><span class="s2">&quot;auth_ids&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">user_info</span><span class="p">[</span><span class="s2">&quot;auth_id&quot;</span><span class="p">]]</span>
 
-        <span class="n">result</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;users&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">new_user</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;users&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">new_user</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">acknowledged</span><span class="p">:</span>
-            <span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Failed to add user with email </span><span class="si">%s</span><span class="s1"> via oidc&#39;</span><span class="p">,</span>
-                                           <span class="n">user_info</span><span class="p">[</span><span class="s1">&#39;email&#39;</span><span class="p">])</span>
+            <span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;Failed to add user with email </span><span class="si">%s</span><span class="s2"> via oidc&quot;</span><span class="p">,</span> <span class="n">user_info</span><span class="p">[</span><span class="s2">&quot;email&quot;</span><span class="p">]</span>
+            <span class="p">)</span>
             <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">utils</span><span class="o">.</span><span class="n">make_log</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="s1">&#39;Creating new user from OAuth&#39;</span><span class="p">,</span> <span class="n">new_user</span><span class="p">,</span> <span class="n">no_user</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+            <span class="n">utils</span><span class="o">.</span><span class="n">make_log</span><span class="p">(</span>
+                <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;add&quot;</span><span class="p">,</span> <span class="s2">&quot;Creating new user from OAuth&quot;</span><span class="p">,</span> <span class="n">new_user</span><span class="p">,</span> <span class="n">no_user</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="do_login"><a class="viewcode-back" href="../user.html#user.do_login">[docs]</a><span class="k">def</span> <span class="nf">do_login</span><span class="p">(</span><span class="n">auth_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="do_login"><a class="viewcode-back" href="../code.user.html#user.do_login">[docs]</a><span class="k">def</span> <span class="nf">do_login</span><span class="p">(</span><span class="n">auth_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Set all relevant variables for a logged in user.</span>
 
@@ -532,27 +548,27 @@
 
 <span class="sd">    Returns bool: Whether the login succeeded.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">user</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;users&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;auth_ids&#39;</span><span class="p">:</span> <span class="n">auth_id</span><span class="p">})</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;users&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;auth_ids&quot;</span><span class="p">:</span> <span class="n">auth_id</span><span class="p">})</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">False</span>
 
-    <span class="n">flask</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="s1">&#39;user_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">user</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span>
+    <span class="n">flask</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="s2">&quot;user_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">user</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span>
     <span class="n">flask</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">permanent</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">return</span> <span class="kc">True</span></div>
 
 
-<div class="viewcode-block" id="get_current_user"><a class="viewcode-back" href="../user.html#user.get_current_user">[docs]</a><span class="k">def</span> <span class="nf">get_current_user</span><span class="p">():</span>
+<div class="viewcode-block" id="get_current_user"><a class="viewcode-back" href="../code.user.html#user.get_current_user">[docs]</a><span class="k">def</span> <span class="nf">get_current_user</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the current user.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        dict: The current user.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">get_user</span><span class="p">(</span><span class="n">user_uuid</span><span class="o">=</span><span class="n">flask</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user_id&#39;</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="n">get_user</span><span class="p">(</span><span class="n">user_uuid</span><span class="o">=</span><span class="n">flask</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;user_id&quot;</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="get_user"><a class="viewcode-back" href="../user.html#user.get_user">[docs]</a><span class="k">def</span> <span class="nf">get_user</span><span class="p">(</span><span class="n">user_uuid</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="get_user"><a class="viewcode-back" href="../code.user.html#user.get_user">[docs]</a><span class="k">def</span> <span class="nf">get_user</span><span class="p">(</span><span class="n">user_uuid</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get information about the user.</span>
 
@@ -563,13 +579,13 @@
 <span class="sd">        dict: The current user.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">user_uuid</span><span class="p">:</span>
-        <span class="n">user</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s1">&#39;users&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">user_uuid</span><span class="p">})</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;users&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">user_uuid</span><span class="p">})</span>
         <span class="k">if</span> <span class="n">user</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">user</span>
     <span class="k">return</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="has_permission"><a class="viewcode-back" href="../user.html#user.has_permission">[docs]</a><span class="k">def</span> <span class="nf">has_permission</span><span class="p">(</span><span class="n">permission</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="has_permission"><a class="viewcode-back" href="../code.user.html#user.has_permission">[docs]</a><span class="k">def</span> <span class="nf">has_permission</span><span class="p">(</span><span class="n">permission</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if the current user permissions fulfills the requirement.</span>
 
@@ -581,22 +597,51 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">permissions</span> <span class="ow">and</span> <span class="n">permission</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">False</span>
-    <span class="n">user_permissions</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">PERMISSIONS</span><span class="p">[</span><span class="n">permission</span><span class="p">]</span>
-                                               <span class="k">for</span> <span class="n">permission</span> <span class="ow">in</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">permissions</span><span class="p">))</span>
+    <span class="n">user_permissions</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
+        <span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span>
+            <span class="n">PERMISSIONS</span><span class="p">[</span><span class="n">permission</span><span class="p">]</span> <span class="k">for</span> <span class="n">permission</span> <span class="ow">in</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">permissions</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
     <span class="k">if</span> <span class="n">permission</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">user_permissions</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">False</span>
     <span class="k">return</span> <span class="kc">True</span></div>
 </pre></div>
 
-            <div class="clearer"></div>
           </div>
+          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
             <p class="logo"><a href="../index.html">
-              <img class="logo" src="../_static/data-centre-logo.svg" alt="Logo"/>
+              <img class="logo" src="../_static/SciLifeLab_symbol_green.svg" alt="Logo"/>
             </a></p>
+<h1 class="logo"><a href="../index.html">Data Tracker</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_structure.html">Data Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../implementation.html">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">Development</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
 <div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
@@ -607,27 +652,29 @@
     </div>
 </div>
 <script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Data Tracker  documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">user</a></li> 
-      </ul>
+    <div class="footer">
+      &copy;2019-2021, SciLifeLab Data Centre.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
     </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2019-2021, SciLifeLab Data Centre.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
-    </div>
+
+    
+
+    
   </body>
 </html>

@@ -6,34 +6,28 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>structure &#8212; Data Tracker  documentation</title>
-    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Data Tracker  documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">structure</a></li> 
-      </ul>
-    </div>  
+  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
+          
+
           <div class="body" role="main">
             
   <h1>Source code for structure</h1><div class="highlight"><pre>
@@ -46,102 +40,138 @@
 <span class="kn">import</span> <span class="nn">utils</span>
 
 
-<div class="viewcode-block" id="dataset"><a class="viewcode-back" href="../structure.html#structure.dataset">[docs]</a><span class="k">def</span> <span class="nf">dataset</span><span class="p">():</span>
+<div class="viewcode-block" id="dataset"><a class="viewcode-back" href="../code.structure.html#structure.dataset">[docs]</a><span class="k">def</span> <span class="nf">dataset</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Provide a basic data structure for a dataset document.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        dict: The data structure for a dataset.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">utils</span><span class="o">.</span><span class="n">new_uuid</span><span class="p">(),</span>
-            <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;cross_references&#39;</span><span class="p">:</span> <span class="p">[],</span>
-            <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{},</span>
-            <span class="s1">&#39;tags&#39;</span><span class="p">:</span> <span class="p">[]}</span></div>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">utils</span><span class="o">.</span><span class="n">new_uuid</span><span class="p">(),</span>
+        <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;cross_references&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{},</span>
+        <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="p">[],</span>
+    <span class="p">}</span></div>
 
 
-<div class="viewcode-block" id="order"><a class="viewcode-back" href="../structure.html#structure.order">[docs]</a><span class="k">def</span> <span class="nf">order</span><span class="p">():</span>
+<div class="viewcode-block" id="order"><a class="viewcode-back" href="../code.structure.html#structure.order">[docs]</a><span class="k">def</span> <span class="nf">order</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Provide a basic data structure for an order document.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        dict: The data structure for an order.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">utils</span><span class="o">.</span><span class="n">new_uuid</span><span class="p">(),</span>
-            <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;authors&#39;</span><span class="p">:</span> <span class="p">[],</span>
-            <span class="s1">&#39;generators&#39;</span><span class="p">:</span> <span class="p">[],</span>
-            <span class="s1">&#39;organisation&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;editors&#39;</span><span class="p">:</span> <span class="p">[],</span>
-            <span class="s1">&#39;datasets&#39;</span><span class="p">:</span> <span class="p">[],</span>
-            <span class="s1">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{},</span>
-            <span class="s1">&#39;tags&#39;</span><span class="p">:</span> <span class="p">[]}</span></div>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">utils</span><span class="o">.</span><span class="n">new_uuid</span><span class="p">(),</span>
+        <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;authors&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s2">&quot;generators&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s2">&quot;organisation&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;editors&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s2">&quot;datasets&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{},</span>
+        <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="p">[],</span>
+    <span class="p">}</span></div>
 
 
-<div class="viewcode-block" id="collection"><a class="viewcode-back" href="../structure.html#structure.collection">[docs]</a><span class="k">def</span> <span class="nf">collection</span><span class="p">():</span>
+<div class="viewcode-block" id="collection"><a class="viewcode-back" href="../code.structure.html#structure.collection">[docs]</a><span class="k">def</span> <span class="nf">collection</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Provide a basic data structure for a project document.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        dict: The data structure for a project.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">utils</span><span class="o">.</span><span class="n">new_uuid</span><span class="p">(),</span>
-            <span class="s1">&#39;cross_references&#39;</span><span class="p">:</span> <span class="p">[],</span>
-            <span class="s1">&#39;datasets&#39;</span><span class="p">:</span> <span class="p">[],</span>
-            <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{},</span>
-            <span class="s1">&#39;tags&#39;</span><span class="p">:</span> <span class="p">[],</span>
-            <span class="s1">&#39;editors&#39;</span><span class="p">:</span> <span class="p">[],</span>
-            <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">}</span></div>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">utils</span><span class="o">.</span><span class="n">new_uuid</span><span class="p">(),</span>
+        <span class="s2">&quot;cross_references&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s2">&quot;datasets&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{},</span>
+        <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s2">&quot;editors&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="p">}</span></div>
 
 
-<div class="viewcode-block" id="user"><a class="viewcode-back" href="../structure.html#structure.user">[docs]</a><span class="k">def</span> <span class="nf">user</span><span class="p">():</span>
+<div class="viewcode-block" id="user"><a class="viewcode-back" href="../code.structure.html#structure.user">[docs]</a><span class="k">def</span> <span class="nf">user</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Provide a basic data structure for a user document.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        dict: The data structure for a user.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">utils</span><span class="o">.</span><span class="n">new_uuid</span><span class="p">(),</span>
-            <span class="s1">&#39;affiliation&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;api_key&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;api_salt&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;auth_ids&#39;</span><span class="p">:</span> <span class="p">[],</span>
-            <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;contact&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;orcid&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;permissions&#39;</span><span class="p">:</span> <span class="p">[],</span>
-            <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">}</span></div>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">utils</span><span class="o">.</span><span class="n">new_uuid</span><span class="p">(),</span>
+        <span class="s2">&quot;affiliation&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;api_key&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;api_salt&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;auth_ids&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;contact&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;orcid&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;permissions&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="p">}</span></div>
 
 
-<div class="viewcode-block" id="log"><a class="viewcode-back" href="../structure.html#structure.log">[docs]</a><span class="k">def</span> <span class="nf">log</span><span class="p">():</span>
+<div class="viewcode-block" id="log"><a class="viewcode-back" href="../code.structure.html#structure.log">[docs]</a><span class="k">def</span> <span class="nf">log</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Provide a basic data structure for a log document.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        dict: The data structure for a log.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">utils</span><span class="o">.</span><span class="n">new_uuid</span><span class="p">(),</span>
-            <span class="s1">&#39;action&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;comment&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;data_type&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;timestamp&#39;</span><span class="p">:</span> <span class="n">utils</span><span class="o">.</span><span class="n">make_timestamp</span><span class="p">(),</span>
-            <span class="s1">&#39;user&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">}</span></div>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">utils</span><span class="o">.</span><span class="n">new_uuid</span><span class="p">(),</span>
+        <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;comment&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;data_type&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="n">utils</span><span class="o">.</span><span class="n">make_timestamp</span><span class="p">(),</span>
+        <span class="s2">&quot;user&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="p">}</span></div>
 </pre></div>
 
-            <div class="clearer"></div>
           </div>
+          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
             <p class="logo"><a href="../index.html">
-              <img class="logo" src="../_static/data-centre-logo.svg" alt="Logo"/>
+              <img class="logo" src="../_static/SciLifeLab_symbol_green.svg" alt="Logo"/>
             </a></p>
+<h1 class="logo"><a href="../index.html">Data Tracker</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_structure.html">Data Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../implementation.html">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">Development</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
 <div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
@@ -152,27 +182,29 @@
     </div>
 </div>
 <script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Data Tracker  documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">structure</a></li> 
-      </ul>
+    <div class="footer">
+      &copy;2019-2021, SciLifeLab Data Centre.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
     </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2019-2021, SciLifeLab Data Centre.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
-    </div>
+
+    
+
+    
   </body>
 </html>

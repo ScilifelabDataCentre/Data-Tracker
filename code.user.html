@@ -6,43 +6,30 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>user.py &#8212; Data Tracker  documentation</title>
-    <link rel="stylesheet" href="static/nature.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="static/documentation_options.js"></script>
     <script src="static/jquery.js"></script>
     <script src="static/underscore.js"></script>
     <script src="static/doctools.js"></script>
-    <script src="static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="utils.py" href="code.utils.html" />
-    <link rel="prev" title="structure.py" href="code.structure.html" /> 
+    <link rel="prev" title="structure.py" href="code.structure.html" />
+   
+  <link rel="stylesheet" href="static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="code.utils.html" title="utils.py"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
-          <a href="code.structure.html" title="structure.py"
-             accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Data Tracker  documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="development.html" >Development</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="modules.html" accesskey="U">Code reference</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">user.py</a></li> 
-      </ul>
-    </div>  
+  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
+          
+
           <div class="body" role="main">
             
   <div class="section" id="module-user">
@@ -58,7 +45,7 @@
 </dl>
 <dl class="py function">
 <dt id="user.add_new_user">
-<code class="sig-prename descclassname">user.</code><code class="sig-name descname">add_new_user</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user_info</span><span class="p">:</span> <span class="n">dict</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#add_new_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#user.add_new_user" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">user.</span></code><code class="sig-name descname"><span class="pre">add_new_user</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_info</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#add_new_user"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#user.add_new_user" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a new user to the database from first oidc login.</p>
 <p>First check if user with the same email exists.
 If so, add the auth_id to the user.</p>
@@ -71,7 +58,7 @@ If so, add the auth_id to the user.</p>
 
 <dl class="py function">
 <dt id="user.add_user">
-<code class="sig-prename descclassname">user.</code><code class="sig-name descname">add_user</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#add_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#user.add_user" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">user.</span></code><code class="sig-name descname"><span class="pre">add_user</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#add_user"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#user.add_user" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a user.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -85,7 +72,7 @@ If so, add the auth_id to the user.</p>
 
 <dl class="py function">
 <dt id="user.delete_user">
-<code class="sig-prename descclassname">user.</code><code class="sig-name descname">delete_user</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">identifier</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#delete_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#user.delete_user" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">user.</span></code><code class="sig-name descname"><span class="pre">delete_user</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#delete_user"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#user.delete_user" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete a user.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -102,7 +89,7 @@ If so, add the auth_id to the user.</p>
 
 <dl class="py function">
 <dt id="user.do_login">
-<code class="sig-prename descclassname">user.</code><code class="sig-name descname">do_login</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">auth_id</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#do_login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#user.do_login" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">user.</span></code><code class="sig-name descname"><span class="pre">do_login</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">auth_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#do_login"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#user.do_login" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set all relevant variables for a logged in user.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -114,7 +101,7 @@ If so, add the auth_id to the user.</p>
 
 <dl class="py function">
 <dt id="user.gen_new_api_key">
-<code class="sig-prename descclassname">user.</code><code class="sig-name descname">gen_new_api_key</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">identifier</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#gen_new_api_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#user.gen_new_api_key" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">user.</span></code><code class="sig-name descname"><span class="pre">gen_new_api_key</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#gen_new_api_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#user.gen_new_api_key" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a new API key for the provided or current user.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -131,7 +118,7 @@ If so, add the auth_id to the user.</p>
 
 <dl class="py function">
 <dt id="user.get_current_user">
-<code class="sig-prename descclassname">user.</code><code class="sig-name descname">get_current_user</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#get_current_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#user.get_current_user" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">user.</span></code><code class="sig-name descname"><span class="pre">get_current_user</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#get_current_user"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#user.get_current_user" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the current user.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -145,7 +132,7 @@ If so, add the auth_id to the user.</p>
 
 <dl class="py function">
 <dt id="user.get_current_user_info">
-<code class="sig-prename descclassname">user.</code><code class="sig-name descname">get_current_user_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#get_current_user_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#user.get_current_user_info" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">user.</span></code><code class="sig-name descname"><span class="pre">get_current_user_info</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#get_current_user_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#user.get_current_user_info" title="Permalink to this definition">¶</a></dt>
 <dd><p>List basic information about the current user.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -159,13 +146,13 @@ If so, add the auth_id to the user.</p>
 
 <dl class="py function">
 <dt id="user.get_permission_info">
-<code class="sig-prename descclassname">user.</code><code class="sig-name descname">get_permission_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#get_permission_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#user.get_permission_info" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">user.</span></code><code class="sig-name descname"><span class="pre">get_permission_info</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#get_permission_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#user.get_permission_info" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a list of all permission types.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt id="user.get_user">
-<code class="sig-prename descclassname">user.</code><code class="sig-name descname">get_user</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user_uuid</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#get_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#user.get_user" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">user.</span></code><code class="sig-name descname"><span class="pre">get_user</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_uuid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#get_user"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#user.get_user" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get information about the user.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -182,7 +169,7 @@ If so, add the auth_id to the user.</p>
 
 <dl class="py function">
 <dt id="user.get_user_actions">
-<code class="sig-prename descclassname">user.</code><code class="sig-name descname">get_user_actions</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">identifier</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#get_user_actions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#user.get_user_actions" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">user.</span></code><code class="sig-name descname"><span class="pre">get_user_actions</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#get_user_actions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#user.get_user_actions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a list of actions (changes) by the user entry with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
 <p>Can be accessed by actual user and admin (USER_MANAGEMENT).</p>
 <dl class="field-list simple">
@@ -200,7 +187,7 @@ If so, add the auth_id to the user.</p>
 
 <dl class="py function">
 <dt id="user.get_user_data">
-<code class="sig-prename descclassname">user.</code><code class="sig-name descname">get_user_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">identifier</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#get_user_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#user.get_user_data" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">user.</span></code><code class="sig-name descname"><span class="pre">get_user_data</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#get_user_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#user.get_user_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get information about a user.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -217,7 +204,7 @@ If so, add the auth_id to the user.</p>
 
 <dl class="py function">
 <dt id="user.get_user_data_structure">
-<code class="sig-prename descclassname">user.</code><code class="sig-name descname">get_user_data_structure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#get_user_data_structure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#user.get_user_data_structure" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">user.</span></code><code class="sig-name descname"><span class="pre">get_user_data_structure</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#get_user_data_structure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#user.get_user_data_structure" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get an empty user entry.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -231,7 +218,7 @@ If so, add the auth_id to the user.</p>
 
 <dl class="py function">
 <dt id="user.get_user_log">
-<code class="sig-prename descclassname">user.</code><code class="sig-name descname">get_user_log</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">identifier</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#get_user_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#user.get_user_log" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">user.</span></code><code class="sig-name descname"><span class="pre">get_user_log</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#get_user_log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#user.get_user_log" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get change logs for the user entry with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
 <p>Can be accessed by actual user and admin (USER_MANAGEMENT).</p>
 <dl class="field-list simple">
@@ -249,7 +236,7 @@ If so, add the auth_id to the user.</p>
 
 <dl class="py function">
 <dt id="user.has_permission">
-<code class="sig-prename descclassname">user.</code><code class="sig-name descname">has_permission</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">permission</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#has_permission"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#user.has_permission" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">user.</span></code><code class="sig-name descname"><span class="pre">has_permission</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">permission</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#has_permission"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#user.has_permission" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if the current user permissions fulfills the requirement.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -266,21 +253,21 @@ If so, add the auth_id to the user.</p>
 
 <dl class="py function">
 <dt id="user.list_users">
-<code class="sig-prename descclassname">user.</code><code class="sig-name descname">list_users</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#list_users"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#user.list_users" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">user.</span></code><code class="sig-name descname"><span class="pre">list_users</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#list_users"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#user.list_users" title="Permalink to this definition">¶</a></dt>
 <dd><p>List all users.</p>
 <p>Admin access should be required.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt id="user.login_required">
-<code class="sig-prename descclassname">user.</code><code class="sig-name descname">login_required</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#login_required"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#user.login_required" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">user.</span></code><code class="sig-name descname"><span class="pre">login_required</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#login_required"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#user.login_required" title="Permalink to this definition">¶</a></dt>
 <dd><p>Confirm that the user is logged in.</p>
 <p>Otherwise abort with status 401 Unauthorized.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt id="user.update_current_user_info">
-<code class="sig-prename descclassname">user.</code><code class="sig-name descname">update_current_user_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#update_current_user_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#user.update_current_user_info" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">user.</span></code><code class="sig-name descname"><span class="pre">update_current_user_info</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#update_current_user_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#user.update_current_user_info" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update the information about the current user.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -294,7 +281,7 @@ If so, add the auth_id to the user.</p>
 
 <dl class="py function">
 <dt id="user.update_user_info">
-<code class="sig-prename descclassname">user.</code><code class="sig-name descname">update_user_info</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">identifier</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#update_user_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#user.update_user_info" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">user.</span></code><code class="sig-name descname"><span class="pre">update_user_info</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/user.html#update_user_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#user.update_user_info" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update the information about a user.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -312,28 +299,49 @@ If so, add the auth_id to the user.</p>
 </div>
 
 
-            <div class="clearer"></div>
           </div>
+          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
             <p class="logo"><a href="index.html">
-              <img class="logo" src="static/data-centre-logo.svg" alt="Logo"/>
+              <img class="logo" src="static/SciLifeLab_symbol_green.svg" alt="Logo"/>
             </a></p>
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="code.structure.html"
-                        title="previous chapter">structure.py</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="code.utils.html"
-                        title="next chapter">utils.py</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="sources/code.user.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
+<h1 class="logo"><a href="index.html">Data Tracker</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_structure.html">Data Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="implementation.html">Implementation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="development.html">Development</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="development.quick_environment.html">System for development</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="modules.html">Code reference</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="development.html">Development</a><ul>
+  <li><a href="modules.html">Code reference</a><ul>
+      <li>Previous: <a href="code.structure.html" title="previous chapter">structure.py</a></li>
+      <li>Next: <a href="code.utils.html" title="next chapter">utils.py</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
 <div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
@@ -344,34 +352,32 @@ If so, add the auth_id to the user.</p>
     </div>
 </div>
 <script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="code.utils.html" title="utils.py"
-             >next</a> |</li>
-        <li class="right" >
-          <a href="code.structure.html" title="structure.py"
-             >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Data Tracker  documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="development.html" >Development</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="modules.html" >Code reference</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">user.py</a></li> 
-      </ul>
+    <div class="footer">
+      &copy;2019-2021, SciLifeLab Data Centre.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="sources/code.user.rst.txt"
+          rel="nofollow">Page source</a>
     </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2019-2021, SciLifeLab Data Centre.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
-    </div>
+
+    
+
+    
   </body>
 </html>
