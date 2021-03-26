@@ -106,7 +106,7 @@ def add_dataset():
         {"description": "Added by fixture.", "title": "Test title from fixture"}
     )
     order_indata.update(TEST_LABEL)
-    orders_user = mongo_db["users"].find_one({"auth_ids": USERS["orders"]})
+    orders_user = mongo_db["users"].find_one({"auth_ids": USERS["edit"]})
     base_user = mongo_db["users"].find_one({"auth_ids": USERS["base"]})
     order_indata["authors"] = [orders_user["_id"]]
     order_indata["editors"] = [orders_user["_id"]]
