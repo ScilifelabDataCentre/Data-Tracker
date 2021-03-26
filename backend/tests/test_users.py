@@ -23,7 +23,7 @@ def test_list_users(mdb):
     """
     responses = make_request_all_roles("/api/v1/user/", ret_json=True)
     for response in responses:
-        if response.role in ("users", "root", "orders"):
+        if response.role in ("users", "root", "edit"):
             assert response.code == 200
             assert len(response.data["users"]) == mdb["users"].count_documents({})
         elif response.role == "no-login":
@@ -269,7 +269,7 @@ def test_add_user(mdb):
         response = make_request(
             session, "/api/v1/user/", ret_json=True, method="POST", data=indata
         )
-        if role in ("users", "root", "orders"):
+        if role in ("users", "root", "edit"):
             assert response.code == 200
             assert "_id" in response.data
             new_user_info = mdb["users"].find_one(
@@ -288,10 +288,10 @@ def test_add_user(mdb):
         "affiliation": "Added University",
         "name": "Added name",
         "email": "user2@added.example.com",
-        "permissions": ["ORDERS"],
+        "permissions": ["DATA_EDIT"],
     }
     session = requests.session()
-    as_user(session, USERS["orders"])
+    as_user(session, USERS["edit"])
     response = make_request(
         session, "/api/v1/user/", ret_json=True, method="POST", data=indata
     )
