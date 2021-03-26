@@ -23,12 +23,12 @@ import utils
 blueprint = flask.Blueprint("user", __name__)  # pylint: disable=invalid-name
 
 PERMISSIONS = {
-    "ORDERS": ("ORDERS", "USER_ADD", "USER_SEARCH"),
+    "DATA_EDIT": ("DATA_EDIT", "USER_ADD", "USER_SEARCH"),
     "OWNERS_READ": ("OWNERS_READ",),
     "USER_ADD": ("USER_ADD",),
     "USER_SEARCH": ("USER_SEARCH",),
     "USER_MANAGEMENT": ("USER_MANAGEMENT", "USER_ADD", "USER_SEARCH"),
-    "DATA_MANAGEMENT": ("ORDERS", "OWNERS_READ", "DATA_MANAGEMENT"),
+    "DATA_MANAGEMENT": ("DATA_EDIT", "OWNERS_READ", "DATA_MANAGEMENT"),
 }
 
 
