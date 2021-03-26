@@ -284,7 +284,7 @@ def test_dataset_update_permissions(dataset_for_tests):
         f"/api/v1/dataset/{ds_uuid}/", method="PATCH", data=indata
     )
     for response in responses:
-        if response.role in ("orders", "data", "root"):
+        if response.role in ("edit", "data", "root"):
             assert response.code == 200
         elif response.role == "no-login":
             assert response.code == 401
@@ -305,7 +305,7 @@ def test_dataset_update_empty(dataset_for_tests):
         f"/api/v1/dataset/{ds_uuid}/", method="PATCH", data=indata
     )
     for response in responses:
-        if response.role in ("orders", "data", "root"):
+        if response.role in ("edit", "data", "root"):
             assert response.code == 200
         elif response.role == "no-login":
             assert response.code == 401
@@ -357,7 +357,7 @@ def test_dataset_update_bad(dataset_for_tests):
             f"/api/v1/dataset/{ds_uuid}/", method="PATCH", data=indata
         )
         for response in responses:
-            if response.role in ("base", "orders", "data", "root"):
+            if response.role in ("base", "edit", "data", "root"):
                 assert response.code == 404
             elif response.role == "no-login":
                 assert response.code == 401
@@ -370,7 +370,7 @@ def test_dataset_update_bad(dataset_for_tests):
             f"/api/v1/dataset/{ds_uuid}/", method="PATCH", data=indata
         )
         for response in responses:
-            if response.role in ("base", "orders", "data", "root"):
+            if response.role in ("base", "edit", "data", "root"):
                 assert response.code == 404
             elif response.role == "no-login":
                 assert response.code == 401
