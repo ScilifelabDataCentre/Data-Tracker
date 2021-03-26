@@ -113,11 +113,12 @@
       </q-card-section>
 
       <q-card-actions align="right">
-        <q-btn flat label="Cancel" color="grey-7" v-close-popup />
-        <q-btn flat label="Delete" color="negative" @click="deleteEntry" />
         <q-spinner v-show="isDeleting"
                    color="negative"
-                   size="1.5em" />
+                   size="1.5em"
+                   class="q-mr-sm" />
+        <q-btn flat label="Delete" color="negative" @click="deleteEntry" />
+        <q-btn flat label="Cancel" color="grey-7" v-close-popup />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -220,13 +221,16 @@ export default {
 
     deleteEntry(event) {
       event.preventDefault();
+      this.isDeleting = true;
       this.$store.dispatch('entries/deleteEntry', {'id': this.uuid,
                                                 'dataType': this.dataType})
         .then(() => {
           this.$router.push({ 'name': 'Order Browser' });
           this.showConfirmDelete = false;
         })
-        .catch((err) => this.error = true);
+        .catch((err) => this.error = true)
+        .finally(() => this.isDeleting = false);
+      
     },
 
     saveEdit (event) {
