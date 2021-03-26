@@ -57,18 +57,18 @@
 
       <q-btn class="q-mx-sm"
              v-show="editMode"
-             icon="cancel"
-             label="Cancel"
-             color="grey-6"
-             @click="cancelEdit" />
-
-      <q-btn class="q-ml-sm q-mr-lg"
-             v-show="editMode"
              icon="save"
              label="Save"
              color="positive"
              :loading="isSaving"
              @click="saveEdit" />
+
+      <q-btn class="q-ml-sm q-mr-lg"
+             v-show="editMode"
+             icon="cancel"
+             label="Cancel"
+             color="grey-6"
+             @click="cancelEdit" />
 
       <q-tabs v-show="editMode"
               v-model="currentTab"
