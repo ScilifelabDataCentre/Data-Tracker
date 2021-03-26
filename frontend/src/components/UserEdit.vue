@@ -113,7 +113,8 @@
       </q-list>
     </q-card-section>
 
-    <q-card-section v-if="currentUser.permissions.includes('USER_MANAGEMENT') && uuid !==''">
+    <q-card-actions v-if="currentUser.permissions.includes('USER_MANAGEMENT') && uuid !==''"
+                    align="left">
       <q-btn label="Logs"
              color="primary"
              class="q-mx-sm"
@@ -127,12 +128,11 @@
                   :uuid="uuid"/>
       <action-viewer v-model="showActions"
                      :uuid="uuid" />
-    </q-card-section>
+    </q-card-actions>
 
     <q-card-actions align="right">
       <span v-show="userDataSaveError" class="text-negative">Save failed</span>
     </q-card-actions>
-
     <q-card-actions align="right">
       <q-btn v-show="uuid !== ''"
              label="Delete"
@@ -140,11 +140,12 @@
              @click="showConfirmDelete = true"
              :loading="userDataSaveWaiting"
              class="text-negative q-mr-xl" />
-      <q-btn label="Cancel" color="grey-6" v-close-popup />
+
       <q-btn label="Save"
              color="positive"
              @click="saveUser"
              :loading="userDataSaveWaiting"/>
+      <q-btn label="Cancel" color="grey-6" v-close-popup />
     </q-card-actions>
 
     <q-inner-loading :showing="isLoading">
@@ -160,12 +161,12 @@
       </q-card-section>
 
       <q-card-actions align="right">
-        <q-btn flat label="Cancel" color="grey-7" v-close-popup />
         <q-btn flat
                :loading="isDeleting"
                label="Delete"
                color="negative"
                @click="deleteEntry" />
+        <q-btn flat label="Cancel" color="grey-7" v-close-popup />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -341,6 +342,9 @@ export default {
 
   mounted () {
     this.loadData();
+    if (!this.currentUser.permissions.includes('USER_MANAGEMENT')) {
+      this.loadPermissions()
+    }
   },
 }
 </script>
