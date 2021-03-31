@@ -22,30 +22,6 @@ from helpers import (
 # pylint: disable=redefined-outer-name
 
 
-def test_random_collection():
-    """Request a random collection."""
-    responses = make_request_all_roles("/api/v1/collection/random", ret_json=True)
-    for response in responses:
-        assert response.code == 200
-        assert len(response.data["collections"]) == 1
-
-
-def test_random_collections():
-    """Request random collections."""
-    session = requests.Session()
-    as_user(session, USERS["base"])
-    for i in (1, 5, 0):
-        response = make_request(
-            session, f"/api/v1/collection/random/{i}", ret_json=True
-        )
-        assert response.code == 200
-        assert len(response.data["collections"]) == i
-
-    response = make_request(session, "/api/v1/collection/random/-1")
-    assert response[1] == 404
-    assert not response[0]
-
-
 def test_get_collection_permissions(mdb):
     """Test permissions for requesting a collection."""
     collection = list(mdb["collections"].aggregate([{"$sample": {"size": 1}}]))[0]
@@ -58,11 +34,7 @@ def test_get_collection_permissions(mdb):
 
 
 def test_get_collection(mdb):
-    """
-    Request multiple collections by uuid, one at a time.
-
-    Collections are choosen randomly using /api/v1/collection/random.
-    """
+    """Request multiple collections by uuid, one at a time."""
     session = requests.Session()
     for _ in range(3):
         collection = list(mdb["collections"].aggregate([{"$sample": {"size": 1}}]))[0]

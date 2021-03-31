@@ -105,28 +105,6 @@ def test_list_user_datasets_no_datasets():
             assert len(response.data["datasets"]) == 0
 
 
-def test_random_dataset():
-    """Request a random dataset."""
-    responses = make_request_all_roles("/api/v1/dataset/random/", ret_json=True)
-    for response in responses:
-        assert response.code == 200
-        assert len(response.data["datasets"]) == 1
-
-
-def test_random_datasets():
-    """Request random datasets."""
-    session = requests.Session()
-    as_user(session, USERS["base"])
-    for i in (1, 5, 0):
-        response = make_request(session, f"/api/v1/dataset/random/{i}/")
-        assert response.code == 200
-        assert len(response.data["datasets"]) == i
-
-    response = make_request(session, "/api/v1/dataset/random/-1")
-    assert response.code == 404
-    assert not response.data
-
-
 def test_get_dataset_get_permissions(mdb):
     """Test permissions for requesting a dataset."""
     orders = list(mdb["datasets"].aggregate([{"$sample": {"size": 2}}]))
@@ -139,19 +117,15 @@ def test_get_dataset_get_permissions(mdb):
             assert response.code == 200
 
 
-def test_get_dataset():
-    """
-    Request multiple datasets by uuid, one at a time.
-
-    Datasets are choosen randomly using /api/v1/dataset/random.
-    """
+def test_get_dataset(mdb):
+    """Request multiple datasets by uuid, one at a time."""
     session = requests.Session()
     for _ in range(10):
-        orig = make_request(session, "/api/v1/dataset/random/")[0]["datasets"][0]
+        orig = mdb["datasets"].aggregate([{"$sample": {"size": 1}}]).next()
         response = make_request(session, f'/api/v1/dataset/{orig["_id"]}/')
         assert response[1] == 200
         requested = response[0]["dataset"]
-        assert orig == requested
+        assert str(orig["_id"]) == requested["_id"]
         assert requested["_id"] not in requested["related"]
 
 

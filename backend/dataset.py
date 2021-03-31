@@ -34,29 +34,6 @@ def list_user_data():
     return utils.response_json({"datasets": user_datasets})
 
 
-@blueprint.route("/random/", methods=["GET"])
-@blueprint.route("/random/<int:amount>/", methods=["GET"])
-def get_random_ds(amount: int = 1):
-    """
-    Retrieve random dataset(s).
-
-    Args:
-        amount (int): number of requested datasets
-
-    Returns:
-        flask.Response: json structure for the dataset(s)
-
-    """
-    results = list(
-        flask.g.db["datasets"].aggregate(
-            [{"$sample": {"size": amount}}, {"$project": {"_id": 1}}]
-        )
-    )
-    for i, result in enumerate(results):
-        results[i] = build_dataset_info(result["_id"].hex)
-    return utils.response_json({"datasets": results})
-
-
 @blueprint.route("/structure/", methods=["GET"])
 def get_dataset_data_structure():
     """
