@@ -112,28 +112,34 @@ def test_add_collection_permissions(mdb):
         "/api/v1/collection/", method="POST", data=indata, ret_json=True
     )
     for response in responses:
-        if response.role == "no-login":
-            assert response.code == 401
-            assert not response.data
-        else:
+        if response.role in ("edit", "data", "root"):
             assert response.code == 200
             assert "_id" in response.data
             assert len(response.data["_id"]) == 36
+        elif response.role == "no-login":
+            assert response.code == 401
+            assert not response.data
+        else:
+            assert response.code == 403
+            assert not response.data
 
     user_info = mdb["users"].find_one({"auth_ids": USERS["base"]})
     indata.update({"editors": [str(user_info["_id"])]})
-
     responses = make_request_all_roles(
         "/api/v1/collection/", method="POST", data=indata, ret_json=True
     )
     for response in responses:
-        if response.role == "no-login":
-            assert response.code == 401
-            assert not response.data
-        else:
+        print(response.role)
+        if response.role in ("edit", "root", "data"):
             assert response.code == 200
             assert "_id" in response.data
             assert len(response.data["_id"]) == 36
+        elif response.role == "no-login":
+            assert response.code == 401
+            assert not response.data
+        else:
+            assert response.code == 403
+            assert not response.data
 
 
 def test_add_collection(mdb):

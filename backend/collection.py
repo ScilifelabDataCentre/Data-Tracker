@@ -83,6 +83,11 @@ def add_collection():  # pylint: disable=too-many-branches
     Returns:
         flask.Response: Json structure with the ``_id`` of the collection.
     """
+    if not flask.g.current_user:
+        flask.abort(status=401)
+    if not user.has_permission("DATA_EDIT"):
+        flask.abort(status=403)
+
     # create new collection
     collection = structure.collection()
 
