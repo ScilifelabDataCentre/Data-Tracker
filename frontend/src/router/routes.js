@@ -75,7 +75,7 @@ const routes = [
     path: '/orders',
     component: MainLayout,
     meta: {
-      'permissionRequired': ['ORDERS'],
+      'permissionRequired': ['DATA_EDIT'],
       'loginRequired': true,
     },
     children: [
