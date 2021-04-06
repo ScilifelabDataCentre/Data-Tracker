@@ -106,7 +106,7 @@ def gen_facilities(db, nr_facilities: int = 30):
             "email": f"facility{i}@domain{i}.se",
             "contact": f"pub_facility{i}@domain{i}.se",
             "name": f"Facility {i}",
-            "permissions": ["ORDERS"],
+            "permissions": ["DATA_EDIT"],
             "url": f"https://www.example.com/facility{i}",
         }
         user.update(changes)
@@ -135,7 +135,7 @@ def gen_organisations(db, nr_organisations: int = 15):
             "email": f"organisation{i}@domain{i}.se",
             "contact": f"pub_organisation{i}@domain{i}.se",
             "name": f"Organisation {i}",
-            "permissions": ["ORDERS"],
+            "permissions": ["DATA_EDIT"],
             "url": f"https://www.example.com/org{i}",
         }
         user.update(changes)
@@ -159,7 +159,7 @@ def gen_orders(db, nr_orders: int = 300):
     facilities = tuple(db["users"].find({"auth_ids": facility_re}))
     organisations = tuple(db["users"].find({"auth_ids": organisation_re}))
     users = tuple(
-        db["users"].find({"$and": [{"auth_ids": user_re}, {"permissions": "ORDERS"}]})
+        db["users"].find({"$and": [{"auth_ids": user_re}, {"permissions": "DATA_EDIT"}]})
     )
     for i in range(1, nr_orders + 1):
         order = structure.order()
@@ -236,7 +236,7 @@ def gen_users(db, nr_users: int = 100):
     # non-random users with specific rights
     special_users = [
         {"name": "Base", "permissions": []},
-        {"name": "Orders", "permissions": ["ORDERS"]},
+        {"name": "Edit", "permissions": ["DATA_EDIT"]},
         {"name": "Owners", "permissions": ["OWNERS_READ"]},
         {"name": "Users", "permissions": ["USER_MANAGEMENT"]},
         {"name": "Data", "permissions": ["DATA_MANAGEMENT"]},

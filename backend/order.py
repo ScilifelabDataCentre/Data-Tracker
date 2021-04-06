@@ -3,8 +3,8 @@ Functions and request handlers related to orders.
 
 Special permissions are required to access orders:
 
-* If you have permission ``ORDERS`` you have CRUD access to your own orders.
-* If you have permission ``DATA_MANAGER`` you have CRUD access to any orders.
+* If you have permission ``DATA_EDIT`` you have CRUD permissions to your own orders.
+* If you have permission ``DATA_MANAGEMENT`` you have CRUD permissions to any orders.
 """
 import flask
 
@@ -18,13 +18,13 @@ blueprint = flask.Blueprint("order", __name__)  # pylint: disable=invalid-name
 @blueprint.before_request
 def prepare():
     """
-    All order request require ``ORDERS``.
+    All order request require ``DATA_EDIT``.
 
     Make sure that the user is logged in and has the required permission.
     """
     if not flask.g.current_user:
         flask.abort(status=401)
-    if not user.has_permission("ORDERS"):
+    if not user.has_permission("DATA_EDIT"):
         flask.abort(status=403)
 
 

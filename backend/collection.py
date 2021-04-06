@@ -19,40 +19,6 @@ def list_collection():
     return utils.response_json({"collections": results})
 
 
-@blueprint.route("/random/", methods=["GET"])
-@blueprint.route("/random/<int:amount>", methods=["GET"])
-def get_random(amount: int = 1):
-    """
-    Retrieve random collection(s).
-
-    Args:
-        amount (int): number of requested collections
-
-    Returns:
-        flask.Request: json structure for the collection(s)
-
-    """
-    results = list(flask.g.db["collections"].aggregate([{"$sample": {"size": amount}}]))
-
-    for result in results:
-        # only show editors if editor/admin
-        if not flask.g.current_user or (
-            not user.has_permission("DATA_MANAGEMENT")
-            or flask.g.current_user["_id"] not in result["editors"]
-        ):
-            flask.current_app.logger.debug(
-                "Not allowed to access editors field %s", flask.g.current_user
-            )
-            del result["editors"]
-
-            # return {_id, _title} for datasets
-            result["datasets"] = [
-                flask.g.db.datasets.find_one({"_id": dataset}, {"title": 1})
-                for dataset in result["datasets"]
-            ]
-    return utils.response_json({"collections": results})
-
-
 @blueprint.route("/<identifier>/", methods=["GET"])
 def get_collection(identifier):
     """
@@ -117,6 +83,11 @@ def add_collection():  # pylint: disable=too-many-branches
     Returns:
         flask.Response: Json structure with the ``_id`` of the collection.
     """
+    if not flask.g.current_user:
+        flask.abort(status=401)
+    if not user.has_permission("DATA_EDIT"):
+        flask.abort(status=403)
+
     # create new collection
     collection = structure.collection()
 
@@ -168,9 +139,9 @@ def delete_collection(identifier: str):
         flask.abort(status=404)
 
     # permission check
-    if (
-        not user.has_permission("DATA_MANAGEMENT")
-        and flask.g.current_user["_id"] not in collection["editors"]
+    if not user.has_permission("DATA_MANAGEMENT") and (
+        not user.has_permission("DATA_EDIT")
+        or flask.g.current_user["_id"] not in collection["editors"]
     ):
         flask.abort(status=403)
 
@@ -195,6 +166,11 @@ def update_collection(identifier):  # pylint: disable=too-many-branches
     Returns:
         flask.Response: Status code.
     """
+    if not flask.g.current_user:
+        flask.abort(status=401)
+    if not user.has_permission("DATA_EDIT"):
+        flask.abort(status=403)
+
     try:
         collection_uuid = utils.str_to_uuid(identifier)
     except ValueError:

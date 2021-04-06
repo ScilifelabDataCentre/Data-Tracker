@@ -22,30 +22,6 @@ from helpers import (
 # pylint: disable=redefined-outer-name
 
 
-def test_random_collection():
-    """Request a random collection."""
-    responses = make_request_all_roles("/api/v1/collection/random", ret_json=True)
-    for response in responses:
-        assert response.code == 200
-        assert len(response.data["collections"]) == 1
-
-
-def test_random_collections():
-    """Request random collections."""
-    session = requests.Session()
-    as_user(session, USERS["base"])
-    for i in (1, 5, 0):
-        response = make_request(
-            session, f"/api/v1/collection/random/{i}", ret_json=True
-        )
-        assert response.code == 200
-        assert len(response.data["collections"]) == i
-
-    response = make_request(session, "/api/v1/collection/random/-1")
-    assert response[1] == 404
-    assert not response[0]
-
-
 def test_get_collection_permissions(mdb):
     """Test permissions for requesting a collection."""
     collection = list(mdb["collections"].aggregate([{"$sample": {"size": 1}}]))[0]
@@ -58,11 +34,7 @@ def test_get_collection_permissions(mdb):
 
 
 def test_get_collection(mdb):
-    """
-    Request multiple collections by uuid, one at a time.
-
-    Collections are choosen randomly using /api/v1/collection/random.
-    """
+    """Request multiple collections by uuid, one at a time."""
     session = requests.Session()
     for _ in range(3):
         collection = list(mdb["collections"].aggregate([{"$sample": {"size": 1}}]))[0]
@@ -140,28 +112,34 @@ def test_add_collection_permissions(mdb):
         "/api/v1/collection/", method="POST", data=indata, ret_json=True
     )
     for response in responses:
-        if response.role == "no-login":
-            assert response.code == 401
-            assert not response.data
-        else:
+        if response.role in ("edit", "data", "root"):
             assert response.code == 200
             assert "_id" in response.data
             assert len(response.data["_id"]) == 36
+        elif response.role == "no-login":
+            assert response.code == 401
+            assert not response.data
+        else:
+            assert response.code == 403
+            assert not response.data
 
     user_info = mdb["users"].find_one({"auth_ids": USERS["base"]})
     indata.update({"editors": [str(user_info["_id"])]})
-
     responses = make_request_all_roles(
         "/api/v1/collection/", method="POST", data=indata, ret_json=True
     )
     for response in responses:
-        if response.role == "no-login":
-            assert response.code == 401
-            assert not response.data
-        else:
+        print(response.role)
+        if response.role in ("edit", "root", "data"):
             assert response.code == 200
             assert "_id" in response.data
             assert len(response.data["_id"]) == 36
+        elif response.role == "no-login":
+            assert response.code == 401
+            assert not response.data
+        else:
+            assert response.code == 403
+            assert not response.data
 
 
 def test_add_collection(mdb):
@@ -252,8 +230,11 @@ def test_add_collection_bad():
         if response.role == "no-login":
             assert response.code == 401
             assert not response.data
-        else:
+        elif response.role in ("root", "edit", "data"):
             assert response.code == 400
+            assert not response.data
+        else:
+            assert response.code == 403
             assert not response.data
 
     indata = {}
@@ -266,8 +247,11 @@ def test_add_collection_bad():
         if response.role == "no-login":
             assert response.code == 401
             assert not response.data
-        else:
+        elif response.role in ("root", "edit", "data"):
             assert response.code == 400
+            assert not response.data
+        else:
+            assert response.code == 403
             assert not response.data
 
     indata = {"bad_tag": "content", "title": "title"}
@@ -281,8 +265,11 @@ def test_add_collection_bad():
         if response.role == "no-login":
             assert response.code == 401
             assert not response.data
-        else:
+        elif response.role in ("root", "edit", "data"):
             assert response.code == 400
+            assert not response.data
+        else:
+            assert response.code == 403
             assert not response.data
 
     indata = {
@@ -299,8 +286,11 @@ def test_add_collection_bad():
         if response.role == "no-login":
             assert response.code == 401
             assert not response.data
-        else:
+        elif response.role in ("root", "edit", "data"):
             assert response.code == 400
+            assert not response.data
+        else:
+            assert response.code == 403
             assert not response.data
 
     session = requests.Session()
@@ -331,6 +321,7 @@ def test_update_collection_permissions(mdb, collection_for_tests):
 
     Test permissions.
     """
+    # TODO: test more situations for new permissions
     session = requests.Session()
 
     collection_uuid = collection_for_tests
@@ -346,7 +337,7 @@ def test_update_collection_permissions(mdb, collection_for_tests):
             data=indata,
             ret_json=True,
         )
-        if role in ("base", "data", "root"):
+        if role in ("edit", "data", "root"):
             assert response.code == 200
             assert not response.data
             new_collection = mdb["collections"].find_one({"_id": collection_uuid})
@@ -363,12 +354,18 @@ def test_update_collection(mdb):
     """
     Update existing collections.
 
-    Confirm that fields are set correctly.
-    Confirm that logs are created.
+    1. Add a new dataset
+    2. Add dataset (and other fields) for existing collection using edit user
+    3. Confirm correct update
+    4. Check that log was created
+    5. Perform update as data user
+    6. Confirm correct update
+    7. Confirm that log was created
+    8. Clean up
     """
     uuids = add_dataset()
     collection_info = mdb["collections"].find_one({"_id": uuids[2]})
-    user_info = mdb["users"].find_one({"auth_ids": USERS["base"]})
+    user_info = mdb["users"].find_one({"auth_ids": USERS["edit"]})
 
     indata = {
         "description": "Test description updated",
@@ -379,7 +376,7 @@ def test_update_collection(mdb):
     indata.update(TEST_LABEL)
 
     session = requests.Session()
-    as_user(session, USERS["base"])
+    as_user(session, USERS["edit"])
 
     response = make_request(
         session,
@@ -460,7 +457,7 @@ def test_update_collection_bad(mdb):
         ret_json=True,
     )
     for response in responses:
-        if response.role in ("base", "data", "root"):
+        if response.role in ("edit", "data", "root"):
             assert response.code == 400
             assert not response.data
         elif response.role == "no-login":
@@ -483,7 +480,7 @@ def test_update_collection_bad(mdb):
         ret_json=True,
     )
     for response in responses:
-        if response.role in ("base", "data", "root"):
+        if response.role in ("edit", "data", "root"):
             assert response.code == 400
             assert not response.data
         elif response.role == "no-login":
@@ -505,8 +502,11 @@ def test_update_collection_bad(mdb):
             if response.role == "no-login":
                 assert response.code == 401
                 assert not response.data
-            else:
+            elif response.role in ("edit", "root", "data"):
                 assert response.code == 404
+                assert not response.data
+            else:
+                assert response.code == 403
                 assert not response.data
 
         indata = {"title": "Test title"}
@@ -520,8 +520,11 @@ def test_update_collection_bad(mdb):
             if response.role == "no-login":
                 assert response.code == 401
                 assert not response.data
-            else:
+            elif response.role in ("edit", "root", "data"):
                 assert response.code == 404
+                assert not response.data
+            else:
+                assert response.code == 403
                 assert not response.data
 
     delete_dataset(*uuids)
@@ -587,7 +590,7 @@ def test_delete_collection(mdb):
                     assert response.code == 403
                     assert not response.data
 
-    as_user(session, USERS["base"])
+    as_user(session, USERS["edit"])
     response = make_request(
         session, "/api/v1/collection/", data={"title": "tmp"}, method="POST"
     )
