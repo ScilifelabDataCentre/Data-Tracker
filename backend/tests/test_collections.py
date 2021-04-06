@@ -230,8 +230,11 @@ def test_add_collection_bad():
         if response.role == "no-login":
             assert response.code == 401
             assert not response.data
-        else:
+        elif response.role in ("root", "edit", "data"):
             assert response.code == 400
+            assert not response.data
+        else:
+            assert response.code == 403
             assert not response.data
 
     indata = {}
@@ -244,8 +247,11 @@ def test_add_collection_bad():
         if response.role == "no-login":
             assert response.code == 401
             assert not response.data
-        else:
+        elif response.role in ("root", "edit", "data"):
             assert response.code == 400
+            assert not response.data
+        else:
+            assert response.code == 403
             assert not response.data
 
     indata = {"bad_tag": "content", "title": "title"}
@@ -259,8 +265,11 @@ def test_add_collection_bad():
         if response.role == "no-login":
             assert response.code == 401
             assert not response.data
-        else:
+        elif response.role in ("root", "edit", "data"):
             assert response.code == 400
+            assert not response.data
+        else:
+            assert response.code == 403
             assert not response.data
 
     indata = {
@@ -277,8 +286,11 @@ def test_add_collection_bad():
         if response.role == "no-login":
             assert response.code == 401
             assert not response.data
-        else:
+        elif response.role in ("root", "edit", "data"):
             assert response.code == 400
+            assert not response.data
+        else:
+            assert response.code == 403
             assert not response.data
 
     session = requests.Session()
@@ -309,6 +321,7 @@ def test_update_collection_permissions(mdb, collection_for_tests):
 
     Test permissions.
     """
+    # TODO: test more situations for new permissions
     session = requests.Session()
 
     collection_uuid = collection_for_tests
@@ -324,7 +337,7 @@ def test_update_collection_permissions(mdb, collection_for_tests):
             data=indata,
             ret_json=True,
         )
-        if role in ("base", "data", "root"):
+        if role in ("edit", "data", "root"):
             assert response.code == 200
             assert not response.data
             new_collection = mdb["collections"].find_one({"_id": collection_uuid})
