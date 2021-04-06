@@ -227,12 +227,12 @@ def collection_for_tests():
     session = requests.Session()
     as_user(session, USERS["data"])
     collection_indata = structure.collection()
-    base_user = mongo_db["users"].find_one({"auth_ids": USERS["base"]})
+    edit_user = mongo_db["users"].find_one({"auth_ids": USERS["edit"]})
     collection_indata.update(
         {
             "description": "Added by fixture.",
             "title": "Test title from fixture",
-            "editors": [base_user["_id"]],
+            "editors": [edit_user["_id"]],
         }
     )
     collection_indata.update(TEST_LABEL)
