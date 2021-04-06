@@ -354,12 +354,18 @@ def test_update_collection(mdb):
     """
     Update existing collections.
 
-    Confirm that fields are set correctly.
-    Confirm that logs are created.
+    1. Add a new dataset
+    2. Add dataset (and other fields) for existing collection using edit user
+    3. Confirm correct update
+    4. Check that log was created
+    5. Perform update as data user
+    6. Confirm correct update
+    7. Confirm that log was created
+    8. Clean up
     """
     uuids = add_dataset()
     collection_info = mdb["collections"].find_one({"_id": uuids[2]})
-    user_info = mdb["users"].find_one({"auth_ids": USERS["base"]})
+    user_info = mdb["users"].find_one({"auth_ids": USERS["edit"]})
 
     indata = {
         "description": "Test description updated",
@@ -370,7 +376,7 @@ def test_update_collection(mdb):
     indata.update(TEST_LABEL)
 
     session = requests.Session()
-    as_user(session, USERS["base"])
+    as_user(session, USERS["edit"])
 
     response = make_request(
         session,
