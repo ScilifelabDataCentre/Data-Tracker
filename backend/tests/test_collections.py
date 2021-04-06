@@ -457,7 +457,7 @@ def test_update_collection_bad(mdb):
         ret_json=True,
     )
     for response in responses:
-        if response.role in ("base", "data", "root"):
+        if response.role in ("edit", "data", "root"):
             assert response.code == 400
             assert not response.data
         elif response.role == "no-login":
@@ -480,7 +480,7 @@ def test_update_collection_bad(mdb):
         ret_json=True,
     )
     for response in responses:
-        if response.role in ("base", "data", "root"):
+        if response.role in ("edit", "data", "root"):
             assert response.code == 400
             assert not response.data
         elif response.role == "no-login":
@@ -502,8 +502,11 @@ def test_update_collection_bad(mdb):
             if response.role == "no-login":
                 assert response.code == 401
                 assert not response.data
-            else:
+            elif response.role in ("edit", "root", "data"):
                 assert response.code == 404
+                assert not response.data
+            else:
+                assert response.code == 403
                 assert not response.data
 
         indata = {"title": "Test title"}
@@ -517,8 +520,11 @@ def test_update_collection_bad(mdb):
             if response.role == "no-login":
                 assert response.code == 401
                 assert not response.data
-            else:
+            elif response.role in ("edit", "root", "data"):
                 assert response.code == 404
+                assert not response.data
+            else:
+                assert response.code == 403
                 assert not response.data
 
     delete_dataset(*uuids)
