@@ -165,17 +165,14 @@ def make_request(
     if method == "GET":
         response = session.get(f"{BASE_URL}{url}")
     elif method == "POST":
-        response = session.post(
-            f"{BASE_URL}{url}", json=data
-        )
+        response = session.post(f"{BASE_URL}{url}", json=data)
     elif method == "PATCH":
         response = session.patch(
-            f"{BASE_URL}{url}", json=data,
+            f"{BASE_URL}{url}",
+            json=data,
         )
     elif method == "PUT":
-        response = session.put(
-            f"{BASE_URL}{url}", json=data
-        )
+        response = session.put(f"{BASE_URL}{url}", json=data)
     elif method == "DELETE":
         response = session.delete(f"{BASE_URL}{url}")
     else:
