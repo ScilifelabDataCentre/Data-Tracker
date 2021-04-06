@@ -139,9 +139,9 @@ def delete_collection(identifier: str):
         flask.abort(status=404)
 
     # permission check
-    if (
-        not user.has_permission("DATA_MANAGEMENT")
-        and flask.g.current_user["_id"] not in collection["editors"]
+    if not user.has_permission("DATA_MANAGEMENT") and (
+        not user.has_permission("DATA_EDIT")
+        or flask.g.current_user["_id"] not in collection["editors"]
     ):
         flask.abort(status=403)
 
@@ -166,6 +166,11 @@ def update_collection(identifier):  # pylint: disable=too-many-branches
     Returns:
         flask.Response: Status code.
     """
+    if not flask.g.current_user:
+        flask.abort(status=401)
+    if not user.has_permission("DATA_EDIT"):
+        flask.abort(status=403)
+
     try:
         collection_uuid = utils.str_to_uuid(identifier)
     except ValueError:
