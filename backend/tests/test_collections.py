@@ -590,7 +590,7 @@ def test_delete_collection(mdb):
                     assert response.code == 403
                     assert not response.data
 
-    as_user(session, USERS["base"])
+    as_user(session, USERS["edit"])
     response = make_request(
         session, "/api/v1/collection/", data={"title": "tmp"}, method="POST"
     )
