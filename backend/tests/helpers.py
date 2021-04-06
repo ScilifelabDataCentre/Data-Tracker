@@ -112,7 +112,6 @@ def add_dataset():
     order_indata["editors"] = [orders_user["_id"]]
     order_indata["generators"] = [orders_user["_id"]]
     order_indata["organisation"] = orders_user["_id"]
-    order_indata["receivers"] = [base_user["_id"]]
 
     dataset_indata = structure.dataset()
     dataset_indata.update(
