@@ -248,7 +248,7 @@ def convert_keys_to_camel(chunk: Any) -> Any:
     return new_chunk
 
 
-REGEX = {"email": re.compile(r".*@.*\..*")}
+REGEX = {"email": re.compile(r"[^@]+@[^@]+\.[^@]+")}
 
 
 def is_email(indata: str):
@@ -263,7 +263,7 @@ def is_email(indata: str):
     """
     if not isinstance(indata, str):
         return False
-    return bool(REGEX["email"].search(indata))
+    return bool(REGEX["email"].fullmatch(indata))
 
 
 def response_json(json_structure: dict):
