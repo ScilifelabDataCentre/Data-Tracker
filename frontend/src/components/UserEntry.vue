@@ -7,7 +7,9 @@
                     && affiliation.length === 0 
                     && url.length === 0
                     && orcid.length === 0">
-      <span class="text-grey">No extra information available</span>
+      <q-item-section>
+        <span class="text-grey">No extra information available</span>
+      </q-item-section>
     </q-item>
     <q-item v-show="contact.length > 0">
       <q-item-section avatar>
