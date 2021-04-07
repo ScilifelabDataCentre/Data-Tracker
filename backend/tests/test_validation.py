@@ -234,12 +234,49 @@ def test_validate_organisation(mdb):
         validator(4.5, db=mdb)
 
 
+def test_validate_properties():
+    """Confirm that only valid key:value pairs are accepted."""
+    validator = validate.VALIDATION_MAPPER["properties"]
+    assert validator( {})
+    assert validator({"key": "value"})
+    assert validator({"long key": "long value"})
+    assert validator({"key": "value",
+                      "key2": "value2",
+                      "key3": "value3",
+                      "key4": "value4",
+                      "long key": "long value"})
+    with pytest.raises(ValueError):
+        assert validator({"ke": "value"})
+    with pytest.raises(ValueError):
+        assert validator({"key": "va"})
+    with pytest.raises(ValueError):
+        assert validator({"key": " value"})
+    with pytest.raises(ValueError):
+        assert validator({"key": "value "})
+    with pytest.raises(ValueError):
+        assert validator({" key": "value"})
+    with pytest.raises(ValueError):
+        assert validator({"key ": "value"})
+    with pytest.raises(ValueError):
+        assert validator(["tag"])
+    with pytest.raises(ValueError):
+        assert validator("")
+    with pytest.raises(ValueError):
+        validator(5)
+    with pytest.raises(ValueError):
+        validator(("asd",))
+    with pytest.raises(ValueError):
+        validator(4.5)
+
+
 def test_validate_tags():
-    """Confirm that only valid strings are accepted."""
+    """Confirm that only valid tags are accepted."""
     validator = validate.VALIDATION_MAPPER["tags"]
     assert validator([])
     assert validator(["test"])
     assert validator(["test", "test2"])
+    with pytest.raises(ValueError):
+        assert validator({})
     with pytest.raises(ValueError):
         assert validator([""])
     with pytest.raises(ValueError):
