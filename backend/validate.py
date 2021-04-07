@@ -281,7 +281,7 @@ def validate_tags(data: list) -> bool:
 
 def validate_string_non_empty(data: str) -> bool:
     """
-    Validate input for string fields that may not be empty
+    Validate input for string fields that may not be empty.
 
     It must be a non-empty string.
 
