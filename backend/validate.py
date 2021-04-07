@@ -50,7 +50,7 @@ def validate_field(field_key: str, field_value: Any) -> bool:
     return True
 
 
-def validate_datasets(data: list) -> bool:
+def validate_datasets(data: list, db=None) -> bool:
     """
     Validate input for the ``datasets`` field.
 
@@ -58,6 +58,7 @@ def validate_datasets(data: list) -> bool:
 
     Args:
         data (str): The data to be validated.
+        db: The database to use. Defaults to ``flask.g.db``.
 
     Returns:
         bool: Validation passed.
@@ -65,6 +66,8 @@ def validate_datasets(data: list) -> bool:
     Raises:
         ValueError: Validation failed.
     """
+    if not db:
+        db = flask.g.db
     if not isinstance(data, list):
         raise ValueError(f"Must be list ({data})")
     for ds_entry in data:
@@ -74,7 +77,7 @@ def validate_datasets(data: list) -> bool:
             ds_uuid = uuid.UUID(ds_entry)
         except ValueError as err:
             raise ValueError(f"Not a valid uuid ({data})") from err
-        if not flask.g.db["datasets"].find_one({"_id": ds_uuid}):
+        if not db["datasets"].find_one({"_id": ds_uuid}):
             raise ValueError(f"Uuid not in db ({data})")
         return True
 
