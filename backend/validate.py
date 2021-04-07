@@ -194,7 +194,10 @@ def validate_properties(data: dict) -> bool:
     """
     Validate input for the ``properties`` field.
 
-    It must be a dict. The user must have DATA_MANAGEMENT permissions.
+    * Must be a dict
+    * Keys and values must be strings
+    * Keys and values must be at least 3 characters
+    * Keys and values may not end nor start with whitespace
 
     Args:
         data (dict): The data to be validated.
@@ -205,13 +208,15 @@ def validate_properties(data: dict) -> bool:
     Raises:
         ValueError: Validation failed.
     """
-    if not user.has_permission("DATA_MANAGEMENT"):
-        raise exceptions.AuthError("Permission DATA_MANAGEMENT required")
     if not isinstance(data, dict):
         raise ValueError(f"Not a  dict ({data})")
     for key in data:
         if not isinstance(key, str) or not isinstance(data[key], str):
             raise ValueError(f"Keys and values must be strings ({key}, {data[key]})")
+        if len(key) < 3 or len(data[key]) < 3:
+            raise ValueError("Must be at least three characters")
+        if len(key) != len(key.strip()) or len(data[key]) != len(data[key].strip()):
+            raise ValueError("May not start nor end with whitespace")
     return True
 
 
