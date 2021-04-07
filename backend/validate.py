@@ -143,7 +143,7 @@ def validate_permissions(data: list) -> bool:
     if not isinstance(data, list):
         raise ValueError("Must be a list")
     if len(set(data)) != len(data):
-        raise ValueError(f"Repeats not allowed")
+        raise ValueError("Repeats not allowed")
     for entry in data:
         if entry not in user.PERMISSIONS:
             raise ValueError(f"Bad entry ({entry})")
