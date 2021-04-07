@@ -68,7 +68,7 @@
     <q-card-section>
       <h4>Orders</h4>
       <ul>
-        <li>In order to work with orders, the user must have the ORDERS permission</li>
+        <li>In order to work with orders, the user must have the DATA_EDIT permission</li>
         <li>A list of orders where the current user has editing permissions can be found in the <router-link class="text-link" :to="{name: 'Order Browser'}">Order Browser</router-link> </li>
         <ul>
           <li>A user with the permission DATA_MANAGEMENT will get a list of all orders</li>
@@ -97,7 +97,7 @@
     <q-card-section>
       <h4>Datasets</h4>
       <ul>
-        <li>In order to work with datasets, the user must have the ORDERS permission</li>
+        <li>In order to work with datasets, the user must have the DATA_EDIT permission</li>
         <li>A list of all datasets can be found in the <router-link class="text-link" :to="{name: 'Dataset Browser'}">Dataset Browser</router-link> </li>
         <li>Create a new dataset by the clicking "+" at the top of the browser, or directly on <router-link class="text-link" :to="{name: 'Dataset New'}">this page</router-link></li>
         <ul>
@@ -259,7 +259,7 @@
     "email": "email@example.com", 
     "name": "First Last", 
     "orcid": "0000-0001-2345-6789", 
-    "permissions": ['ORDERS'], 
+    "permissions": ['DATA_EDIT'], 
     "url": "https://www.example.com"
 }
 ```

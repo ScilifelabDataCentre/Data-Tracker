@@ -87,7 +87,7 @@ export default {
     showAdd: {
       get () {
         let passed = false;
-        if (this.entryType === 'datasets' && this.currentUser.permissions.includes('ORDERS') || this.currentUser.email !== '')
+        if (this.currentUser.permissions.includes('DATA_EDIT'))
           passed = true;
         return passed;
       }

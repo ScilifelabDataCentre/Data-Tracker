@@ -2,7 +2,7 @@
 <q-list>
   <q-item-label header> Data </q-item-label>
 
-  <NavEntry v-if="currentUser.permissions.includes('ORDERS')"
+  <NavEntry v-if="currentUser.permissions.includes('DATA_EDIT')"
             v-bind="orderLink" />
 
   <NavEntry v-for="link in dataLinks"
@@ -10,7 +10,7 @@
             v-bind="link" />
 
   <div v-if="currentUser.permissions.includes('USER_MANAGEMENT') || 
-             currentUser.permissions.includes('ORDERS')">
+             currentUser.permissions.includes('DATA_EDIT')">
     <q-item-label header> Admin </q-item-label>
     <NavEntry v-bind="adminUserLink" />
   </div>
