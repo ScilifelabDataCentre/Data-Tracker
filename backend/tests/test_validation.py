@@ -11,6 +11,7 @@ def test_validate_affiliation():
     """Confirm that only valid strings are accepted."""
     validator = validate.VALIDATION_MAPPER["affiliation"]
     assert validator("Test")
+    assert validator("")
     with pytest.raises(ValueError):
         validator(5)
     with pytest.raises(ValueError):
@@ -60,6 +61,7 @@ def test_validate_contact():
     """Confirm that only valid strings are accepted."""
     validator = validate.VALIDATION_MAPPER["contact"]
     assert validator("Test")
+    assert validator("")
     with pytest.raises(ValueError):
         validator(5)
     with pytest.raises(ValueError):
@@ -94,6 +96,7 @@ def test_validate_description():
     """Confirm that only valid strings are accepted."""
     validator = validate.VALIDATION_MAPPER["description"]
     assert validator("Test")
+    assert validator("")
     with pytest.raises(ValueError):
         validator(5)
     with pytest.raises(ValueError):
@@ -127,6 +130,7 @@ def test_validate_editors(mdb):
 def test_validate_email(mdb):
     """Confirm that "only" valid emails are accepted."""
     validator = validate.VALIDATION_MAPPER["email"]
+    assert validator("")
     assert validator("test@example.com")
     assert validator("test.name@sub.example.com")
     with pytest.raises(ValueError):
@@ -168,6 +172,8 @@ def test_validate_name():
     validator = validate.VALIDATION_MAPPER["name"]
     assert validator("Test")
     assert validator("Test Name")
+    with pytest.raises(ValueError):
+        assert validator("")
     with pytest.raises(ValueError):
         validator(5)
     with pytest.raises(ValueError):
@@ -221,3 +227,20 @@ def test_validate_organisation(mdb):
         validator([1, 2, 3, 4], db=mdb)
     with pytest.raises(ValueError):
         validator(4.5, db=mdb)
+
+
+def test_validate_title():
+    """Confirm that only valid strings are accepted."""
+    validator = validate.VALIDATION_MAPPER["title"]
+    assert validator("Test")
+    assert validator("Test With more WORdS")
+    with pytest.raises(ValueError):
+        assert validator("")
+    with pytest.raises(ValueError):
+        validator(5)
+    with pytest.raises(ValueError):
+        validator(["asd"])
+    with pytest.raises(ValueError):
+        validator(("asd",))
+    with pytest.raises(ValueError):
+        validator(4.5)
