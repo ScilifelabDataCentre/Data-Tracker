@@ -4,19 +4,17 @@ Validators for indata.
 Indata can be sent to ``validate_field``, which will use the corresponding
 functions to check each field.
 """
-from typing import Any, Union
+from typing import Any
 import re
 import uuid
 
 import flask
 
-import exceptions
-
 import user
 import utils
 
 
-def validate_field(field_key: str, field_value: Any) -> bool:
+def validate_field(field_key: str, field_value: Any, testing=False) -> bool:
     """
     Validate that the input data matches expectations.
 
@@ -31,6 +29,7 @@ def validate_field(field_key: str, field_value: Any) -> bool:
     Args:
         field_key (str): The field to validate.
         field_value (Any): The value to validate.
+        testing (bool): Whether the function is used for testing.
 
     Returns:
         bool: Whether validation passed.
@@ -38,15 +37,14 @@ def validate_field(field_key: str, field_value: Any) -> bool:
     try:
         VALIDATION_MAPPER[field_key](field_value)
     except KeyError:
-        flask.current_app.logger.debug("Unknown key: %s", field_key)
+        if not testing:
+            flask.current_app.logger.debug("Unknown key: %s", field_key)
         return False
     except ValueError as err:
-        flask.current_app.logger.debug(
-            "Indata validation failed: %s - %s", field_key, err
-        )
-        return False
-    except exceptions.AuthError as err:
-        flask.current_app.logger.debug("Permission failed: %s - %s", field_key, err)
+        if not testing:
+            flask.current_app.logger.debug(
+                "Indata validation failed: %s - %s", field_key, err
+            )
         return False
     return True
 
@@ -130,7 +128,8 @@ def validate_permissions(data: list) -> bool:
     """
     Validate input for the ``permissions`` field.
 
-    It must be a list containing permissions found in ``PERMISSIONS``.
+    * Must be a list containing permissions found in ``PERMISSIONS``
+    * Repeats are not allowed
 
     Args:
         data (list): The data to be validated.
@@ -143,6 +142,8 @@ def validate_permissions(data: list) -> bool:
     """
     if not isinstance(data, list):
         raise ValueError("Must be a list")
+    if len(set(data)) != len(data):
+        raise ValueError("Repeats not allowed")
     for entry in data:
         if entry not in user.PERMISSIONS:
             raise ValueError(f"Bad entry ({entry})")
@@ -355,7 +356,7 @@ def validate_user(data: str, db=None) -> bool:
     return True
 
 
-def validate_user_list(data: Union[tuple, list], db=None) -> bool:
+def validate_user_list(data: list, db=None) -> bool:
     """
     Validate input for a field containing a list of user uuid(s).
 
@@ -365,7 +366,7 @@ def validate_user_list(data: Union[tuple, list], db=None) -> bool:
     All users must exist in the database.
 
     Args:
-        data (Union[str, list]): The data to be validated.
+        data (list): The data to be validated.
         db: The database to use. Defaults to ``flask.g.db``.
 
     Returns:
