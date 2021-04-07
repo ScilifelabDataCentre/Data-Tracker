@@ -278,9 +278,9 @@ def validate_tags(data: Union[tuple, list]) -> bool:
     return True
 
 
-def validate_title(data: str) -> bool:
+def validate_string_non_empty(data: str) -> bool:
     """
-    Validate input for the ``title`` field.
+    Validate input for string fields that may not be empty
 
     It must be a non-empty string.
 
@@ -398,12 +398,12 @@ VALIDATION_MAPPER = {
     "editors": validate_user_list,
     "email": validate_email,
     "generators": validate_user_list,
-    "name": validate_string,
+    "name": validate_string_non_empty,
     "orcid": validate_orcid,
     "organisation": validate_user,
     "permissions": validate_permissions,
     "properties": validate_properties,
     "tags": validate_tags,
-    "title": validate_title,
+    "title": validate_string_non_empty,
     "url": validate_url,
 }
