@@ -197,3 +197,27 @@ def test_validate_orcid():
         validator("1234-")
     with pytest.raises(ValueError):
         validator("1234-6789")
+
+
+def test_validate_organisation(mdb):
+    """Confirm that only valid users are accepted."""
+    validator = validate.VALIDATION_MAPPER["organisation"]
+    test_users = [str(entry['_id']) for entry in mdb["users"].aggregate([{"$sample": {"size": 5}}])]
+    assert validator(test_users[0], db=mdb)
+    assert validator(test_users[4], db=mdb)
+    with pytest.raises(ValueError):
+        validator(test_users, db=mdb)
+    with pytest.raises(ValueError):
+        validator(test_users[:1], db=mdb)
+    with pytest.raises(ValueError):
+        validator([str(uuid.uuid4()) for _ in range(4)], db=mdb)
+    with pytest.raises(ValueError):
+        validator(str(uuid.uuid4()), db=mdb)
+    with pytest.raises(ValueError):
+        validator(5, db=mdb)
+    with pytest.raises(ValueError):
+        validator("asd", db=mdb)
+    with pytest.raises(ValueError):
+        validator([1, 2, 3, 4], db=mdb)
+    with pytest.raises(ValueError):
+        validator(4.5, db=mdb)
