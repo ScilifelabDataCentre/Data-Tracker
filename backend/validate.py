@@ -80,7 +80,7 @@ def validate_datasets(data: list, db=None) -> bool:
             raise ValueError(f"Not a valid uuid ({data})") from err
         if not db["datasets"].find_one({"_id": ds_uuid}):
             raise ValueError(f"Uuid not in db ({data})")
-        return True
+    return True
 
 
 def validate_email(data) -> bool:
