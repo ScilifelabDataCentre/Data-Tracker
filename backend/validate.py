@@ -10,8 +10,6 @@ import uuid
 
 import flask
 
-import exceptions
-
 import user
 import utils
 
@@ -44,9 +42,6 @@ def validate_field(field_key: str, field_value: Any) -> bool:
         flask.current_app.logger.debug(
             "Indata validation failed: %s - %s", field_key, err
         )
-        return False
-    except exceptions.AuthError as err:
-        flask.current_app.logger.debug("Permission failed: %s - %s", field_key, err)
         return False
     return True
 
