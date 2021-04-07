@@ -124,6 +124,26 @@ def test_validate_editors(mdb):
         validator(4.5, db=mdb)
 
 
+
+def test_validate_email(mdb):
+    """Confirm that "only" valid emails are accepted."""
+    validator = validate.VALIDATION_MAPPER["email"]
+    assert validator("test@example.com")
+    assert validator("test.name@sub.example.com")
+    with pytest.raises(ValueError):
+        validator("test@localhost")
+    with pytest.raises(ValueError):
+        validator("test@localhost@localhost.com")
+    with pytest.raises(ValueError):
+        validator(5)
+    with pytest.raises(ValueError):
+        validator("asd")
+    with pytest.raises(ValueError):
+        validator([1, 2, 3, 4])
+    with pytest.raises(ValueError):
+        validator(4.5)
+
+
 def test_validate_generators(mdb):
     """Confirm that only valid users are accepted."""
     validator = validate.VALIDATION_MAPPER["editors"]
