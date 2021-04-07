@@ -100,7 +100,7 @@ def validate_email(data) -> bool:
     """
     if not isinstance(data, str):
         raise ValueError(f"Not a string ({data})")
-    if not utils.is_email(data):
+    if data and not utils.is_email(data):
         raise ValueError(f"Not a valid email address ({data})")
     return True
 
