@@ -279,6 +279,32 @@ def test_validate_organisation(mdb):
         validator(4.5, db=mdb)
 
 
+def test_validate_permissions():
+    """Confirm that only valid permission lists are accepted."""
+    validator = validate.VALIDATION_MAPPER["permissions"]
+
+    assert validator(["DATA_EDIT"])
+    assert validator(["DATA_EDIT", "USER_MANAGEMENT"])
+    assert validator([])
+
+    with pytest.raises(ValueError):
+        validator(["DATA_EDIT", "USER_MANAGEMENT", "DATA_EDIT"])
+    with pytest.raises(ValueError):
+        validator(5)
+    with pytest.raises(ValueError):
+        validator([1, 2, 3])
+    with pytest.raises(ValueError):
+        validator(["DATA_EDIT", 2, 3])
+    with pytest.raises(ValueError):
+        validator({})
+    with pytest.raises(ValueError):
+        validator(["BAD_PERMISSION"])
+    with pytest.raises(ValueError):
+        validator(("DATA_EDIT",))
+    with pytest.raises(ValueError):
+        validator(4.5)
+
+
 def test_validate_properties():
     """Confirm that only valid key:value pairs are accepted."""
     validator = validate.VALIDATION_MAPPER["properties"]
