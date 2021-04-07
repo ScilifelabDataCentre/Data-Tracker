@@ -5,6 +5,7 @@ Indata can be sent to ``validate_field``, which will use the corresponding
 functions to check each field.
 """
 from typing import Any, Union
+import re
 import uuid
 
 import flask
@@ -193,6 +194,31 @@ def validate_cross_references(data: list) -> bool:
     return True
 
 
+ORCID_REGEX = re.compile(r"[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}")
+
+def validate_orcid(data: str) -> bool:
+    """
+    Validate input for the ``orcid`` field.
+
+    * Must be a str
+    * Must math xxxx-xxxx-xxxx-xxxx
+
+    Args:
+        data (str): The data to be validated.
+
+    Returns:
+        bool: Validation passed.
+
+    Raises:
+        ValueError: Validation failed.
+    """
+    if not isinstance(data, str):
+        raise ValueError(f"Not a str ({data})")
+    if not ORCID_REGEX.fullmatch(data):
+        raise ValueError(f"Not an orcid ({data})")
+    return True
+
+
 def validate_properties(data: dict) -> bool:
     """
     Validate input for the ``properties`` field.
@@ -372,7 +398,7 @@ VALIDATION_MAPPER = {
     "email": validate_email,
     "generators": validate_user_list,
     "name": validate_string,
-    "orcid": validate_string,
+    "orcid": validate_orcid,
     "organisation": validate_user,
     "permissions": validate_permissions,
     "properties": validate_properties,
