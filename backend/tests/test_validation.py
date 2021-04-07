@@ -244,3 +244,30 @@ def test_validate_title():
         validator(("asd",))
     with pytest.raises(ValueError):
         validator(4.5)
+
+
+def test_validate_url():
+    """Confirm that urls start with http(s)://."""
+    validator = validate.VALIDATION_MAPPER["url"]
+    assert validator("")
+    assert validator("https://www.example.com/folder/")
+    assert validator("http://www.example.com/folder/")
+    assert validator("http://localhost")
+    with pytest.raises(ValueError):
+        validator("RandomTexthttps://www.example.com/folder/")
+    with pytest.raises(ValueError):
+        validator("http://")
+    with pytest.raises(ValueError):
+        validator("https://")
+    with pytest.raises(ValueError):
+        validator("ftp://localhost")
+    with pytest.raises(ValueError):
+        validator("Test With more WORdS")    
+    with pytest.raises(ValueError):
+        validator(5)
+    with pytest.raises(ValueError):
+        validator(["asd"])
+    with pytest.raises(ValueError):
+        validator(("asd",))
+    with pytest.raises(ValueError):
+        validator(4.5)
