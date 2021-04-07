@@ -183,10 +183,10 @@ def test_validate_field(mdb):
     """Confirm that the correct validation is run."""
     validator = validate.validate_field
 
-    assert validator("permissions", ["DATA_EDIT"])
-    assert validator("name", "Test")
-    assert not validator("permissions", "DATA_EDIT")
-    assert not validator("bad_key", [])
+    assert validator("permissions", ["DATA_EDIT"], testing=True)
+    assert validator("name", "Test", testing=True)
+    assert not validator("permissions", "DATA_EDIT", testing=True)
+    assert not validator("bad_key", [], testing=True)
 
 
 def test_validate_generators(mdb):
