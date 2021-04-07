@@ -296,6 +296,8 @@ def test_validate_permissions():
     with pytest.raises(ValueError):
         validator(["DATA_EDIT", 2, 3])
     with pytest.raises(ValueError):
+        validator("DATA_EDIT")
+    with pytest.raises(ValueError):
         validator({})
     with pytest.raises(ValueError):
         validator(["BAD_PERMISSION"])
