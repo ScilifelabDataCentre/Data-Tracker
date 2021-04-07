@@ -320,7 +320,7 @@ def validate_url(data: str) -> bool:
     return True
 
 
-def validate_user(data: str) -> bool:
+def validate_user(data: str, db=None) -> bool:
     """
     Validate input for a field containing a single user uuid string.
 
@@ -328,6 +328,7 @@ def validate_user(data: str) -> bool:
 
     Args:
         data (str): The data to be validated.
+        db: The database to use. Defaults to ``flask.g.db``.
 
     Returns:
         bool: Validation passed.
@@ -335,17 +336,17 @@ def validate_user(data: str) -> bool:
     Raises:
         ValueError: Validation failed.
     """
+    if not db:
+        db = flask.g.db
     if not isinstance(data, str):
         raise ValueError(f"Bad data type (must be str): {data}")
-
     if not data:
         return True
-
     try:
         user_uuid = uuid.UUID(data)
     except ValueError as err:
         raise ValueError(f"Not a valid uuid ({data})") from err
-    if not flask.g.db["users"].find_one({"_id": user_uuid}):
+    if not db["users"].find_one({"_id": user_uuid}):
         raise ValueError(f"Uuid not in db ({data})")
     return True
 
