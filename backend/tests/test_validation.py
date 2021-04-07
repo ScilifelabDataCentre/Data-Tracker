@@ -124,7 +124,6 @@ def test_validate_editors(mdb):
         validator(4.5, db=mdb)
 
 
-
 def test_validate_email(mdb):
     """Confirm that "only" valid emails are accepted."""
     validator = validate.VALIDATION_MAPPER["email"]
@@ -162,3 +161,39 @@ def test_validate_generators(mdb):
         validator([1, 2, 3, 4], db=mdb)
     with pytest.raises(ValueError):
         validator(4.5, db=mdb)
+
+
+def test_validate_name():
+    """Confirm that only valid strings are accepted."""
+    validator = validate.VALIDATION_MAPPER["name"]
+    assert validator("Test")
+    assert validator("Test Name")
+    with pytest.raises(ValueError):
+        validator(5)
+    with pytest.raises(ValueError):
+        validator(["asd"])
+    with pytest.raises(ValueError):
+        validator(("asd",))
+    with pytest.raises(ValueError):
+        validator(4.5)
+
+
+def test_validate_orcid():
+    """Confirm that only valid orcids are accepted."""
+    validator = validate.VALIDATION_MAPPER["orcid"]
+    assert validator("0123-4567-8901-2345")
+    assert validator("9999-9999-9999-9999")
+    with pytest.raises(ValueError):
+        validator(5)
+    with pytest.raises(ValueError):
+        validator(["asd"])
+    with pytest.raises(ValueError):
+        validator(("asd",))
+    with pytest.raises(ValueError):
+        validator(4.5)
+    with pytest.raises(ValueError):
+        validator("999F-9999-9999-9999")
+    with pytest.raises(ValueError):
+        validator("1234-")
+    with pytest.raises(ValueError):
+        validator("1234-6789")
