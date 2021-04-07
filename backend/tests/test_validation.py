@@ -179,6 +179,16 @@ def test_validate_email(mdb):
         validator(4.5)
 
 
+def test_validate_field(mdb):
+    """Confirm that the correct validation is run."""
+    validator = validate.validate_field
+
+    assert validator("permissions", ["DATA_EDIT"])
+    assert validator("name", "Test")
+    assert not validator("permissions", "DATA_EDIT")
+    assert not validator("bad_key", [])
+
+
 def test_validate_generators(mdb):
     """Confirm that only valid users are accepted."""
     validator = validate.VALIDATION_MAPPER["editors"]

@@ -14,7 +14,7 @@ import user
 import utils
 
 
-def validate_field(field_key: str, field_value: Any) -> bool:
+def validate_field(field_key: str, field_value: Any, testing=False) -> bool:
     """
     Validate that the input data matches expectations.
 
@@ -29,6 +29,7 @@ def validate_field(field_key: str, field_value: Any) -> bool:
     Args:
         field_key (str): The field to validate.
         field_value (Any): The value to validate.
+        testing (bool): Whether the function is used for testing.
 
     Returns:
         bool: Whether validation passed.
@@ -36,12 +37,14 @@ def validate_field(field_key: str, field_value: Any) -> bool:
     try:
         VALIDATION_MAPPER[field_key](field_value)
     except KeyError:
-        flask.current_app.logger.debug("Unknown key: %s", field_key)
+        if not testing:
+            flask.current_app.logger.debug("Unknown key: %s", field_key)
         return False
     except ValueError as err:
-        flask.current_app.logger.debug(
-            "Indata validation failed: %s - %s", field_key, err
-        )
+        if not testing:
+            flask.current_app.logger.debug(
+                "Indata validation failed: %s - %s", field_key, err
+            )
         return False
     return True
 
