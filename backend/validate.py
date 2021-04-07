@@ -4,7 +4,7 @@ Validators for indata.
 Indata can be sent to ``validate_field``, which will use the corresponding
 functions to check each field.
 """
-from typing import Any, Union
+from typing import Any
 import re
 import uuid
 
@@ -353,7 +353,7 @@ def validate_user(data: str, db=None) -> bool:
     return True
 
 
-def validate_user_list(data: Union[tuple, list], db=None) -> bool:
+def validate_user_list(data: list, db=None) -> bool:
     """
     Validate input for a field containing a list of user uuid(s).
 
@@ -363,7 +363,7 @@ def validate_user_list(data: Union[tuple, list], db=None) -> bool:
     All users must exist in the database.
 
     Args:
-        data (Union[str, list]): The data to be validated.
+        data (list): The data to be validated.
         db: The database to use. Defaults to ``flask.g.db``.
 
     Returns:
