@@ -196,6 +196,7 @@ def validate_cross_references(data: list) -> bool:
 
 ORCID_REGEX = re.compile(r"[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}")
 
+
 def validate_orcid(data: str) -> bool:
     """
     Validate input for the ``orcid`` field.
@@ -299,6 +300,7 @@ def validate_string_non_empty(data: str) -> bool:
 
 
 URL_REGEX = re.compile(r"^https{0,1}://.+")
+
 
 def validate_url(data: str) -> bool:
     """
