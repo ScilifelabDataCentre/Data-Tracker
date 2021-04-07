@@ -249,16 +249,16 @@ def validate_properties(data: dict) -> bool:
     return True
 
 
-def validate_tags(data: Union[tuple, list]) -> bool:
+def validate_tags(data: list) -> bool:
     """
     Validate input for the ``tags`` field.
 
-    * It must be a list or tuple
+    * It must be a list
     * Must be at least 3 characters
     * May not end nor start with whitespace
 
     Args:
-        data (dict): The data to be validated.
+        data (list): The data to be validated.
 
     Returns:
         bool: Validation passed.
@@ -266,7 +266,7 @@ def validate_tags(data: Union[tuple, list]) -> bool:
     Raises:
         ValueError: Validation failed.
     """
-    if not isinstance(data, list) and not isinstance(data, tuple):
+    if not isinstance(data, list):
         raise ValueError(f"Not a list ({data})")
     for value in data:
         if not isinstance(value, str):
