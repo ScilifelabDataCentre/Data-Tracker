@@ -150,7 +150,7 @@ def validate_permissions(data: list) -> bool:
 
 def validate_string(data: str) -> bool:
     """
-    Validate input for field that must have a ``str`` value.
+    Validate input for a field that must have a ``str`` value.
 
     Args:
         data (str): The data to be validated.
@@ -324,7 +324,7 @@ def validate_user(data: str) -> bool:
     return True
 
 
-def validate_user_list(data: Union[tuple, list]) -> bool:
+def validate_user_list(data: Union[tuple, list], db=None) -> bool:
     """
     Validate input for a field containing a list of user uuid(s).
 
@@ -335,6 +335,7 @@ def validate_user_list(data: Union[tuple, list]) -> bool:
 
     Args:
         data (Union[str, list]): The data to be validated.
+        db: The database to use. Defaults to ``flask.g.db``.
 
     Returns:
         bool: Validation passed.
@@ -342,15 +343,19 @@ def validate_user_list(data: Union[tuple, list]) -> bool:
     Raises:
         ValueError: Validation failed.
     """
+    if not db:
+        db = flask.g.db
     if not isinstance(data, list):
         raise ValueError(f"Bad data type (must be list): {data}")
 
     for u_uuid in data:
+        if not isinstance(u_uuid, str):
+            raise ValueError(f"Bad entry data type (must be a string): {u_uuid}")
         try:
             user_uuid = uuid.UUID(u_uuid)
         except ValueError as err:
             raise ValueError(f"Not a valid uuid ({data})") from err
-        if not flask.g.db["users"].find_one({"_id": user_uuid}):
+        if not db["users"].find_one({"_id": user_uuid}):
             raise ValueError(f"Uuid not in db ({data})")
     return True
 
