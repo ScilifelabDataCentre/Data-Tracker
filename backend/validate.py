@@ -298,6 +298,8 @@ def validate_string_non_empty(data: str) -> bool:
     return True
 
 
+URL_REGEX = re.compile(r"^https{0,1}://.+")
+
 def validate_url(data: str) -> bool:
     """
     Validate input for a url intended for browsers.
@@ -315,7 +317,7 @@ def validate_url(data: str) -> bool:
     """
     if not isinstance(data, str):
         raise ValueError("Must be a string")
-    if data and not data.startswith("http://") and not data.startswith("https://"):
+    if data and not URL_REGEX.search(data):
         raise ValueError("URLs must start with http(s)://")
     return True
 
