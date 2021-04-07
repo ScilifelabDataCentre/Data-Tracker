@@ -342,7 +342,7 @@ export default {
 
   mounted () {
     this.loadData();
-    if (!this.currentUser.permissions.includes('USER_MANAGEMENT')) {
+    if (this.currentUser.permissions.includes('USER_MANAGEMENT')) {
       this.loadPermissions()
     }
   },
