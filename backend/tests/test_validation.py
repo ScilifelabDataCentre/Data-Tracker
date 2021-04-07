@@ -92,6 +92,8 @@ def test_validate_datasets(mdb):
     with pytest.raises(ValueError):
         validator([str(uuid.uuid4()) for _ in range(4)], db=mdb)
     with pytest.raises(ValueError):
+        validator(["not_an_uuid"], db=mdb)
+    with pytest.raises(ValueError):
         validator(5, db=mdb)
     with pytest.raises(ValueError):
         validator("asd", db=mdb)
@@ -129,6 +131,8 @@ def test_validate_editors(mdb):
         validator(test_users[0], db=mdb)
     with pytest.raises(ValueError):
         validator([str(uuid.uuid4()) for _ in range(4)], db=mdb)
+    with pytest.raises(ValueError):
+        validator(["invalid_uuid"], db=mdb)
     with pytest.raises(ValueError):
         validator(5, db=mdb)
     with pytest.raises(ValueError):
@@ -174,6 +178,8 @@ def test_validate_generators(mdb):
     with pytest.raises(ValueError):
         validator([str(uuid.uuid4()) for _ in range(4)], db=mdb)
     with pytest.raises(ValueError):
+        validator(["invalid_uuid"], db=mdb)
+    with pytest.raises(ValueError):
         validator(5, db=mdb)
     with pytest.raises(ValueError):
         validator("asd", db=mdb)
@@ -205,6 +211,8 @@ def test_validate_orcid():
     validator = validate.VALIDATION_MAPPER["orcid"]
     assert validator("0123-4567-8901-2345")
     assert validator("9999-9999-9999-9999")
+    with pytest.raises(ValueError):
+        validator({})
     with pytest.raises(ValueError):
         validator(5)
     with pytest.raises(ValueError):
@@ -277,9 +285,15 @@ def test_validate_properties():
     with pytest.raises(ValueError):
         assert validator({"key ": "value"})
     with pytest.raises(ValueError):
+        assert validator({1: "value"})
+    with pytest.raises(ValueError):
+        assert validator({"key": 1})
+    with pytest.raises(ValueError):
         assert validator(["tag"])
     with pytest.raises(ValueError):
         assert validator("")
+    with pytest.raises(ValueError):
+        assert validator([])
     with pytest.raises(ValueError):
         validator(5)
     with pytest.raises(ValueError):
@@ -304,6 +318,10 @@ def test_validate_tags():
         assert validator(["tag "])
     with pytest.raises(ValueError):
         assert validator(["ta"])
+    with pytest.raises(ValueError):
+        assert validator([0])
+    with pytest.raises(ValueError):
+        assert validator([0, 1, 2, 3])
     with pytest.raises(ValueError):
         assert validator("")
     with pytest.raises(ValueError):
@@ -338,6 +356,7 @@ def test_validate_url():
     assert validator("https://www.example.com/folder/")
     assert validator("http://www.example.com/folder/")
     assert validator("http://localhost")
+
     with pytest.raises(ValueError):
         validator("RandomTexthttps://www.example.com/folder/")
     with pytest.raises(ValueError):
