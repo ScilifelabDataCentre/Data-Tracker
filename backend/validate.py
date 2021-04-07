@@ -224,7 +224,9 @@ def validate_tags(data: Union[tuple, list]) -> bool:
     """
     Validate input for the ``tags`` field.
 
-    It must be a list or tuple.
+    * It must be a list or tuple
+    * Must be at least 3 characters
+    * May not end nor start with whitespace
 
     Args:
         data (dict): The data to be validated.
@@ -240,6 +242,10 @@ def validate_tags(data: Union[tuple, list]) -> bool:
     for value in data:
         if not isinstance(value, str):
             raise ValueError(f"All list entries must be str ({value})")
+        if len(value) < 3:
+            raise ValueError("Must be at least three characters")
+        if len(value) != len(value.strip()):
+            raise ValueError("May not start nor end with whitespace")
     return True
 
 
