@@ -251,6 +251,7 @@ export default {
           .catch(() => this.loadingError = true)
           .finally(() => this.isLoading = false);
       }
+      Object.keys(this.permissions).forEach((key) => this.permissions[key] = this.userData.permissions.includes(key));
     },
     
     loadPermissions () {
