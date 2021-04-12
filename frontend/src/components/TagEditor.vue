@@ -1,24 +1,20 @@
 <template>
 <div>
-  <div class="row q-my-md">
+  <div class="q-my-md">
     <q-input stack-label
              outlined
              label="New Tag Name"
              v-model="newTag"
              @keyup.enter="addTag"
-             :rules="[ val => { val.length > 3 && val.trim() === val } ]"
-             class="col-10">
+             :rules="[ function (val) { return (evaluateTag(val) || val.length === 0) || 'At least three characters, no whitespace at beginning nor end.' }]">
       <template v-slot:append>
         <q-btn icon="fas fa-plus"
                dense
                round
                size="sm"
-               :disable="disableButton"
-               :color="disableButton ? 'grey' : 'positive'"
+               v-show="enableAdd"
+               color="positive"
                @click="addTag" />
-      </template>
-      <template v-slot:hint>
-        At least three characters, may not start nor end with whitespace characters.
       </template>
     </q-input>
   </div>
@@ -44,9 +40,9 @@ export default {
   name: 'TagEditor',
 
   computed: {
-    disableButton: {
+    enableAdd: {
       get () {
-        return this.newTag.length < 3 || this.newTag.trim() !== this.newTag;
+        return this.evaluateTag(this.newTag);
       },
     }
   },
@@ -71,6 +67,10 @@ export default {
   },
 
   methods: {
+    evaluateTag (val) {
+      return (val.length >= 3 && val.trim() === val);
+    },
+
     addTag() {
       this.tagExistsError = false;
       if (!this.value.includes(this.newTag)) {
