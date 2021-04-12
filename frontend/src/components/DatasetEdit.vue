@@ -70,6 +70,7 @@
              class="q-my-md"
              label="Title"
              v-model="title"
+             :rules="[ val => val.length > 0 ]"
              outlined>
       <template v-slot:prepend>
         <q-icon name="title" />
