@@ -6,7 +6,7 @@
              label="New Tag Name"
              v-model="newTag"
              @keyup.enter="addTag"
-             :rules="[ function (val) { return (evaluateTag(val) || val.length === 0) || 'At least three characters, no whitespace at beginning nor end.' }]">
+             :rules="[ function (val) { return (evaluateTag(val) || val.length === 0) || 'Must not exist, contain at least 3 characters, and no whitespace at beginning nor end.' }]">
       <template v-slot:append>
         <q-btn icon="fas fa-plus"
                dense
@@ -68,17 +68,19 @@ export default {
 
   methods: {
     evaluateTag (val) {
-      return (val.length >= 3 && val.trim() === val);
+      return (val.length >= 3 && val.trim() === val && !this.value.includes(this.newTag));
     },
 
     addTag() {
-      this.tagExistsError = false;
-      if (!this.value.includes(this.newTag)) {
-        this.$emit('input', this.value.concat(this.newTag))
-        this.newTag = '';
+      if (this.enableAdd) {
+        this.tagExistsError = false;
+        if (!this.value.includes(this.newTag)) {
+          this.$emit('input', this.value.concat(this.newTag))
+          this.newTag = '';
+        }
+        else
+          this.tagExistsError = true;
       }
-      else
-        this.tagExistsError = true;
     },
 
     deleteTag(tagName) {
