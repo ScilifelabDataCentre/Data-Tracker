@@ -6,9 +6,14 @@
              label="New Tag Name"
              v-model="newTag"
              @keyup.enter="addTag"
-             class="col-10" />
+             :rules="[ val => { val.length > 3 && val.trim() === val } ]"
+             class="col-10">
+      <template v-slot:hint>
+        At least three characters and may not start nor end with whitespace characters.
+      </template>
+    </q-input>
     <q-btn icon="fas fa-tags"
-           :disable="newTag.length === 0"
+           :disable="newTag.length < 3 || newTag.trim() !== newTag"
            color="positive"
            @click="addTag"
            label="Add"
