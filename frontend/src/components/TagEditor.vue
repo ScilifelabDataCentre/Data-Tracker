@@ -8,17 +8,19 @@
              @keyup.enter="addTag"
              :rules="[ val => { val.length > 3 && val.trim() === val } ]"
              class="col-10">
+      <template v-slot:append>
+        <q-btn icon="fas fa-plus"
+               dense
+               round
+               size="sm"
+               :disable="disableButton"
+               :color="disableButton ? 'grey' : 'positive'"
+               @click="addTag" />
+      </template>
       <template v-slot:hint>
-        At least three characters and may not start nor end with whitespace characters.
+        At least three characters, may not start nor end with whitespace characters.
       </template>
     </q-input>
-    <q-btn icon="fas fa-tags"
-           :disable="newTag.length < 3 || newTag.trim() !== newTag"
-           color="positive"
-           @click="addTag"
-           label="Add"
-           class="col-2"
-           flat/>
   </div>
   <div class="flex q-ma-sm">
     <q-chip v-for="tag of value"
@@ -41,6 +43,14 @@
 export default {
   name: 'TagEditor',
 
+  computed: {
+    disableButton: {
+      get () {
+        return this.newTag.length < 3 || this.newTag.trim() !== this.newTag;
+      },
+    }
+  },
+  
   props: {
     isLoading: {
       type: Boolean,
