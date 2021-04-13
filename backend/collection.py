@@ -8,7 +8,7 @@ import utils
 blueprint = flask.Blueprint("collection", __name__)  # pylint: disable=invalid-name
 
 
-@blueprint.route("/", methods=["GET"])
+@blueprint.route("", methods=["GET"])
 def list_collection():
     """Provide a simplified list of all available collections."""
     results = list(
@@ -19,7 +19,7 @@ def list_collection():
     return utils.response_json({"collections": results})
 
 
-@blueprint.route("/<identifier>/", methods=["GET"])
+@blueprint.route("/<identifier>", methods=["GET"])
 def get_collection(identifier):
     """
     Retrieve the collection with uuid <identifier>.
@@ -61,7 +61,7 @@ def get_collection(identifier):
     return utils.response_json({"collection": result})
 
 
-@blueprint.route("/structure/", methods=["GET"])
+@blueprint.route("/structure", methods=["GET"])
 def get_collection_data_structure():
     """
     Get an empty collection entry.
@@ -74,7 +74,7 @@ def get_collection_data_structure():
     return utils.response_json({"collection": empty_collection})
 
 
-@blueprint.route("/", methods=["POST"])
+@blueprint.route("", methods=["POST"])
 @user.login_required
 def add_collection():  # pylint: disable=too-many-branches
     """
@@ -119,7 +119,7 @@ def add_collection():  # pylint: disable=too-many-branches
     return utils.response_json({"_id": result.inserted_id})
 
 
-@blueprint.route("/<identifier>/", methods=["DELETE"])
+@blueprint.route("/<identifier>", methods=["DELETE"])
 @user.login_required
 def delete_collection(identifier: str):
     """
@@ -154,7 +154,7 @@ def delete_collection(identifier: str):
     return flask.Response(status=200)
 
 
-@blueprint.route("/<identifier>/", methods=["PATCH"])
+@blueprint.route("/<identifier>", methods=["PATCH"])
 @user.login_required
 def update_collection(identifier):  # pylint: disable=too-many-branches
     """
@@ -227,7 +227,7 @@ def update_collection(identifier):  # pylint: disable=too-many-branches
     return flask.Response(status=200)
 
 
-@blueprint.route("/user/", methods=["GET"])
+@blueprint.route("/user", methods=["GET"])
 @user.login_required
 def list_user_collections():  # pylint: disable=too-many-branches
     """
@@ -242,7 +242,7 @@ def list_user_collections():  # pylint: disable=too-many-branches
     return utils.response_json({"collections": results})
 
 
-@blueprint.route("/<identifier>/log/", methods=["GET"])
+@blueprint.route("/<identifier>/log", methods=["GET"])
 @user.login_required
 def get_collection_log(identifier: str = None):
     """
