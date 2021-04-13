@@ -11,7 +11,7 @@
         <q-btn icon="fas fa-plus"
                dense
                round
-               size="sm"o
+               size="sm"
                v-show="enableAdd"
                color="positive"
                @click="addTag" />
