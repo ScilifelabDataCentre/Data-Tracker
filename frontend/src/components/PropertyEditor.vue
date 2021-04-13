@@ -1,19 +1,22 @@
 <template>
 <div>
-  <div class="row q-my-md">
+  <div class="q-my-md">
     <q-input stack-label
              outlined
              label="New Property Name"
              v-model="key"
              @keyup.enter="addProperty"
-             class="col-10" />
-    <q-btn icon="fas fa-tags"
-           color="positive"
-           @click="addProperty"
-           label="Add"
-           class="col-2"
-           :disable="key.length === 0"
-           flat/>
+             :rules="[ function (val) { return (enableAdd || val.length === 0) || 'Must contain at least 3 characters, no whitespace at beginning nor end, and must not already exist.' }]">
+      <template v-slot:append>
+        <q-btn icon="fas fa-plus"
+               dense
+               round
+               size="sm"
+               v-show="enableAdd"
+               color="positive"
+               @click="addProperty" />
+        </template>
+    </q-input>
   </div>
   <q-list dense>
     <q-item v-for="propertyKey of Object.keys(fieldEntries)" :key="propertyKey">
@@ -21,6 +24,7 @@
         <q-input stack-label
                  outlined
                  :label="propertyKey"
+                 :rules="[ function (val) { return (evaluateField(val) || val.length === 0) || 'At least three characters, no whitespace at beginning nor end.' }]"
                  @input="setProperty(propertyKey, $event)"
                  :value="fieldEntries[propertyKey]">
           <template v-slot:append>
@@ -48,6 +52,12 @@ export default {
   name: 'PropertyEditor',
 
   computed: {
+    enableAdd: {
+      get () {
+        return this.evaluateKey(this.key);
+      },
+    },
+
     fieldEntries: {
       get () {
         if (!this.isLoading)
@@ -75,9 +85,17 @@ export default {
   },
 
   methods: {
+    evaluateField (val) {
+      return val.length >= 3 && val.trim() === val;
+    },
+
+    evaluateKey (val) {
+      return this.evaluateField(val) && !Object.keys(this.fieldEntries).includes(val);
+    },
+    
     addProperty(event) {
       event.preventDefault();
-      if (this.key.length > 0 && !Object.keys(this.fieldEntries).includes(this.key)) {
+      if (this.enableAdd) {
         this.$store.dispatch('entries/addProperty',
                              {'propertyName': this.fieldDataName,
                               'key': this.key});

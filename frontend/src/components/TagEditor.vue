@@ -1,19 +1,22 @@
 <template>
 <div>
-  <div class="row q-my-md">
+  <div class="q-my-md">
     <q-input stack-label
              outlined
              label="New Tag Name"
              v-model="newTag"
              @keyup.enter="addTag"
-             class="col-10" />
-    <q-btn icon="fas fa-tags"
-           :disable="newTag.length === 0"
-           color="positive"
-           @click="addTag"
-           label="Add"
-           class="col-2"
-           flat/>
+             :rules="[ function (val) { return (evaluateTag(val) || val.length === 0) || 'Must contain at least 3 characters, no whitespace at beginning nor end, and must not already exist.' }]">
+      <template v-slot:append>
+        <q-btn icon="fas fa-plus"
+               dense
+               round
+               size="sm"o
+               v-show="enableAdd"
+               color="positive"
+               @click="addTag" />
+      </template>
+    </q-input>
   </div>
   <div class="flex q-ma-sm">
     <q-chip v-for="tag of value"
@@ -36,6 +39,14 @@
 export default {
   name: 'TagEditor',
 
+  computed: {
+    enableAdd: {
+      get () {
+        return this.evaluateTag(this.newTag);
+      },
+    }
+  },
+  
   props: {
     isLoading: {
       type: Boolean,
@@ -56,14 +67,20 @@ export default {
   },
 
   methods: {
+    evaluateTag (val) {
+      return (val.length >= 3 && val.trim() === val && !this.value.includes(this.newTag));
+    },
+
     addTag() {
-      this.tagExistsError = false;
-      if (!this.value.includes(this.newTag)) {
-        this.$emit('input', this.value.concat(this.newTag))
-        this.newTag = '';
+      if (this.enableAdd) {
+        this.tagExistsError = false;
+        if (!this.value.includes(this.newTag)) {
+          this.$emit('input', this.value.concat(this.newTag))
+          this.newTag = '';
+        }
+        else
+          this.tagExistsError = true;
       }
-      else
-        this.tagExistsError = true;
     },
 
     deleteTag(tagName) {
