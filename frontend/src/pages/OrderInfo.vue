@@ -4,7 +4,9 @@
     <q-banner>
       The entry <span class="text-negative text-weight-medium">{{ uuid }}</span> could not be found.
     </q-banner>
-    <q-btn class="q-my-md"
+    <q-btn flat
+           no-caps
+           class="q-my-md"
            color="primary"
            :to="{ 'name': 'Order Browser' }"
            label="Back to order browser" />
