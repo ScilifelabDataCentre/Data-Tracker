@@ -7,6 +7,7 @@ const Login = () => import(/* webpackChunkName: "base" */ 'pages/Login.vue')
 const CurrentUser = () => import(/* webpackChunkName: "base" */ 'pages/CurrentUser.vue')
 
 const Page404 = () => import(/* webpackChunkName: "errors" */ 'pages/Error404.vue')
+const NonAuth = () => import(/* webpackChunkName: "errors" */ 'pages/NonAuth.vue')
 const NoBackend = () => import(/* webpackChunkName: "errors" */ 'pages/NoBackend.vue')
 
 const CollectionInfo = () => import(/* webpackChunkName: "data" */ 'pages/CollectionInfo.vue')
@@ -45,6 +46,10 @@ const routes = [
       },
       {
         path: 'new',
+        meta: {
+          'permissionRequired': ['DATA_EDIT'],
+          'loginRequired': true,
+        },
         component: DatasetInfo,
         props: {'uuid': ''},
         name: 'Dataset New'
@@ -89,6 +94,10 @@ const routes = [
       },
       {
         path: 'new',
+        meta: {
+          'permissionRequired': ['DATA_EDIT'],
+          'loginRequired': true,
+        },
         component: OrderInfo,
         props: {'uuid': ''},
         name: 'Order New'
@@ -115,6 +124,10 @@ const routes = [
       },
       {
         path: 'new',
+        meta: {
+          'permissionRequired': ['DATA_EDIT'],
+          'loginRequired': true,
+        },
         component: CollectionInfo,
         props: {'uuid': ''},
         name: 'Collection New'
@@ -141,6 +154,14 @@ const routes = [
         },
         name: 'User Manager',
       },
+    ]
+  },
+
+  {
+    path: '/forbidden',
+    component: MainLayout,
+    children: [
+      { path: '', component: NonAuth, name: 'Forbidden' }
     ]
   },
 

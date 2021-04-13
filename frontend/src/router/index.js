@@ -14,27 +14,43 @@ export default function (store) {
     base: process.env.VUE_ROUTER_BASE
   })
 
+  function routeChecker (to, from, next) {
+    let ruleMatch = false;
+    if (to.matched.some(entry => entry.meta.loginRequired)) {
+      if (!store.store.getters['currentUser/isLoggedIn']) {
+        next({name: 'Login', params: {origin: {name: to.name, path: to.path}}});
+        ruleMatch = true;
+      }
+    }
+
+    if (!ruleMatch && to.matched.some(entry => entry.meta.permissionRequired)) {
+      let permissions = to.matched.map((entry) => entry.meta.permissionRequired).flat();
+      for (let perm of permissions) {
+        if (perm === undefined)
+          continue;
+        if (!store.store.getters['currentUser/info'].permissions.includes(perm)) {
+          next({name: 'Forbidden', params: {toPath: {name: to.name,
+                                                     path: to.path},
+                                            fromPath: {name: from.name,
+                                                       path: from.path}}});
+          ruleMatch = true;
+          break;
+        }
+      }
+    }
+    return ruleMatch
+  }
+
   Router.beforeEach((to, from, next) => {
-    if (to.matched.some(record => record.meta.loginRequired)) {
-      if (!store.store.getters['currentUser/infoLoaded']) {
-        store.store.dispatch('currentUser/getInfo')
-          .then(() => {
-            if (!store.store.getters['currentUser/isLoggedIn']) {
-              next({name: 'Login', params: {origin: {name: to.name, path: to.path}}});
-            }
-            else {
-              next();
-            }
-          })
-      }
-      else {
-        next();
-      }
+    if (!store.store.getters['currentUser/infoLoaded']) {
+      store.store.dispatch('currentUser/getInfo')
+        .then(() => { if (!routeChecker(to, from, next)) next() })
+        .catch(() => next({name: 'No Backend'}));
     }
     else {
-      next();
+      if (!routeChecker(to, from, next))
+        next();
     }
   })
-
   return Router
 }
