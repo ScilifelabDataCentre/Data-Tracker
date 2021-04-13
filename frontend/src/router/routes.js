@@ -5,7 +5,9 @@ const About = () => import(/* webpackChunkName: "base" */ 'pages/About.vue')
 const UserGuide = () => import(/* webpackChunkName: "base" */ 'pages/UserGuide.vue')
 const Login = () => import(/* webpackChunkName: "base" */ 'pages/Login.vue')
 const CurrentUser = () => import(/* webpackChunkName: "base" */ 'pages/CurrentUser.vue')
-const Page404 = () => import(/* webpackChunkName: "base" */ 'pages/Error404.vue')
+
+const Page404 = () => import(/* webpackChunkName: "errors" */ 'pages/Error404.vue')
+const NoBackend = () => import(/* webpackChunkName: "errors" */ 'pages/NoBackend.vue')
 
 const CollectionInfo = () => import(/* webpackChunkName: "data" */ 'pages/CollectionInfo.vue')
 const DatasetInfo = () => import(/* webpackChunkName: "data" */ 'pages/DatasetInfo.vue')
@@ -139,6 +141,14 @@ const routes = [
         },
         name: 'User Manager',
       },
+    ]
+  },
+
+  {
+    path: '/error',
+    component: MainLayout,
+    children: [
+      { path: '', component: NoBackend, name: 'No Backend' }
     ]
   },
 
