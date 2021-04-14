@@ -275,7 +275,7 @@ def response_json(data: dict):
     Returns:
         flask.Response: Prepared response containing json structure with camelBack keys.
     """
-    url = flask.request.full_path
+    url = flask.request.path
     return flask.jsonify(prepare_response(data, url))
 
 
