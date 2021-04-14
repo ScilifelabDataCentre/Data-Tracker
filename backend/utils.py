@@ -83,7 +83,7 @@ def secure_description(data: str):
 
 
 # csrf
-def verify_csrf_token(request: flask.request) -> bool:
+def verify_csrf_token() -> bool:
     """
     Compare the csrf token from the request (header) with the one in ``cookie.session``.
 
