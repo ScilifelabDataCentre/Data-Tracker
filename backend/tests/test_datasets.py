@@ -31,7 +31,7 @@ def test_list_datasets(mdb):
       * Confirm all datasets in the database are listed.
       * Confirm that the correct fields are included
     """
-    responses = make_request_all_roles("/api/v1/dataset/", ret_json=True)
+    responses = make_request_all_roles("/api/v1/dataset", ret_json=True)
     expected_fields = {"title", "_id", "tags", "properties"}
     for response in responses:
         assert response.code == 200
@@ -47,7 +47,7 @@ def test_list_user_datasets_permissions():
 
       * Confirm that non-logged in users get 401, logged in users 200
     """
-    responses = make_request_all_roles("/api/v1/dataset/user/")
+    responses = make_request_all_roles("/api/v1/dataset/user")
     for response in responses:
         if response.role == "no-login":
             assert response.code == 401
@@ -82,7 +82,7 @@ def test_list_user_datasets_with_datasets(mdb):
         user_datasets = [str(uuid) for uuid in user_datasets]
 
         as_user(session, user["auth_ids"][0])
-        response = make_request(session, "/api/v1/dataset/user/")
+        response = make_request(session, "/api/v1/dataset/user")
         assert response.code == 200
         assert len(user_datasets) == len(response.data["datasets"])
         assert set(entry["_id"] for entry in response.data["datasets"]) == set(
@@ -99,7 +99,7 @@ def test_list_user_datasets_no_datasets():
       * Select a few users, confirm that no datasets are returned as intended
     """
     # *::testers should have no datasets
-    responses = make_request_all_roles("/api/v1/dataset/user/", ret_json=True)
+    responses = make_request_all_roles("/api/v1/dataset/user", ret_json=True)
     for response in responses:
         if response.role != "no-login":
             assert len(response.data["datasets"]) == 0
@@ -110,7 +110,7 @@ def test_get_dataset_get_permissions(mdb):
     orders = list(mdb["datasets"].aggregate([{"$sample": {"size": 2}}]))
     for order in orders:
         responses = make_request_all_roles(
-            f'/api/v1/dataset/{order["_id"]}/', ret_json=True
+            f'/api/v1/dataset/{order["_id"]}', ret_json=True
         )
         for response in responses:
             assert response.data["dataset"]
@@ -122,7 +122,7 @@ def test_get_dataset(mdb):
     session = requests.Session()
     for _ in range(10):
         orig = mdb["datasets"].aggregate([{"$sample": {"size": 1}}]).next()
-        response = make_request(session, f'/api/v1/dataset/{orig["_id"]}/')
+        response = make_request(session, f'/api/v1/dataset/{orig["_id"]}')
         assert response[1] == 200
         requested = response[0]["dataset"]
         assert str(orig["_id"]) == requested["_id"]
@@ -137,12 +137,12 @@ def test_get_dataset_bad():
     """
     session = requests.Session()
     for _ in range(5):
-        response = make_request(session, f"/api/v1/dataset/{uuid.uuid4().hex}/")
+        response = make_request(session, f"/api/v1/dataset/{uuid.uuid4().hex}")
         assert response.code == 404
         assert not response.data
 
     for _ in range(5):
-        response = make_request(session, f"/api/v1/dataset/{random_string()}/")
+        response = make_request(session, f"/api/v1/dataset/{random_string()}")
         assert response.code == 404
         assert not response.data
 
@@ -172,7 +172,7 @@ def test_delete_dataset(mdb):
                 mdb["collections"].find({"datasets": datasets[i]["_id"]})
             )
             response = make_request(
-                session, f'/api/v1/dataset/{datasets[i]["_id"]}/', method="DELETE"
+                session, f'/api/v1/dataset/{datasets[i]["_id"]}', method="DELETE"
             )
             current_user = mdb["users"].find_one({"auth_ids": USERS[role]})
             if role == "no-login":
@@ -237,11 +237,11 @@ def test_delete_bad():
     as_user(session, USERS["data"])
     for _ in range(3):
         ds_uuid = random_string()
-        response = make_request(session, f"/api/v1/dataset/{ds_uuid}/", method="DELETE")
+        response = make_request(session, f"/api/v1/dataset/{ds_uuid}", method="DELETE")
         assert response.code == 404
         assert not response.data
         ds_uuid = uuid.uuid4().hex
-        response = make_request(session, f"/api/v1/dataset/{ds_uuid}/", method="DELETE")
+        response = make_request(session, f"/api/v1/dataset/{ds_uuid}", method="DELETE")
         assert response.code == 404
         assert not response.data
 
@@ -255,7 +255,7 @@ def test_dataset_update_permissions(dataset_for_tests):
     ds_uuid = dataset_for_tests
     indata = {"title": "Updated title"}
     responses = make_request_all_roles(
-        f"/api/v1/dataset/{ds_uuid}/", method="PATCH", data=indata
+        f"/api/v1/dataset/{ds_uuid}", method="PATCH", data=indata
     )
     for response in responses:
         if response.role in ("edit", "data", "root"):
@@ -276,7 +276,7 @@ def test_dataset_update_empty(dataset_for_tests):
     ds_uuid = dataset_for_tests
     indata = {}
     responses = make_request_all_roles(
-        f"/api/v1/dataset/{ds_uuid}/", method="PATCH", data=indata
+        f"/api/v1/dataset/{ds_uuid}", method="PATCH", data=indata
     )
     for response in responses:
         if response.role in ("edit", "data", "root"):
@@ -305,7 +305,7 @@ def test_dataset_update(mdb, dataset_for_tests):
     as_user(session, USERS["data"])
 
     response = make_request(
-        session, f"/api/v1/dataset/{ds_uuid}/", method="PATCH", data=indata
+        session, f"/api/v1/dataset/{ds_uuid}", method="PATCH", data=indata
     )
     assert response.code == 200
     assert not response.data
@@ -328,7 +328,7 @@ def test_dataset_update_bad(dataset_for_tests):
         indata = {"title": "Updated title"}
         ds_uuid = random_string()
         responses = make_request_all_roles(
-            f"/api/v1/dataset/{ds_uuid}/", method="PATCH", data=indata
+            f"/api/v1/dataset/{ds_uuid}", method="PATCH", data=indata
         )
         for response in responses:
             if response.role in ("base", "edit", "data", "root"):
@@ -341,7 +341,7 @@ def test_dataset_update_bad(dataset_for_tests):
 
         ds_uuid = uuid.uuid4().hex
         responses = make_request_all_roles(
-            f"/api/v1/dataset/{ds_uuid}/", method="PATCH", data=indata
+            f"/api/v1/dataset/{ds_uuid}", method="PATCH", data=indata
         )
         for response in responses:
             if response.role in ("base", "edit", "data", "root"):
@@ -357,21 +357,21 @@ def test_dataset_update_bad(dataset_for_tests):
     as_user(session, USERS["data"])
     indata = {"title": ""}
     response = make_request(
-        session, f"/api/v1/dataset/{ds_uuid}/", method="PATCH", data=indata
+        session, f"/api/v1/dataset/{ds_uuid}", method="PATCH", data=indata
     )
     assert response.code == 400
     assert not response.data
 
     indata = {"extra": "asd"}
     response = make_request(
-        session, f"/api/v1/dataset/{ds_uuid}/", method="PATCH", data=indata
+        session, f"/api/v1/dataset/{ds_uuid}", method="PATCH", data=indata
     )
     assert response.code == 400
     assert not response.data
 
     indata = {"timestamp": "asd"}
     response = make_request(
-        session, f"/api/v1/dataset/{ds_uuid}/", method="PATCH", data=indata
+        session, f"/api/v1/dataset/{ds_uuid}", method="PATCH", data=indata
     )
     assert response.code == 400
     assert not response.data
@@ -389,7 +389,7 @@ def test_get_dataset_logs_permissions(mdb):
         {"$or": [{"_id": {"$in": order_data["editors"]}}]}
     )
     responses = make_request_all_roles(
-        f'/api/v1/dataset/{dataset_data["_id"]}/log/', ret_json=True
+        f'/api/v1/dataset/{dataset_data["_id"]}/log', ret_json=True
     )
     for response in responses:
         if response.role in ("data", "root"):
@@ -406,7 +406,7 @@ def test_get_dataset_logs_permissions(mdb):
 
     as_user(session, user_data["auth_ids"][0])
     response = make_request(
-        session, f'/api/v1/dataset/{dataset_data["_id"]}/log/', ret_json=True
+        session, f'/api/v1/dataset/{dataset_data["_id"]}/log', ret_json=True
     )
 
     assert response.code == 200
@@ -427,7 +427,7 @@ def test_get_dataset_logs(mdb):
         )
         as_user(session, USERS["data"])
         response = make_request(
-            session, f'/api/v1/dataset/{dataset["_id"]}/log/', ret_json=True
+            session, f'/api/v1/dataset/{dataset["_id"]}/log', ret_json=True
         )
         assert response.data["dataType"] == "dataset"
         assert response.data["entryId"] == str(dataset["_id"])
@@ -450,7 +450,7 @@ def test_add_dataset_permissions(mdb):
         indata.update(TEST_LABEL)
 
         responses = make_request_all_roles(
-            "/api/v1/dataset/", method="POST", data=indata, ret_json=True
+            "/api/v1/dataset", method="POST", data=indata, ret_json=True
         )
         for response in responses:
             if response.role in ("data", "root"):
@@ -467,7 +467,7 @@ def test_add_dataset_permissions(mdb):
         # as order editor
         owner = db["users"].find_one({"_id": order["editors"][0]})
         as_user(session, owner["auth_ids"][0])
-        response = make_request(session, "/api/v1/dataset/", method="POST", data=indata)
+        response = make_request(session, "/api/v1/dataset", method="POST", data=indata)
         assert response.code == 200
         assert "_id" in response.data
         assert len(response.data["_id"]) == 36
@@ -491,7 +491,7 @@ def test_add_dataset(mdb):
     as_user(session, USERS["data"])
 
     response = make_request(
-        session, "/api/v1/dataset/", method="POST", data=indata, ret_json=True
+        session, "/api/v1/dataset", method="POST", data=indata, ret_json=True
     )
     assert response.code == 200
     assert "_id" in response.data
@@ -526,7 +526,7 @@ def test_add_dataset_log(mdb):
     )
 
     response = make_request(
-        session, "/api/v1/dataset/", method="POST", data=indata, ret_json=True
+        session, "/api/v1/dataset", method="POST", data=indata, ret_json=True
     )
 
     order_logs_post = list(
@@ -555,26 +555,26 @@ def test_add_dataset_bad_fields(mdb):
         "title": "test title",
         "order": str(order["_id"]),
     }
-    response = make_request(session, "/api/v1/dataset/", method="POST", data=indata)
+    response = make_request(session, "/api/v1/dataset", method="POST", data=indata)
     assert response.code == 403
     assert not response.data
 
     indata = {"timestamp": "asd", "title": "test title"}
-    response = make_request(session, "/api/v1/dataset/", method="POST", data=indata)
+    response = make_request(session, "/api/v1/dataset", method="POST", data=indata)
     assert response.code == 400
     assert not response.data
 
     indata = {"extra": [{"asd": 123}], "title": "test title"}
-    response = make_request(session, "/api/v1/dataset/", method="POST", data=indata)
+    response = make_request(session, "/api/v1/dataset", method="POST", data=indata)
     assert response.code == 400
     assert not response.data
 
     indata = {"links": [{"asd": 123}], "title": "test title"}
-    response = make_request(session, "/api/v1/dataset/", method="POST", data=indata)
+    response = make_request(session, "/api/v1/dataset", method="POST", data=indata)
     assert response.code == 400
     assert not response.data
 
     indata = {"links": "Some text", "title": "test title"}
-    response = make_request(session, "/api/v1/dataset/", method="POST", data=indata)
+    response = make_request(session, "/api/v1/dataset", method="POST", data=indata)
     assert response.code == 400
     assert not response.data
