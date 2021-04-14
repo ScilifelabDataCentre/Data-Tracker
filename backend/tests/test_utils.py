@@ -24,3 +24,44 @@ def test_secure_description():
         "# Title *bold* &lt;a href=&quot;http://www.example.com&quot;&gt;Link&lt;/a&gt;"
     )
     assert utils.secure_description(indata) == expected
+
+
+def test_prepare_response():
+    """
+    Test the preparation or a json response.
+
+    * ``_id`` to ``id``
+    * ``url`` added
+    """
+    assert utils.prepare_response({"key": "value"}) == {"key": "value"}
+    assert utils.prepare_response({"_id": "value"}) == {"id": "value"}
+    assert utils.prepare_response({"_id": {"_id": "value"}}) == {"id": {"id": "value"}}
+    indata = ({"lvl1": {"lvl2": "value"}}, "https://www.example.com/api/v1/stuff")
+    expected = {
+        "url": "https://www.example.com/api/v1/stuff",
+        "lvl1": {"lvl2": "value"},
+    }
+    assert utils.prepare_response(*indata) == expected
+    indata = {
+        "list": [{"_id": "value"}, {"_id": "value"}, {"_id": "value"}, {"_id": "value"}]
+    }
+    expected = {
+        "list": [{"id": "value"}, {"id": "value"}, {"id": "value"}, {"id": "value"}]
+    }
+    assert utils.prepare_response(indata) == expected
+    indata = {
+        "lvl1_1": 0,
+        "lvl1_2": {"lvl2": {"lvl3_1": "value", "lvl3_2": {"_id": "value"}}},
+    }
+    expected = {
+        "lvl1_1": 0,
+        "lvl1_2": {"lvl2": {"lvl3_1": "value", "lvl3_2": {"id": "value"}}},
+    }
+    assert utils.prepare_response(indata) == expected
+    indata = {
+        "list": ({"_id": "value"}, {"_id": "value"}, {"_id": "value"}, {"_id": "value"})
+    }
+    expected = {
+        "list": [{"id": "value"}, {"id": "value"}, {"id": "value"}, {"id": "value"}]
+    }
+    assert utils.prepare_response(indata) == expected

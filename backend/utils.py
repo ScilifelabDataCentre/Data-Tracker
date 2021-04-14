@@ -294,24 +294,28 @@ def prepare_response(data: dict, url: str = ""):
     Returns:
         dict:
     """
-    if not isinstance(data, dict):
-        return data
 
     def fix_id(chunk):
         """Recurse over the data structure to convert any ``_id`` to ``id``"""
-        if not isinstance(chunk, dict):
-            return chunk
-        if "_id" in chunk:
-            chunk["id"] = chunk["_id"]
-            del chunk["_id"]
-        for key, value in chunk.items():
-            chunk[key] = fix_id(value)
+        if isinstance(chunk, dict):
+            if "_id" in chunk:
+                chunk["id"] = chunk["_id"]
+                del chunk["_id"]
+            for key, value in chunk.items():
+                chunk[key] = fix_id(value)
+        elif isinstance(chunk, list) or isinstance(chunk, tuple):
+            new_list = []
+            for i, entry in enumerate(chunk):
+                new_list.append(fix_id(entry))
+            chunk = new_list
         return chunk
 
-    fix_id(data)
-    if url:
-        data["url"] = url
-
+    if isinstance(data, dict):
+        data = fix_id(data)
+        if url:
+            data["url"] = url
+    elif isinstance(data, list) or isinstance(data, tuple):
+        data = fix_id(data)
     return data
 
 
