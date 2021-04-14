@@ -32,7 +32,7 @@ def test_list_datasets(mdb):
       * Confirm that the correct fields are included
     """
     responses = make_request_all_roles("/api/v1/dataset", ret_json=True)
-    expected_fields = {"title", "_id", "tags", "properties"}
+    expected_fields = {"title", "id", "tags", "properties"}
     for response in responses:
         assert response.code == 200
         assert len(response.data["datasets"]) == mdb["datasets"].count_documents({})
@@ -85,7 +85,7 @@ def test_list_user_datasets_with_datasets(mdb):
         response = make_request(session, "/api/v1/dataset/user")
         assert response.code == 200
         assert len(user_datasets) == len(response.data["datasets"])
-        assert set(entry["_id"] for entry in response.data["datasets"]) == set(
+        assert set(entry["id"] for entry in response.data["datasets"]) == set(
             user_datasets
         )
 
@@ -125,8 +125,8 @@ def test_get_dataset(mdb):
         response = make_request(session, f'/api/v1/dataset/{orig["_id"]}')
         assert response[1] == 200
         requested = response[0]["dataset"]
-        assert str(orig["_id"]) == requested["_id"]
-        assert requested["_id"] not in requested["related"]
+        assert str(orig["_id"]) == requested["id"]
+        assert requested["id"] not in requested["related"]
 
 
 def test_get_dataset_bad():
@@ -429,8 +429,8 @@ def test_get_dataset_logs(mdb):
         response = make_request(
             session, f'/api/v1/dataset/{dataset["_id"]}/log', ret_json=True
         )
-        assert response.data["dataType"] == "dataset"
-        assert response.data["entryId"] == str(dataset["_id"])
+        assert response.data["data_type"] == "dataset"
+        assert response.data["entry_id"] == str(dataset["_id"])
         assert len(response.data["logs"]) == len(logs)
         assert response.code == 200
 
@@ -455,8 +455,8 @@ def test_add_dataset_permissions(mdb):
         for response in responses:
             if response.role in ("data", "root"):
                 assert response.code == 200
-                assert "_id" in response.data
-                assert len(response.data["_id"]) == 36
+                assert "id" in response.data
+                assert len(response.data["id"]) == 36
             elif response.role == "no-login":
                 assert response.code == 401
                 assert not response.data
@@ -469,8 +469,8 @@ def test_add_dataset_permissions(mdb):
         as_user(session, owner["auth_ids"][0])
         response = make_request(session, "/api/v1/dataset", method="POST", data=indata)
         assert response.code == 200
-        assert "_id" in response.data
-        assert len(response.data["_id"]) == 36
+        assert "id" in response.data
+        assert len(response.data["id"]) == 36
 
 
 def test_add_dataset(mdb):
@@ -494,10 +494,10 @@ def test_add_dataset(mdb):
         session, "/api/v1/dataset", method="POST", data=indata, ret_json=True
     )
     assert response.code == 200
-    assert "_id" in response.data
-    assert len(response.data["_id"]) == 36
-    indata.update({"_id": response.data["_id"]})
-    mdb_ds = mdb["datasets"].find_one({"_id": uuid.UUID(response.data["_id"])})
+    assert "id" in response.data
+    assert len(response.data["id"]) == 36
+    indata.update({"_id": response.data["id"]})
+    mdb_ds = mdb["datasets"].find_one({"_id": uuid.UUID(response.data["id"])})
     mdb_o = mdb["orders"].find_one({"_id": order["_id"]})
     mdb_ds["_id"] = str(mdb_ds["_id"])
     mdb_o["datasets"] = [str(ds_uuid) for ds_uuid in mdb_o["datasets"]]
@@ -505,7 +505,7 @@ def test_add_dataset(mdb):
         if field == "order":
             continue
         assert mdb_ds[field] == indata[field]
-    assert response.data["_id"] in mdb_o["datasets"]
+    assert response.data["id"] in mdb_o["datasets"]
 
 
 def test_add_dataset_log(mdb):
@@ -536,7 +536,7 @@ def test_add_dataset_log(mdb):
     assert len(order_logs_post) == len(order_logs) + 1
     ds_logs_post = list(
         mdb["logs"].find(
-            {"data_type": "dataset", "data._id": uuid.UUID(response.data["_id"])}
+            {"data_type": "dataset", "data._id": uuid.UUID(response.data["id"])}
         )
     )
     assert len(ds_logs_post) == 1
