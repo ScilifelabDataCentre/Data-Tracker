@@ -42,16 +42,17 @@ def test_get_collection(mdb):
         proj_owner = mdb["users"].find_one({"_id": {"$in": collection["editors"]}})
         collection["editors"] = [str(entry) for entry in collection["editors"]]
         collection["datasets"] = [str(entry) for entry in collection["datasets"]]
-        collection = utils.convert_keys_to_camel(collection)
         as_user(session, USERS["base"])
         response = make_request(session, f'/api/v1/collection/{collection["_id"]}')
         assert response.code == 200
         for field in collection:
             if field == "datasets":
                 for i, ds_uuid in enumerate(collection[field]):
-                    assert ds_uuid == response.data["collection"][field][i]["_id"]
+                    assert ds_uuid == response.data["collection"][field][i]["id"]
             elif field == "editors":
                 continue
+            elif field == "_id":
+                assert collection["_id"] == response.data["collection"]["id"]
             else:
                 assert collection[field] == response.data["collection"][field]
 
@@ -61,10 +62,12 @@ def test_get_collection(mdb):
         print(collection)
         for field in collection:
             if field in ("datasets", "editors"):
-                entries = [entry["_id"] for entry in response.data["collection"][field]]
+                entries = [entry["id"] for entry in response.data["collection"][field]]
                 assert len(collection[field]) == len(entries)
                 for i, ds_uuid in enumerate(collection[field]):
                     assert ds_uuid in entries
+            elif field == "_id":
+                assert collection["_id"] == response.data["collection"]["id"]
             else:
                 assert collection[field] == response.data["collection"][field]
 
@@ -73,10 +76,12 @@ def test_get_collection(mdb):
         assert response.code == 200
         for field in collection:
             if field in ("datasets", "editors"):
-                entries = [entry["_id"] for entry in response.data["collection"][field]]
+                entries = [entry["id"] for entry in response.data["collection"][field]]
                 assert len(collection[field]) == len(entries)
                 for i, ds_uuid in enumerate(collection[field]):
                     assert ds_uuid in entries
+            elif field == "_id":
+                assert collection["_id"] == response.data["collection"]["id"]
             else:
                 assert collection[field] == response.data["collection"][field]
 
@@ -114,8 +119,8 @@ def test_add_collection_permissions(mdb):
     for response in responses:
         if response.role in ("edit", "data", "root"):
             assert response.code == 200
-            assert "_id" in response.data
-            assert len(response.data["_id"]) == 36
+            assert "id" in response.data
+            assert len(response.data["id"]) == 36
         elif response.role == "no-login":
             assert response.code == 401
             assert not response.data
@@ -132,8 +137,8 @@ def test_add_collection_permissions(mdb):
         print(response.role)
         if response.role in ("edit", "root", "data"):
             assert response.code == 200
-            assert "_id" in response.data
-            assert len(response.data["_id"]) == 36
+            assert "id" in response.data
+            assert len(response.data["id"]) == 36
         elif response.role == "no-login":
             assert response.code == 401
             assert not response.data
@@ -169,9 +174,9 @@ def test_add_collection(mdb):
         session, "/api/v1/collection", method="POST", data=indata, ret_json=True
     )
     assert response.code == 200
-    assert "_id" in response.data
-    assert len(response.data["_id"]) == 36
-    collection = mdb["collections"].find_one({"_id": uuid.UUID(response.data["_id"])})
+    assert "id" in response.data
+    assert len(response.data["id"]) == 36
+    collection = mdb["collections"].find_one({"_id": uuid.UUID(response.data["id"])})
     assert collection["description"] == indata["description"]
     assert str(collection["editors"][0]) == indata["editors"][0]
     assert collection["title"] == indata["title"]
@@ -180,7 +185,7 @@ def test_add_collection(mdb):
     # log
     assert mdb["logs"].find_one(
         {
-            "data._id": uuid.UUID(response.data["_id"]),
+            "data._id": uuid.UUID(response.data["id"]),
             "data_type": "collection",
             "user": user_info["_id"],
             "action": "add",
@@ -193,9 +198,9 @@ def test_add_collection(mdb):
         session, "/api/v1/collection", method="POST", data=indata, ret_json=True
     )
     assert response.code == 200
-    assert "_id" in response.data
-    assert len(response.data["_id"]) == 36
-    collection = mdb["collections"].find_one({"_id": uuid.UUID(response.data["_id"])})
+    assert "id" in response.data
+    assert len(response.data["id"]) == 36
+    collection = mdb["collections"].find_one({"_id": uuid.UUID(response.data["id"])})
     assert collection["description"] == indata["description"]
     assert str(collection["editors"][0]) == indata["editors"][0]
     assert collection["title"] == indata["title"]
@@ -206,7 +211,7 @@ def test_add_collection(mdb):
     # log
     assert mdb["logs"].find_one(
         {
-            "data._id": uuid.UUID(response.data["_id"]),
+            "data._id": uuid.UUID(response.data["id"]),
             "data_type": "collection",
             "user": data_user["_id"],
             "action": "add",
@@ -596,7 +601,7 @@ def test_delete_collection(mdb):
     )
     assert response.code == 200
     response = make_request(
-        session, f'/api/v1/collection/{response.data["_id"]}', method="DELETE"
+        session, f'/api/v1/collection/{response.data["id"]}', method="DELETE"
     )
     assert response.code == 200
     assert not response.data
@@ -685,7 +690,7 @@ def test_get_collection_logs(mdb):
         response = make_request(
             session, f'/api/v1/collection/{collection["_id"]}/log', ret_json=True
         )
-        assert response.data["dataType"] == "collection"
-        assert response.data["entryId"] == str(collection["_id"])
+        assert response.data["data_type"] == "collection"
+        assert response.data["entry_id"] == str(collection["_id"])
         assert len(response.data["logs"]) == len(logs)
         assert response.code == 200
