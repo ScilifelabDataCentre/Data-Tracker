@@ -19,7 +19,7 @@ export function getUsers ({ commit }) {
 export function getUser(context, payload) {
   return new Promise((resolve, reject) => {
     axios
-      .get('/api/v1/user' + payload + '')
+      .get('/api/v1/user' + payload)
       .then((response) => {
         resolve(response);
       })
@@ -71,7 +71,7 @@ export function saveUser (context, payload) {
     }
     else {
       axios
-        .patch('/api/v1/user' + uuid + '',
+        .patch('/api/v1/user' + uuid,
                payload,
                {
                  headers: getCsrfHeader(),
@@ -89,7 +89,7 @@ export function saveUser (context, payload) {
 export function deleteUser (context, payload) {
   return new Promise((resolve, reject) => {
     axios
-      .delete('/api/v1/user' + payload +'',
+      .delete('/api/v1/user' + payload,
               {
                 headers: getCsrfHeader(),
               })
