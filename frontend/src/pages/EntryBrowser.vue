@@ -35,13 +35,13 @@
 
     <template v-slot:item="props">
       <div class="col-xs-12 col-md-6 col-lg-4 col-xl-3 row self-stretch">
-        <q-card class="q-ma-xs bg-grey-1 col" @click="gotoEntry(props.row._id)">
+        <q-card class="q-ma-xs bg-grey-1 col" @click="gotoEntry(props.row.id)">
           <q-card-section class="text-center">
             <div class="text-h6 bg-grey-4 q-mb-xs q-pa-xs">
               {{ props.row.title }}
             </div>
             <div class="text-caption text-italic">
-              {{ props.row._id }}
+              {{ props.row.id }}
             </div>
           </q-card-section>
           <q-card-section>
@@ -161,7 +161,7 @@ export default {
 
   methods: {
     gotoEntry (uuid) {
-      this.$router.push({ name: this.pageAbout, params: { 'uuid': uuid } });
+      this.$router.push({ name: this.pageAbout, params: { 'uuid': uuid, 'entryType': this.entryType} });
     },
     loadData () {
       this.$store.dispatch('entries/resetEntryList')
