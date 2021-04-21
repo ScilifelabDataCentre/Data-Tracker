@@ -1,44 +1,44 @@
 <template>
-<div v-if="Object.keys(collection).length">
+<div v-if="Object.keys(entry).length">
   <div class="text-center q-mb-lg">
-    <h1 class="text-h2 q-mb-xs ">{{ collection.title }}</h1>
+    <h1 class="text-h2 q-mb-xs ">{{ entry.title }}</h1>
     <div class="text-subtitle1 text-italic">
-      {{ collection.id }}
+      {{ entry.id }}
     </div>
   </div>
 
   <div class="q-my-md q-mx-sm"
-       v-show="Object.keys(collection.properties).length">
+       v-show="Object.keys(entry.properties).length">
     <q-chip square
             color="grey-3"
-            v-for="field in Object.keys(collection.properties)"
+            v-for="field in Object.keys(entry.properties)"
             :key="field">
-      <span class="text-bold text-capitalize text-blue-9 q-mr-sm">{{ field }}</span> {{ collection.properties[field] }}
+      <span class="text-bold text-capitalize text-blue-9 q-mr-sm">{{ field }}</span> {{ entry.properties[field] }}
     </q-chip>
   </div>
 
   <div class="q-my-sm q-mx-sm"
-       v-show="collection.tags.length">
+       v-show="entry.tags.length">
     <q-chip square
             color="grey-3"
-            v-for="entry in collection.tags"
+            v-for="entry in entry.tags"
             :key="entry">
       <q-avatar color="secondary" text-color="white" icon="fas fa-tag" />
       {{ entry }}
     </q-chip>
   </div>
 
-  <div class="q-my-md" v-show="collection.description.length">
-    <q-markdown :src="collection.description" />
+  <div class="q-my-md" v-show="entry.description.length">
+    <q-markdown :src="entry.description" />
   </div>
 
   <div class="q-my-md"
-       v-show="collection.datasets.length > 0">
+       v-show="entry.datasets.length > 0">
     <q-list>
       <list-header title="Datasets"
-                   explanation="Datasets associated with this collection" />
+                   :explanation="'Datasets associated with this ' + dataType" />
       <q-item clickable
-              v-for="dataset in collection.datasets"
+              v-for="dataset in entry.datasets"
               :key="dataset.id"
               @click="$router.push({ 'name': 'Dataset About', 'params': { 'uuid': dataset.id } })">
         <q-item-section avatar>
@@ -56,12 +56,12 @@
     </q-list>
   </div>
 
-  <div class="q-my-md" v-show="'editors' in collection && collection.editors.length">
+  <div class="q-my-md" v-show="'editors' in entry && entry.editors.length">
     <q-list>
       <div>
         <list-header title="Editors"
-                     explanation="Users that may edit this collection" />
-        <user-entry v-for="entry in collection.editors"
+                     :explanation="'Users that may edit this ' + dataType" />
+        <user-entry v-for="entry in entry.editors"
                     :key="entry.id"
                     v-bind="entry" />
       </div>
@@ -87,14 +87,14 @@ export default {
       type: Boolean,
       default: true,
     },
-    entryType: {
+    dataType: {
       type: String,
-      
+      required: true,  
     }
   },
 
   computed: {
-    collection: {
+    entry: {
       get () {
         return this.$store.state.entries.entry;
       },
