@@ -11,6 +11,7 @@ const NonAuth = () => import(/* webpackChunkName: "errors" */ 'pages/NonAuth.vue
 const NoBackend = () => import(/* webpackChunkName: "errors" */ 'pages/NoBackend.vue')
 
 const CollectionInfo = () => import(/* webpackChunkName: "data" */ 'pages/CollectionInfo.vue')
+const EntryInfo = () => import(/* webpackChunkName: "data" */ 'pages/EntryInfo.vue')
 const DatasetInfo = () => import(/* webpackChunkName: "data" */ 'pages/DatasetInfo.vue')
 const OrderInfo = () => import(/* webpackChunkName: "data" */ 'pages/OrderInfo.vue')
 const EntryBrowser = () => import(/* webpackChunkName: "data" */ 'pages/EntryBrowser.vue')
@@ -30,6 +31,35 @@ const routes = [
         component: Login,
         name: 'Login',
         props: true
+      },
+    ]
+  },
+
+  {
+    path: '/collections',
+    component: MainLayout,
+    children: [
+      {
+        path: '',
+        component: EntryBrowser,
+        name: 'Collection Browser',
+        props: { 'entryType': 'collection'}
+      },
+      {
+        path: 'new',
+        meta: {
+          'permissionRequired': ['DATA_EDIT'],
+          'loginRequired': true,
+        },
+        component: EntryInfo,
+        props: {'uuid': '', entryType: 'collection'},
+        name: 'Collection New'
+      },
+      {
+        path: ':uuid',
+        component: EntryInfo,
+        props: route => ({'uuid': route.params.uuid, 'entryType': 'collection'}),
+        name: 'Collection About'
       },
     ]
   },
@@ -109,35 +139,6 @@ const routes = [
         name: 'Order About'
       },
 
-    ]
-  },
-
-  {
-    path: '/collections',
-    component: MainLayout,
-    children: [
-      {
-        path: '',
-        component: EntryBrowser,
-        name: 'Collection Browser',
-        props: { 'entryType': 'collection'}
-      },
-      {
-        path: 'new',
-        meta: {
-          'permissionRequired': ['DATA_EDIT'],
-          'loginRequired': true,
-        },
-        component: CollectionInfo,
-        props: {'uuid': ''},
-        name: 'Collection New'
-      },
-      {
-        path: ':uuid',
-        component: CollectionInfo,
-        props: true,
-        name: 'Collection About'
-      },
     ]
   },
 
