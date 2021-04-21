@@ -43,7 +43,7 @@ const routes = [
         path: '',
         component: EntryBrowser,
         name: 'Collection Browser',
-        props: { 'entryType': 'collection'}
+        props: { 'dataType': 'collection'}
       },
       {
         path: 'new',
@@ -52,13 +52,13 @@ const routes = [
           'loginRequired': true,
         },
         component: EntryInfo,
-        props: {'uuid': '', entryType: 'collection'},
+        props: {'uuid': '', dataType: 'collection'},
         name: 'Collection New'
       },
       {
         path: ':uuid',
         component: EntryInfo,
-        props: route => ({'uuid': route.params.uuid, 'entryType': 'collection'}),
+        props: route => ({'uuid': route.params.uuid, 'dataType': 'collection'}),
         name: 'Collection About'
       },
     ]
@@ -72,7 +72,7 @@ const routes = [
         path: '',
         component: EntryBrowser,
         name: 'Dataset Browser',
-        props: { 'entryType': 'dataset'}
+        props: { 'dataType': 'dataset'}
       },
       {
         path: 'new',
@@ -120,7 +120,7 @@ const routes = [
         path: '',
         component: EntryBrowser,
         name: 'Order Browser',
-        props: { 'entryType': 'order'}
+        props: { 'dataType': 'order'}
       },
       {
         path: 'new',
