@@ -7,7 +7,7 @@ export function getEntry ({ commit, dispatch }, payload) {
   // payload: {'id': id, 'dataType': dataType}
   return new Promise((resolve, reject) => {
     axios
-      .get('/api/v1/' + payload.dataType + '' + payload.id + '')
+      .get('/api/v1/' + payload.dataType + '/' + payload.id)
       .then((response) => {
         commit('UPDATE_ENTRY', response.data[payload.dataType]);
         resolve(response);
@@ -23,7 +23,7 @@ export function getLocalEntry ({ commit, dispatch }, payload) {
   // payload: {'id': id, 'dataType': dataType}
   return new Promise((resolve, reject) => {
     axios
-      .get('/api/v1/' + payload.dataType + '' + payload.id + '')
+      .get('/api/v1/' + payload.dataType + '/' + payload.id)
       .then((response) => {
         resolve(response.data[payload.dataType]);
       })
@@ -39,7 +39,7 @@ export function getEntryLog ({ commit, dispatch }, payload) {
   return new Promise((resolve, reject) => {
     if (payload.dataType !== 'me') {
       axios
-        .get('/api/v1/' + payload.dataType + '' + payload.id + '/log')
+        .get('/api/v1/' + payload.dataType + '/' + payload.id + '/log')
         .then((response) => {
           commit('UPDATE_ENTRY_LOG', response.data.logs);
           resolve(response);
@@ -125,7 +125,7 @@ export function deleteEntry (context, payload) {
   // payload: {'id': id, 'dataType': dataType}
   return new Promise((resolve, reject) => {
     axios
-      .delete('/api/v1/' + payload.dataType + '' + payload.id + '',
+      .delete('/api/v1/' + payload.dataType + '/' + payload.id,
               {
                 headers: getCsrfHeader(),
               })
@@ -146,7 +146,7 @@ export function saveEntry (context, payload) {
     delete payload.data.id;
     if (uuid === '') {
       axios
-        .post('/api/v1/' + payload.dataType + '',
+        .post('/api/v1/' + payload.dataType,
               payload.data,
               {
                 headers: getCsrfHeader(),
@@ -160,7 +160,7 @@ export function saveEntry (context, payload) {
     }
     else {
       axios
-        .patch('/api/v1/' + payload.dataType + '' + uuid + '',
+        .patch('/api/v1/' + payload.dataType + '/' + uuid,
                payload.data,
                {
                  headers: getCsrfHeader(),
@@ -262,7 +262,7 @@ export function resetUserActions({ commit }) {
 export function getEntries ({ commit, dispatch }, dataType) {
   return new Promise((resolve, reject) => {
     axios
-      .get('/api/v1/' + dataType + '')
+      .get('/api/v1/' + dataType)
       .then((response) => {
         commit('UPDATE_ENTRY_LIST', response.data[dataType + 's']);
         resolve(response);
@@ -277,7 +277,7 @@ export function getEntries ({ commit, dispatch }, dataType) {
 export function getLocalEntries ({ commit, dispatch }, dataType) {
   return new Promise((resolve, reject) => {
     axios
-      .get('/api/v1/' + dataType + '')
+      .get('/api/v1/' + dataType)
       .then((response) => {
         resolve(response.data[dataType + 's']);
       })
