@@ -140,11 +140,9 @@ export function deleteEntry (context, payload) {
 
 
 export function saveEntry (context, payload) {
-  // payload: {'data': data, 'dataType': dataType}
+  // payload: {'id': id, 'data': data, 'dataType': dataType}
   return new Promise((resolve, reject) => {
-    let uuid = payload.data.id;
-    delete payload.data.id;
-    if (uuid === '') {
+    if (payload.id === '') {
       axios
         .post('/api/v1/' + payload.dataType,
               payload.data,
@@ -160,7 +158,7 @@ export function saveEntry (context, payload) {
     }
     else {
       axios
-        .patch('/api/v1/' + payload.dataType + '/' + uuid,
+        .patch('/api/v1/' + payload.dataType + '/' + payload.id,
                payload.data,
                {
                  headers: getCsrfHeader(),
