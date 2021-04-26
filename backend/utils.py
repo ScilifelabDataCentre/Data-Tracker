@@ -296,7 +296,7 @@ def prepare_response(data: dict, url: str = ""):
     """
 
     def fix_id(chunk):
-        """Recurse over the data structure to convert any ``_id`` to ``id``"""
+        """Recurse over the data structure to convert any ``_id`` to ``id``."""
         if isinstance(chunk, dict):
             if "_id" in chunk:
                 chunk["id"] = chunk["_id"]
