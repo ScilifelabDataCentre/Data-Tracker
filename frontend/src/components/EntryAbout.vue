@@ -21,10 +21,10 @@
        v-show="entry.tags.length">
     <q-chip square
             color="grey-3"
-            v-for="entry in entry.tags"
-            :key="entry">
+            v-for="tag in entry.tags"
+            :key="tag">
       <q-avatar color="secondary" text-color="white" icon="fas fa-tag" />
-      {{ entry }}
+      {{ tag }}
     </q-chip>
   </div>
 
@@ -33,7 +33,7 @@
   </div>
 
   <div class="q-my-md"
-       v-show="entry.datasets.length > 0">
+       v-if="dataType === 'collection'">
     <q-list>
       <list-header title="Datasets"
                    :explanation="'Datasets associated with this ' + dataType" />
@@ -56,7 +56,7 @@
     </q-list>
   </div>
 
-  <div class="q-my-md" v-show="'editors' in entry && entry.editors.length">
+  <div class="q-my-md" v-if="['collection', 'order'].includes(dataType) && 'editors' in entry && entry.editors.length">
     <q-list>
       <div>
         <list-header title="Editors"

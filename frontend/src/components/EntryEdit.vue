@@ -1,6 +1,6 @@
 <template>
 <div>
-  <q-field v-if="collection.id !== ''"
+  <q-field v-if="entry.id !== ''"
            label="UUID"
            class="q-mb-lg"
 	   stack-label
@@ -9,15 +9,15 @@
       <q-icon name="label_important" />
     </template>
     <template v-slot:control>
-      {{ collection.id }}
+      {{ entry.id }}
     </template>
   </q-field>
 
-  <q-input id="collection-title"
+  <q-input id="entry-title"
            class="q-my-md"
            label="Title"
            v-model="title"
-           :rules="[ val => val.length > 0 ]"
+           :rules="[ function (val) { return val.length > 0 || 'Title cannot be empty' }]"
            outlined>
     <template v-slot:prepend>
       <q-icon name="title" />
@@ -25,7 +25,7 @@
   </q-input>
 
   <div class="q-my-md">
-    <q-input id="collection-description"
+    <q-input id="entry-description"
              type="textarea"
              label="Description"
              v-model="description"
@@ -75,9 +75,10 @@
     <q-separator />
 
     <q-expansion-item expand-separator
+                      v-if="dataType === 'collection'"
                       icon="fas fa-chart-area"
                       label="Datasets"
-                      caption="Datasets to include in the collection">
+                      caption="Datasets to include in the entry">
       <q-table flat
                :data="onlySelected ? selectedDatasets : datasets"
                :columns="columns"
@@ -112,14 +113,15 @@
     </q-expansion-item>
 
     <q-expansion-item expand-separator
+                      v-if="['collection', 'order'].includes(dataType)"
                       icon="far fa-user"
                       label="Editors"
-                      caption="Users who may edit this collection and the associated datasets">
+                      caption="Users who may edit this entry and the associated datasets">
       <user-selector fieldTitle="Editors"
                      fieldDataName="editors"
                      class="q-my-sm"
-                     helpText="Users who may edit this collection and the associated datasets"
-                     value="collection.editors"
+                     helpText="Users who may edit this entry and the associated datasets"
+                     value="entry.editors"
                      :isLoadingUsers="isLoadingUsers"
                      :isLoading="isLoading"/>
     </q-expansion-item>
@@ -133,7 +135,7 @@ import PropertyEditor from 'components/PropertyEditor.vue'
 import TagEditor from 'components/TagEditor.vue'
 
 export default {
-  name: 'CollectionEdit',
+  name: 'EntryEdit',
 
   components: {
     'user-selector': UserSelector,
@@ -145,11 +147,15 @@ export default {
     isLoading: {
       type: Boolean,
       default: true
-    }
+    },
+    dataType: {
+      type: String,
+      required: true,
+    },
   },
 
   computed: {
-    collection: {
+    entry: {
       get () {
         return this.$store.state.entries.entry;
       },
@@ -184,7 +190,7 @@ export default {
 
     selectedDatasets: {
       get () {
-        if (this.isLoading)
+        if (this.isLoading || this.dataType !== 'collection')
           return [];
         return JSON.parse(JSON.stringify(this.$store.state.entries.entry['datasets']));
       },
