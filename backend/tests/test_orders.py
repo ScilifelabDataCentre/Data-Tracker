@@ -92,9 +92,11 @@ def test_get_order(mdb):
         data = response.data["order"]
         assert len(order) == len(data)
         for field in order:
-            if  field in ("authors", "datasets", "generators", "editors"):
+            if field in ("authors", "datasets", "generators", "editors"):
                 assert len(order[field]) == len(data[field])
-                assert set(subentry["_id"] for subentry in order[field]) == set(subentry["id"] for subentry in data[field])
+                assert set(subentry["_id"] for subentry in order[field]) == set(
+                    subentry["id"] for subentry in data[field]
+                )
             elif field == "_id":
                 assert order["_id"] == data["id"]
             elif field == "organisation":

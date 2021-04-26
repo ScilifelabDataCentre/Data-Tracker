@@ -166,10 +166,7 @@ def make_request(
     elif method == "POST":
         response = session.post(f"{BASE_URL}{url}", json=data)
     elif method == "PATCH":
-        response = session.patch(
-            f"{BASE_URL}{url}",
-            json=data,
-        )
+        response = session.patch(f"{BASE_URL}{url}", json=data,)
     elif method == "PUT":
         response = session.put(f"{BASE_URL}{url}", json=data)
     elif method == "DELETE":
