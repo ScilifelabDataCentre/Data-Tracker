@@ -235,10 +235,7 @@ export default {
       this.$store.dispatch('entries/deleteEntry', {'id': this.uuid,
                                                    'dataType': this.dataType})
         .then(() => {
-          console.log(capitalize(this.dataType));
-          console.log({ 'name': capitalize(this.dataType) + ' Browser' });
           this.$router.push({ 'name': capitalize(this.dataType) + ' Browser' });
-          console.log(capitalize(this.dataType))
           this.showConfirmDelete = false;
         })
         .catch((err) => this.error = true)
