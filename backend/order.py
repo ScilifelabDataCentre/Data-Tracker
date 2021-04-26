@@ -53,19 +53,6 @@ def list_orders():
     return utils.response_json({"orders": orders})
 
 
-@blueprint.route("/structure", methods=["GET"])
-def get_order_data_structure():
-    """
-    Get an empty order entry.
-
-    Returns:
-        flask.Response: JSON structure with a list of orders.
-    """
-    empty_order = structure.order()
-    empty_order["_id"] = ""
-    return utils.response_json({"order": empty_order})
-
-
 @blueprint.route("/user", defaults={"user_id": None}, methods=["GET"])
 @blueprint.route("/user/<user_id>", methods=["GET"])
 def list_orders_user(user_id: str):
