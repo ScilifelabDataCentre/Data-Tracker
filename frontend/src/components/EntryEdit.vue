@@ -12,7 +12,7 @@
       {{ entry.id }}
     </template>
   </q-field>
-
+  
   <q-input id="entry-title"
            class="q-my-md"
            label="Title"
@@ -23,7 +23,7 @@
       <q-icon name="title" />
     </template>
   </q-input>
-
+  
   <div class="q-my-md">
     <q-input id="entry-description"
              type="textarea"
@@ -43,7 +43,7 @@
       </template>
     </q-input>
   </div>
-
+  
   <q-list bordered
           class="q-my-lg">
     <q-expansion-item expand-separator
@@ -57,7 +57,7 @@
         </q-card-section>
       </q-card>
     </q-expansion-item>
-
+    
     <q-expansion-item expand-separator
                       icon="fas fa-tags"
                       label="Properties"
@@ -71,9 +71,9 @@
         </q-card-section>
       </q-card>
     </q-expansion-item>
-
+    
     <q-separator />
-
+    
     <q-expansion-item expand-separator
                       v-if="dataType === 'collection'"
                       icon="fas fa-chart-area"
@@ -111,7 +111,44 @@
         </template>
       </q-table>
     </q-expansion-item>
-
+    <div v-if="dataType === 'order'">
+      <q-expansion-item expand-separator
+                        icon="far fa-user"
+                        label="Authors"
+                        caption="The ones who own the sample (e.g. PI)">
+        <user-selector fieldTitle="Authors"
+                       fieldDataName="authors"
+                       class="q-my-sm"
+                       helpText="The ones who own the sample (e.g. PI)"
+                       :isLoadingUsers="isLoadingUsers"
+                       :isLoading="isLoading"/>
+      </q-expansion-item>
+      
+      <q-expansion-item expand-separator
+                        icon="far fa-user"
+                        label="Generators"
+                        caption="The ones who generated the data (e.g. Facility)">
+        <user-selector fieldTitle="Generators"
+                       fieldDataName="generators"
+                       class="q-my-sm"
+                       helpText="The ones who generated the data (e.g. Facility)"
+                       :isLoadingUsers="isLoadingUsers"
+                       :isLoading="isLoading"/>
+      </q-expansion-item>
+      
+      <q-expansion-item expand-separator
+                        icon="far fa-user"
+                        label="Organisation"
+                        caption="The data controller (e.g. university)">
+        <user-selector fieldTitle="Organisation"
+                       fieldDataName="organisation"
+                       selectType="single"
+                       class="q-my-sm"
+                       helpText="The data controller (e.g. university)"
+                       :isLoadingUsers="isLoadingUsers"
+                     :isLoading="isLoading"/>
+      </q-expansion-item>
+    </div>
     <q-expansion-item expand-separator
                       v-if="['collection', 'order'].includes(dataType)"
                       icon="far fa-user"
