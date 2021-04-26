@@ -21,7 +21,7 @@
                      filled
                      stack-label
                      label="UUID"
-                     v-model="userData._id"
+                     v-model="userData.id"
                      disable />
           </q-item-section>
         </q-item>
@@ -86,7 +86,7 @@
         <div v-if="uuid !== ''">
           <q-item-label caption>Authentication IDs</q-item-label>
           <q-item class="column">
-            <div v-for="authId in userData.authIds"
+            <div v-for="authId in userData.auth_ids"
                  :key="authId">
               {{ authId }}
             </div>
@@ -243,15 +243,17 @@ export default {
           .catch(() => this.loadingError = true)
           .finally(() => this.isLoading = false);
       }
-
       else {
         this.$store.dispatch('entries/getLocalEntry', {'id': this.uuid,
                                                        'dataType': this.dataType})
-          .then((data) => this.userData = data)
+          .then((data) => {
+            this.userData = data;
+            for (const key in this.permissions)
+              this.permissions[key] = this.userData.permissions.includes(key)
+          })
           .catch(() => this.loadingError = true)
           .finally(() => this.isLoading = false);
       }
-      Object.keys(this.permissions).forEach((key) => this.permissions[key] = this.userData.permissions.includes(key));
     },
     
     loadPermissions () {
@@ -298,25 +300,14 @@ export default {
     saveUser () {
       this.userDataSaveError = false;
       this.userDataSaveWaiting = true;
-      let toSubmit = JSON.parse(JSON.stringify(this.userData));
+      let toSubmit = {};
+      toSubmit.affiliation = this.userData.affiliation;
+      toSubmit.email = this.userData.email;
+      toSubmit.contact = this.userData.contact;
+      toSubmit.orcid = this.userData.orcid;
+      toSubmit.url = this.userData.url;
 
-      if (this.uuid == '') {
-        toSubmit.id = '';
-      }
-      else {
-        toSubmit.id = toSubmit._id;
-      }
-      delete toSubmit._id;
-      delete toSubmit.authIds;
-
-      if (this.uuid === '') {
-        delete toSubmit.apiKey;
-        delete toSubmit.apiSalt;
-      }
-
-      if (!this.currentUser.permissions.includes('USER_MANAGEMENT'))
-        delete toSubmit.permissions;
-      else 
+      if (this.currentUser.permissions.includes('USER_MANAGEMENT'))
         toSubmit.permissions = Object.keys(this.permissions).filter((key) => this.permissions[key]);
 
       this.$store.dispatch('entries/saveEntry', {data: toSubmit,

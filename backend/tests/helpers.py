@@ -71,7 +71,7 @@ def as_user(session: requests.Session, auth_id: str, set_csrf: bool = True) -> i
         code = session.get(f"{BASE_URL}/api/v1/developer/login/{auth_id}").status_code
         assert code == 200
     else:
-        code = session.get(f"{BASE_URL}/api/v1/logout/").status_code
+        code = session.get(f"{BASE_URL}/api/v1/logout").status_code
         session.get(f"{BASE_URL}/api/v1/developer/hello")  # reset cookies
     if set_csrf:
         session.headers["X-CSRFToken"] = session.cookies.get("_csrf_token")
@@ -166,10 +166,7 @@ def make_request(
     elif method == "POST":
         response = session.post(f"{BASE_URL}{url}", json=data)
     elif method == "PATCH":
-        response = session.patch(
-            f"{BASE_URL}{url}",
-            json=data,
-        )
+        response = session.patch(f"{BASE_URL}{url}", json=data,)
     elif method == "PUT":
         response = session.put(f"{BASE_URL}{url}", json=data)
     elif method == "DELETE":

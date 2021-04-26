@@ -18,23 +18,22 @@ export default function (store) {
     let ruleMatch = false;
     if (to.matched.some(entry => entry.meta.loginRequired)) {
       if (!store.store.getters['currentUser/isLoggedIn']) {
-        next({name: 'Login', params: {origin: {name: to.name, path: to.path}}});
         ruleMatch = true;
+        next({name: 'Login', params: {origin: {name: to.name, path: to.path}}});
       }
-    }
-
-    if (!ruleMatch && to.matched.some(entry => entry.meta.permissionRequired)) {
-      let permissions = to.matched.map((entry) => entry.meta.permissionRequired).flat();
-      for (let perm of permissions) {
-        if (perm === undefined)
-          continue;
-        if (!store.store.getters['currentUser/info'].permissions.includes(perm)) {
-          next({name: 'Forbidden', params: {toPath: {name: to.name,
-                                                     path: to.path},
-                                            fromPath: {name: from.name,
-                                                       path: from.path}}});
-          ruleMatch = true;
-          break;
+      else if (to.matched.some(entry => entry.meta.permissionRequired)) {
+        let permissions = to.matched.map((entry) => entry.meta.permissionRequired).flat();
+        for (let perm of permissions) {
+          if (perm === undefined)
+            continue;
+          if (!store.store.getters['currentUser/info'].permissions.includes(perm)) {
+            ruleMatch = true;
+            next({name: 'Forbidden', params: {toPath: {name: to.name,
+                                                       path: to.path},
+                                              fromPath: {name: from.name,
+                                                         path: from.path}}});
+            break;
+          }
         }
       }
     }

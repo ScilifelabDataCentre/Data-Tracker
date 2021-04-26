@@ -22,11 +22,11 @@ def test_logout():
     """Assure that session is cleared after logging out."""
     session = requests.Session()
     as_user(session, USERS["root"])
-    response = make_request(session, "/api/v1/user/me/")
+    response = make_request(session, "/api/v1/user/me")
     for field in response.data["user"]:
         assert response.data["user"][field]
-    response = make_request(session, "/api/v1/logout/", ret_json=False)
-    response = make_request(session, "/api/v1/user/me/")
+    response = make_request(session, "/api/v1/logout", ret_json=False)
+    response = make_request(session, "/api/v1/user/me")
     for field in response.data["user"]:
         assert not response.data["user"][field]
 
@@ -38,7 +38,7 @@ def test_key_login():
     for i, userid in enumerate(USERS):
         response = make_request(
             session,
-            "/api/v1/login/apikey/",
+            "/api/v1/login/apikey",
             data={"api-user": USERS[userid], "api-key": str(i - 1)},
             method="POST",
         )
@@ -56,7 +56,7 @@ def test_key_login():
 
 def test_list_login_types():
     """List possible ways to login"""
-    responses = helpers.make_request_all_roles("/api/v1/login/", ret_json=True)
+    responses = helpers.make_request_all_roles("/api/v1/login", ret_json=True)
     for response in responses:
         assert response.code == 200
         assert response.data == {"types": ["apikey", "oidc"]}
@@ -64,7 +64,7 @@ def test_list_login_types():
 
 def test_list_oidc_types():
     """List supported oidc logins"""
-    responses = helpers.make_request_all_roles("/api/v1/login/oidc/", ret_json=True)
+    responses = helpers.make_request_all_roles("/api/v1/login/oidc", ret_json=True)
     for response in responses:
         assert response.code == 200
-        assert response.data == {"entry": "/api/v1/login/oidc/entry/login/"}
+        assert response.data == {"entry": "/api/v1/login/oidc/entry/login"}

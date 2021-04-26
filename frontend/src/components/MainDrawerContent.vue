@@ -109,7 +109,7 @@ export default {
           title: 'Current User',
           caption: 'About the current user',
           icon: 'person',
-          link: '/me'
+          link: { 'name': 'About Current User'}
         },
       ],
       

@@ -8,7 +8,7 @@ import user
 blueprint = flask.Blueprint("dataset", __name__)  # pylint: disable=invalid-name
 
 
-@blueprint.route("/", methods=["GET"])
+@blueprint.route("", methods=["GET"])
 def list_datasets():
     """Provide a simplified list of all available datasets."""
     results = list(
@@ -19,7 +19,7 @@ def list_datasets():
     return utils.response_json({"datasets": results})
 
 
-@blueprint.route("/user/", methods=["GET"])
+@blueprint.route("/user", methods=["GET"])
 @user.login_required
 def list_user_data():
     """List all datasets belonging to current user."""
@@ -34,7 +34,7 @@ def list_user_data():
     return utils.response_json({"datasets": user_datasets})
 
 
-@blueprint.route("/structure/", methods=["GET"])
+@blueprint.route("/structure", methods=["GET"])
 def get_dataset_data_structure():
     """
     Get an empty dataset entry.
@@ -47,7 +47,7 @@ def get_dataset_data_structure():
     return utils.response_json({"dataset": empty_dataset})
 
 
-@blueprint.route("/<identifier>/", methods=["GET"])
+@blueprint.route("/<identifier>", methods=["GET"])
 def get_dataset(identifier):
     """
     Retrieve the dataset with uuid <identifier>.
@@ -65,7 +65,7 @@ def get_dataset(identifier):
     return utils.response_json({"dataset": result})
 
 
-@blueprint.route("/", methods=["POST"])
+@blueprint.route("", methods=["POST"])
 @user.login_required
 def add_dataset():  # pylint: disable=too-many-branches
     """
@@ -133,7 +133,7 @@ def add_dataset():  # pylint: disable=too-many-branches
     return utils.response_json({"_id": result_ds.inserted_id})
 
 
-@blueprint.route("/<identifier>/", methods=["DELETE"])
+@blueprint.route("/<identifier>", methods=["DELETE"])
 @user.login_required
 def delete_dataset(identifier: str):
     """
@@ -193,7 +193,7 @@ def delete_dataset(identifier: str):
     return flask.Response(status=200)
 
 
-@blueprint.route("/<identifier>/", methods=["PATCH"])
+@blueprint.route("/<identifier>", methods=["PATCH"])
 @user.login_required
 def update_dataset(identifier):
     """
@@ -249,7 +249,7 @@ def update_dataset(identifier):
     return flask.Response(status=200)
 
 
-@blueprint.route("/<identifier>/log/", methods=["GET"])
+@blueprint.route("/<identifier>/log", methods=["GET"])
 @user.login_required
 def get_dataset_log(identifier: str = None):
     """

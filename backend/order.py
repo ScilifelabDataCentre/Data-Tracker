@@ -28,7 +28,7 @@ def prepare():
         flask.abort(status=403)
 
 
-@blueprint.route("/", methods=["GET"])
+@blueprint.route("", methods=["GET"])
 def list_orders():
     """
     List all orders visible to the current user.
@@ -53,21 +53,8 @@ def list_orders():
     return utils.response_json({"orders": orders})
 
 
-@blueprint.route("/structure/", methods=["GET"])
-def get_order_data_structure():
-    """
-    Get an empty order entry.
-
-    Returns:
-        flask.Response: JSON structure with a list of orders.
-    """
-    empty_order = structure.order()
-    empty_order["_id"] = ""
-    return utils.response_json({"order": empty_order})
-
-
-@blueprint.route("/user/", defaults={"user_id": None}, methods=["GET"])
-@blueprint.route("/user/<user_id>/", methods=["GET"])
+@blueprint.route("/user", defaults={"user_id": None}, methods=["GET"])
+@blueprint.route("/user/<user_id>", methods=["GET"])
 def list_orders_user(user_id: str):
     """
     List all orders belonging to the provided user.
@@ -98,7 +85,7 @@ def list_orders_user(user_id: str):
     return utils.response_json({"orders": orders})
 
 
-@blueprint.route("/<identifier>/", methods=["GET"])
+@blueprint.route("/<identifier>", methods=["GET"])
 def get_order(identifier):
     """
     Retrieve the order with the provided uuid.
@@ -129,7 +116,7 @@ def get_order(identifier):
     return utils.response_json({"order": order_data})
 
 
-@blueprint.route("/<identifier>/log/", methods=["GET"])
+@blueprint.route("/<identifier>/log", methods=["GET"])
 def get_order_logs(identifier):
     """
     List changes to the dataset.
@@ -167,7 +154,7 @@ def get_order_logs(identifier):
     )
 
 
-@blueprint.route("/base/", methods=["GET"])
+@blueprint.route("/base", methods=["GET"])
 def get_empty_order():
     """
     Provide the basic data structure for an empty order.
@@ -182,7 +169,7 @@ def get_empty_order():
     return utils.response_json({"order": order})
 
 
-@blueprint.route("/", methods=["POST"])
+@blueprint.route("", methods=["POST"])
 def add_order():
     """
     Add an order.
@@ -222,7 +209,7 @@ def add_order():
     return utils.response_json({"_id": result.inserted_id})
 
 
-@blueprint.route("/<identifier>/", methods=["DELETE"])
+@blueprint.route("/<identifier>", methods=["DELETE"])
 def delete_order(identifier: str):
     """
     Delete the order with the given identifier.
@@ -264,7 +251,7 @@ def delete_order(identifier: str):
     return flask.Response(status=200)
 
 
-@blueprint.route("/<identifier>/", methods=["PATCH"])
+@blueprint.route("/<identifier>", methods=["PATCH"])
 def update_order(identifier: str):  # pylint: disable=too-many-branches
     """
     Update an existing order.

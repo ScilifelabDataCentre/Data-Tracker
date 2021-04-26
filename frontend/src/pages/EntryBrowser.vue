@@ -1,6 +1,6 @@
 <template>
 <q-page padding>
-  <h2 class="text-capitalize">{{ entryType + 's' }}</h2>
+  <h2 class="text-capitalize">{{ dataType + 's' }}</h2>
   <q-table flat
            :data="entries"
            :columns="columns"
@@ -16,7 +16,7 @@
       <q-btn v-show="showAdd"
              color="primary"
              icon="add"
-             :label="'Add ' + entryType"
+             :label="'Add ' + dataType"
              :to="{ 'name': pageNew }" />
     </template>
 
@@ -35,13 +35,13 @@
 
     <template v-slot:item="props">
       <div class="col-xs-12 col-md-6 col-lg-4 col-xl-3 row self-stretch">
-        <q-card class="q-ma-xs bg-grey-1 col" @click="gotoEntry(props.row._id)">
+        <q-card class="q-ma-xs bg-grey-1 col" @click="gotoEntry(props.row.id)">
           <q-card-section class="text-center">
             <div class="text-h6 bg-grey-4 q-mb-xs q-pa-xs">
               {{ props.row.title }}
             </div>
             <div class="text-caption text-italic">
-              {{ props.row._id }}
+              {{ props.row.id }}
             </div>
           </q-card-section>
           <q-card-section>
@@ -101,14 +101,14 @@ export default {
   },
 
   props: {
-    entryType: {
+    dataType: {
       type: String,
       required: true
     }
   },
 
   watch: {
-    entryType: {
+    dataType: {
       immediate: true,
       handler () {
         this.loadData();
@@ -161,18 +161,18 @@ export default {
 
   methods: {
     gotoEntry (uuid) {
-      this.$router.push({ name: this.pageAbout, params: { 'uuid': uuid } });
+      this.$router.push({ name: this.pageAbout, params: { 'uuid': uuid, 'dataType': this.dataType} });
     },
     loadData () {
       this.$store.dispatch('entries/resetEntryList')
         .then(() => this.loading = true)
         .then(() => {
-          this.$store.dispatch('entries/getEntries', this.entryType)
+          this.$store.dispatch('entries/getEntries', this.dataType)
             .then(() => this.loading = false)
             .catch(() => this.loading = false)
         });
-      this.pageAbout = capitalize(this.entryType) + ' About';
-      this.pageNew = capitalize(this.entryType) + ' New';
+      this.pageAbout = capitalize(this.dataType) + ' About';
+      this.pageNew = capitalize(this.dataType) + ' New';
     },
   }
 }

@@ -418,16 +418,16 @@ def test_validate_url():
     validator = validate.VALIDATION_MAPPER["url"]
 
     assert validator("")
-    assert validator("https://www.example.com/folder/")
-    assert validator("http://www.example.com/folder/")
+    assert validator("https://www.example.com/folder")
+    assert validator("http://www.example.com/folder")
     assert validator("http://localhost")
 
     with pytest.raises(ValueError):
-        validator("RandomTexthttps://www.example.com/folder/")
+        validator("RandomTexthttps://www.example.com/folder")
     with pytest.raises(ValueError):
-        validator("http://")
+        validator("http:/")
     with pytest.raises(ValueError):
-        validator("https://")
+        validator("https:/")
     with pytest.raises(ValueError):
         validator("ftp://localhost")
     with pytest.raises(ValueError):

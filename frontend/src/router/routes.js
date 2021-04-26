@@ -10,9 +10,7 @@ const Page404 = () => import(/* webpackChunkName: "errors" */ 'pages/Error404.vu
 const NonAuth = () => import(/* webpackChunkName: "errors" */ 'pages/NonAuth.vue')
 const NoBackend = () => import(/* webpackChunkName: "errors" */ 'pages/NoBackend.vue')
 
-const CollectionInfo = () => import(/* webpackChunkName: "data" */ 'pages/CollectionInfo.vue')
-const DatasetInfo = () => import(/* webpackChunkName: "data" */ 'pages/DatasetInfo.vue')
-const OrderInfo = () => import(/* webpackChunkName: "data" */ 'pages/OrderInfo.vue')
+const EntryInfo = () => import(/* webpackChunkName: "data" */ 'pages/EntryInfo.vue')
 const EntryBrowser = () => import(/* webpackChunkName: "data" */ 'pages/EntryBrowser.vue')
 
 const UserManager = () => import(/* webpackChunkName: "admin" */ 'pages/UserManager.vue')
@@ -35,14 +33,14 @@ const routes = [
   },
 
   {
-    path: '/datasets',
+    path: '/collections',
     component: MainLayout,
     children: [
       {
         path: '',
         component: EntryBrowser,
-        name: 'Dataset Browser',
-        props: { 'entryType': 'dataset'}
+        name: 'Collection Browser',
+        props: { 'dataType': 'collection'}
       },
       {
         path: 'new',
@@ -50,21 +48,50 @@ const routes = [
           'permissionRequired': ['DATA_EDIT'],
           'loginRequired': true,
         },
-        component: DatasetInfo,
-        props: {'uuid': ''},
+        component: EntryInfo,
+        props: {'uuid': '', dataType: 'collection'},
+        name: 'Collection New'
+      },
+      {
+        path: ':uuid',
+        component: EntryInfo,
+        props: route => ({'uuid': route.params.uuid, 'dataType': 'collection'}),
+        name: 'Collection About'
+      },
+    ]
+  },
+
+  {
+    path: '/datasets',
+    component: MainLayout,
+    children: [
+      {
+        path: '',
+        component: EntryBrowser,
+        name: 'Dataset Browser',
+        props: { 'dataType': 'dataset'}
+      },
+      {
+        path: 'new',
+        meta: {
+          'permissionRequired': ['DATA_EDIT'],
+          'loginRequired': true,
+        },
+        component: EntryInfo,
+        props: {'uuid': '', dataType: 'dataset'},
         name: 'Dataset New'
       },
       {
         path: ':uuid',
-        component: DatasetInfo,
-        props: true,
+        component: EntryInfo,
+        props: route => ({'uuid': route.params.uuid, 'dataType': 'dataset'}),
         name: 'Dataset About'
       },
     ]
   },
 
   {
-    path: '/me',
+    path: '/account',
     component: MainLayout,
     meta: {
       'loginRequired': true,
@@ -90,7 +117,7 @@ const routes = [
         path: '',
         component: EntryBrowser,
         name: 'Order Browser',
-        props: { 'entryType': 'order'}
+        props: { 'dataType': 'order'}
       },
       {
         path: 'new',
@@ -98,46 +125,17 @@ const routes = [
           'permissionRequired': ['DATA_EDIT'],
           'loginRequired': true,
         },
-        component: OrderInfo,
-        props: {'uuid': ''},
+        component: EntryInfo,
+        props: {'uuid': '', dataType: 'order'},
         name: 'Order New'
       },
       {
         path: ':uuid',
-        component: OrderInfo,
-        props: true,
+        component: EntryInfo,
+        props: route => ({'uuid': route.params.uuid, 'dataType': 'order'}),
         name: 'Order About'
       },
 
-    ]
-  },
-
-  {
-    path: '/collections',
-    component: MainLayout,
-    children: [
-      {
-        path: '',
-        component: EntryBrowser,
-        name: 'Collection Browser',
-        props: { 'entryType': 'collection'}
-      },
-      {
-        path: 'new',
-        meta: {
-          'permissionRequired': ['DATA_EDIT'],
-          'loginRequired': true,
-        },
-        component: CollectionInfo,
-        props: {'uuid': ''},
-        name: 'Collection New'
-      },
-      {
-        path: ':uuid',
-        component: CollectionInfo,
-        props: true,
-        name: 'Collection About'
-      },
     ]
   },
 

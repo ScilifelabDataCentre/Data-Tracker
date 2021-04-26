@@ -1,6 +1,6 @@
 """General helper functions."""
 
-from collections import abc, namedtuple
+from collections import namedtuple
 from typing import Any, Union
 import datetime
 import html
@@ -85,7 +85,10 @@ def secure_description(data: str):
 # csrf
 def verify_csrf_token():
     """
-    Compare the csrf token from the request (header) with the one in the cookie.session.
+    Compare the csrf token from the request (header) with the one in ``cookie.session``.
+
+    Args:
+        request: The Flask request.
 
     Aborts with status 400 if the verification fails.
     """
@@ -231,12 +234,6 @@ def convert_keys_to_camel(chunk: Any) -> Any:
     Returns:
         Any: Chunk converted to camelCase `dict`, otherwise chunk.
     """
-    if isinstance(chunk, abc.Sequence) and not isinstance(chunk, str):
-        return [convert_keys_to_camel(e) for e in chunk]
-
-    if not isinstance(chunk, abc.Mapping):
-        return chunk
-
     new_chunk = {}
     for key, value in chunk.items():
         if key == "_id":
@@ -255,6 +252,8 @@ def is_email(indata: str):
     """
     Check whether a string seems to be an email address or not.
 
+    Will not do thorough checking, just a basic check that the basic components are there.
+
     Args:
         indata (str): Data to check.
 
@@ -266,18 +265,58 @@ def is_email(indata: str):
     return bool(REGEX["email"].fullmatch(indata))
 
 
-def response_json(json_structure: dict):
+def response_json(data: dict):
     """
-    Convert keys to camelCase and run ``flask.jsonify()``.
+    Prepare a json response from the provided data.
 
     Args:
-        json_structure (dict): Structure to prepare.
+        date (dict): Structure to make into a respone.
 
     Returns:
         flask.Response: Prepared response containing json structure with camelBack keys.
     """
-    data = convert_keys_to_camel(json_structure)
-    return flask.jsonify(data)
+    url = flask.request.path
+    return flask.jsonify(prepare_response(data, url))
+
+
+def prepare_response(data: dict, url: str = ""):
+    """
+    Prepare the fields before running jsonify.
+
+    ``data`` is modified in-place
+
+    * Rename ``_id`` to ``id``
+    * If available, add origin URL to the response
+
+    Args:
+        data (dict): Structure to prepare.
+
+    Returns:
+        dict:
+    """
+
+    def fix_id(chunk):
+        """Recurse over the data structure to convert any ``_id`` to ``id``."""
+        if isinstance(chunk, dict):
+            if "_id" in chunk:
+                chunk["id"] = chunk["_id"]
+                del chunk["_id"]
+            for key, value in chunk.items():
+                chunk[key] = fix_id(value)
+        elif isinstance(chunk, list) or isinstance(chunk, tuple):
+            new_list = []
+            for i, entry in enumerate(chunk):
+                new_list.append(fix_id(entry))
+            chunk = new_list
+        return chunk
+
+    if isinstance(data, dict):
+        data = fix_id(data)
+        if url:
+            data["url"] = url
+    elif isinstance(data, list) or isinstance(data, tuple):
+        data = fix_id(data)
+    return data
 
 
 def make_timestamp():
