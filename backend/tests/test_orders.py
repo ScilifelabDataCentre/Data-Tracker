@@ -292,7 +292,7 @@ def test_list_user_orders(mdb):
             assert response.data
             assert len(user_orders) == len(response.data["orders"])
             for order in response.data["orders"]:
-                assert order["_id"] in order_uuids
+                assert order["id"] in order_uuids
         else:
             assert response.code == 200
             assert len(response.data["orders"]) == 0
@@ -830,7 +830,7 @@ def test_list_all_orders(mdb):
             assert len(response.data["orders"]) == nr_orders
             assert set(response.data["orders"][0].keys()) == {
                 "title",
-                "_id",
+                "id",
                 "tags",
                 "properties",
             }
