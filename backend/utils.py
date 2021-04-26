@@ -1,6 +1,6 @@
 """General helper functions."""
 
-from collections import abc, namedtuple
+from collections import namedtuple
 from typing import Any, Union
 import datetime
 import html
