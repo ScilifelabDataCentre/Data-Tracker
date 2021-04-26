@@ -6,7 +6,7 @@
       {{ entry.id }}
     </div>
   </div>
-
+  
   <div class="q-my-md q-mx-sm"
        v-show="Object.keys(entry.properties).length">
     <q-chip square
@@ -16,7 +16,7 @@
       <span class="text-bold text-capitalize text-blue-9 q-mr-sm">{{ field }}</span> {{ entry.properties[field] }}
     </q-chip>
   </div>
-
+  
   <div class="q-my-sm q-mx-sm"
        v-show="entry.tags.length">
     <q-chip square
@@ -27,14 +27,14 @@
       {{ tag }}
     </q-chip>
   </div>
-
+  
   <div class="q-my-md" v-show="entry.description.length">
     <q-markdown :src="entry.description" />
   </div>
-
+  
   <div class="q-my-md"
-       v-if="dataType === 'collection'">
-    <q-list>
+       v-if="['collection', 'order'].includes(dataType) && entry.datasets.length > 0">
+    <q-list bordered>
       <list-header title="Datasets"
                    :explanation="'Datasets associated with this ' + dataType" />
       <q-item clickable
@@ -55,15 +55,36 @@
       </q-item>
     </q-list>
   </div>
-
-  <div class="q-my-md" v-if="['collection', 'order'].includes(dataType) && 'editors' in entry && entry.editors.length">
-    <q-list>
-      <div>
+  
+  <div class="q-my-md" v-if="['collection', 'order'].includes(dataType)">
+    <q-list bordered>
+      <div v-if="dataType === 'order'">
+        <div v-show="entry.authors.length">
+          <list-header title="Authors"
+                       explanation="The ones who provided the sample, e.g. a researcher" />
+          <user-entry v-for="author in entry.authors"
+                      :key="author._id"
+                      v-bind="author" />
+        </div>
+        <div v-show="entry.generators.length">
+          <list-header title="Generators"
+                       explanation="The ones who generated the data, e.g. a facility" />
+          <user-entry v-for="generator in entry.generators"
+                      :key="generator._id"
+                      v-bind="generator" />
+        </div>
+        <div v-if="Object.keys(entry.organisation).length">
+          <list-header title="Organisation"
+                       explanation="The data owner, e.g. a university" />
+          <user-entry v-bind="entry.organisation" />
+        </div>
+      </div>
+      <div v-show="'editors' in entry && entry.editors.length">
         <list-header title="Editors"
-                     :explanation="'Users that may edit this ' + dataType" />
-        <user-entry v-for="entry in entry.editors"
-                    :key="entry.id"
-                    v-bind="entry" />
+                     explanation="Users that may edit this entry" />
+        <user-entry v-for="editor in entry.editors"
+                    :key="editor.id"
+                    v-bind="editor" />
       </div>
     </q-list>
   </div>
