@@ -80,21 +80,21 @@ const routes = [
           'permissionRequired': ['DATA_EDIT'],
           'loginRequired': true,
         },
-        component: DatasetInfo,
-        props: {'uuid': ''},
+        component: EntryInfo,
+        props: {'uuid': '', dataType: 'dataset'},
         name: 'Dataset New'
       },
       {
         path: ':uuid',
-        component: DatasetInfo,
-        props: true,
+        component: EntryInfo,
+        props: route => ({'uuid': route.params.uuid, 'dataType': 'dataset'}),
         name: 'Dataset About'
       },
     ]
   },
 
   {
-    path: '/me',
+    path: '/account',
     component: MainLayout,
     meta: {
       'loginRequired': true,
@@ -128,14 +128,14 @@ const routes = [
           'permissionRequired': ['DATA_EDIT'],
           'loginRequired': true,
         },
-        component: OrderInfo,
-        props: {'uuid': ''},
+        component: EntryInfo,
+        props: {'uuid': '', dataType: 'order'},
         name: 'Order New'
       },
       {
         path: ':uuid',
-        component: OrderInfo,
-        props: true,
+        component: EntryInfo,
+        props: route => ({'uuid': route.params.uuid, 'dataType': 'order'}),
         name: 'Order About'
       },
 
