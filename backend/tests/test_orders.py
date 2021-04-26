@@ -89,7 +89,6 @@ def test_get_order(mdb):
 
         response = make_request(session, f'/api/v1/order/{order["_id"]}')
         assert response.code == 200
-        assert response.code == 200
         data = response.data["order"]
         assert len(order) == len(data)
         for field in order:
@@ -97,6 +96,8 @@ def test_get_order(mdb):
                 assert len(order[field]) == len(data[field])
                 for ds in order[field]:
                     assert ds in data[field]
+            elif field == "_id":
+                assert order["_id"] == data["id"]                
             else:
                 assert order[field] == data[field]
 
@@ -193,8 +194,8 @@ def test_get_order_logs(mdb):
         response = make_request(
             session, f'/api/v1/order/{order["_id"]}/log', ret_json=True
         )
-        assert response.data["dataType"] == "order"
-        assert response.data["entryId"] == str(order["_id"])
+        assert response.data["data_type"] == "order"
+        assert response.data["entry_id"] == str(order["_id"])
         assert len(response.data["logs"]) == len(logs)
         assert response.code == 200
 
@@ -355,8 +356,8 @@ def test_add_order_permissions():
     for response in responses:
         if response.role in ("edit", "data", "root"):
             assert response.code == 200
-            assert "_id" in response.data
-            assert len(response.data["_id"]) == 36
+            assert "id" in response.data
+            assert len(response.data["id"]) == 36
         elif response.role == "no-login":
             assert response.code == 401
             assert not response.data
@@ -382,9 +383,9 @@ def test_add_order(mdb):
     for response in responses:
         if response.role in ("edit", "data", "root"):
             assert response.code == 200
-            assert "_id" in response.data
-            assert len(response.data["_id"]) == 36
-            order = db["orders"].find_one({"_id": uuid.UUID(response.data["_id"])})
+            assert "id" in response.data
+            assert len(response.data["id"]) == 36
+            order = db["orders"].find_one({"_id": uuid.UUID(response.data["id"])})
             curr_user = db["users"].find_one({"auth_ids": USERS[response.role]})
             assert order["description"] == indata["description"]
             assert order["title"] == indata["title"]
@@ -413,9 +414,9 @@ def test_add_order(mdb):
     for response in responses:
         if response.role in ("edit", "data", "root"):
             assert response.code == 200
-            assert "_id" in response.data
-            assert len(response.data["_id"]) == 36
-            order = db["orders"].find_one({"_id": uuid.UUID(response.data["_id"])})
+            assert "id" in response.data
+            assert len(response.data["id"]) == 36
+            order = db["orders"].find_one({"_id": uuid.UUID(response.data["id"])})
 
             user_list = [edit_user["_id"]]
             for field in ("description", "title"):
@@ -453,12 +454,12 @@ def test_add_order_log(mdb):
     for response in responses:
         if response.role in ("edit", "data", "root"):
             assert response.code == 200
-            assert "_id" in response.data
-            assert len(response.data["_id"]) == 36
-            order = db["orders"].find_one({"_id": uuid.UUID(response.data["_id"])})
+            assert "id" in response.data
+            assert len(response.data["id"]) == 36
+            order = db["orders"].find_one({"_id": uuid.UUID(response.data["id"])})
             logs = list(
                 db["logs"].find(
-                    {"data_type": "order", "data._id": uuid.UUID(response.data["_id"])}
+                    {"data_type": "order", "data._id": uuid.UUID(response.data["id"])}
                 )
             )
             assert len(logs) == 1
@@ -798,7 +799,7 @@ def test_delete_order(mdb):
     )
     assert response.code == 200
     response = make_request(
-        session, f'/api/v1/order/{response.data["_id"]}', method="DELETE"
+        session, f'/api/v1/order/{response.data["id"]}', method="DELETE"
     )
     assert response.code == 200
     assert not response.data
