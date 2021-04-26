@@ -12,7 +12,7 @@
       <q-list>
         <q-expansion-item expand-separator
                           v-for="entry in actions"
-                          :key="entry._id"
+                          :key="entry.id"
                           :label="capitalize(entry.comment) + ' (' + entry.action.toUpperCase() + ')'"
                           :caption="entry.timestamp">
           <q-card>
@@ -22,7 +22,7 @@
                   <q-field stack-label
                            label="Data Type"
                            outlined>
-                    {{ capitalize(entry.dataType) }}
+                    {{ capitalize(entry.data_type) }}
                   </q-field>
                 </q-item-section>
               </q-item>
@@ -31,7 +31,7 @@
                   <q-field stack-label
                            label="Entry UUID"
                            outlined>
-                    {{ entry.entryId }}
+                    {{ entry.entry_id }}
                   </q-field>
                 </q-item-section>
               </q-item>
@@ -39,8 +39,8 @@
                 <q-item-section>
                   <q-btn flat
                          color="primary"
-                         :label="'Go to ' + entry.dataType"
-                         :to="{ 'name': capitalize(entry.dataType) + ' About', 'params': { 'uuid': entry.entryId } }" />
+                         :label="'Go to ' + entry.data_type"
+                         :to="{ 'name': capitalize(entry.data_type) + ' About', 'params': { 'uuid': entry.entry_id } }" />
                 </q-item-section>
               </q-item>
             </q-list>
