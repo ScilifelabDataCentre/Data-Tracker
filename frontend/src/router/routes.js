@@ -10,10 +10,7 @@ const Page404 = () => import(/* webpackChunkName: "errors" */ 'pages/Error404.vu
 const NonAuth = () => import(/* webpackChunkName: "errors" */ 'pages/NonAuth.vue')
 const NoBackend = () => import(/* webpackChunkName: "errors" */ 'pages/NoBackend.vue')
 
-const CollectionInfo = () => import(/* webpackChunkName: "data" */ 'pages/CollectionInfo.vue')
 const EntryInfo = () => import(/* webpackChunkName: "data" */ 'pages/EntryInfo.vue')
-const DatasetInfo = () => import(/* webpackChunkName: "data" */ 'pages/DatasetInfo.vue')
-const OrderInfo = () => import(/* webpackChunkName: "data" */ 'pages/OrderInfo.vue')
 const EntryBrowser = () => import(/* webpackChunkName: "data" */ 'pages/EntryBrowser.vue')
 
 const UserManager = () => import(/* webpackChunkName: "admin" */ 'pages/UserManager.vue')
