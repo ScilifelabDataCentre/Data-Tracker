@@ -92,28 +92,17 @@ def test_get_order(mdb):
         data = response.data["order"]
         assert len(order) == len(data)
         for field in order:
-            if field == "datasets":
+            if  field in ("authors", "datasets", "generators", "editors"):
                 assert len(order[field]) == len(data[field])
-                for ds in order[field]:
-                    assert ds in data[field]
+                assert set(subentry["_id"] for subentry in order[field]) == set(subentry["id"] for subentry in data[field])
             elif field == "_id":
-                assert order["_id"] == data["id"]                
+                assert order["_id"] == data["id"]
+            elif field == "organisation":
+                assert order[field]["_id"] == data[field]["id"]
             else:
+                print(order)
+                print(data)
                 assert order[field] == data[field]
-
-
-def test_get_order_structure():
-    """Request the order structure and confirm that it matches the official one"""
-    session = requests.Session()
-    as_user(session, USERS["data"])
-
-    reference = structure.order()
-    reference["_id"] = ""
-
-    response = make_request(session, "/api/v1/order/base")
-    assert response.code == 200
-    data = response.data["order"]
-    assert data == reference
 
 
 def test_get_order_bad():
