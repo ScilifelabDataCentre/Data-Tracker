@@ -37,7 +37,7 @@
                  dense
                  round
                  icon="edit"
-                 @click="activateUserEdit(props.row._id)"
+                 @click="activateUserEdit(props.row.id)"
                  size="sm" />
         </q-td>
       </q-tr>
