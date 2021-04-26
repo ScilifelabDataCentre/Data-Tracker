@@ -13,21 +13,23 @@
                           :label="capitalize(entry.comment) + ' (' + entry.action.toUpperCase() + ')'"
                           :caption="entry.timestamp">
           <q-card>
-            <q-list dense>
+            <q-list>
               <q-item>
                 <q-item-section>
                   <q-field stack-label
+                           outlined
                            label="User">
                     {{ entry.user }}
                   </q-field>
                 </q-item-section>
               </q-item>
-              <q-item-label header>
+              <q-item-label caption>
                 Changes
               </q-item-label>
               <q-item v-for="key in Object.keys(entry.data)" :key="key">
                 <q-item-section>
                   <q-field stack-label
+                           outlined
                            :label="key">
                     {{ entry.data[key] }}
                   </q-field>
