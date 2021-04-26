@@ -243,15 +243,17 @@ export default {
           .catch(() => this.loadingError = true)
           .finally(() => this.isLoading = false);
       }
-
       else {
         this.$store.dispatch('entries/getLocalEntry', {'id': this.uuid,
                                                        'dataType': this.dataType})
-          .then((data) => this.userData = data)
+          .then((data) => {
+            this.userData = data;
+            for (const key in this.permissions)
+              this.permissions[key] = this.userData.permissions.includes(key)
+          })
           .catch(() => this.loadingError = true)
           .finally(() => this.isLoading = false);
       }
-      Object.keys(this.permissions).forEach((key) => this.permissions[key] = this.userData.permissions.includes(key));
     },
     
     loadPermissions () {
