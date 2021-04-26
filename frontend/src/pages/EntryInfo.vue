@@ -9,7 +9,7 @@
            class="q-my-md"
            color="primary"
            :to="{ 'name': 'Collection Browser' }"
-           :label="'Back to ' + entryType + ' browser'" />
+           :label="'Back to ' + dataType + ' browser'" />
   </div>
   <div v-else>
     <div class="row justify-between">
@@ -63,6 +63,7 @@
                label="Save"
                color="positive"
                :loading="isSaving"
+               :disable="entry.title === '' ? true : false"
                @click="saveEdit" />
         
         <q-btn class="q-ml-sm q-mr-lg"
@@ -85,30 +86,30 @@
         </q-tabs>
       </div>
       <q-btn type="a"
-             :href="'/api/v1/' + entryType + '/' + uuid"
+             :href="'/api/v1/' + dataType + '/' + uuid"
              color="primary"
              label="JSON (API)" />
     </div>
     <q-tab-panels v-model="currentTab">
       <q-tab-panel name="preview">
-        <entry-about :isLoading="isLoading"/>
+        <entry-about :isLoading="isLoading" :dataType="dataType" />
       </q-tab-panel>
       
       <q-tab-panel name="edit">
-        <entry-edit :isLoading="isLoading"/>
+        <entry-edit :isLoading="isLoading"  :dataType="dataType" />
       </q-tab-panel>
     </q-tab-panels>
 
     <log-viewer v-if="'editors' in entry"
                 v-model="showLogs"
-                :entryType="entryType"
+                :dataType="dataType"
                 :uuid="uuid" />
     
     <q-dialog v-model="showConfirmDelete">
       <q-card>
         <q-card-section class="row items-center">
           <q-avatar icon="fas fa-trash" color="alert" text-color="primary" />
-          <span class="q-ml-sm">Are you sure you want to delete this {{ entryType }}?</span>
+          <span class="q-ml-sm">Are you sure you want to delete this {{ dataType }}?</span>
         </q-card-section>
         
         <q-card-actions align="right">
@@ -142,6 +143,9 @@
 </template>
 
 <script>
+import { format } from 'quasar'
+const { capitalize } = format
+
 import EntryAbout from 'components/EntryAbout.vue'
 import EntryEdit from 'components/EntryEdit.vue'
 import LogViewer from 'components/LogViewer.vue'
@@ -160,7 +164,7 @@ export default {
       type: String,
       default: '',
     },
-    entryType: {
+    dataType: {
       type: String,
       required: true,
     },
@@ -213,7 +217,7 @@ export default {
 
     cancelEdit () {
       if (this.uuid === '') {
-          this.$router.push({ 'name': capitalize(this.entryType) + ' Browser' });
+          this.$router.push({ 'name': capitalize(this.dataType) + ' Browser' });
       }
       this.editMode = false;
       this.loadData();
@@ -229,9 +233,12 @@ export default {
       event.preventDefault();
       this.isDeleting =  true;
       this.$store.dispatch('entries/deleteEntry', {'id': this.uuid,
-                                                'entryType': this.entryType})
+                                                   'dataType': this.dataType})
         .then(() => {
-          this.$router.push({ 'name': capitalize(this.entryType) + ' Browser' });
+          console.log(capitalize(this.dataType));
+          console.log({ 'name': capitalize(this.dataType) + ' Browser' });
+          this.$router.push({ 'name': capitalize(this.dataType) + ' Browser' });
+          console.log(capitalize(this.dataType))
           this.showConfirmDelete = false;
         })
         .catch((err) => this.error = true)
@@ -242,15 +249,26 @@ export default {
       event.preventDefault();
       if (this.entry.title === '')
         return;
-      let collectionToSubmit = JSON.parse(JSON.stringify(this.entry));
-      let field = '';
-      for (field of ['editors', 'datasets'])
-           collectionToSubmit[field] = collectionToSubmit[field].map(item => item.id);
-      if (this.uuid === '')
-        collectionToSubmit.id = ''
+      let dataToSubmit = {}
+      dataToSubmit.title = this.entry.title;
+      dataToSubmit.description = this.entry.description;
+      dataToSubmit.properties = this.entry.properties;
+      dataToSubmit.tags = this.entry.tags;
+      if (this.dataType === 'order') {
+        dataToSubmit.organisation = this.entry.organisation[0].id;
+        for (const key of ['authors', 'generators', 'editors']) {
+          dataToSubmit[key] = this.entry[key].map(item => item.id);
+        }
+      }
+      if (this.dataType === 'collection') {
+        for (const key of ['editors', 'datasets']) {
+          dataToSubmit[key] = this.entry[key].map(item => item.id);
+        }
+      }
       this.isSaving = true;
-      this.$store.dispatch('entries/saveEntry', {data: collectionToSubmit,
-                                                 entryType: this.entryType})
+      this.$store.dispatch('entries/saveEntry', {id: this.uuid,
+                                                 data: dataToSubmit,
+                                                 dataType: this.dataType})
         .then((response) => {
           if (this.uuid === '') {
             this.$router.push({ name: 'Collection About', params: { 'uuid': response.data.id } });
@@ -259,7 +277,6 @@ export default {
           this.isSaving = false;
           this.editMode = false;
           this.currentTab = "preview";
-
         })
         .catch((err) => {
           this.error = true;
@@ -270,14 +287,14 @@ export default {
     loadData () {
       this.isLoading = true;
       if (this.uuid === '') {
-        this.$store.dispatch('entries/getEmptyEntry', this.entryType)
+        this.$store.dispatch('entries/getEmptyEntry', this.dataType)
           .finally(() => this.isLoading = false);
       }
       else {
         this.$store.dispatch('entries/resetEntry')
           .then(() => {
             this.$store.dispatch('entries/getEntry', {'id': this.uuid,
-                                                      'dataType': this.entryType})
+                                                      'dataType': this.dataType})
               .catch((err) => {
                 if (err.response.status === 404)
                   this.badEntry = true;
