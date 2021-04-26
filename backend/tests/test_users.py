@@ -271,9 +271,9 @@ def test_add_user(mdb):
         )
         if role in ("users", "root", "edit"):
             assert response.code == 200
-            assert "_id" in response.data
+            assert "id" in response.data
             new_user_info = mdb["users"].find_one(
-                {"_id": uuid.UUID(response.data["_id"])}
+                {"_id": uuid.UUID(response.data["id"])}
             )
             assert indata["email"] == new_user_info["email"]
             indata["email"] = "new_" + indata["email"]
@@ -302,8 +302,8 @@ def test_add_user(mdb):
         session, "/api/v1/user", ret_json=True, method="POST", data=indata
     )
     assert response.code == 200
-    assert "_id" in response.data
-    new_user_info = mdb["users"].find_one({"_id": uuid.UUID(response.data["_id"])})
+    assert "id" in response.data
+    new_user_info = mdb["users"].find_one({"_id": uuid.UUID(response.data["id"])})
     for key in indata:
         assert new_user_info[key] == indata[key]
 
@@ -425,8 +425,8 @@ def test_get_user_logs(mdb):
         response = make_request(
             session, f'/api/v1/user/{user["_id"]}/log', ret_json=True
         )
-        assert response.data["dataType"] == "user"
-        assert response.data["entryId"] == str(user["_id"])
+        assert response.data["data_type"] == "user"
+        assert response.data["entry_id"] == str(user["_id"])
         assert len(response.data["logs"]) == len(logs)
         assert response.code == 200
 
