@@ -3,6 +3,8 @@ import re
 import requests
 import uuid
 
+# avoid pylint errors because of fixtures
+# pylint: disable = redefined-outer-name, unused-import
 from helpers import (
     make_request,
     as_user,
@@ -11,8 +13,6 @@ from helpers import (
     mdb,
     random_string,
 )
-
-# pylint: disable=redefined-outer-name
 
 
 def test_list_users(mdb):

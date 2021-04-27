@@ -4,9 +4,10 @@ import uuid
 
 import requests
 
-import structure
 import utils
 
+# avoid pylint errors because of fixtures
+# pylint: disable = redefined-outer-name, unused-import
 from helpers import (
     make_request,
     as_user,
@@ -17,9 +18,6 @@ from helpers import (
     mdb,
     USER_RE,
 )
-
-# avoid pylint errors because of fixtures
-# pylint: disable = redefined-outer-name, unused-import
 
 logging.getLogger().setLevel(logging.DEBUG)
 
@@ -57,7 +55,6 @@ def test_get_order_permissions(mdb):
         as_user(session, owner["auth_id"])
         response = make_request(session, f'/api/v1/order/{order["_id"]}')
         assert response.code == 200
-        data = response.data["order"]
 
 
 def test_get_order(mdb):
@@ -417,7 +414,7 @@ def test_add_order(mdb):
             curr_user = db["users"].find_one({"auth_ids": USERS[response.role]})
 
             assert set(order["editors"]) == set(
-                [uuid.UUID(entry) for entry in indata[field]]
+                uuid.UUID(entry) for entry in indata[field]
             )
             assert order["organisation"] == uuid.UUID(indata["organisation"])
         elif response.role == "no-login":

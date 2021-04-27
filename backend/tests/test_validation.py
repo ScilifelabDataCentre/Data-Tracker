@@ -3,6 +3,8 @@ import uuid
 
 import pytest
 
+# avoid pylint errors because of fixtures
+# pylint: disable = redefined-outer-name, unused-import
 from helpers import mdb
 import validate
 
@@ -157,7 +159,7 @@ def test_validate_editors(mdb):
         validator(4.5, db=mdb)
 
 
-def test_validate_email(mdb):
+def test_validate_email():
     """Confirm that "only" valid emails are accepted."""
     validator = validate.VALIDATION_MAPPER["email"]
 
@@ -179,7 +181,7 @@ def test_validate_email(mdb):
         validator(4.5)
 
 
-def test_validate_field(mdb):
+def test_validate_field():
     """Confirm that the correct validation is run."""
     validator = validate.validate_field
 

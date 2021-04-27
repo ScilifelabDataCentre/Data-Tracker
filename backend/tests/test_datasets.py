@@ -13,12 +13,10 @@ from helpers import (
     dataset_for_tests,
     USERS,
     random_string,
-    parse_time,
     TEST_LABEL,
     mdb,
     add_dataset,
     delete_dataset,
-    USER_RE,
 )
 
 
