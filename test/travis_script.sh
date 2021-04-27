@@ -45,6 +45,7 @@ echo '>>> Test 3: Code evaluation'
 black --check backend/*py
 pydocstyle backend/*py
 flake8 backend/*py
+pylint backend/*py
 
 echo '>>> Finalising: Stop the backend'
 
