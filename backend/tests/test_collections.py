@@ -2,9 +2,8 @@
 import uuid
 import requests
 
-import utils
-
-# pylint: disable=unused-import
+# avoid pylint errors because of fixtures
+# pylint: disable = redefined-outer-name, unused-import
 from helpers import (
     make_request,
     as_user,
@@ -17,9 +16,6 @@ from helpers import (
     add_dataset,
     delete_dataset,
 )
-
-# pylint: enable=unused-import
-# pylint: disable=redefined-outer-name
 
 
 def test_get_collection_permissions(mdb):
