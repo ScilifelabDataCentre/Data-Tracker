@@ -80,6 +80,12 @@ def api_base():
     )
 
 
+@app.route("/api/heartbeat")
+def heartbeat():
+    """Return 200 to show that the api is active."""
+    return flask.Response(status=200)
+
+
 @app.route("/api/v1/login")
 def login_types():
     """List login types."""
