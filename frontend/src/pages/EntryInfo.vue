@@ -8,7 +8,7 @@
            no-caps
            class="q-my-md"
            color="primary"
-           :to="{ 'name': 'Collection Browser' }"
+           :to="{ 'name': capitalize(dataType) + ' Browser' }"
            :label="'Back to ' + dataType + ' browser'" />
   </div>
   <div v-else>
@@ -203,6 +203,7 @@ export default {
       isSaving: false,
       isDeleting: false,
       showLogs: false,
+      capitalize: capitalize,
     }
   },
 
@@ -268,7 +269,7 @@ export default {
                                                  dataType: this.dataType})
         .then((response) => {
           if (this.uuid === '') {
-            this.$router.push({ name: 'Collection About', params: { 'uuid': response.data.id } });
+            this.$router.push({ name: capitalize(this.dataType) + ' About', params: { 'uuid': response.data.id } });
           }
           this.loadData();
           this.isSaving = false;
