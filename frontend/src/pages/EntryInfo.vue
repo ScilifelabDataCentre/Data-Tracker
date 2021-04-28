@@ -253,12 +253,13 @@ export default {
       dataToSubmit.properties = this.entry.properties;
       dataToSubmit.tags = this.entry.tags;
       if (this.dataType === 'order') {
-        dataToSubmit.organisation = this.entry.organisation[0].id;
+        if (dataToSubmit.length)
+          dataToSubmit.organisation = this.entry.organisation[0].id;
         for (const key of ['authors', 'generators', 'editors']) {
           dataToSubmit[key] = this.entry[key].map(item => item.id);
         }
       }
-      if (this.dataType === 'collection') {
+      else if (this.dataType === 'collection') {
         for (const key of ['editors', 'datasets']) {
           dataToSubmit[key] = this.entry[key].map(item => item.id);
         }
