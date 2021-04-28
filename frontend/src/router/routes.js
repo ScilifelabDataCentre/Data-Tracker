@@ -43,7 +43,7 @@ const routes = [
         props: { 'dataType': 'collection'}
       },
       {
-        path: 'new',
+        path: 'add',
         meta: {
           'permissionRequired': ['DATA_EDIT'],
           'loginRequired': true,
@@ -72,7 +72,7 @@ const routes = [
         props: { 'dataType': 'dataset'}
       },
       {
-        path: 'new',
+        path: 'add',
         meta: {
           'permissionRequired': ['DATA_EDIT'],
           'loginRequired': true,
@@ -120,7 +120,7 @@ const routes = [
         props: { 'dataType': 'order'}
       },
       {
-        path: 'new',
+        path: 'add',
         meta: {
           'permissionRequired': ['DATA_EDIT'],
           'loginRequired': true,
