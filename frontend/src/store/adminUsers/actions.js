@@ -44,7 +44,7 @@ export function getPermissionTypes() {
 }
 
 export function genApiKey(context, payload) {
-  return axios.post('/api/v1/user' + payload + '/apikey',
+  return axios.post('/api/v1/user/' + payload + '/apikey',
                     {},
                     {
                       headers: getCsrfHeader(),

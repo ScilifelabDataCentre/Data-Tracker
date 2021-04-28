@@ -310,7 +310,8 @@ export default {
       if (this.currentUser.permissions.includes('USER_MANAGEMENT'))
         toSubmit.permissions = Object.keys(this.permissions).filter((key) => this.permissions[key]);
 
-      this.$store.dispatch('entries/saveEntry', {data: toSubmit,
+      this.$store.dispatch('entries/saveEntry', {id: this.uuid,
+                                                 data: toSubmit,
                                                  dataType: this.dataType})
         .then(() => {
           this.updateVisibility(false);
