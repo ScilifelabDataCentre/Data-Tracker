@@ -102,7 +102,7 @@ def oidc_types():
     return flask.jsonify(auth_types)
 
 
-@app.route("/api/v1/login/oidc/<auth_name>/login")
+@app.route("/api/v1/login/oidc/<auth_name>")
 def oidc_login(auth_name):
     """Perform a login using OpenID Connect (e.g. Elixir AAI)."""
     client = oauth.create_client(auth_name)
