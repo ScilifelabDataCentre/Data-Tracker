@@ -5,7 +5,7 @@ import {getCsrfHeader} from '../helpers.js';
 export function getInfo ({ commit }) {
   return new Promise((resolve, reject) => {
     axios
-      .get('/api/v1/user/me/')
+      .get('/api/v1/user/me')
       .then((response) => {
         commit('setInfo', response.data.user);
         resolve(response);
@@ -17,7 +17,7 @@ export function getInfo ({ commit }) {
 }
 
 export function updateInfo(context, payload) {
-  return axios.patch('/api/v1/user/me/',
+  return axios.patch('/api/v1/user/me',
                      payload,
                      {
                        headers: getCsrfHeader(),
@@ -25,7 +25,7 @@ export function updateInfo(context, payload) {
 }
   
 export function genApiKey() {
-  return axios.post('/api/v1/user/me/apikey/',
+  return axios.post('/api/v1/user/me/apikey',
                     {},
                     {
                       headers: getCsrfHeader(),
@@ -35,7 +35,7 @@ export function genApiKey() {
 export function loginKey (context, payload) {
   return new Promise((resolve, reject) => {
     axios
-      .post('/api/v1/login/apikey/',
+      .post('/api/v1/login/apikey',
             payload,
             {
               headers: getCsrfHeader(),
@@ -56,7 +56,7 @@ export function logOut (context) {
 export function getOrders ({ commit }) {
   return new Promise((resolve, reject) => {
     axios
-      .get('/api/v1/order/user/')
+      .get('/api/v1/order/user')
       .then((response) => {
         commit('setOrders', response.data.orders);
         resolve(response);
@@ -70,7 +70,7 @@ export function getOrders ({ commit }) {
 export function getDatasets ({ commit }) {
   return new Promise((resolve, reject) => {
     axios
-      .get('/api/v1/dataset/user/')
+      .get('/api/v1/dataset/user')
       .then((response) => {
         commit('setDatasets', response.data.datasets);
         resolve(response);
@@ -84,7 +84,7 @@ export function getDatasets ({ commit }) {
 export function getCollections ({ commit }) {
   return new Promise((resolve, reject) => {
     axios
-      .get('/api/v1/project/user/')
+      .get('/api/v1/project/user')
       .then((response) => {
         commit('setCollections', response.data.collections);
         resolve(response);
@@ -98,5 +98,5 @@ export function getCollections ({ commit }) {
 
 export function getOIDC () {
   return axios
-    .get('/api/v1/login/oidc/')
+    .get('/api/v1/login/oidc')
 }

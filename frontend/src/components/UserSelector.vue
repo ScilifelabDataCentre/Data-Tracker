@@ -4,7 +4,7 @@
     flat
   :data="onlySelected ? selected : users"
   :columns="columns"
-  row-key="_id"
+  row-key="id"
   :loading="isLoadingUsers"
   :filter="filter"
   :selection="selectType"

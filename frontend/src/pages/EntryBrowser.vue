@@ -1,24 +1,22 @@
 <template>
 <q-page padding>
-  <h2 class="text-capitalize">{{ entryType + 's' }}</h2>
-  <q-card>
-    <q-card-section>
-  <q-table
-    :data="entries"
-    :columns="columns"
-    row-key="id"
-    :pagination.sync="pagination"
-    :filter="filter"
-    grid
-    :loading="loading"
-    no-data-label="No entries found"
-    :no-results-label="filter + ' does not match any entries'">
+  <h2 class="text-capitalize">{{ dataType + 's' }}</h2>
+  <q-table flat
+           :data="entries"
+           :columns="columns"
+           row-key="id"
+           :pagination.sync="pagination"
+           :filter="filter"
+           grid
+           :loading="loading"
+           no-data-label="No entries found"
+           :no-results-label="filter + ' does not match any entries'">
 
     <template v-slot:top-left>
       <q-btn v-show="showAdd"
              color="primary"
              icon="add"
-             :label="'Add ' + entryType"
+             :label="'Add ' + dataType"
              :to="{ 'name': pageNew }" />
     </template>
 
@@ -37,36 +35,38 @@
 
     <template v-slot:item="props">
       <div class="col-xs-12 col-md-6 col-lg-4 col-xl-3 row self-stretch">
-        <q-card class="q-ma-xs bg-grey-2 col" @click="gotoEntry(props.row._id)">
+        <q-card class="q-ma-xs bg-grey-1 col" @click="gotoEntry(props.row.id)">
           <q-card-section class="text-center">
             <div class="text-h6 bg-grey-4 q-mb-xs q-pa-xs">
               {{ props.row.title }}
             </div>
-            <div class="text-caption">
-              {{ props.row._id }}
+            <div class="text-caption text-italic">
+              {{ props.row.id }}
             </div>
           </q-card-section>
           <q-card-section>
-            <q-chip square
-                    color="grey-3"
-                    v-for="field in Object.keys(props.row.properties)"
-                    :key="field">
-              <span class="text-bold text-capitalize text-blue-9 q-mr-sm">{{ field }}</span> {{ props.row.properties[field] }}
-            </q-chip>
-            <q-chip square
-                    color="grey-3"
-                    v-for="entry in props.row.tags"
-                    :key="entry">
-              <q-avatar color="secondary" text-color="white" icon="fas fa-tag" />
-              {{ entry }}
-            </q-chip>
+            <div class="row">
+              <q-chip square
+                      dense
+                      v-for="field in Object.keys(props.row.properties)"
+                      :key="field">
+                <span class="text-bold text-capitalize text-blue-9 q-mr-sm">{{ field }}</span> {{ props.row.properties[field] }}
+              </q-chip>
+            </div>
+            <div class="row">
+              <q-chip square
+                      dense
+                      v-for="entry in props.row.tags"
+                      :key="entry">
+                <q-avatar color="secondary" text-color="white" icon="fas fa-tag" />
+                {{ entry }}
+              </q-chip>
+            </div>
           </q-card-section>
         </q-card>
       </div>
     </template>
   </q-table>
-    </q-card-section>
-  </q-card>
 </q-page>
 </template>
 
@@ -87,7 +87,7 @@ export default {
     showAdd: {
       get () {
         let passed = false;
-        if (this.entryType === 'datasets' && this.currentUser.permissions.includes('ORDERS') || this.currentUser.email !== '')
+        if (this.currentUser.permissions.includes('DATA_EDIT'))
           passed = true;
         return passed;
       }
@@ -101,14 +101,14 @@ export default {
   },
 
   props: {
-    entryType: {
+    dataType: {
       type: String,
       required: true
     }
   },
 
   watch: {
-    entryType: {
+    dataType: {
       immediate: true,
       handler () {
         this.loadData();
@@ -161,18 +161,18 @@ export default {
 
   methods: {
     gotoEntry (uuid) {
-      this.$router.push({ name: this.pageAbout, params: { 'uuid': uuid } });
+      this.$router.push({ name: this.pageAbout, params: { 'uuid': uuid, 'dataType': this.dataType} });
     },
     loadData () {
       this.$store.dispatch('entries/resetEntryList')
         .then(() => this.loading = true)
         .then(() => {
-          this.$store.dispatch('entries/getEntries', this.entryType)
+          this.$store.dispatch('entries/getEntries', this.dataType)
             .then(() => this.loading = false)
             .catch(() => this.loading = false)
         });
-      this.pageAbout = capitalize(this.entryType) + ' About';
-      this.pageNew = capitalize(this.entryType) + ' New';
+      this.pageAbout = capitalize(this.dataType) + ' About';
+      this.pageNew = capitalize(this.dataType) + ' New';
     },
   }
 }

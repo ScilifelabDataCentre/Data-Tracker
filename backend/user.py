@@ -23,12 +23,14 @@ import utils
 blueprint = flask.Blueprint("user", __name__)  # pylint: disable=invalid-name
 
 PERMISSIONS = {
-    "ORDERS": ("ORDERS", "USER_ADD", "USER_SEARCH"),
+    "DATA_EDIT": ("DATA_EDIT", "USER_ADD", "USER_SEARCH"),
+    "DATA_LIST": ("DATA_LIST"),
+    "STATISTICS": ("STATISTICS"),
     "OWNERS_READ": ("OWNERS_READ",),
     "USER_ADD": ("USER_ADD",),
     "USER_SEARCH": ("USER_SEARCH",),
     "USER_MANAGEMENT": ("USER_MANAGEMENT", "USER_ADD", "USER_SEARCH"),
-    "DATA_MANAGEMENT": ("ORDERS", "OWNERS_READ", "DATA_MANAGEMENT"),
+    "DATA_MANAGEMENT": ("DATA_EDIT", "OWNERS_READ", "DATA_MANAGEMENT"),
 }
 
 
@@ -50,13 +52,13 @@ def login_required(func):
 
 
 # requests
-@blueprint.route("/permissions/")
+@blueprint.route("/permissions")
 def get_permission_info():
     """Get a list of all permission types."""
     return utils.response_json({"permissions": list(PERMISSIONS.keys())})
 
 
-@blueprint.route("/")
+@blueprint.route("")
 @login_required
 def list_users():
     """
@@ -78,7 +80,7 @@ def list_users():
     return utils.response_json({"users": result})
 
 
-@blueprint.route("/structure/", methods=["GET"])
+@blueprint.route("/structure", methods=["GET"])
 def get_user_data_structure():
     """
     Get an empty user entry.
@@ -92,7 +94,7 @@ def get_user_data_structure():
 
 
 # requests
-@blueprint.route("/me/")
+@blueprint.route("/me")
 def get_current_user_info():
     """
     List basic information about the current user.
@@ -109,7 +111,7 @@ def get_current_user_info():
         "contact": "",
         "name": "",
         "orcid": "",
-        "permissions": "",
+        "permissions": [],
         "url": "",
     }
     if data:
@@ -120,8 +122,8 @@ def get_current_user_info():
 
 
 # requests
-@blueprint.route("/me/apikey/", methods=["POST"])
-@blueprint.route("/<identifier>/apikey/", methods=["POST"])
+@blueprint.route("/me/apikey", methods=["POST"])
+@blueprint.route("/<identifier>/apikey", methods=["POST"])
 @login_required
 def gen_new_api_key(identifier: str = None):
     """
@@ -166,7 +168,7 @@ def gen_new_api_key(identifier: str = None):
     return utils.response_json({"key": apikey.key})
 
 
-@blueprint.route("/<identifier>/", methods=["GET"])
+@blueprint.route("/<identifier>", methods=["GET"])
 @login_required
 def get_user_data(identifier: str):
     """
@@ -198,7 +200,7 @@ def get_user_data(identifier: str):
     return utils.response_json({"user": user_info})
 
 
-@blueprint.route("/", methods=["POST"])
+@blueprint.route("", methods=["POST"])
 @login_required
 def add_user():
     """
@@ -248,7 +250,7 @@ def add_user():
     return utils.response_json({"_id": result.inserted_id})
 
 
-@blueprint.route("/<identifier>/", methods=["DELETE"])
+@blueprint.route("/<identifier>", methods=["DELETE"])
 @login_required
 def delete_user(identifier: str):
     """
@@ -281,7 +283,7 @@ def delete_user(identifier: str):
     return flask.Response(status=200)
 
 
-@blueprint.route("/me/", methods=["PATCH"])
+@blueprint.route("/me", methods=["PATCH"])
 @login_required
 def update_current_user_info():
     """
@@ -318,7 +320,7 @@ def update_current_user_info():
     return flask.Response(status=200)
 
 
-@blueprint.route("/<identifier>/", methods=["PATCH"])
+@blueprint.route("/<identifier>", methods=["PATCH"])
 @login_required
 def update_user_info(identifier: str):
     """
@@ -381,8 +383,8 @@ def update_user_info(identifier: str):
     return flask.Response(status=200)
 
 
-@blueprint.route("/me/log/", methods=["GET"])
-@blueprint.route("/<identifier>/log/", methods=["GET"])
+@blueprint.route("/me/log", methods=["GET"])
+@blueprint.route("/<identifier>/log", methods=["GET"])
 @login_required
 def get_user_log(identifier: str = None):
     """
@@ -423,8 +425,8 @@ def get_user_log(identifier: str = None):
     )
 
 
-@blueprint.route("/me/actions/", methods=["GET"])
-@blueprint.route("/<identifier>/actions/", methods=["GET"])
+@blueprint.route("/me/actions", methods=["GET"])
+@blueprint.route("/<identifier>/actions", methods=["GET"])
 @login_required
 def get_user_actions(identifier: str = None):
     """

@@ -1,6 +1,4 @@
 """Collection requests."""
-import json
-
 import flask
 
 import structure
@@ -10,7 +8,7 @@ import utils
 blueprint = flask.Blueprint("collection", __name__)  # pylint: disable=invalid-name
 
 
-@blueprint.route("/", methods=["GET"])
+@blueprint.route("", methods=["GET"])
 def list_collection():
     """Provide a simplified list of all available collections."""
     results = list(
@@ -21,41 +19,7 @@ def list_collection():
     return utils.response_json({"collections": results})
 
 
-@blueprint.route("/random/", methods=["GET"])
-@blueprint.route("/random/<int:amount>", methods=["GET"])
-def get_random(amount: int = 1):
-    """
-    Retrieve random collection(s).
-
-    Args:
-        amount (int): number of requested collections
-
-    Returns:
-        flask.Request: json structure for the collection(s)
-
-    """
-    results = list(flask.g.db["collections"].aggregate([{"$sample": {"size": amount}}]))
-
-    for result in results:
-        # only show editors if editor/admin
-        if not flask.g.current_user or (
-            not user.has_permission("DATA_MANAGEMENT")
-            or flask.g.current_user["_id"] not in result["editors"]
-        ):
-            flask.current_app.logger.debug(
-                "Not allowed to access editors field %s", flask.g.current_user
-            )
-            del result["editors"]
-
-            # return {_id, _title} for datasets
-            result["datasets"] = [
-                flask.g.db.datasets.find_one({"_id": dataset}, {"title": 1})
-                for dataset in result["datasets"]
-            ]
-    return utils.response_json({"collections": results})
-
-
-@blueprint.route("/<identifier>/", methods=["GET"])
+@blueprint.route("/<identifier>", methods=["GET"])
 def get_collection(identifier):
     """
     Retrieve the collection with uuid <identifier>.
@@ -97,7 +61,7 @@ def get_collection(identifier):
     return utils.response_json({"collection": result})
 
 
-@blueprint.route("/structure/", methods=["GET"])
+@blueprint.route("/structure", methods=["GET"])
 def get_collection_data_structure():
     """
     Get an empty collection entry.
@@ -110,7 +74,7 @@ def get_collection_data_structure():
     return utils.response_json({"collection": empty_collection})
 
 
-@blueprint.route("/", methods=["POST"])
+@blueprint.route("", methods=["POST"])
 @user.login_required
 def add_collection():  # pylint: disable=too-many-branches
     """
@@ -119,13 +83,15 @@ def add_collection():  # pylint: disable=too-many-branches
     Returns:
         flask.Response: Json structure with the ``_id`` of the collection.
     """
+    if not flask.g.current_user:
+        flask.abort(status=401)
+    if not user.has_permission("DATA_EDIT"):
+        flask.abort(status=403)
+
     # create new collection
     collection = structure.collection()
 
-    try:
-        indata = flask.json.loads(flask.request.data)
-    except json.decoder.JSONDecodeError:
-        flask.abort(status=400)
+    indata = flask.request.json
 
     # indata validation
     validation = utils.basic_check_indata(indata, collection, prohibited=["_id"])
@@ -153,7 +119,7 @@ def add_collection():  # pylint: disable=too-many-branches
     return utils.response_json({"_id": result.inserted_id})
 
 
-@blueprint.route("/<identifier>/", methods=["DELETE"])
+@blueprint.route("/<identifier>", methods=["DELETE"])
 @user.login_required
 def delete_collection(identifier: str):
     """
@@ -173,9 +139,9 @@ def delete_collection(identifier: str):
         flask.abort(status=404)
 
     # permission check
-    if (
-        not user.has_permission("DATA_MANAGEMENT")
-        and flask.g.current_user["_id"] not in collection["editors"]
+    if not user.has_permission("DATA_MANAGEMENT") and (
+        not user.has_permission("DATA_EDIT")
+        or flask.g.current_user["_id"] not in collection["editors"]
     ):
         flask.abort(status=403)
 
@@ -188,7 +154,7 @@ def delete_collection(identifier: str):
     return flask.Response(status=200)
 
 
-@blueprint.route("/<identifier>/", methods=["PATCH"])
+@blueprint.route("/<identifier>", methods=["PATCH"])
 @user.login_required
 def update_collection(identifier):  # pylint: disable=too-many-branches
     """
@@ -200,6 +166,11 @@ def update_collection(identifier):  # pylint: disable=too-many-branches
     Returns:
         flask.Response: Status code.
     """
+    if not flask.g.current_user:
+        flask.abort(status=401)
+    if not user.has_permission("DATA_EDIT"):
+        flask.abort(status=403)
+
     try:
         collection_uuid = utils.str_to_uuid(identifier)
     except ValueError:
@@ -208,10 +179,7 @@ def update_collection(identifier):  # pylint: disable=too-many-branches
     if not collection:
         flask.abort(status=404)
 
-    try:
-        indata = flask.json.loads(flask.request.data)
-    except json.decoder.JSONDecodeError:
-        flask.abort(status=400)
+    indata = flask.request.json
 
     # permission check
     if (
@@ -259,7 +227,7 @@ def update_collection(identifier):  # pylint: disable=too-many-branches
     return flask.Response(status=200)
 
 
-@blueprint.route("/user/", methods=["GET"])
+@blueprint.route("/user", methods=["GET"])
 @user.login_required
 def list_user_collections():  # pylint: disable=too-many-branches
     """
@@ -274,7 +242,7 @@ def list_user_collections():  # pylint: disable=too-many-branches
     return utils.response_json({"collections": results})
 
 
-@blueprint.route("/<identifier>/log/", methods=["GET"])
+@blueprint.route("/<identifier>/log", methods=["GET"])
 @user.login_required
 def get_collection_log(identifier: str = None):
     """

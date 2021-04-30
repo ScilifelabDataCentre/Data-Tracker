@@ -17,7 +17,6 @@ def dataset():
     return {
         "_id": utils.new_uuid(),
         "description": "",
-        "cross_references": [],
         "title": "",
         "properties": {},
         "tags": [],
@@ -54,7 +53,6 @@ def collection():
     """
     return {
         "_id": utils.new_uuid(),
-        "cross_references": [],
         "datasets": [],
         "description": "",
         "properties": {},

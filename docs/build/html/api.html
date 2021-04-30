@@ -6,41 +6,30 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>API &#8212; Data Tracker  documentation</title>
-    <link rel="stylesheet" href="static/nature.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="static/documentation_options.js"></script>
     <script src="static/jquery.js"></script>
     <script src="static/underscore.js"></script>
     <script src="static/doctools.js"></script>
-    <script src="static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Data Structure" href="data_structure.html" />
-    <link rel="prev" title="Data Tracker" href="index.html" /> 
+    <link rel="prev" title="Data Tracker" href="index.html" />
+   
+  <link rel="stylesheet" href="static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="data_structure.html" title="Data Structure"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
-          <a href="index.html" title="Data Tracker"
-             accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Data Tracker  documentation</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">API</a></li> 
-      </ul>
-    </div>  
+  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
+          
+
           <div class="body" role="main">
             
   <div class="section" id="api">
@@ -56,7 +45,7 @@
 </div>
 <dl class="py function">
 <dt>
-<code class="sig-name descname">/order/</code></dt>
+<code class="sig-name descname"><span class="pre">/order/</span></code></dt>
 <dd><dl class="simple">
 <dt><strong>GET</strong></dt><dd><ul class="simple">
 <li><p>Get a list of all orders where the user is <code class="docutils literal notranslate"><span class="pre">editor</span></code>.</p></li>
@@ -73,7 +62,7 @@
 
 <dl class="py function">
 <dt>
-<code class="sig-name descname">/order/&lt;uuid&gt;/</code></dt>
+<code class="sig-name descname"><span class="pre">/order/&lt;uuid&gt;/</span></code></dt>
 <dd><dl class="simple">
 <dt><strong>GET</strong></dt><dd><ul class="simple">
 <li><p>Get information about the order <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p></li>
@@ -92,7 +81,7 @@
 
 <dl class="py function">
 <dt>
-<code class="sig-name descname">/order/&lt;uuid&gt;/dataset/</code></dt>
+<code class="sig-name descname"><span class="pre">/order/&lt;uuid&gt;/dataset/</span></code></dt>
 <dd><dl class="simple">
 <dt><strong>POST</strong></dt><dd><ul class="simple">
 <li><p>Add a new dataset for the order <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p></li>
@@ -104,7 +93,7 @@
 
 <dl class="py function">
 <dt>
-<code class="sig-name descname">/order/&lt;uuid&gt;/log/</code></dt>
+<code class="sig-name descname"><span class="pre">/order/&lt;uuid&gt;/log/</span></code></dt>
 <dd><dl class="simple">
 <dt><strong>GET</strong></dt><dd><ul class="simple">
 <li><p>Get a list of changes for the order <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p></li>
@@ -118,7 +107,7 @@
 <h3>Dataset<a class="headerlink" href="#dataset" title="Permalink to this headline">¶</a></h3>
 <dl class="py function">
 <dt>
-<code class="sig-name descname">/dataset/</code></dt>
+<code class="sig-name descname"><span class="pre">/dataset/</span></code></dt>
 <dd><dl class="simple">
 <dt><strong>GET</strong></dt><dd><ul class="simple">
 <li><p>Get a list of all datasets.</p></li>
@@ -129,7 +118,7 @@
 
 <dl class="py function">
 <dt>
-<code class="sig-name descname">/dataset/&lt;uuid&gt;/</code></dt>
+<code class="sig-name descname"><span class="pre">/dataset/&lt;uuid&gt;/</span></code></dt>
 <dd><dl class="simple">
 <dt><strong>GET</strong></dt><dd><ul class="simple">
 <li><p>Get information about the dataset <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p></li>
@@ -148,7 +137,7 @@
 
 <dl class="py function">
 <dt>
-<code class="sig-name descname">/dataset/&lt;uuid&gt;/log/</code></dt>
+<code class="sig-name descname"><span class="pre">/dataset/&lt;uuid&gt;/log/</span></code></dt>
 <dd><dl class="simple">
 <dt><strong>GET</strong></dt><dd><ul class="simple">
 <li><p>Get a list of changes done to the dataset <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p></li>
@@ -162,7 +151,7 @@
 <h3>Collection<a class="headerlink" href="#collection" title="Permalink to this headline">¶</a></h3>
 <dl class="py function">
 <dt>
-<code class="sig-name descname">/collection/</code></dt>
+<code class="sig-name descname"><span class="pre">/collection/</span></code></dt>
 <dd><dl class="simple">
 <dt><strong>GET</strong></dt><dd><ul class="simple">
 <li><p>Get a list of all collections.</p></li>
@@ -177,7 +166,7 @@
 
 <dl class="py function">
 <dt>
-<code class="sig-name descname">/collection/&lt;uuid&gt;/</code></dt>
+<code class="sig-name descname"><span class="pre">/collection/&lt;uuid&gt;/</span></code></dt>
 <dd><dl class="simple">
 <dt><strong>GET</strong></dt><dd><ul class="simple">
 <li><p>Get information about the collection <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p></li>
@@ -196,7 +185,7 @@
 
 <dl class="py function">
 <dt>
-<code class="sig-name descname">/collection/&lt;uuid&gt;/log/</code></dt>
+<code class="sig-name descname"><span class="pre">/collection/&lt;uuid&gt;/log/</span></code></dt>
 <dd><dl class="simple">
 <dt><strong>GET</strong></dt><dd><ul class="simple">
 <li><p>Get a list of changes done to the collection <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p></li>
@@ -212,7 +201,7 @@
 <h4>Current User<a class="headerlink" href="#current-user" title="Permalink to this headline">¶</a></h4>
 <dl class="py function">
 <dt>
-<code class="sig-name descname">/user/me/</code></dt>
+<code class="sig-name descname"><span class="pre">/user/me/</span></code></dt>
 <dd><dl class="simple">
 <dt><strong>GET</strong></dt><dd><ul class="simple">
 <li><p>Get information about the current user.</p></li>
@@ -227,7 +216,7 @@
 
 <dl class="py function">
 <dt>
-<code class="sig-name descname">/user/me/apikey/</code></dt>
+<code class="sig-name descname"><span class="pre">/user/me/apikey/</span></code></dt>
 <dd><dl class="simple">
 <dt><strong>POST</strong></dt><dd><ul class="simple">
 <li><p>Generate a new API key for the current user.</p></li>
@@ -239,7 +228,7 @@
 
 <dl class="py function">
 <dt>
-<code class="sig-name descname">/user/me/log/</code></dt>
+<code class="sig-name descname"><span class="pre">/user/me/log/</span></code></dt>
 <dd><dl class="simple">
 <dt><strong>GET</strong></dt><dd><ul class="simple">
 <li><p>Get a list of changes done to the current user.</p></li>
@@ -250,7 +239,7 @@
 
 <dl class="py function">
 <dt>
-<code class="sig-name descname">/user/me/actions/</code></dt>
+<code class="sig-name descname"><span class="pre">/user/me/actions/</span></code></dt>
 <dd><dl class="simple">
 <dt><strong>GET</strong></dt><dd><ul class="simple">
 <li><p>Get a list of changes done by the current user.</p></li>
@@ -261,7 +250,7 @@
 
 <dl class="py function">
 <dt>
-<code class="sig-name descname">/user/me/orders/</code></dt>
+<code class="sig-name descname"><span class="pre">/user/me/orders/</span></code></dt>
 <dd><dl class="simple">
 <dt><strong>GET</strong></dt><dd><ul class="simple">
 <li><p>Get a list of orders where the current user is listed as <code class="docutils literal notranslate"><span class="pre">editor</span></code>.</p></li>
@@ -272,7 +261,7 @@
 
 <dl class="py function">
 <dt>
-<code class="sig-name descname">/user/me/datasets/</code></dt>
+<code class="sig-name descname"><span class="pre">/user/me/datasets/</span></code></dt>
 <dd><dl class="simple">
 <dt><strong>GET</strong></dt><dd><ul class="simple">
 <li><p>Get a list of datasets where the current user is listed as <code class="docutils literal notranslate"><span class="pre">editor</span></code>.</p></li>
@@ -283,7 +272,7 @@
 
 <dl class="py function">
 <dt>
-<code class="sig-name descname">/user/me/collections/</code></dt>
+<code class="sig-name descname"><span class="pre">/user/me/collections/</span></code></dt>
 <dd><dl class="simple">
 <dt><strong>GET</strong></dt><dd><ul class="simple">
 <li><p>Get a list of collections where the current user is listed as <code class="docutils literal notranslate"><span class="pre">editor</span></code>.</p></li>
@@ -301,7 +290,7 @@
 </div>
 <dl class="py function">
 <dt>
-<code class="sig-name descname">/user/</code></dt>
+<code class="sig-name descname"><span class="pre">/user/</span></code></dt>
 <dd><div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Only for users with <code class="docutils literal notranslate"><span class="pre">USER_SEARCH</span></code> or <code class="docutils literal notranslate"><span class="pre">USER_MANAGEMENT</span></code>.</p>
@@ -321,7 +310,7 @@
 
 <dl class="py function">
 <dt>
-<code class="sig-name descname">/user/&lt;uuid&gt;/</code></dt>
+<code class="sig-name descname"><span class="pre">/user/&lt;uuid&gt;/</span></code></dt>
 <dd><dl class="simple">
 <dt><strong>GET</strong></dt><dd><ul class="simple">
 <li><p>Get information about the user <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p></li>
@@ -340,7 +329,7 @@
 
 <dl class="py function">
 <dt>
-<code class="sig-name descname">/user/&lt;uuid&gt;/apikey/</code></dt>
+<code class="sig-name descname"><span class="pre">/user/&lt;uuid&gt;/apikey/</span></code></dt>
 <dd><dl class="simple">
 <dt><strong>POST</strong></dt><dd><ul class="simple">
 <li><p>Generate a new API key for the user <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p></li>
@@ -352,7 +341,7 @@
 
 <dl class="py function">
 <dt>
-<code class="sig-name descname">/user/&lt;uuid&gt;/log/</code></dt>
+<code class="sig-name descname"><span class="pre">/user/&lt;uuid&gt;/log/</span></code></dt>
 <dd><dl class="simple">
 <dt><strong>GET</strong></dt><dd><ul class="simple">
 <li><p>Get a list of changes done to the user <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p></li>
@@ -363,7 +352,7 @@
 
 <dl class="py function">
 <dt>
-<code class="sig-name descname">/user/&lt;uuid&gt;/actions/</code></dt>
+<code class="sig-name descname"><span class="pre">/user/&lt;uuid&gt;/actions/</span></code></dt>
 <dd><dl class="simple">
 <dt><strong>GET</strong></dt><dd><ul class="simple">
 <li><p>Get a list of changes done by the user with <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p></li>
@@ -374,7 +363,7 @@
 
 <dl class="py function">
 <dt>
-<code class="sig-name descname">/user/&lt;uuid&gt;/orders/</code></dt>
+<code class="sig-name descname"><span class="pre">/user/&lt;uuid&gt;/orders/</span></code></dt>
 <dd><dl class="simple">
 <dt><strong>GET</strong></dt><dd><ul class="simple">
 <li><p>Get a list of orders where the user <code class="docutils literal notranslate"><span class="pre">uuid</span></code> is listed as <code class="docutils literal notranslate"><span class="pre">editor</span></code>.</p></li>
@@ -385,7 +374,7 @@
 
 <dl class="py function">
 <dt>
-<code class="sig-name descname">/user/&lt;uuid&gt;/datasets/</code></dt>
+<code class="sig-name descname"><span class="pre">/user/&lt;uuid&gt;/datasets/</span></code></dt>
 <dd><dl class="simple">
 <dt><strong>GET</strong></dt><dd><ul class="simple">
 <li><p>Get a list of datasets where the user <code class="docutils literal notranslate"><span class="pre">uuid</span></code> is listed as <code class="docutils literal notranslate"><span class="pre">editor</span></code>.</p></li>
@@ -396,7 +385,7 @@
 
 <dl class="py function">
 <dt>
-<code class="sig-name descname">/user/&lt;uuid&gt;/collections/</code></dt>
+<code class="sig-name descname"><span class="pre">/user/&lt;uuid&gt;/collections/</span></code></dt>
 <dd><dl class="simple">
 <dt><strong>GET</strong></dt><dd><ul class="simple">
 <li><p>Get a list of collections where the user <code class="docutils literal notranslate"><span class="pre">uuid</span></code> is listed as <code class="docutils literal notranslate"><span class="pre">editor</span></code>.</p></li>
@@ -410,7 +399,7 @@
 <h4>Log In/Log Out<a class="headerlink" href="#log-in-log-out" title="Permalink to this headline">¶</a></h4>
 <dl class="py function">
 <dt>
-<code class="sig-name descname">/logout/</code></dt>
+<code class="sig-name descname"><span class="pre">/logout/</span></code></dt>
 <dd><dl class="simple">
 <dt><strong>GET</strong></dt><dd><ul class="simple">
 <li><p>Log out the current user.</p></li>
@@ -421,7 +410,7 @@
 
 <dl class="py function">
 <dt>
-<code class="sig-name descname">/login/oidc/&lt;auth_name&gt;/login/</code></dt>
+<code class="sig-name descname"><span class="pre">/login/oidc/&lt;auth_name&gt;/login/</span></code></dt>
 <dd><dl class="simple">
 <dt><strong>GET</strong></dt><dd><ul class="simple">
 <li><p>Log in using OpenID Connect (e.g. Elixir AAI) for service <code class="docutils literal notranslate"><span class="pre">auth_name</span></code>.</p></li>
@@ -432,7 +421,7 @@
 
 <dl class="py function">
 <dt>
-<code class="sig-name descname">/login/oidc/&lt;auth_name&gt;/authorize/</code></dt>
+<code class="sig-name descname"><span class="pre">/login/oidc/&lt;auth_name&gt;/authorize/</span></code></dt>
 <dd><dl class="simple">
 <dt><strong>GET</strong></dt><dd><ul class="simple">
 <li><p>Authorize using OpenID Connect (e.g. Elixir AAI) for service <code class="docutils literal notranslate"><span class="pre">auth_name</span></code> (via <code class="docutils literal notranslate"><span class="pre">login</span></code>).</p></li>
@@ -443,7 +432,7 @@
 
 <dl class="py function">
 <dt>
-<code class="sig-name descname">/login/apikey/</code></dt>
+<code class="sig-name descname"><span class="pre">/login/apikey/</span></code></dt>
 <dd><dl class="simple">
 <dt><strong>GET</strong></dt><dd><ul class="simple">
 <li><p>Log in using <code class="docutils literal notranslate"><span class="pre">auth_id</span></code> + <code class="docutils literal notranslate"><span class="pre">api_key</span></code>.</p></li>
@@ -458,47 +447,44 @@
 </div>
 
 
-            <div class="clearer"></div>
           </div>
+          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
             <p class="logo"><a href="index.html">
-              <img class="logo" src="static/data-centre-logo.svg" alt="Logo"/>
+              <img class="logo" src="static/SciLifeLab_symbol_green.svg" alt="Logo"/>
             </a></p>
-  <h3><a href="index.html">Table of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">API</a><ul>
-<li><a class="reference internal" href="#version-1">Version 1</a><ul>
-<li><a class="reference internal" href="#order">Order</a></li>
-<li><a class="reference internal" href="#dataset">Dataset</a></li>
-<li><a class="reference internal" href="#collection">Collection</a></li>
-<li><a class="reference internal" href="#user">User</a><ul>
-<li><a class="reference internal" href="#current-user">Current User</a></li>
-<li><a class="reference internal" href="#look-up-users">Look Up Users</a></li>
-<li><a class="reference internal" href="#log-in-log-out">Log In/Log Out</a></li>
+<h1 class="logo"><a href="index.html">Data Tracker</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#version-1">Version 1</a></li>
 </ul>
 </li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="data_structure.html">Data Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="implementation.html">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
 </ul>
 
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="index.html"
-                        title="previous chapter">Data Tracker</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="data_structure.html"
-                        title="next chapter">Data Structure</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="sources/api.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Data Tracker</a></li>
+      <li>Next: <a href="data_structure.html" title="next chapter">Data Structure</a></li>
+  </ul></li>
+</ul>
+</div>
 <div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
@@ -509,32 +495,32 @@
     </div>
 </div>
 <script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="data_structure.html" title="Data Structure"
-             >next</a> |</li>
-        <li class="right" >
-          <a href="index.html" title="Data Tracker"
-             >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Data Tracker  documentation</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">API</a></li> 
-      </ul>
+    <div class="footer">
+      &copy;2019-2021, SciLifeLab Data Centre.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="sources/api.rst.txt"
+          rel="nofollow">Page source</a>
     </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2019-2021, SciLifeLab Data Centre.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
-    </div>
+
+    
+
+    
   </body>
 </html>

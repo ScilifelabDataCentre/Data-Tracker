@@ -25,7 +25,7 @@ TEST_LABEL = {"tags": ["testing"]}
 USERS = {
     "no-login": None,
     "base": "base::testers",
-    "orders": "orders::testers",
+    "edit": "edit::testers",
     "owners": "owners::testers",
     "users": "users::testers",
     "data": "data::testers",
@@ -71,7 +71,7 @@ def as_user(session: requests.Session, auth_id: str, set_csrf: bool = True) -> i
         code = session.get(f"{BASE_URL}/api/v1/developer/login/{auth_id}").status_code
         assert code == 200
     else:
-        code = session.get(f"{BASE_URL}/api/v1/logout/").status_code
+        code = session.get(f"{BASE_URL}/api/v1/logout").status_code
         session.get(f"{BASE_URL}/api/v1/developer/hello")  # reset cookies
     if set_csrf:
         session.headers["X-CSRFToken"] = session.cookies.get("_csrf_token")
@@ -106,13 +106,11 @@ def add_dataset():
         {"description": "Added by fixture.", "title": "Test title from fixture"}
     )
     order_indata.update(TEST_LABEL)
-    orders_user = mongo_db["users"].find_one({"auth_ids": USERS["orders"]})
-    base_user = mongo_db["users"].find_one({"auth_ids": USERS["base"]})
-    order_indata["authors"] = [orders_user["_id"]]
-    order_indata["editors"] = [orders_user["_id"]]
-    order_indata["generators"] = [orders_user["_id"]]
-    order_indata["organisation"] = orders_user["_id"]
-    order_indata["receivers"] = [base_user["_id"]]
+    edit_user = mongo_db["users"].find_one({"auth_ids": USERS["edit"]})
+    order_indata["authors"] = [edit_user["_id"]]
+    order_indata["editors"] = [edit_user["_id"]]
+    order_indata["generators"] = [edit_user["_id"]]
+    order_indata["organisation"] = edit_user["_id"]
 
     dataset_indata = structure.dataset()
     dataset_indata.update(
@@ -125,7 +123,7 @@ def add_dataset():
         {
             "description": "Added by fixture.",
             "title": "Test title from fixture",
-            "editors": [base_user["_id"]],
+            "editors": [edit_user["_id"]],
         }
     )
     collection_indata.update(TEST_LABEL)
@@ -166,11 +164,14 @@ def make_request(
     if method == "GET":
         response = session.get(f"{BASE_URL}{url}")
     elif method == "POST":
-        response = session.post(f"{BASE_URL}{url}", data=json.dumps(data))
+        response = session.post(f"{BASE_URL}{url}", json=data)
     elif method == "PATCH":
-        response = session.patch(f"{BASE_URL}{url}", data=json.dumps(data))
+        response = session.patch(
+            f"{BASE_URL}{url}",
+            json=data,
+        )
     elif method == "PUT":
-        response = session.put(f"{BASE_URL}{url}", data=json.dumps(data))
+        response = session.put(f"{BASE_URL}{url}", json=data)
     elif method == "DELETE":
         response = session.delete(f"{BASE_URL}{url}")
     else:
@@ -222,12 +223,12 @@ def collection_for_tests():
     session = requests.Session()
     as_user(session, USERS["data"])
     collection_indata = structure.collection()
-    base_user = mongo_db["users"].find_one({"auth_ids": USERS["base"]})
+    edit_user = mongo_db["users"].find_one({"auth_ids": USERS["edit"]})
     collection_indata.update(
         {
             "description": "Added by fixture.",
             "title": "Test title from fixture",
-            "editors": [base_user["_id"]],
+            "editors": [edit_user["_id"]],
         }
     )
     collection_indata.update(TEST_LABEL)

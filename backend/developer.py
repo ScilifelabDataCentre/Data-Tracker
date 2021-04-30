@@ -97,3 +97,13 @@ def stop_server():
     """Shutdown the flask server."""
     flask.request.environ.get("werkzeug.server.shutdown")()
     return flask.Response(status=200)
+
+
+@blueprint.route("/sitemap")
+def list_endpoints():
+    """List all endpoints for the app."""
+    endpoints = []
+    for rule in flask.current_app.url_map.iter_rules():
+        methods = ",".join(rule.methods)
+        endpoints.append(f"{rule.endpoint:50s} {methods:25s} {rule}")
+    return flask.jsonify(endpoints)

@@ -6,7 +6,7 @@ from migrations import MIGRATIONS
 import utils
 import structure
 
-DB_VERSION = 1
+DB_VERSION = 2
 
 
 def check_db(config: dict):
@@ -98,3 +98,4 @@ def check_migrations(db):
     for i in range(db_version["version"], DB_VERSION):
         logging.info("Database migration for version %d to %d starting", i, i + 1)
         MIGRATIONS[i](db)
+    db["db_status"].update_one({"_id": "db_version"}, {"$set": {"version": DB_VERSION}})

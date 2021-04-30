@@ -31,13 +31,13 @@ def test_request_login_required():
             assert not response.data
 
 
-def test_request_permission_orders_self():
-    """Request requiring ORDERS permissions."""
+def test_request_permission_data_edit():
+    """Request requiring DATA_EDIT permissions."""
     responses = helpers.make_request_all_roles(
-        "/api/v1/developer/hello/ORDERS", ret_json=True
+        "/api/v1/developer/hello/DATA_EDIT", ret_json=True
     )
     for response in responses:
-        if response.role in ("orders", "data", "root"):
+        if response.role in ("edit", "data", "root"):
             assert response.code == 200
             assert response.data == {"test": "success"}
         else:

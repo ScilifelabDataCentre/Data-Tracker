@@ -50,9 +50,9 @@ exclude_patterns = []
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'nature'
+html_theme = 'alabaster'
 
-html_logo = '_static/data-centre-logo.svg'
+html_logo = '_static/SciLifeLab_symbol_green.svg'
 
 html_context = {
     "display_github": True, # Integrate GitHub

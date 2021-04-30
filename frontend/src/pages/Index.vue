@@ -7,6 +7,16 @@
     </div>
   </div>
   <div class="row flex flex-center">
+    <div class="col-md-4 col-lg-4 col-xs-10 col-sm-10"
+         v-show="currentUser.permissions.includes('DATA_EDIT')">
+      <q-card class="q-pa-lg text-center box-shadow q-ma-md"
+              @click="$router.push({ name: 'Order Browser' })">
+	<q-card-section>
+          <q-icon size="150px" name="assignment" style="color: #045C64;"/>
+          <div class="q-mt-lg text-h5 text-weight-bold">Orders</div>
+        </q-card-section>
+      </q-card>
+    </div>
     <div class="col-md-4 col-lg-4 col-xs-10 col-sm-10">
       <q-card class="q-pa-lg text-center box-shadow q-ma-md"
               @click="$router.push({ name: 'Dataset Browser' })">
@@ -33,10 +43,17 @@
 <script>
 export default {
   name: 'PageIndex',
+  computed: {
+    currentUser: {
+      get () {
+        return this.$store.getters['currentUser/info'];
+      },
+    },
+  },
 
   data () {
     return {
     }
-  }
+  },
 }
 </script>

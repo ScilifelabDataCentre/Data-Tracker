@@ -17,10 +17,11 @@
                class="q-ml-sm pull-right"
                type="a"
                target="_blank"
+               rel="noopener"
                href="https://www.scilifelab.se/data/">
           <q-avatar size="2em">
             <img :src="require('../assets/scilifelab_symbol_white.svg')"
-                 alt="Data Centre logo"/>
+                 alt="SciLifeLab logo"/>
           </q-avatar>
         </q-btn>
       </q-toolbar>

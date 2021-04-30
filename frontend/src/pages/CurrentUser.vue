@@ -2,12 +2,8 @@
 <q-page padding>
   <h2>User Settings</h2>
 
-  <q-card class="q-my-md">
-    <q-card-section>
-      <span class="text-h5">User Data</span>
-    </q-card-section>
-
-    <q-card-section>
+  <div class="q-my-md">
+    <span class="text-h5">User Data</span>
       <q-input outlined
                filled
                stack-label
@@ -21,8 +17,6 @@
                label="Email"
                :value="currentUser.email"
                disable />
-    </q-card-section>
-    <q-card-section>
       <q-input outlined
                class="q-my-sm"
                label="Name"
@@ -43,8 +37,6 @@
                class="q-my-sm"
                label="URL"
                v-model="userData.url"/>
-    </q-card-section>
-    <q-card-section>
       <div class="row">
       <q-btn color="positive"
              class="q-mt-md"
@@ -55,28 +47,20 @@
         <span v-show="userDataSaveSuccess" class="text-positive q-ml-md q-mt-md self-center">Settings saved</span>
         <span v-show="userDataSaveError" class="text-negative q-ml-md q-mt-md self-center">Failed to save settings</span>
       </div>
-    </q-card-section>
-  </q-card>
-
-  <q-card>
-    <q-card-section>
-      <span class="text-h5">Permissions</span>
-    </q-card-section>
-    <q-card-section class="flex text-bold">
+  </div>
+  <div class="q-my-md">
+    <span class="text-h6">Permissions:</span>
+    <div class="row">
       <q-chip square
               color="blue-9"
               text-color="white"
               v-for="perm in currentUser.permissions"
               :key="perm"
               :label="perm" />
-    </q-card-section>
-  </q-card>
+    </div>
+  </div>
 
-  <q-card class="q-my-md">
-    <q-card-section>
-      <span class="text-h5">Logs</span>
-    </q-card-section>
-    <q-card-section>
+  <div class="q-my-md">
       <q-btn label="Logs"
              color="primary"
              class="q-mx-sm"
@@ -85,20 +69,14 @@
              color="primary"
              class="q-mx-sm"
              @click="showActions = true"/>
-    </q-card-section>
 
     <log-viewer v-model="showLogs"
                 dataType="me" />
     <action-viewer v-model="showActions"
                    uuid="me" />
-  </q-card>
+  </div>
 
-  <q-card class="q-my-md">
-    <q-card-section>
-      <span class="text-h5">API Key</span>
-    </q-card-section>
-
-    <q-card-section>
+  <div class="q-my-md">
       <span class="text-h6">Available Authentication IDs:</span>
       <q-list>
         <q-item v-for="authId in currentUser.authIds"
@@ -108,9 +86,8 @@
                   :label="authId" />
         </q-item>
       </q-list>
-    </q-card-section>
 
-    <q-card-section>
+      <div>
       <q-btn color="positive"
              label="Generate new API key"
              :loading="newApiKeyWaiting"
@@ -124,8 +101,8 @@
                class="q-my-sm"
                :value="newApiKey"
                disable />
-    </q-card-section>
-  </q-card>
+      </div>
+  </div>
 </q-page>
 </template>
 
