@@ -96,7 +96,7 @@
       </q-tab-panel>
       
       <q-tab-panel name="edit">
-        <entry-edit :isLoading="isLoading"  :dataType="dataType" />
+        <entry-edit :isLoading="isLoading"  :dataType="dataType" :newEntry="newEntry" />
       </q-tab-panel>
     </q-tab-panels>
 
@@ -168,6 +168,10 @@ export default {
       type: String,
       required: true,
     },
+    newEntry: {
+      type: Boolean,
+      default: false
+    }
   },
 
   computed: {

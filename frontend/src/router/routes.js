@@ -49,7 +49,7 @@ const routes = [
           'loginRequired': true,
         },
         component: EntryInfo,
-        props: {'uuid': '', dataType: 'collection'},
+        props: {'uuid': '', dataType: 'collection', newEntry: true},
         name: 'Collection New'
       },
       {
@@ -78,7 +78,7 @@ const routes = [
           'loginRequired': true,
         },
         component: EntryInfo,
-        props: {'uuid': '', dataType: 'dataset'},
+        props: {'uuid': '', dataType: 'dataset', newEntry: true},
         name: 'Dataset New'
       },
       {
@@ -126,7 +126,7 @@ const routes = [
           'loginRequired': true,
         },
         component: EntryInfo,
-        props: {'uuid': '', dataType: 'order'},
+        props: {'uuid': '', dataType: 'order', newEntry: true},
         name: 'Order New'
       },
       {
