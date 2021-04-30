@@ -352,32 +352,39 @@ def test_key_reset(mdb):
     session = requests.Session()
     for i, userid in enumerate(USERS):
         as_user(session, USERS[userid])
-        response = make_request(session, "/api/v1/user/me/apikey", method="POST")
-        if userid == "no-login":
-            assert response.code == 401
+        if userid != "no-login":
+            # Test modifying user's own key
+            user_response = make_request(
+                session, "/api/v1/user/me", method="GET", ret_json=True
+            )
+            response = make_request(
+                session,
+                f"/api/v1/user/{user_response.data['user']['id']}/apikey",
+                method="POST",
+                ret_json=True,
+            )
+            assert response.data["key"]
+            assert response.code == 200
+            new_key = response.data["key"]
+            response = make_request(
+                session,
+                "/api/v1/login/apikey",
+                data={"api-user": USERS[userid], "api-key": new_key},
+                method="POST",
+            )
+            assert response.code == 200
             assert not response.data
-            continue
-
-        assert response.code == 200
-        new_key = response.data["key"]
-        response = make_request(
-            session,
-            "/api/v1/login/apikey",
-            data={"api-user": USERS[userid], "api-key": new_key},
-            method="POST",
-        )
-        assert response.code == 200
-        assert not response.data
-        mdb.users.update_one(
-            {"auth_ids": userid}, {"$set": {"api_salt": "abc", "api_key": str(i - 1)}}
-        )
 
         response = make_request(
             session, f'/api/v1/user/{mod_user_info["_id"]}/apikey', method="POST"
         )
         if userid not in ("users", "root"):
-            assert response.code == 403
-            assert not response.data
+            if userid == "no-login":
+                assert response.code == 401
+                assert not response.data
+            else:
+                assert response.code == 403
+                assert not response.data
         else:
             assert response.code == 200
             new_key = response.data["key"]
@@ -387,6 +394,10 @@ def test_key_reset(mdb):
                 data={"api-user": mod_user["auth_ids"], "api-key": new_key},
                 method="POST",
             )
+            user_response = make_request(
+                session, "/api/v1/user/me", method="GET", ret_json=True
+            )
+            assert mod_user["auth_ids"] in user_response.data["user"]["auth_ids"]
             assert response.code == 200
             assert not response.data
 
@@ -431,22 +442,6 @@ def test_get_user_logs(mdb):
         assert response.code == 200
 
 
-def test_get_current_user_logs():
-    """
-    Get current user logs.
-
-    Should return logs for all logged in users.
-    """
-    responses = make_request_all_roles("/api/v1/user/me/log", ret_json=True)
-    for response in responses:
-        if response.role == "no-login":
-            assert response.code == 401
-            assert not response.data
-        else:
-            assert response.code == 200
-            assert "logs" in response.data
-
-
 def test_get_user_actions_access(mdb):
     """
     Get user logs.
@@ -467,19 +462,3 @@ def test_get_user_actions_access(mdb):
         else:
             assert response.code == 403
             assert not response.data
-
-
-def test_get_current_user_actions():
-    """
-    Get current user logs.
-
-    Should return logs for all logged in users.
-    """
-    responses = make_request_all_roles("/api/v1/user/me/actions", ret_json=True)
-    for response in responses:
-        if response.role == "no-login":
-            assert response.code == 401
-            assert not response.data
-        else:
-            assert response.code == 200
-            assert "logs" in response.data

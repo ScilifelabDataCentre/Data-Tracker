@@ -122,7 +122,6 @@ def get_current_user_info():
 
 
 # requests
-@blueprint.route("/me/apikey", methods=["POST"])
 @blueprint.route("/<identifier>/apikey", methods=["POST"])
 @login_required
 def gen_new_api_key(identifier: str = None):
@@ -135,20 +134,19 @@ def gen_new_api_key(identifier: str = None):
     Returns:
         flask.Response: The new API key
     """
-    if not identifier:
-        user_data = flask.g.current_user
-    else:
-        if not has_permission("USER_MANAGEMENT"):
-            flask.abort(403)
-        try:
-            user_uuid = utils.str_to_uuid(identifier)
-        except ValueError:
-            flask.abort(status=404)
-
-        if not (
-            user_data := flask.g.db["users"].find_one({"_id": user_uuid})
-        ):  # pylint: disable=superfluous-parens
-            flask.abort(status=404)
+    flask.current_app.logger.error(flask.g.current_user["_id"])
+    if identifier != str(flask.g.current_user["_id"]) and not has_permission(
+        "USER_MANAGEMENT"
+    ):
+        flask.abort(403)
+    try:
+        user_uuid = utils.str_to_uuid(identifier)
+    except ValueError:
+        flask.abort(status=404)
+    if not (
+        user_data := flask.g.db["users"].find_one({"_id": user_uuid})
+    ):  # pylint: disable=superfluous-parens
+        flask.abort(status=404)
 
     apikey = utils.gen_api_key()
     new_hash = utils.gen_api_key_hash(apikey.key, apikey.salt)
@@ -383,10 +381,9 @@ def update_user_info(identifier: str):
     return flask.Response(status=200)
 
 
-@blueprint.route("/me/log", methods=["GET"])
 @blueprint.route("/<identifier>/log", methods=["GET"])
 @login_required
-def get_user_log(identifier: str = None):
+def get_user_log(identifier: str):
     """
     Get change logs for the user entry with uuid ``identifier``.
 
@@ -398,9 +395,6 @@ def get_user_log(identifier: str = None):
     Returns:
         flask.Response: Information about the user as json.
     """
-    if identifier is None:
-        identifier = str(flask.g.current_user["_id"])
-
     if str(flask.g.current_user["_id"]) != identifier and not has_permission(
         "USER_MANAGEMENT"
     ):
@@ -425,10 +419,9 @@ def get_user_log(identifier: str = None):
     )
 
 
-@blueprint.route("/me/actions", methods=["GET"])
 @blueprint.route("/<identifier>/actions", methods=["GET"])
 @login_required
-def get_user_actions(identifier: str = None):
+def get_user_actions(identifier: str):
     """
     Get a list of actions (changes) by the user entry with uuid ``identifier``.
 
