@@ -24,8 +24,8 @@ export function updateInfo(context, payload) {
                      });
 }
   
-export function genApiKey() {
-  return axios.post('/api/v1/user/me/apikey',
+export function genApiKey(context, payload) {
+  return axios.post('/api/v1/user/' + payload + '/apikey',
                     {},
                     {
                       headers: getCsrfHeader(),

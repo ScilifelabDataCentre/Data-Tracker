@@ -61,19 +61,20 @@
   </div>
 
   <div class="q-my-md">
-      <q-btn label="Logs"
-             color="primary"
-             class="q-mx-sm"
-             @click="showLogs = true"/>
-      <q-btn label="Actions"
-             color="primary"
-             class="q-mx-sm"
-             @click="showActions = true"/>
+    <q-btn label="Logs"
+           color="primary"
+           class="q-mx-sm"
+           @click="showLogs = true"/>
+    <q-btn label="Actions"
+           color="primary"
+           class="q-mx-sm"
+           @click="showActions = true"/>
 
     <log-viewer v-model="showLogs"
-                dataType="me" />
+                :uuid="currentUser.id"
+                dataType="user" />
     <action-viewer v-model="showActions"
-                   uuid="me" />
+                   :uuid="currentUser.id" />
   </div>
 
   <div class="q-my-md">
@@ -165,7 +166,7 @@ export default {
     generateNewApiKey () {
       this.newApiKeyWaiting = true;
       this.newApiKeyError  = false;
-      this.$store.dispatch('currentUser/genApiKey')
+      this.$store.dispatch('currentUser/genApiKey', this.currentUser.id)
         .then((response) => this.newApiKey = response.data.key)
         .catch(() => this.newApiKeyError = true)
         .finally(() => this.newApiKeyWaiting = false);
