@@ -242,6 +242,8 @@ export default {
           .then((data) => this.userData = data)
           .catch(() => this.loadingError = true)
           .finally(() => this.isLoading = false);
+        for (const key in this.permissions)
+          this.permissions[key] = false;
       }
       else {
         this.$store.dispatch('entries/getLocalEntry', {'id': this.uuid,
