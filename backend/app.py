@@ -5,14 +5,15 @@ import logging
 
 import flask
 
+import collection
 import config
 import dataset
+import db_management
 import developer
 import order
-import collection
+import schema
 import user
 import utils
-import db_management
 
 from authlib.integrations.flask_client import OAuth
 
@@ -28,6 +29,7 @@ app.register_blueprint(dataset.blueprint, url_prefix="/api/v1/dataset")
 app.register_blueprint(order.blueprint, url_prefix="/api/v1/order")
 app.register_blueprint(collection.blueprint, url_prefix="/api/v1/collection")
 app.register_blueprint(user.blueprint, url_prefix="/api/v1/user")
+app.register_blueprint(schema.blueprint, url_prefix="/api/v1/schema")
 
 
 oauth = OAuth(app)
