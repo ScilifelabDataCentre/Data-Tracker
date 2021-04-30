@@ -9,6 +9,7 @@ blueprint = flask.Blueprint("schema", __name__)  # pylint: disable=invalid-name
 
 @blueprint.route("", methods=["GET"])
 def list_available_schemas():
+    """Provide a list of available schemas."""
     return utils.response_json({"schemas": ["collection", "dataset", "order", "user"]})
 
 

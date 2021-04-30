@@ -99,7 +99,13 @@ def stop_server():
     return flask.Response(status=200)
 
 
-def sitemap_builder():
+def sitemap_builder() -> dict:
+    """
+    Build a sitemap.
+
+    Returns:
+        dict: All routes/methods/endpoints
+    """
     endpoints = []
     for rule in flask.current_app.url_map.iter_rules():
         methods = ",".join(rule.methods)
