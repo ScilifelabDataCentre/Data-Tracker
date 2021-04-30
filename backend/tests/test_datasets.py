@@ -431,3 +431,13 @@ def test_get_dataset_logs(mdb):
         assert response.data["entry_id"] == str(dataset["_id"])
         assert len(response.data["logs"]) == len(logs)
         assert response.code == 200
+
+
+def test_info_add_dataset():
+    """Confirm that the redirect information works as intended."""
+    session = requests.session()
+    as_user(session, USERS["data"])
+    response = make_request(
+        session, f'/api/v1/dataset', ret_json=False, method="POST"
+    )
+    assert response.data == "Use http://localhost:5000/api/v1/order/-identifier-/dataset instead"
