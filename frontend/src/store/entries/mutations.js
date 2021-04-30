@@ -64,3 +64,8 @@ export function RESET_USER_ACTIONS (state) {
 export function RESET_ENTRY_LIST (state) {
   state.entryList = [];
 }
+
+
+export function SET_PARENT_ORDER (state, payload) {
+  state.parentOrder = payload;
+}

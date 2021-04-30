@@ -4,5 +4,6 @@ export default function () {
     entryList: [],
     logs: [],
     actions: [],
+    parentOrder: '',
   }
 }

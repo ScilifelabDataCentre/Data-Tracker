@@ -154,19 +154,17 @@ def get_order_logs(identifier):
     )
 
 
-@blueprint.route("/base", methods=["GET"])
-def get_empty_order():
+@blueprint.route("/structure", methods=["GET"])
+def get_order_data_structure():
     """
-    Provide the basic data structure for an empty order.
+    Get an empty order entry.
 
     Returns:
-        flask.Response: Json structure of an empty order.
+        flask.Response: JSON structure with a list of orders.
     """
-    # create new order
-    order = structure.order()
-    order["_id"] = ""
-
-    return utils.response_json({"order": order})
+    empty_order = structure.order()
+    empty_order["_id"] = ""
+    return utils.response_json({"order": empty_order})
 
 
 @blueprint.route("", methods=["POST"])
@@ -309,6 +307,70 @@ def update_order(identifier: str):  # pylint: disable=too-many-branches
             utils.make_log("order", "edit", "Order updated", order)
 
     return flask.Response(status=200)
+
+
+@blueprint.route("/<identifier>/dataset", methods=["POST"])
+@user.login_required
+def add_dataset(identifier: str):  # pylint: disable=too-many-branches
+    """
+    Add a dataset to the given order.
+
+    Args:
+        identifier (str): The order to add the dataset to.
+    """
+    # permissions
+    indata = flask.request.json
+    try:
+        order_uuid = utils.str_to_uuid(identifier)
+    except ValueError:
+        flask.current_app.logger.debug("Incorrect order UUID (%s)", indata["order"])
+        flask.abort(status=400)
+    order = flask.g.db["orders"].find_one({"_id": order_uuid})
+    if not order:
+        flask.current_app.logger.debug("Order (%s) not in db", indata["order"])
+        flask.abort(status=400)
+    if not (
+        user.has_permission("DATA_MANAGEMENT")
+        or flask.g.current_user["_id"] in order["editors"]
+    ):
+        return flask.abort(status=403)
+
+    # create new dataset
+    dataset = structure.dataset()
+    validation = utils.basic_check_indata(indata, dataset, ["_id"])
+    if not validation.result:
+        flask.abort(status=validation.status)
+    dataset.update(indata)
+
+    dataset["description"] = utils.secure_description(dataset["description"])
+
+    # add to db
+    result_ds = flask.g.db["datasets"].insert_one(dataset)
+    if not result_ds.acknowledged:
+        flask.current_app.logger.error("Dataset insert failed: %s", dataset)
+    else:
+        utils.make_log(
+            "dataset", "add", f"Dataset added for order {order_uuid}", dataset
+        )
+
+        result_o = flask.g.db["orders"].update_one(
+            {"_id": order_uuid}, {"$push": {"datasets": dataset["_id"]}}
+        )
+        if not result_o.acknowledged:
+            flask.current_app.logger.error(
+                "Order %s insert failed: ADD dataset %s", order_uuid, dataset["_id"]
+            )
+        else:
+            order = flask.g.db["orders"].find_one({"_id": order_uuid})
+
+            utils.make_log(
+                "order",
+                "edit",
+                f"Dataset {result_ds.inserted_id} added for order",
+                order,
+            )
+
+    return utils.response_json({"_id": result_ds.inserted_id})
 
 
 def prepare_order_response(order_data: dict, mongodb):

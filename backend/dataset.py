@@ -57,80 +57,11 @@ def get_dataset(identifier):
 
     Returns:
         flask.Response: json structure for the dataset
-
     """
     result = build_dataset_info(identifier)
     if not result:
         return flask.Response(status=404)
     return utils.response_json({"dataset": result})
-
-
-@blueprint.route("", methods=["POST"])
-@user.login_required
-def add_dataset():  # pylint: disable=too-many-branches
-    """
-    Add a dataset to the given order.
-
-    Args:
-        identifier (str): The order to add the dataset to.
-    """
-    # permissions
-    indata = flask.request.json
-    if "order" not in indata:
-        flask.current_app.logger.debug("Order field missing")
-        flask.abort(status=400)
-    try:
-        order_uuid = utils.str_to_uuid(indata["order"])
-    except ValueError:
-        flask.current_app.logger.debug("Incorrect order UUID (%s)", indata["order"])
-        flask.abort(status=400)
-    order = flask.g.db["orders"].find_one({"_id": order_uuid})
-    if not order:
-        flask.current_app.logger.debug("Order (%s) not in db", indata["order"])
-        flask.abort(status=400)
-    if not (
-        user.has_permission("DATA_MANAGEMENT")
-        or flask.g.current_user["_id"] in order["editors"]
-    ):
-        return flask.abort(status=403)
-    del indata["order"]
-
-    # create new dataset
-    dataset = structure.dataset()
-    validation = utils.basic_check_indata(indata, dataset, ["_id"])
-    if not validation.result:
-        flask.abort(status=validation.status)
-    dataset.update(indata)
-
-    dataset["description"] = utils.secure_description(dataset["description"])
-
-    # add to db
-    result_ds = flask.g.db["datasets"].insert_one(dataset)
-    if not result_ds.acknowledged:
-        flask.current_app.logger.error("Dataset insert failed: %s", dataset)
-    else:
-        utils.make_log(
-            "dataset", "add", f"Dataset added for order {order_uuid}", dataset
-        )
-
-        result_o = flask.g.db["orders"].update_one(
-            {"_id": order_uuid}, {"$push": {"datasets": dataset["_id"]}}
-        )
-        if not result_o.acknowledged:
-            flask.current_app.logger.error(
-                "Order %s insert failed: ADD dataset %s", order_uuid, dataset["_id"]
-            )
-        else:
-            order = flask.g.db["orders"].find_one({"_id": order_uuid})
-
-            utils.make_log(
-                "order",
-                "edit",
-                f"Dataset {result_ds.inserted_id} added for order",
-                order,
-            )
-
-    return utils.response_json({"_id": result_ds.inserted_id})
 
 
 @blueprint.route("/<identifier>", methods=["DELETE"])
@@ -285,6 +216,16 @@ def get_dataset_log(identifier: str = None):
 
     return utils.response_json(
         {"entry_id": dataset_uuid, "data_type": "dataset", "logs": dataset_logs}
+    )
+
+
+@blueprint.route("", methods=["POST"])
+@user.login_required
+def info_add_dataset():
+    """Return information about the correct endpoint for adding datasets."""
+    return flask.Response(
+        f"Use {flask.url_for('order.add_dataset', identifier='-identifier-', _external=True)} instead",
+        status=400,
     )
 
 

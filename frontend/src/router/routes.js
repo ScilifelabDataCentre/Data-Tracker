@@ -43,13 +43,13 @@ const routes = [
         props: { 'dataType': 'collection'}
       },
       {
-        path: 'new',
+        path: 'add',
         meta: {
           'permissionRequired': ['DATA_EDIT'],
           'loginRequired': true,
         },
         component: EntryInfo,
-        props: {'uuid': '', dataType: 'collection'},
+        props: {'uuid': '', dataType: 'collection', newEntry: true},
         name: 'Collection New'
       },
       {
@@ -72,13 +72,13 @@ const routes = [
         props: { 'dataType': 'dataset'}
       },
       {
-        path: 'new',
+        path: 'add',
         meta: {
           'permissionRequired': ['DATA_EDIT'],
           'loginRequired': true,
         },
         component: EntryInfo,
-        props: {'uuid': '', dataType: 'dataset'},
+        props: {'uuid': '', dataType: 'dataset', newEntry: true},
         name: 'Dataset New'
       },
       {
@@ -120,13 +120,13 @@ const routes = [
         props: { 'dataType': 'order'}
       },
       {
-        path: 'new',
+        path: 'add',
         meta: {
           'permissionRequired': ['DATA_EDIT'],
           'loginRequired': true,
         },
         component: EntryInfo,
-        props: {'uuid': '', dataType: 'order'},
+        props: {'uuid': '', dataType: 'order', newEntry: true},
         name: 'Order New'
       },
       {

@@ -8,7 +8,7 @@
            no-caps
            class="q-my-md"
            color="primary"
-           :to="{ 'name': 'Collection Browser' }"
+           :to="{ 'name': capitalize(dataType) + ' Browser' }"
            :label="'Back to ' + dataType + ' browser'" />
   </div>
   <div v-else>
@@ -96,7 +96,9 @@
       </q-tab-panel>
       
       <q-tab-panel name="edit">
-        <entry-edit :isLoading="isLoading"  :dataType="dataType" />
+        <entry-edit :isLoading="isLoading"
+                    :dataType="dataType"
+                    :newEntry="newEntry" />
       </q-tab-panel>
     </q-tab-panels>
 
@@ -168,6 +170,10 @@ export default {
       type: String,
       required: true,
     },
+    newEntry: {
+      type: Boolean,
+      default: false
+    }
   },
 
   computed: {
@@ -203,6 +209,7 @@ export default {
       isSaving: false,
       isDeleting: false,
       showLogs: false,
+      capitalize: capitalize,
     }
   },
 
@@ -252,33 +259,40 @@ export default {
       dataToSubmit.properties = this.entry.properties;
       dataToSubmit.tags = this.entry.tags;
       if (this.dataType === 'order') {
-        dataToSubmit.organisation = this.entry.organisation[0].id;
+        if (this.entry.organisation.length)
+          dataToSubmit.organisation = this.entry.organisation[0].id;
         for (const key of ['authors', 'generators', 'editors']) {
           dataToSubmit[key] = this.entry[key].map(item => item.id);
         }
       }
-      if (this.dataType === 'collection') {
+      else if (this.dataType === 'collection') {
         for (const key of ['editors', 'datasets']) {
           dataToSubmit[key] = this.entry[key].map(item => item.id);
         }
       }
       this.isSaving = true;
-      this.$store.dispatch('entries/saveEntry', {id: this.uuid,
+      let dataType = this.dataType;
+      let targetId = this.uuid;
+
+      if (this.dataType === 'dataset' && this.newEntry) {
+        dataType = 'newDataset';
+        targetId = this.$store.state.entries.parentOrder;
+      }
+      this.$store.dispatch('entries/saveEntry', {id: targetId,
                                                  data: dataToSubmit,
-                                                 dataType: this.dataType})
+                                                 dataType: dataType})
         .then((response) => {
           if (this.uuid === '') {
-            this.$router.push({ name: 'Collection About', params: { 'uuid': response.data.id } });
+            this.$router.push({ name: capitalize(this.dataType) + ' About', params: { 'uuid': response.data.id } });
           }
           this.loadData();
-          this.isSaving = false;
           this.editMode = false;
           this.currentTab = "preview";
         })
         .catch((err) => {
           this.error = true;
-          this.isSaving = false;
-        });
+        })
+        .finally(() => this.isSaving = false);
     },
 
     loadData () {

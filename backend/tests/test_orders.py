@@ -844,3 +844,172 @@ def test_list_all_orders(mdb):
         else:
             assert response.code == 403
             assert not response.data
+
+
+def test_add_dataset_permissions(mdb):
+    """
+    Add a dataset using .post(addDataset).
+
+    Confirm that permissions are handled correctly.
+    """
+    session = requests.Session()
+
+    db = mdb
+    orders = db["orders"].aggregate([{"$sample": {"size": 2}}])
+    for order in orders:
+        indata = {"title": "Test title"}
+        indata.update(TEST_LABEL)
+
+        responses = make_request_all_roles(
+            f"/api/v1/order/{str(order['_id'])}/dataset",
+            method="POST",
+            data=indata,
+            ret_json=True,
+        )
+        for response in responses:
+            if response.role in ("data", "root"):
+                assert response.code == 200
+                assert "id" in response.data
+                assert len(response.data["id"]) == 36
+            elif response.role == "no-login":
+                assert response.code == 401
+                assert not response.data
+            else:
+                assert response.code == 403
+                assert not response.data
+
+        # as order editor
+        owner = db["users"].find_one({"_id": order["editors"][0]})
+        as_user(session, owner["auth_ids"][0])
+        response = make_request(
+            session,
+            f"/api/v1/order/{str(order['_id'])}/dataset",
+            method="POST",
+            data=indata,
+        )
+        assert response.code == 200
+        assert "id" in response.data
+        assert len(response.data["id"]) == 36
+
+
+def test_add_dataset(mdb):
+    """
+    Add a dataset using POST dataset.
+
+    Set values in all available fields.
+    """
+    order = next(mdb["orders"].aggregate([{"$sample": {"size": 1}}]))
+    indata = {
+        "title": "Test title",
+        "description": "Test description",
+    }
+    indata.update(TEST_LABEL)
+
+    session = requests.session()
+    as_user(session, USERS["data"])
+
+    response = make_request(
+        session,
+        f"/api/v1/order/{order['_id']}/dataset",
+        method="POST",
+        data=indata,
+        ret_json=True,
+    )
+    assert response.code == 200
+    assert "id" in response.data
+    assert len(response.data["id"]) == 36
+    indata.update({"_id": response.data["id"]})
+    mdb_ds = mdb["datasets"].find_one({"_id": uuid.UUID(response.data["id"])})
+    mdb_o = mdb["orders"].find_one({"_id": order["_id"]})
+    mdb_ds["_id"] = str(mdb_ds["_id"])
+    mdb_o["datasets"] = [str(ds_uuid) for ds_uuid in mdb_o["datasets"]]
+    for field in indata:
+        if field == "order":
+            continue
+        assert mdb_ds[field] == indata[field]
+    assert response.data["id"] in mdb_o["datasets"]
+
+
+def test_add_dataset_log(mdb):
+    """
+    Confirm that logs are added correctly when datasets are added.
+
+    Check that both there is both update on order and add on dataset.
+    """
+    order = next(mdb["orders"].aggregate([{"$sample": {"size": 1}}]))
+    indata = {"title": "Test title"}
+    indata.update(TEST_LABEL)
+
+    session = requests.session()
+    as_user(session, USERS["data"])
+
+    order_logs = list(
+        mdb["logs"].find({"data_type": "order", "data._id": order["_id"]})
+    )
+
+    response = make_request(
+        session,
+        f"/api/v1/order/{order['_id']}/dataset",
+        method="POST",
+        data=indata,
+        ret_json=True,
+    )
+
+    order_logs_post = list(
+        mdb["logs"].find({"data_type": "order", "data._id": order["_id"]})
+    )
+    print(order_logs_post)
+    assert len(order_logs_post) == len(order_logs) + 1
+    ds_logs_post = list(
+        mdb["logs"].find(
+            {"data_type": "dataset", "data._id": uuid.UUID(response.data["id"])}
+        )
+    )
+    assert len(ds_logs_post) == 1
+    assert ds_logs_post[0]["action"]
+
+
+def test_add_dataset_bad_fields(mdb):
+    """Attempt to add datasets with e.g. forbidden fields."""
+    db = mdb
+    order = next(db["orders"].aggregate([{"$sample": {"size": 1}}]))
+    session = requests.Session()
+    as_user(session, USERS["data"])
+
+    indata = {
+        "_id": "asd",
+        "title": "test title",
+    }
+    response = make_request(
+        session, f"/api/v1/order/{order['_id']}/dataset", method="POST", data=indata
+    )
+    assert response.code == 403
+    assert not response.data
+
+    indata = {"timestamp": "asd", "title": "test title"}
+    response = make_request(
+        session, f"/api/v1/order/{order['_id']}/dataset", method="POST", data=indata
+    )
+    assert response.code == 400
+    assert not response.data
+
+    indata = {"extra": [{"asd": 123}], "title": "test title"}
+    response = make_request(
+        session, f"/api/v1/order/{order['_id']}/dataset", method="POST", data=indata
+    )
+    assert response.code == 400
+    assert not response.data
+
+    indata = {"links": [{"asd": 123}], "title": "test title"}
+    response = make_request(
+        session, f"/api/v1/order/{order['_id']}/dataset", method="POST", data=indata
+    )
+    assert response.code == 400
+    assert not response.data
+
+    indata = {"links": "Some text", "title": "test title"}
+    response = make_request(
+        session, f"/api/v1/order/{order['_id']}/dataset", method="POST", data=indata
+    )
+    assert response.code == 400
+    assert not response.data

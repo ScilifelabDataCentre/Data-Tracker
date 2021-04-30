@@ -156,6 +156,16 @@ export function saveEntry (context, payload) {
           reject(err);
         });
     }
+    else if (payload.dataType === 'newDataset') {
+      axios
+        .post('/api/v1/order/' + payload.id + '/dataset',
+              payload.data,
+              {
+                headers: getCsrfHeader(),
+              })
+        .then((response) => resolve(response))
+        .catch((err) => reject(err));
+    }
     else {
       axios
         .patch('/api/v1/' + payload.dataType + '/' + payload.id,
@@ -283,4 +293,9 @@ export function getLocalEntries ({ commit, dispatch }, dataType) {
         reject(err);
       });
   });
+}
+
+
+export function setParentOrder ({ commit, dispatch }, id) {
+    commit('SET_PARENT_ORDER', id);
 }
