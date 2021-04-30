@@ -437,7 +437,8 @@ def test_info_add_dataset():
     """Confirm that the redirect information works as intended."""
     session = requests.session()
     as_user(session, USERS["data"])
-    response = make_request(
-        session, f'/api/v1/dataset', ret_json=False, method="POST"
+    response = make_request(session, "/api/v1/dataset", ret_json=False, method="POST")
+    assert (
+        response.data
+        == "Use http://localhost:5000/api/v1/order/-identifier-/dataset instead"
     )
-    assert response.data == "Use http://localhost:5000/api/v1/order/-identifier-/dataset instead"

@@ -861,7 +861,10 @@ def test_add_dataset_permissions(mdb):
         indata.update(TEST_LABEL)
 
         responses = make_request_all_roles(
-            f"/api/v1/order/{str(order['_id'])}/dataset", method="POST", data=indata, ret_json=True
+            f"/api/v1/order/{str(order['_id'])}/dataset",
+            method="POST",
+            data=indata,
+            ret_json=True,
         )
         for response in responses:
             if response.role in ("data", "root"):
@@ -878,7 +881,12 @@ def test_add_dataset_permissions(mdb):
         # as order editor
         owner = db["users"].find_one({"_id": order["editors"][0]})
         as_user(session, owner["auth_ids"][0])
-        response = make_request(session, f"/api/v1/order/{str(order['_id'])}/dataset", method="POST", data=indata)
+        response = make_request(
+            session,
+            f"/api/v1/order/{str(order['_id'])}/dataset",
+            method="POST",
+            data=indata,
+        )
         assert response.code == 200
         assert "id" in response.data
         assert len(response.data["id"]) == 36
@@ -901,7 +909,11 @@ def test_add_dataset(mdb):
     as_user(session, USERS["data"])
 
     response = make_request(
-        session, f"/api/v1/order/{order['_id']}/dataset", method="POST", data=indata, ret_json=True
+        session,
+        f"/api/v1/order/{order['_id']}/dataset",
+        method="POST",
+        data=indata,
+        ret_json=True,
     )
     assert response.code == 200
     assert "id" in response.data
@@ -936,7 +948,11 @@ def test_add_dataset_log(mdb):
     )
 
     response = make_request(
-        session, f"/api/v1/order/{order['_id']}/dataset", method="POST", data=indata, ret_json=True
+        session,
+        f"/api/v1/order/{order['_id']}/dataset",
+        method="POST",
+        data=indata,
+        ret_json=True,
     )
 
     order_logs_post = list(
@@ -964,26 +980,36 @@ def test_add_dataset_bad_fields(mdb):
         "_id": "asd",
         "title": "test title",
     }
-    response = make_request(session, f"/api/v1/order/{order['_id']}/dataset", method="POST", data=indata)
+    response = make_request(
+        session, f"/api/v1/order/{order['_id']}/dataset", method="POST", data=indata
+    )
     assert response.code == 403
     assert not response.data
 
     indata = {"timestamp": "asd", "title": "test title"}
-    response = make_request(session, f"/api/v1/order/{order['_id']}/dataset", method="POST", data=indata)
+    response = make_request(
+        session, f"/api/v1/order/{order['_id']}/dataset", method="POST", data=indata
+    )
     assert response.code == 400
     assert not response.data
 
     indata = {"extra": [{"asd": 123}], "title": "test title"}
-    response = make_request(session, f"/api/v1/order/{order['_id']}/dataset", method="POST", data=indata)
+    response = make_request(
+        session, f"/api/v1/order/{order['_id']}/dataset", method="POST", data=indata
+    )
     assert response.code == 400
     assert not response.data
 
     indata = {"links": [{"asd": 123}], "title": "test title"}
-    response = make_request(session, f"/api/v1/order/{order['_id']}/dataset", method="POST", data=indata)
+    response = make_request(
+        session, f"/api/v1/order/{order['_id']}/dataset", method="POST", data=indata
+    )
     assert response.code == 400
     assert not response.data
 
     indata = {"links": "Some text", "title": "test title"}
-    response = make_request(session, f"/api/v1/order/{order['_id']}/dataset", method="POST", data=indata)
+    response = make_request(
+        session, f"/api/v1/order/{order['_id']}/dataset", method="POST", data=indata
+    )
     assert response.code == 400
     assert not response.data

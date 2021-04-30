@@ -223,7 +223,10 @@ def get_dataset_log(identifier: str = None):
 @user.login_required
 def info_add_dataset():
     """Return information about the correct endpoint for adding datasets."""
-    return flask.Response(f"Use {flask.url_for('order.add_dataset', identifier='-identifier-', _external=True)} instead", status=400)
+    return flask.Response(
+        f"Use {flask.url_for('order.add_dataset', identifier='-identifier-', _external=True)} instead",
+        status=400,
+    )
 
 
 # helper functions
