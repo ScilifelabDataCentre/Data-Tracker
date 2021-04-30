@@ -1,16 +1,16 @@
 <template>
 <div>
-  <div v-if="this.newEntry"
+  <div v-if="this.newEntry && this.dataType === 'dataset'"
        class="q-my-sm">
     <q-table flat
-             title="Select an order"
-             :data="onlySelectedOrder ? selectedOrder : orders"
+             title="Parent order for the dataset"
+             :data="onlySelectedOrder ? parentOrder : orders"
              :columns="columns"
              row-key="id"
              :loading="isLoadingOrders"
              :filter="filter"
              selection="single"
-             :selected.sync="selectedOrder"
+             :selected.sync="parentOrder"
              :pagination.sync="pagination"
              no-data-label="No entries found"
              :no-results-label="filter + ' does not match any entries'">
@@ -34,11 +34,11 @@
            label="Load data from order"
            color="primary"
            @click="confirmOrder"
-           :disable="selectedOrder.length === 0"
+           :disable="parentOrder.length === 0"
            :loading="isLoadingOrderData"/>
   </div>
 
-  <div v-if="dataType !== 'dataset' || entry.order || this.selectedOrder.length">
+  <div v-if="dataType !== 'dataset' || entry.order || parentOrder.length">
     <q-field v-if="!newEntry"
              label="UUID"
              class="q-mb-lg"
@@ -232,7 +232,7 @@ export default {
     newEntry: {
       type: Boolean,
       default: false
-    }
+    },
   },
   
   computed: {
@@ -257,6 +257,15 @@ export default {
       },
       set (newValue) {
         this.$store.dispatch('entries/setEntryFields', {'title': newValue});
+      },
+    },
+
+    parentOrder: {
+      get () {
+        return this.$store.state.entries.parentOrder.length ? [{id: this.$store.state.entries.parentOrder}] : [];
+      },
+      set (newValue) {
+        this.$store.dispatch('entries/setParentOrder', newValue.length ? newValue[0]['id'] : '');
       },
     },
 
@@ -301,7 +310,6 @@ export default {
       // for new datasets
       isLoadingOrders: false,
       isLoadingOrderData: false,
-      selectedOrder: [],
       orders: [],
       onlySelectedDatasets: false,
       onlySelectedOrder: false,
@@ -339,7 +347,7 @@ export default {
     confirmOrder() {
       this.isLoadingOrderData = true;
       this.$store.dispatch('entries/getLocalEntry',
-                           {'id': this.selectedOrder[0].id,
+                           {'id': this.parentOrder[0].id,
                             'dataType': 'order'})
         .then((data) => {
           this.$store.dispatch('entries/setEntryFields',
@@ -369,6 +377,7 @@ export default {
     }
     else if (this.newEntry && this.dataType === 'dataset') {
       this.isLoadingOrders = true;
+      
       this.$store.dispatch('entries/getLocalEntries', 'order')
         .then((orders) => this.orders = orders)
         .finally(() => this.isLoadingOrders = false);

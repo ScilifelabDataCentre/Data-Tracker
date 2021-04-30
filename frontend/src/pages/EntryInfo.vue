@@ -96,7 +96,9 @@
       </q-tab-panel>
       
       <q-tab-panel name="edit">
-        <entry-edit :isLoading="isLoading"  :dataType="dataType" :newEntry="newEntry" />
+        <entry-edit :isLoading="isLoading"
+                    :dataType="dataType"
+                    :newEntry="newEntry" />
       </q-tab-panel>
     </q-tab-panels>
 
@@ -257,7 +259,7 @@ export default {
       dataToSubmit.properties = this.entry.properties;
       dataToSubmit.tags = this.entry.tags;
       if (this.dataType === 'order') {
-        if (dataToSubmit.length)
+        if (this.entry.organisation.length)
           dataToSubmit.organisation = this.entry.organisation[0].id;
         for (const key of ['authors', 'generators', 'editors']) {
           dataToSubmit[key] = this.entry[key].map(item => item.id);
@@ -269,22 +271,28 @@ export default {
         }
       }
       this.isSaving = true;
-      this.$store.dispatch('entries/saveEntry', {id: this.uuid,
+      let dataType = this.dataType;
+      let targetId = this.uuid;
+
+      if (this.dataType === 'dataset' && this.newEntry) {
+        dataType = 'newDataset';
+        targetId = this.$store.state.entries.parentOrder;
+      }
+      this.$store.dispatch('entries/saveEntry', {id: targetId,
                                                  data: dataToSubmit,
-                                                 dataType: this.dataType})
+                                                 dataType: dataType})
         .then((response) => {
           if (this.uuid === '') {
             this.$router.push({ name: capitalize(this.dataType) + ' About', params: { 'uuid': response.data.id } });
           }
           this.loadData();
-          this.isSaving = false;
           this.editMode = false;
           this.currentTab = "preview";
         })
         .catch((err) => {
           this.error = true;
-          this.isSaving = false;
-        });
+        })
+        .finally(() => this.isSaving = false);
     },
 
     loadData () {
