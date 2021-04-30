@@ -99,11 +99,29 @@ def stop_server():
     return flask.Response(status=200)
 
 
-@blueprint.route("/sitemap")
-def list_endpoints():
-    """List all endpoints for the app."""
+def sitemap_builder():
     endpoints = []
     for rule in flask.current_app.url_map.iter_rules():
         methods = ",".join(rule.methods)
-        endpoints.append(f"{rule.endpoint:50s} {methods:25s} {rule}")
-    return flask.jsonify(endpoints)
+        endpoints.append(
+            {"endpoint": rule.endpoint, "methods": methods, "route": str(rule)}
+        )
+    endpoints.sort(key=lambda x: x["route"])
+    return endpoints
+
+
+@blueprint.route("/sitemap")
+def list_endpoints_formatted_text():
+    """List all endpoints for the app."""
+    return flask.jsonify(
+        [
+            f"{entry['endpoint']:50s} {entry['methods']:25s} {entry['route']}"
+            for entry in sitemap_builder()
+        ]
+    )
+
+
+@blueprint.route("/sitemap-json")
+def list_endpoints_json():
+    """List all endpoints for the app."""
+    return flask.jsonify({"endpoints": sitemap_builder()})

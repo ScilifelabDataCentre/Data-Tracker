@@ -17,7 +17,9 @@ def test_available_schema_list():
 
 def test_schema_collection():
     """Confirm the schema of a collection."""
-    responses = helpers.make_request_all_roles("/api/v1/schema/collection", ret_json=True)
+    responses = helpers.make_request_all_roles(
+        "/api/v1/schema/collection", ret_json=True
+    )
     expected = utils.prepare_response(structure.collection())
     expected["id"] = ""
     for response in responses:
