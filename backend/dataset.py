@@ -1,7 +1,6 @@
 """Dataset requests."""
 import flask
 
-import structure
 import utils
 import user
 
