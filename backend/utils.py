@@ -276,23 +276,21 @@ def response_json(data: dict):
         flask.Response: Prepared response containing json structure with camelBack keys.
     """
     url = flask.request.path
-    return flask.jsonify(prepare_response(data, url))
+    prepare_response(data, url)
+    return flask.jsonify(data)
 
 
 def prepare_response(data: dict, url: str = ""):
     """
     Prepare the fields before running jsonify.
 
-    ``data`` is modified in-place
+    ``data`` is modified in-place.
 
     * Rename ``_id`` to ``id``
     * If available, add origin URL to the response
 
     Args:
         data (dict): Structure to prepare.
-
-    Returns:
-        dict:
     """
 
     def fix_id(chunk):
@@ -316,7 +314,6 @@ def prepare_response(data: dict, url: str = ""):
             data["url"] = url
     elif isinstance(data, (list, tuple)):
         data = fix_id(data)
-    return data
 
 
 def make_timestamp():
