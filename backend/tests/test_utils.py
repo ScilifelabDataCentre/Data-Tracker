@@ -1,5 +1,7 @@
 """Test functions in the utils module."""
 
+import helpers
+
 import utils
 
 
@@ -65,3 +67,23 @@ def test_prepare_response():
         "list": [{"id": "value"}, {"id": "value"}, {"id": "value"}, {"id": "value"}]
     }
     assert utils.prepare_response(indata) == expected
+
+
+def test_check_permissions():
+    """
+    Confirm that permissions are correctly evaluated.
+
+    Checks:
+    * User not logged in (401)
+    * User lacks permission (403)
+    * User has permission indirectly (part of another permission) (200)
+    * User has permission (200)
+    """
+    assert utils.check_permissions(["DATA_EDIT"], [], False) == 401
+    permissions = ["DATA_EDIT"]
+    user_permissions = {}
+    assert utils.check_permissions(permissions, user_permissions, True) == 403
+    user_permissions = ["DATA_MANAGEMENT"]
+    assert utils.check_permissions(permissions, user_permissions, True) == 200
+    user_permissions = ["DATA_EDIT"]
+    assert utils.check_permissions(permissions, user_permissions, True) == 200

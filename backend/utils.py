@@ -1,12 +1,13 @@
 """General helper functions."""
 
-from collections import namedtuple
-from typing import Any, Union
 import datetime
 import html
 import re
 import secrets
 import uuid
+from collections import namedtuple
+from itertools import chain
+from typing import Any, Union
 
 import argon2
 import bson
@@ -14,8 +15,8 @@ import flask
 import pymongo
 
 import structure
+import user
 import validate
-
 
 ValidationResult = namedtuple("ValidationResult", ["result", "status"])
 
@@ -202,6 +203,25 @@ def new_uuid() -> uuid.UUID:
         uuid.UUID: The new uuid in binary format.
     """
     return uuid.uuid4()
+
+
+def list_to_uuid(uuids: list) -> list:
+    """
+    Convert the uuids in a list to uuid.UUID.
+
+    Args:
+        uuids (list): The uuid to be converted.
+
+    Returns:
+        list: All the provided uuids as uuid.UUID.
+    """
+    new_list = []
+    for entry in uuids:
+        if isinstance(entry, uuid.UUID):
+            new_list.append(entry)
+        else:
+            new_list.append(str_to_uuid(entry))
+    return new_list
 
 
 def str_to_uuid(in_uuid: Union[str, uuid.UUID]) -> uuid.UUID:
@@ -464,3 +484,72 @@ def user_uuid_data(
         }
         for entry in data
     ]
+
+
+def req_check_permissions(permissions):
+    """
+    Call ``check_permissions`` from inside a Flask request.
+
+    Convenience function to use the Flask variables.
+    """
+    return check_permissions(
+        permissions, flask.g.permissions, bool(flask.g.current_user)
+    )
+
+
+def check_permissions(
+    permissions: list, user_permissions: list, logged_in: bool
+) -> int:
+    """
+    Perform the standard permissions check for a request.
+
+    Will return a status code:
+    * 200: accepted
+    * 401: not logged in
+    * 403: permission missing
+
+    Args:
+        permissions (list): The required permissions.
+        user_permissions (list): List of permissions for the user.
+        logged_in (bool): Whether the current user is logged in.
+
+    Returns:
+        int: The suggested status code.
+    """
+    if permissions and not logged_in:
+        return 401
+    if not user_permissions and permissions:
+        return 403
+    user_permissions = set(
+        chain.from_iterable(
+            user.PERMISSIONS[permission] for permission in user_permissions
+        )
+    )
+    for perm in permissions:
+        if perm not in user_permissions:
+            return 403
+    return 200
+
+
+def has_permission(permission: str, user_permissions: list):
+    """
+    Check if the current user permissions fulfills the requirement.
+
+    Args:
+        permission (str): The required permission
+        user_permissions (list): List of permissions for the user.
+            Should be ``flask.g.permissions`` for most requests.
+
+    Returns:
+        bool: whether the user has the required permissions or not
+    """
+    if not flask.g.permissions and permission:
+        return False
+    user_permissions = set(
+        chain.from_iterable(
+            user.PERMISSIONS[permission] for permission in user_permissions
+        )
+    )
+    if permission not in user_permissions:
+        return False
+    return True

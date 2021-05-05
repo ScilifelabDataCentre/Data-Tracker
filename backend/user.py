@@ -7,11 +7,9 @@ Decorators
 Helper functions
     Functions to help with user-related tasks, e.g. setting all variables at login.
 
-
 Requests
     User-related API endpoints, including login/logout and user manament.
 """
-from itertools import chain
 import functools
 import json
 
@@ -536,21 +534,8 @@ def get_user(user_uuid=None):
 
 def has_permission(permission: str):
     """
-    Check if the current user permissions fulfills the requirement.
+    Function moved to utils.
 
-    Args:
-        permission (str): The required permission
-
-    Returns:
-        bool: whether the user has the required permissions or not
+    Kept until all current uses have been migrated.
     """
-    if not flask.g.permissions and permission:
-        return False
-    user_permissions = set(
-        chain.from_iterable(
-            PERMISSIONS[permission] for permission in flask.g.permissions
-        )
-    )
-    if permission not in user_permissions:
-        return False
-    return True
+    return utils.has_permission(permission, flask.g.permissions)
