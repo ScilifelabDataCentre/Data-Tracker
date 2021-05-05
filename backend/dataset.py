@@ -1,8 +1,8 @@
 """Dataset requests."""
 import flask
 
-import utils
 import user
+import utils
 
 blueprint = flask.Blueprint("dataset", __name__)  # pylint: disable=invalid-name
 

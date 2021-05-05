@@ -2,9 +2,9 @@
 import logging
 import sys
 
-from migrations import MIGRATIONS
-import utils
 import structure
+import utils
+from migrations import MIGRATIONS
 
 DB_VERSION = 2
 

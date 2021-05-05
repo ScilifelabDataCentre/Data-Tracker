@@ -4,6 +4,7 @@ import json
 import logging
 
 import flask
+from authlib.integrations.flask_client import OAuth
 
 import collection
 import config
@@ -14,8 +15,6 @@ import order
 import schema
 import user
 import utils
-
-from authlib.integrations.flask_client import OAuth
 
 app = flask.Flask(__name__)  # pylint: disable=invalid-name
 appconf = config.init()
