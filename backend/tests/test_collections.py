@@ -1,21 +1,275 @@
 """Tests for collection requests."""
 import uuid
+
 import requests
 
 # avoid pylint errors because of fixtures
 # pylint: disable = redefined-outer-name, unused-import
 from helpers import (
-    make_request,
-    as_user,
-    make_request_all_roles,
-    USERS,
-    random_string,
-    mdb,
     TEST_LABEL,
-    collection_for_tests,
+    USERS,
     add_dataset,
+    as_user,
+    collection_for_tests,
     delete_dataset,
+    make_request,
+    make_request_all_roles,
+    mdb,
+    random_string,
 )
+
+import utils
+
+
+def test_list_collections(mdb):
+    """Request a list of all collections."""
+    responses = make_request_all_roles("/api/v1/collection", ret_json=True)
+    for response in responses:
+        assert response.code == 200
+        assert len(response.data["collections"]) == mdb["collections"].count_documents(
+            {}
+        )
+        assert set(response.data["collections"][0].keys()) == {
+            "id",
+            "title",
+            "tags",
+            "properties",
+        }
+
+
+def test_add_collection_permissions(mdb):
+    """
+    Test permissions for adding a collection.
+
+    * any user with ``DATA_MANAGEMENT`` can add a collection
+    """
+    indata = {"collection": {"title": "Test title"}}
+    indata["collection"].update(TEST_LABEL)
+
+    responses = make_request_all_roles(
+        "/api/v1/collection", method="POST", data=indata, ret_json=True
+    )
+    for response in responses:
+        if response.role in ("edit", "data", "root"):
+            assert response.code == 200
+            assert "id" in response.data
+            assert len(response.data["id"]) == 36
+        elif response.role == "no-login":
+            assert response.code == 401
+            assert not response.data
+        else:
+            assert response.code == 403
+            assert not response.data
+
+
+def test_add_collection_data(mdb):
+    """
+    Test the functionality for adding collections.
+
+    Checks:
+    * fields are set correctly
+    * logs are created
+    * logs contain the relevant data
+    """
+    ds_id = next(mdb["datasets"].aggregate([{"$sample": {"size": 1}}]))["_id"]
+    order_info = mdb["orders"].find_one({"datasets": ds_id})
+    user_info = mdb["users"].find_one({"_id": {"$in": order_info["editors"]}})
+
+    session = requests.Session()
+    as_user(session, user_info["auth_ids"][0])
+
+    # add data
+    indata = {
+        "collection": {
+            "description": "Test description",
+            "editors": [str(user_info["_id"])],
+            "title": "Test title",
+            "datasets": [str(ds_id)],
+            "tags": [],
+            "properties": {
+                "Source": "Added from test",
+            },
+        }
+    }
+    indata["collection"].update(TEST_LABEL)
+    response = make_request(
+        session, "/api/v1/collection", method="POST", data=indata, ret_json=True
+    )
+    assert response.code == 200
+    assert "id" in response.data
+    assert len(response.data["id"]) == 36
+
+    added_id = uuid.UUID(response.data["id"])
+
+    # validate added data
+    collection = mdb["collections"].find_one({"_id": added_id})
+    utils.prepare_response(collection)
+    for field in ("editors", "datasets"):
+        collection[field] = [str(entry) for entry in collection[field]]
+    for field in indata["collection"]:
+        assert collection[field] == indata["collection"][field]
+
+    # validate log
+    log_query = {
+        "data._id": added_id,
+        "data_type": "collection",
+        "user": user_info["_id"],
+        "action": "add",
+    }
+    log_entry = mdb["logs"].find_one(log_query)
+    assert log_entry
+    for field in ("editors", "datasets"):
+        log_entry["data"][field] = [str(entry) for entry in log_entry["data"][field]]
+
+    print(log_entry, indata)
+    for field in indata["collection"]:
+        assert log_entry["data"][field] == indata["collection"][field]
+
+
+def test_add_collection_bad():
+    """
+    Perform bad add collection attempts.
+
+    * no {collection: {...} }
+    * empty title
+    * no data (no collection)
+    * no data
+    * list instead of object
+    * incorrect field name
+    * incorrect editor uuid
+    * attempt to set ``_id``
+    * bad dataset uuid
+    """
+    indata = {"title": "a title"}
+    responses = make_request_all_roles(
+        "/api/v1/collection", method="POST", data=indata, ret_json=True
+    )
+    for response in responses:
+        if response.role == "no-login":
+            assert response.code == 401
+            assert not response.data
+        elif response.role in ("root", "edit", "data"):
+            assert response.code == 400
+            assert not response.data
+        else:
+            assert response.code == 403
+            assert not response.data
+
+    indata = {"collection": {"title": ""}}
+    responses = make_request_all_roles(
+        "/api/v1/collection", method="POST", data=indata, ret_json=True
+    )
+    for response in responses:
+        if response.role == "no-login":
+            assert response.code == 401
+            assert not response.data
+        elif response.role in ("root", "edit", "data"):
+            assert response.code == 400
+            assert not response.data
+        else:
+            assert response.code == 403
+            assert not response.data
+
+    indata = {}
+    responses = make_request_all_roles(
+        "/api/v1/collection", method="POST", data=indata, ret_json=True
+    )
+    for response in responses:
+        if response.role == "no-login":
+            assert response.code == 401
+            assert not response.data
+        elif response.role in ("root", "edit", "data"):
+            assert response.code == 400
+            assert not response.data
+        else:
+            assert response.code == 403
+            assert not response.data
+
+    indata = {"collection": {}}
+    responses = make_request_all_roles(
+        "/api/v1/collection", method="POST", data=indata, ret_json=True
+    )
+    for response in responses:
+        if response.role == "no-login":
+            assert response.code == 401
+            assert not response.data
+        elif response.role in ("root", "edit", "data"):
+            assert response.code == 400
+            assert not response.data
+        else:
+            assert response.code == 403
+            assert not response.data
+
+    indata = {"collection": []}
+    responses = make_request_all_roles(
+        "/api/v1/collection", method="POST", data=indata, ret_json=True
+    )
+    for response in responses:
+        if response.role == "no-login":
+            assert response.code == 401
+            assert not response.data
+        elif response.role in ("root", "edit", "data"):
+            assert response.code == 400
+            assert not response.data
+        else:
+            assert response.code == 403
+            assert not response.data
+
+    indata = {"bad_field": "content", "title": "title"}
+    responses = make_request_all_roles(
+        "/api/v1/collection", method="POST", data=indata, ret_json=True
+    )
+    for response in responses:
+        if response.role == "no-login":
+            assert response.code == 401
+            assert not response.data
+        elif response.role in ("root", "edit", "data"):
+            assert response.code == 400
+            assert not response.data
+        else:
+            assert response.code == 403
+            assert not response.data
+
+    indata = {
+        "collection": {
+            "description": "Test description",
+            "editors": [str(uuid.uuid4())],
+            "title": "Test title",
+        }
+    }
+    responses = make_request_all_roles(
+        "/api/v1/collection", method="POST", data=indata, ret_json=True
+    )
+    for response in responses:
+        if response.role == "no-login":
+            assert response.code == 401
+            assert not response.data
+        elif response.role in ("root", "edit", "data"):
+            assert response.code == 400
+            assert not response.data
+        else:
+            assert response.code == 403
+            assert not response.data
+
+    session = requests.Session()
+    as_user(session, USERS["data"])
+    indata = {
+        "collection": {
+            "_id": str(uuid.uuid4()),
+            "title": "Test title",
+        }
+    }
+    response = make_request(
+        session, "/api/v1/collection", method="POST", data=indata, ret_json=True
+    )
+    assert response.code == 403
+    assert not response.data
+
+    indata = {"collection": {"datasets": [str(uuid.uuid4())], "title": "Test title"}}
+    response = make_request(
+        session, "/api/v1/collection", method="POST", data=indata, ret_json=True
+    )
+    assert response.code == 400
 
 
 def test_get_collection_permissions(mdb):
@@ -30,16 +284,26 @@ def test_get_collection_permissions(mdb):
 
 
 def test_get_collection(mdb):
-    """Request multiple collections by uuid, one at a time."""
+    """
+    Request multiple collections by uuid, one at a time.
+
+    * Normal collection
+    * Collection as editor; confirm that the user gets the editors field
+    * Collection as DATA_MANAGEMENT; confirm that the user gets the editors field
+    """
     session = requests.Session()
     for _ in range(3):
+        # Get a random collection, use external data structure
         collection = list(mdb["collections"].aggregate([{"$sample": {"size": 1}}]))[0]
-        collection["_id"] = str(collection["_id"])
+        utils.prepare_response(collection)
         proj_owner = mdb["users"].find_one({"_id": {"$in": collection["editors"]}})
+        collection["id"] = str(collection["id"])
         collection["editors"] = [str(entry) for entry in collection["editors"]]
         collection["datasets"] = [str(entry) for entry in collection["datasets"]]
+
         as_user(session, USERS["base"])
-        response = make_request(session, f'/api/v1/collection/{collection["_id"]}')
+
+        response = make_request(session, f'/api/v1/collection/{collection["id"]}')
         assert response.code == 200
         for field in collection:
             if field == "datasets":
@@ -47,28 +311,23 @@ def test_get_collection(mdb):
                     assert ds_uuid == response.data["collection"][field][i]["id"]
             elif field == "editors":
                 continue
-            elif field == "_id":
-                assert collection["_id"] == response.data["collection"]["id"]
             else:
                 assert collection[field] == response.data["collection"][field]
 
         as_user(session, proj_owner["auth_ids"][0])
-        response = make_request(session, f'/api/v1/collection/{collection["_id"]}')
+        response = make_request(session, f'/api/v1/collection/{collection["id"]}')
         assert response.code == 200
-        print(collection)
         for field in collection:
             if field in ("datasets", "editors"):
                 entries = [entry["id"] for entry in response.data["collection"][field]]
                 assert len(collection[field]) == len(entries)
                 for i, ds_uuid in enumerate(collection[field]):
                     assert ds_uuid in entries
-            elif field == "_id":
-                assert collection["_id"] == response.data["collection"]["id"]
             else:
                 assert collection[field] == response.data["collection"][field]
 
         as_user(session, USERS["root"])
-        response = make_request(session, f'/api/v1/collection/{collection["_id"]}')
+        response = make_request(session, f'/api/v1/collection/{collection["id"]}')
         assert response.code == 200
         for field in collection:
             if field in ("datasets", "editors"):
@@ -76,8 +335,6 @@ def test_get_collection(mdb):
                 assert len(collection[field]) == len(entries)
                 for i, ds_uuid in enumerate(collection[field]):
                     assert ds_uuid in entries
-            elif field == "_id":
-                assert collection["_id"] == response.data["collection"]["id"]
             else:
                 assert collection[field] == response.data["collection"][field]
 
@@ -98,222 +355,6 @@ def test_get_collection_bad():
         response = make_request(session, f"/api/v1/collection/{random_string()}")
         assert response.code == 404
         assert not response.data
-
-
-def test_add_collection_permissions(mdb):
-    """
-    Add a collection.
-
-    Test permissions.
-    """
-    indata = {"title": "Test title"}
-    indata.update(TEST_LABEL)
-
-    responses = make_request_all_roles(
-        "/api/v1/collection", method="POST", data=indata, ret_json=True
-    )
-    for response in responses:
-        if response.role in ("edit", "data", "root"):
-            assert response.code == 200
-            assert "id" in response.data
-            assert len(response.data["id"]) == 36
-        elif response.role == "no-login":
-            assert response.code == 401
-            assert not response.data
-        else:
-            assert response.code == 403
-            assert not response.data
-
-    user_info = mdb["users"].find_one({"auth_ids": USERS["base"]})
-    indata.update({"editors": [str(user_info["_id"])]})
-    responses = make_request_all_roles(
-        "/api/v1/collection", method="POST", data=indata, ret_json=True
-    )
-    for response in responses:
-        print(response.role)
-        if response.role in ("edit", "root", "data"):
-            assert response.code == 200
-            assert "id" in response.data
-            assert len(response.data["id"]) == 36
-        elif response.role == "no-login":
-            assert response.code == 401
-            assert not response.data
-        else:
-            assert response.code == 403
-            assert not response.data
-
-
-def test_add_collection(mdb):
-    """
-    Add a collection.
-
-    Confirm:
-    * fields are set correctly
-    * logs are created
-    """
-    dataset_info = next(mdb["datasets"].aggregate([{"$sample": {"size": 1}}]))
-    order_info = mdb["orders"].find_one({"datasets": dataset_info["_id"]})
-    session = requests.Session()
-    user_info = mdb["users"].find_one({"_id": {"$in": order_info["editors"]}})
-
-    as_user(session, user_info["auth_ids"][0])
-
-    indata = {
-        "description": "Test description",
-        "editors": [str(user_info["_id"])],
-        "title": "Test title",
-        "datasets": [str(dataset_info["_id"])],
-    }
-    indata.update(TEST_LABEL)
-
-    response = make_request(
-        session, "/api/v1/collection", method="POST", data=indata, ret_json=True
-    )
-    assert response.code == 200
-    assert "id" in response.data
-    assert len(response.data["id"]) == 36
-    collection = mdb["collections"].find_one({"_id": uuid.UUID(response.data["id"])})
-    assert collection["description"] == indata["description"]
-    assert str(collection["editors"][0]) == indata["editors"][0]
-    assert collection["title"] == indata["title"]
-    assert str(collection["datasets"][0]) == indata["datasets"][0]
-
-    # log
-    assert mdb["logs"].find_one(
-        {
-            "data._id": uuid.UUID(response.data["id"]),
-            "data_type": "collection",
-            "user": user_info["_id"],
-            "action": "add",
-        }
-    )
-
-    as_user(session, USERS["data"])
-
-    response = make_request(
-        session, "/api/v1/collection", method="POST", data=indata, ret_json=True
-    )
-    assert response.code == 200
-    assert "id" in response.data
-    assert len(response.data["id"]) == 36
-    collection = mdb["collections"].find_one({"_id": uuid.UUID(response.data["id"])})
-    assert collection["description"] == indata["description"]
-    assert str(collection["editors"][0]) == indata["editors"][0]
-    assert collection["title"] == indata["title"]
-    assert str(collection["datasets"][0]) == indata["datasets"][0]
-
-    data_user = mdb["users"].find_one({"auth_ids": USERS["data"]})
-
-    # log
-    assert mdb["logs"].find_one(
-        {
-            "data._id": uuid.UUID(response.data["id"]),
-            "data_type": "collection",
-            "user": data_user["_id"],
-            "action": "add",
-        }
-    )
-
-
-def test_add_collection_bad():
-    """
-    Add a default dataset using / POST.
-
-    Bad requests.
-    """
-    indata = {"title": ""}
-    indata.update(TEST_LABEL)
-
-    responses = make_request_all_roles(
-        "/api/v1/collection", method="POST", data=indata, ret_json=True
-    )
-    for response in responses:
-        if response.role == "no-login":
-            assert response.code == 401
-            assert not response.data
-        elif response.role in ("root", "edit", "data"):
-            assert response.code == 400
-            assert not response.data
-        else:
-            assert response.code == 403
-            assert not response.data
-
-    indata = {}
-    indata.update(TEST_LABEL)
-
-    responses = make_request_all_roles(
-        "/api/v1/collection", method="POST", data=indata, ret_json=True
-    )
-    for response in responses:
-        if response.role == "no-login":
-            assert response.code == 401
-            assert not response.data
-        elif response.role in ("root", "edit", "data"):
-            assert response.code == 400
-            assert not response.data
-        else:
-            assert response.code == 403
-            assert not response.data
-
-    indata = {"bad_tag": "content", "title": "title"}
-
-    indata.update(TEST_LABEL)
-
-    responses = make_request_all_roles(
-        "/api/v1/collection", method="POST", data=indata, ret_json=True
-    )
-    for response in responses:
-        if response.role == "no-login":
-            assert response.code == 401
-            assert not response.data
-        elif response.role in ("root", "edit", "data"):
-            assert response.code == 400
-            assert not response.data
-        else:
-            assert response.code == 403
-            assert not response.data
-
-    indata = {
-        "description": "Test description",
-        "owners": [str(uuid.uuid4())],
-        "title": "Test title",
-    }
-    indata.update(TEST_LABEL)
-
-    responses = make_request_all_roles(
-        "/api/v1/collection", method="POST", data=indata, ret_json=True
-    )
-    for response in responses:
-        if response.role == "no-login":
-            assert response.code == 401
-            assert not response.data
-        elif response.role in ("root", "edit", "data"):
-            assert response.code == 400
-            assert not response.data
-        else:
-            assert response.code == 403
-            assert not response.data
-
-    session = requests.Session()
-    as_user(session, USERS["data"])
-    indata = {
-        "_id": str(uuid.uuid4()),
-        "owners": [str(uuid.uuid4())],
-        "title": "Test title",
-    }
-    indata.update(TEST_LABEL)
-    response = make_request(
-        session, "/api/v1/collection", method="POST", data=indata, ret_json=True
-    )
-    assert response.code == 403
-    assert not response.data
-
-    indata = {"datasets": [str(uuid.uuid4())], "title": "Test title"}
-    indata.update(TEST_LABEL)
-    response = make_request(
-        session, "/api/v1/collection", method="POST", data=indata, ret_json=True
-    )
-    assert response.code == 400
 
 
 def test_update_collection_permissions(mdb, collection_for_tests):
@@ -621,20 +662,6 @@ def test_delete_collection_bad():
         )
     assert response.code == 404
     assert not response.data
-
-
-def test_list_collections(mdb):
-    """
-    Request a list of all collections.
-
-    Should also test e.g. pagination once implemented.
-    """
-    responses = make_request_all_roles("/api/v1/collection", ret_json=True)
-    for response in responses:
-        assert response.code == 200
-        assert len(response.data["collections"]) == mdb["collections"].count_documents(
-            {}
-        )
 
 
 def test_get_collection_logs_permissions(mdb):

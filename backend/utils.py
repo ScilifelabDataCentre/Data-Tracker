@@ -19,7 +19,7 @@ import user
 import validate
 
 ValidationResult = namedtuple("ValidationResult", ["result", "status"])
-
+CommitResult = namedtuple("CommitResult", ["log", "data", "ins_id"])
 
 def basic_check_indata(
     indata: dict, reference_data: dict, prohibited: Union[tuple, list]
@@ -553,3 +553,147 @@ def has_permission(permission: str, user_permissions: list):
     if permission not in user_permissions:
         return False
     return True
+
+
+def make_log_new(
+    db: str,
+    data_type: str,
+    action: str,
+    comment: str,
+    user,
+    data,
+    logger=None,
+) -> bool:
+    """
+    Log a change in the system.
+
+    Saves a complete copy of the new object.
+
+    Warning:
+        It is assumed that all values are exactly like in the db,
+        e.g. ``data`` should only contain permitted fields.
+
+    Args:
+        db: Connection to the database (client).
+        data_type (str): The collection name.
+        action (str): Type of action (add, edit, delete).
+        comment (str): Note about why the change was done
+            (e.g. "Dataset added via addDataset").
+        active_user: The ``_id`` for the user performing the operation.
+        data (dict): The new data for the entry.
+        logger: The logging object to use for errors.
+
+    Raises:
+        ValueError: No data provided.
+
+    Returns:
+        bool: Whether the log insertion succeeded.
+    """
+    if not data:
+        raise ValueError("Empty data is not allowed")
+    log = structure.log()
+    logger.error(data)
+    log.update(
+        {
+            "action": action,
+            "comment": comment,
+            "data_type": data_type,
+            "data": data,
+            "user": user,
+        }
+    )
+    logger.error(log)
+    success = db["logs"].insert_one(log).acknowledged
+    if not success:
+        if logger:
+            logger.error(
+                "Log addition failed: A: %s C: %s D: %s DT: %s U: %s",
+                action,
+                comment,
+                data,
+                data_type,
+                user,
+            )
+    return success
+
+
+def req_commit_to_db(
+    dbcollection: str,
+    operation: str,
+    data: dict = None,
+    comment: str = "",
+) -> bool:
+    """
+    Commit to one entry in the database from a Flask request.
+
+    Data should contain ``{_id: uuid}}`` if there is a deletion.
+
+    Args:
+        dbcollection (str): Name of the target database collection.
+        operation (str): Operation to perform (add, edit, delete)
+        data (dict): Data to commit to db.
+        comment (str): Custom comment for the log.
+    """
+    if not comment:
+        comment = f"{operation.capitalize()} in {dbcollection}"
+    data_res = {"ack": False, "ins_id": None}
+    result = commit_to_db(
+        flask.g.db,
+        dbcollection,
+        operation,
+        data,
+        logger=flask.current_app.logger,
+    )
+    data_res["ack"] = result.acknowledged
+    log_res = False
+    if data_res["ack"]:
+        if operation == "add":
+            data_res["ins_id"] = result.inserted_id
+            data = flask.g.db[dbcollection].find_one({"_id": data_res["ins_id"]})
+        log_res = make_log_new(
+            db=flask.g.db,
+            data_type=dbcollection[:-1],  # to make singular (e.g. collection|s)
+            action=operation,
+            comment=comment,
+            user=flask.g.current_user["_id"],
+            data=data,
+            logger=flask.current_app.logger,
+        )
+    return CommitResult(data=data_res["ack"], log=log_res, ins_id=data_res["ins_id"])
+
+
+def commit_to_db(
+    db,
+    dbcollection: str,
+    operation: str,
+    data: dict = None,
+    id: uuid.UUID = None,
+    logger=None,
+):
+    """
+    Commit to one entry in the database.
+
+    Only uses *_one commands.
+
+    Args:
+        db: Connection to the database (client).
+        dbcollection (str): Name of the target collection.
+        operation (str): Operation to perform (add, edit, delete)
+        data (dict): Data to commit to db.
+        id (dict): The entry to perform the operation on (_id).
+        logger: The logging object to use for errors.
+
+    Returns:
+        dict: The response from the db commit.
+    """
+    if operation == "add":
+        result = db[dbcollection].insert_one(data)
+    elif operation == "delete":
+        result = db[dbcollection].delete_one({_id: id})
+    elif operation == "edit":
+        result = db[dbcollection].update_one({_id: id}, {"$set": data})
+
+    if not result.acknowledged and logger:
+        logger.error("Database %s of %s failed", operation, dbcollection)
+
+    return result

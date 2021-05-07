@@ -70,40 +70,41 @@ def add_collection():  # pylint: disable=too-many-branches
     Returns:
         flask.Response: Json structure with the ``_id`` of the collection.
     """
-    if not flask.g.current_user:
-        flask.abort(status=401)
-    if not user.has_permission("DATA_EDIT"):
-        flask.abort(status=403)
+    perm_status = utils.req_check_permissions(["DATA_EDIT"])
+    if perm_status != 200:
+        flask.abort(status=perm_status)
 
     # create new collection
     collection = structure.collection()
 
-    indata = flask.request.json
+    jsondata = flask.request.json
+    if not "collection" in jsondata or not isinstance(jsondata["collection"], dict):
+        flask.abort(status=400)
+    indata = jsondata["collection"]
 
     # indata validation
     validation = utils.basic_check_indata(indata, collection, prohibited=["_id"])
-    if not validation[0]:
-        flask.abort(status=validation[1])
+    if not validation.result:
+        flask.abort(status=validation.status)
 
-    if "title" not in indata:
-        flask.abort(status=400)
-
+    # add current user to editors if no editors are defined
     if not indata.get("editors"):
         indata["editors"] = [flask.g.current_user["_id"]]
 
-    if "datasets" in indata:
-        indata["datasets"] = [utils.str_to_uuid(value) for value in indata["datasets"]]
-    collection.update(indata)
+    # convert entries to uuids
+    for field in ("datasets", "editors"):
+        if field in indata:
+            indata[field] = [utils.str_to_uuid(value) for value in indata[field]]
+
     collection["description"] = utils.secure_description(collection["description"])
 
-    # add to db
-    result = flask.g.db["collections"].insert_one(collection)
-    if not result.acknowledged:
-        flask.current_app.logger.error("Collection insert failed: %s", collection)
-    else:
-        utils.make_log("collection", "add", "Collection added", collection)
+    collection.update(indata)
 
-    return utils.response_json({"_id": result.inserted_id})
+    # add to db
+    result = utils.req_commit_to_db("collections", "add", collection)
+    if not result.log or not result.data:
+        flask.abort(status=500)
+    return utils.response_json({"_id": result.ins_id})
 
 
 @blueprint.route("/<identifier>", methods=["DELETE"])
