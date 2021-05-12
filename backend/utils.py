@@ -21,6 +21,7 @@ import validate
 ValidationResult = namedtuple("ValidationResult", ["result", "status"])
 CommitResult = namedtuple("CommitResult", ["log", "data", "ins_id"])
 
+
 def basic_check_indata(
     indata: dict, reference_data: dict, prohibited: Union[tuple, list]
 ) -> tuple:
@@ -617,6 +618,46 @@ def make_log_new(
     return success
 
 
+def req_get_entry(dbcollection: str, identifier: str) -> dict:
+    """
+    Confirm that the identifier is valid and, if so, return the entry.
+
+    Wrapper for usage from a Flask request.
+
+    Args:
+        dbcollection (str): The database collection to use (e.g. ``collections``).
+        identifier (str): The provided identifier.
+    
+    Returns:
+        dict: The entry from the database. None if not found.
+    """
+    return get_entry(db=flask.g.db, dbcollection=dbcollection, identifier=identifier)
+
+
+def get_entry(db, dbcollection: str, identifier: str) -> dict:
+    """
+    Args:
+        db: Connection to the database (client).
+        dbcollection (str): Name of the target collection.
+        operation (str): Operation to perform (add, edit, delete)
+        data (dict): Data to commit to db.
+        id (dict): The entry to perform the operation on (_id).
+        logger: The logging object to use for errors.
+
+    Raises:
+        ValueError: Missing ``_id`` in ``data`` for delete or update.
+
+    Returns:
+        dict: The response from the db commit.
+    """
+    try:
+        entry_uuid = str_to_uuid(identifier)
+    except ValueError:
+        return None
+    entry = db[dbcollection].find_one({"_id": entry_uuid})
+    return entry
+
+
 def req_commit_to_db(
     dbcollection: str,
     operation: str,
@@ -666,12 +707,13 @@ def commit_to_db(
     db,
     dbcollection: str,
     operation: str,
-    data: dict = None,
-    id: uuid.UUID = None,
+    data: dict,
     logger=None,
 ):
     """
     Commit to one entry in the database.
+
+    ``_id`` should be included in ``data`` for delete and update operations.
 
     Only uses *_one commands.
 
@@ -683,17 +725,25 @@ def commit_to_db(
         id (dict): The entry to perform the operation on (_id).
         logger: The logging object to use for errors.
 
+    Raises:
+        ValueError: Missing ``_id`` in ``data`` for delete or update.
+
     Returns:
         dict: The response from the db commit.
     """
     if operation == "add":
         result = db[dbcollection].insert_one(data)
-    elif operation == "delete":
-        result = db[dbcollection].delete_one({_id: id})
-    elif operation == "edit":
-        result = db[dbcollection].update_one({_id: id}, {"$set": data})
+    elif operation in ("delete", "update"):
+        if not "_id" in data:
+            raise ValueError(f"_id must be included in data for {operation} operations")
+        if operation == "delete":
+            result = db[dbcollection].delete_one({"_id": data["_id"]})
+        else:
+            result = db[dbcollection].update_one({"_id": data["_id"]}, {"$set": data})
+    else:
+        raise ValueError(f"Bad operation type ({operation})")
 
     if not result.acknowledged and logger:
         logger.error("Database %s of %s failed", operation, dbcollection)
-
+        
     return result
