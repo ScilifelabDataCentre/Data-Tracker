@@ -671,7 +671,7 @@ def req_commit_to_db(
 
     Args:
         dbcollection (str): Name of the target database collection.
-        operation (str): Operation to perform (add, edit, delete)
+        operation (str): Operation to perform (add, edit, delete).
         data (dict): Data to commit to db.
         comment (str): Custom comment for the log.
     """
@@ -720,13 +720,13 @@ def commit_to_db(
     Args:
         db: Connection to the database (client).
         dbcollection (str): Name of the target collection.
-        operation (str): Operation to perform (add, edit, delete)
+        operation (str): Operation to perform (add, edit, delete).
         data (dict): Data to commit to db.
         id (dict): The entry to perform the operation on (_id).
         logger: The logging object to use for errors.
 
     Raises:
-        ValueError: Missing ``_id`` in ``data`` for delete or update.
+        ValueError: Missing ``_id`` in ``data`` for delete or update, or bad operation type.
 
     Returns:
         dict: The response from the db commit.

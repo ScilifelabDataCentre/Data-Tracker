@@ -158,7 +158,7 @@ def test_commit_to_db(mdb):
         data=delete_data
     )
     assert delete_result.acknowledged
-    delete_entry = mdb["collections"].find_one({"_id": update_data["_id"]})
+    delete_entry = mdb["collections"].find_one({"_id": delete_data["_id"]})
     assert not delete_entry
 
     # bad operation
