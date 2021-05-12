@@ -18,6 +18,8 @@ from helpers import (
     random_string,
 )
 
+import helpers
+
 import utils
 
 
@@ -574,79 +576,62 @@ def test_update_collection_bad(mdb):
 
 def test_delete_collection(mdb):
     """
-    Add and delete collections.
-
-    * Check permissions.
-    * Delete collections added by the add tests.
-    * Confirm that related datasets are deleted.
-    * Check that logs are created correctly.
+    Confirm that collection deletions work as intended.
+    
+    Checks:
+    * DATA_MANAGEMENT can delete any entry.
+    * Users in editors with DATA_EDIT can delete the entry.
+    * No other users can delete entries.
     """
     session = requests.Session()
+    collections = [entry["_id"] for entry in mdb["collections"].find({"tags": "testing"})]
+    collections.append(helpers.add_collection())
+    print(collections)
+    helpers.as_user(session, USERS["data"])
+    for coll_id in collections:
+        print(coll_id)
+        response = make_request(
+            session, f'/api/v1/collection/{coll_id}', method="DELETE"
+        )
+        assert response.code == 200
+        assert not response.data
+        assert not mdb["collections"].find_one({"_id": coll_id})
 
-    # must be updated if TEST_LABEL is modified
-    collections = list(mdb["collections"].find({"extra.testing": "yes"}))
-    i = 0
-    while i < len(collections):
-        for role in USERS:
-            as_user(session, USERS[role])
-            response = make_request(
-                session, f'/api/v1/collection/{collections[i]["_id"]}', method="DELETE"
-            )
-            if role in ("data", "root"):
-                assert response.code == 200
-                assert not response.data
-                assert not mdb["collections"].find_one({"_id": collections[i]["_id"]})
-                assert mdb["logs"].find_one(
-                    {
-                        "data._id": collections[i]["_id"],
-                        "action": "delete",
-                        "data_type": "collection",
-                    }
-                )
-                i += 1
-                if i >= len(collections):
-                    break
-            elif role == "no-login":
-                assert response.code == 401
-                assert not response.data
-            else:
-                current_user = mdb["users"].find_one({"auth_id": USERS[role]})
-                if current_user["_id"] in collections[i]["owners"]:
-                    assert response.code == 200
-                    assert not response.data
-                    assert not mdb["collections"].find_one(
-                        {"_id": collections[i]["_id"]}
-                    )
-                    assert mdb["logs"].find_one(
-                        {
-                            "data._id": collections[i]["_id"],
-                            "action": "delete",
-                            "data_type": "collection",
-                        }
-                    )
-                    i += 1
-                    if i >= len(collections):
-                        break
+    coll_id = helpers.add_collection()
+    for role in USERS:
+        helpers.as_user(session, USERS[role])
+        if role in ("data", "root", "edit"):
+            continue
+        response = helpers.make_request(
+            session, f'/api/v1/collection/{coll_id}', method="DELETE"
+        )
+        if role == "no-login":
+            assert response.code == 401
+        else:
+            assert response.code == 403
+        assert not response.data
+        assert mdb["collections"].find_one({"_id": coll_id})
 
-                else:
-                    assert response.code == 403
-                    assert not response.data
-
-    as_user(session, USERS["edit"])
+    helpers.as_user(session, USERS["data"])
     response = make_request(
-        session, "/api/v1/collection", data={"title": "tmp"}, method="POST"
-    )
-    assert response.code == 200
-    response = make_request(
-        session, f'/api/v1/collection/{response.data["id"]}', method="DELETE"
+        session, f'/api/v1/collection/{coll_id}', method="DELETE"
     )
     assert response.code == 200
     assert not response.data
+    assert not mdb["collections"].find_one({"_id": coll_id})
 
 
 def test_delete_collection_bad():
     """Attempt bad collection delete requests."""
     session = requests.Session()
+
+    as_user(session, USERS["base"])
+    for _ in range(2):
+        response = make_request(
+            session, f"/api/v1/collection/{random_string()}", method="DELETE"
+        )
+    assert response.code == 403
+    assert not response.data
 
     as_user(session, USERS["data"])
     for _ in range(2):

@@ -63,7 +63,7 @@ def get_collection(identifier):
 
 @blueprint.route("", methods=["POST"])
 @user.login_required
-def add_collection():  # pylint: disable=too-many-branches
+def add_collection():
     """
     Add a collection.
 
@@ -118,27 +118,23 @@ def delete_collection(identifier: str):
     Args:
         identifier (str): The collection uuid.
     """
-    try:
-        ds_uuid = utils.str_to_uuid(identifier)
-    except ValueError:
-        return flask.abort(status=404)
-    collection = flask.g.db["collections"].find_one({"_id": ds_uuid})
-    if not collection:
+    perm_status = utils.req_check_permissions(["DATA_EDIT"])
+    if perm_status != 200:
+        flask.abort(status=perm_status)
+
+    entry = utils.req_get_entry("collections", identifier)
+    if not entry:
         flask.abort(status=404)
 
     # permission check
-    if not user.has_permission("DATA_MANAGEMENT") and (
-        not user.has_permission("DATA_EDIT")
-        or flask.g.current_user["_id"] not in collection["editors"]
+    if (not utils.req_check_permissions(["DATA_MANAGEMENT"])
+        and flask.g.current_user["_id"] not in collection["editors"]
     ):
         flask.abort(status=403)
 
-    result = flask.g.db["collections"].delete_one({"_id": ds_uuid})
-    if not result.acknowledged:
-        flask.current_app.logger.error("Failed to delete collection %s", ds_uuid)
-        return flask.Response(status=500)
-    utils.make_log("collection", "delete", "Deleted collection", data={"_id": ds_uuid})
-
+    result = utils.req_commit_to_db("collections", "delete", {"_id": entry["_id"]})
+    if not result.log or not result.data:
+        flask.abort(status=500)
     return flask.Response(status=200)
 
 
