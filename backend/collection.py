@@ -104,6 +104,7 @@ def add_collection():
     result = utils.req_commit_to_db("collections", "add", collection)
     if not result.log or not result.data:
         flask.abort(status=500)
+
     return utils.response_json({"_id": result.ins_id})
 
 
@@ -140,7 +141,7 @@ def delete_collection(identifier: str):
 
 @blueprint.route("/<identifier>", methods=["PATCH"])
 @user.login_required
-def update_collection(identifier):  # pylint: disable=too-many-branches
+def update_collection(identifier):
     """
     Update a collection.
 
@@ -150,44 +151,40 @@ def update_collection(identifier):  # pylint: disable=too-many-branches
     Returns:
         flask.Response: Status code.
     """
-    if not flask.g.current_user:
-        flask.abort(status=401)
-    if not user.has_permission("DATA_EDIT"):
-        flask.abort(status=403)
+    perm_status = utils.req_check_permissions(["DATA_EDIT"])
+    if perm_status != 200:
+        flask.abort(status=perm_status)
 
-    try:
-        collection_uuid = utils.str_to_uuid(identifier)
-    except ValueError:
-        return flask.abort(status=404)
-    collection = flask.g.db["collections"].find_one({"_id": collection_uuid})
+    collection = utils.req_get_entry("collections", identifier)
     if not collection:
         flask.abort(status=404)
 
-    indata = flask.request.json
+    jsondata = flask.request.json
+    if not "collection" in jsondata or not isinstance(jsondata["collection"], dict):
+        flask.abort(status=400)
+    indata = jsondata["collection"]
 
     # permission check
     if (
-        not user.has_permission("DATA_MANAGEMENT")
-        and flask.g.current_user["_id"] not in collection["editors"]
-        and flask.g.current_user["email"] not in collection["editors"]
+            not utils.req_check_permissions(["DATA_MANAGEMENT"])
+            and flask.g.current_user["_id"] not in collection["editors"]
     ):
         flask.current_app.logger.debug(
             "Unauthorized update attempt (collection %s, user %s)",
-            collection_uuid,
+            collection["_id"],
             flask.g.current_user["_id"],
         )
         flask.abort(status=403)
 
     # indata validation
-    validation = utils.basic_check_indata(indata, collection, prohibited=("_id"))
-    if not validation[0]:
-        flask.abort(status=validation[1])
+    validation = utils.basic_check_indata(indata, collection, prohibited=["_id"])
+    if not validation.result:
+        flask.abort(status=validation.status)
 
-    if "datasets" in indata:
-        indata["datasets"] = [utils.str_to_uuid(value) for value in indata["datasets"]]
-
-    if "editors" in indata and not indata["editors"]:
-        indata["editors"] = [flask.g.current_user["_id"]]
+    # convert entries to uuids
+    for field in ("datasets", "editors"):
+        if field in indata:
+            indata[field] = [utils.str_to_uuid(value) for value in indata[field]]
 
     if "description" in indata:
         indata["description"] = utils.secure_description(indata["description"])
@@ -198,15 +195,12 @@ def update_collection(identifier):  # pylint: disable=too-many-branches
             is_different = True
             break
 
+    flask.current_app.logger.error(indata)
     if indata and is_different:
-        result = flask.g.db["collections"].update_one(
-            {"_id": collection["_id"]}, {"$set": indata}
-        )
-        if not result.acknowledged:
-            flask.current_app.logger.error("Collection update failed: %s", indata)
-        else:
-            collection.update(indata)
-            utils.make_log("collection", "edit", "Collection updated", collection)
+        collection.update(indata)
+        result = utils.req_commit_to_db("collections", "edit", collection)
+        if not result.log or not result.data:
+            flask.abort(status=500)
 
     return flask.Response(status=200)
 
