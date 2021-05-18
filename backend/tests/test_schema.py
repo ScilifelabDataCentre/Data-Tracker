@@ -20,7 +20,8 @@ def test_schema_collection():
     responses = helpers.make_request_all_roles(
         "/api/v1/schema/collection", ret_json=True
     )
-    expected = utils.prepare_response(structure.collection())
+    expected = structure.collection()
+    utils.prepare_response(expected)
     expected["id"] = ""
     for response in responses:
         assert response.code == 200
@@ -30,7 +31,8 @@ def test_schema_collection():
 def test_schema_dataset():
     """Confirm the schema of a dataset."""
     responses = helpers.make_request_all_roles("/api/v1/schema/dataset", ret_json=True)
-    expected = utils.prepare_response(structure.dataset())
+    expected = structure.dataset()
+    utils.prepare_response(expected)
     expected["id"] = ""
     for response in responses:
         assert response.code == 200
@@ -40,7 +42,8 @@ def test_schema_dataset():
 def test_schema_order():
     """Confirm the schema of a order."""
     responses = helpers.make_request_all_roles("/api/v1/schema/order", ret_json=True)
-    expected = utils.prepare_response(structure.order())
+    expected = structure.order()
+    utils.prepare_response(expected)
     expected["id"] = ""
     for response in responses:
         assert response.code == 200
@@ -50,7 +53,8 @@ def test_schema_order():
 def test_schema_user():
     """Confirm the schema of a user."""
     responses = helpers.make_request_all_roles("/api/v1/schema/user", ret_json=True)
-    expected = utils.prepare_response(structure.user())
+    expected = structure.user()
+    utils.prepare_response(expected)
     expected["id"] = ""
     for response in responses:
         assert response.code == 200
