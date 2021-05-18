@@ -141,7 +141,7 @@ def test_commit_to_db(mdb):
     update_result = utils.commit_to_db(
         mdb,
         "collections",
-        "update",
+        "edit",
         data=update_data
     )
     assert update_result.acknowledged
@@ -175,7 +175,7 @@ def test_commit_to_db(mdb):
         utils.commit_to_db(
             mdb,
             "collections",
-            "update",
+            "edit",
             data={"title": "new title"}
         )
 
@@ -205,7 +205,6 @@ def test_get_entry(mdb):
         entries = mdb[dbcollection].aggregate([{"$sample": {"size": 2}}])
         for entry in entries:
             res = utils.get_entry(mdb, dbcollection, str(entry["_id"]))
-            print(res)
             assert res["_id"] == entry["_id"]
 
     for _ in range(3):
