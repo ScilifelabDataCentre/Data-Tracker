@@ -687,6 +687,7 @@ def req_commit_to_db(
     )
     data_res["ack"] = result.acknowledged
     log_res = False
+
     if data_res["ack"]:
         if operation == "add":
             data_res["ins_id"] = result.inserted_id
@@ -733,7 +734,7 @@ def commit_to_db(
     """
     if operation == "add":
         result = db[dbcollection].insert_one(data)
-    elif operation in ("delete", "update"):
+    elif operation in ("delete", "edit"):
         if not "_id" in data:
             raise ValueError(f"_id must be included in data for {operation} operations")
         if operation == "delete":
@@ -745,5 +746,4 @@ def commit_to_db(
 
     if not result.acknowledged and logger:
         logger.error("Database %s of %s failed", operation, dbcollection)
-        
     return result
