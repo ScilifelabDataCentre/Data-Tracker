@@ -737,7 +737,7 @@ def commit_to_db(
     if operation == "add":
         result = db[dbcollection].insert_one(data)
     elif operation in ("delete", "edit"):
-        if not "_id" in data:
+        if "_id" not in data:
             raise ValueError(f"_id must be included in data for {operation} operations")
         if operation == "delete":
             result = db[dbcollection].delete_one({"_id": data["_id"]})

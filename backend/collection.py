@@ -78,7 +78,7 @@ def add_collection():
     collection = structure.collection()
 
     jsondata = flask.request.json
-    if not "collection" in jsondata or not isinstance(jsondata["collection"], dict):
+    if "collection" not in jsondata or not isinstance(jsondata["collection"], dict):
         flask.abort(status=400)
     indata = jsondata["collection"]
 
@@ -161,7 +161,7 @@ def update_collection(identifier):
         flask.abort(status=404)
 
     jsondata = flask.request.json
-    if not "collection" in jsondata or not isinstance(jsondata["collection"], dict):
+    if "collection" not in jsondata or not isinstance(jsondata["collection"], dict):
         flask.abort(status=400)
     indata = jsondata["collection"]
 
