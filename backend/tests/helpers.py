@@ -53,15 +53,6 @@ def mdb():
     yield db_connection()
 
 
-@pytest.fixture
-def bad_db():
-    """Get a connection to a non-existing db."""
-    conf = config.init()
-    client = utils.get_dbclient(conf)
-    return utils.get_db(client, conf)
-    yield db_connection()
-
-
 def as_user(session: requests.Session, auth_id: str, set_csrf: bool = True) -> int:
     """
     Set the current user to the one with the provided ``auth_id``.
@@ -290,9 +281,9 @@ def users_uuids():
     Returns:
         list: All uuids (as str) for ``USERS``.
     """
-    mdb = db_connection()
+    mongo_db = db_connection()
     return [
-        str(mdb["users"].find_one({"auth_ids": USERS[entry]})["_id"])
+        str(mongo_db["users"].find_one({"auth_ids": USERS[entry]})["_id"])
         for entry in USERS
         if USERS[entry]
     ]

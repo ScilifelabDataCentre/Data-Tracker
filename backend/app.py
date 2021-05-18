@@ -16,6 +16,9 @@ import schema
 import user
 import utils
 
+# avoid pylint warnings for using slots on g and session
+# pylint: disable=assigning-non-slot
+
 app = flask.Flask(__name__)  # pylint: disable=invalid-name
 appconf = config.init()
 db_management.check_db(appconf)

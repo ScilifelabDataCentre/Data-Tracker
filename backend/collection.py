@@ -130,7 +130,7 @@ def delete_collection(identifier: str):
     # permission check
     if (
         not utils.req_check_permissions(["DATA_MANAGEMENT"])
-        and flask.g.current_user["_id"] not in collection["editors"]
+        and flask.g.current_user["_id"] not in entry["editors"]
     ):
         flask.abort(status=403)
 

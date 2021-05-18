@@ -561,7 +561,7 @@ def make_log_new(
     data_type: str,
     action: str,
     comment: str,
-    user,
+    user_id,
     data,
     logger=None,
 ) -> bool:
@@ -580,7 +580,7 @@ def make_log_new(
         action (str): Type of action (add, edit, delete).
         comment (str): Note about why the change was done
             (e.g. "Dataset added via addDataset").
-        active_user: The ``_id`` for the user performing the operation.
+        user_id (uuid.UUID): The ``_id`` for the user performing the operation.
         data (dict): The new data for the entry.
         logger: The logging object to use for errors.
 
@@ -600,7 +600,7 @@ def make_log_new(
             "comment": comment,
             "data_type": data_type,
             "data": data,
-            "user": user,
+            "user": user_id,
         }
     )
     logger.error(log)
@@ -613,7 +613,7 @@ def make_log_new(
                 comment,
                 data,
                 data_type,
-                user,
+                user_id,
             )
     return success
 
@@ -697,7 +697,7 @@ def req_commit_to_db(
             data_type=dbcollection[:-1],  # to make singular (e.g. collection|s)
             action=operation,
             comment=comment,
-            user=flask.g.current_user["_id"],
+            user_id=flask.g.current_user["_id"],
             data=data,
             logger=flask.current_app.logger,
         )

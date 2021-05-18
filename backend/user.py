@@ -501,7 +501,7 @@ def do_login(auth_id: str):
         return False
 
     flask.session["user_id"] = user["_id"]
-    flask.session.permanent = True
+    flask.session.permanent = True  # pylint: disable=assigning-non-slot
     return True
 
 

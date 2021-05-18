@@ -1,5 +1,8 @@
 """Test functions in the utils module."""
 
+# avoid pylint errors because of fixtures
+# pylint: disable = redefined-outer-name, unused-import
+
 import uuid
 
 import pytest

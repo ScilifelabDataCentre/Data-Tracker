@@ -39,11 +39,11 @@ def test_list_collections(mdb):
         }
 
 
-def test_add_collection_permissions(mdb):
+def test_add_collection_permissions():
     """
     Test permissions for adding a collection.
 
-    * any user with ``DATA_MANAGEMENT`` can add a collection
+    * Any user with ``DATA_EDIT`` can add a collection
     """
     indata = {"collection": {"title": "Test title"}}
     indata["collection"].update(TEST_LABEL)
