@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>config.py &#8212; Data Tracker  documentation</title>
+    <title>migrations.py &#8212; Data Tracker  documentation</title>
     <link rel="stylesheet" type="text/css" href="static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="static/alabaster.css" />
     <script data-url_root="./" id="documentation_options" src="static/documentation_options.js"></script>
@@ -15,8 +15,8 @@
     <script src="static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="dataset.py" href="code.dataset.html" />
-    <link rel="prev" title="collection.py" href="code.collection.html" />
+    <link rel="next" title="order.py" href="code.order.html" />
+    <link rel="prev" title="developer.py" href="code.developer.html" />
    
   <link rel="stylesheet" href="static/custom.css" type="text/css" />
   
@@ -33,43 +33,23 @@
 
           <div class="body" role="main">
             
-  <section id="module-config">
-<span id="config-py"></span><h1>config.py<a class="headerlink" href="#module-config" title="Permalink to this headline">¶</a></h1>
-<p>Settings manager for the data tracker.</p>
-<p>Read settings from <cite>./config.yaml</cite>, <cite>../config.yaml</cite> or from the provided path.</p>
+  <section id="module-migrations">
+<span id="migrations-py"></span><h1>migrations.py<a class="headerlink" href="#module-migrations" title="Permalink to this headline">¶</a></h1>
+<p>Database migrations.</p>
+<p>Each migration should be a function changing property names etc.</p>
+<p><code class="docutils literal notranslate"><span class="pre">MIGRATIONS</span></code> contain all migrations.
+To migrate the database from version <code class="docutils literal notranslate"><span class="pre">X</span></code> to version <code class="docutils literal notranslate"><span class="pre">Y`,</span>
+<span class="pre">run</span> <span class="pre">all</span> <span class="pre">migrations</span> <span class="pre">in</span> <span class="pre">``MIGRATIONS[current_version:</span> <span class="pre">software_version]</span></code>.
+Version 1 to 2 should run <code class="docutils literal notranslate"><span class="pre">MIGRATIONS[1:2]</span></code>, i.e. the function at
+<code class="docutils literal notranslate"><span class="pre">MIGRATIONS[1]</span></code> should be run.</p>
 <dl class="py function">
-<dt class="sig sig-object py" id="config.init">
-<span class="sig-prename descclassname"><span class="pre">config.</span></span><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">dict</span><a class="reference internal" href="modules/config.html#init"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#config.init" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read the config from a config.yaml file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>The config.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>dict</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="config.read_config">
-<span class="sig-prename descclassname"><span class="pre">config.</span></span><span class="sig-name descname"><span class="pre">read_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/config.html#read_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#config.read_config" title="Permalink to this definition">¶</a></dt>
-<dd><p>Look for settings.yaml and parse the settings from there.</p>
-<p>The file is expected to be found in the current, parent or provided folder.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – The yaml file to use</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The loaded settings</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>dict</p>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><p><strong>FileNotFoundError</strong> – No settings file found</p>
-</dd>
-</dl>
+<dt class="sig sig-object py" id="migrations.migrate_v1_to_v2">
+<span class="sig-prename descclassname"><span class="pre">migrations.</span></span><span class="sig-name descname"><span class="pre">migrate_v1_to_v2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/migrations.html#migrate_v1_to_v2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#migrations.migrate_v1_to_v2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the database fields to match the changes in the data structure.</p>
+<ul class="simple">
+<li><p>Rename all <code class="docutils literal notranslate"><span class="pre">ORDERS</span></code> permissions to <code class="docutils literal notranslate"><span class="pre">DATA_EDIT</span></code> to match the updated permission names</p></li>
+<li><p>Remove the <code class="docutils literal notranslate"><span class="pre">cross_references</span></code> field from collections and datasets</p></li>
+</ul>
 </dd></dl>
 
 </section>
@@ -111,8 +91,8 @@
   <li><a href="index.html">Documentation overview</a><ul>
   <li><a href="development.html">Development</a><ul>
   <li><a href="modules.html">Code reference</a><ul>
-      <li>Previous: <a href="code.collection.html" title="previous chapter">collection.py</a></li>
-      <li>Next: <a href="code.dataset.html" title="next chapter">dataset.py</a></li>
+      <li>Previous: <a href="code.developer.html" title="previous chapter">developer.py</a></li>
+      <li>Next: <a href="code.order.html" title="next chapter">order.py</a></li>
   </ul></li>
   </ul></li>
   </ul></li>
@@ -148,7 +128,7 @@
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
-      <a href="sources/code.config.rst.txt"
+      <a href="sources/code.migrations.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 

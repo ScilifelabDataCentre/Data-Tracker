@@ -4,11 +4,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>utils.py &#8212; Data Tracker  documentation</title>
-    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="static/alabaster.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="static/documentation_options.js"></script>
     <script src="static/jquery.js"></script>
     <script src="static/underscore.js"></script>
     <script src="static/doctools.js"></script>
@@ -32,30 +33,54 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="module-utils">
+  <section id="module-utils">
 <span id="utils-py"></span><h1>utils.py<a class="headerlink" href="#module-utils" title="Permalink to this headline">¶</a></h1>
 <p>General helper functions.</p>
 <dl class="py class">
-<dt id="utils.ValidationResult">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">utils.</span></code><code class="sig-name descname"><span class="pre">ValidationResult</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.ValidationResult" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="utils.CommitResult">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">CommitResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ins_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.CommitResult" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
 <dl class="py attribute">
-<dt id="utils.ValidationResult.result">
-<code class="sig-name descname"><span class="pre">result</span></code><a class="headerlink" href="#utils.ValidationResult.result" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="utils.CommitResult.data">
+<span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#utils.CommitResult.data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="utils.CommitResult.ins_id">
+<span class="sig-name descname"><span class="pre">ins_id</span></span><a class="headerlink" href="#utils.CommitResult.ins_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="utils.CommitResult.log">
+<span class="sig-name descname"><span class="pre">log</span></span><a class="headerlink" href="#utils.CommitResult.log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="utils.ValidationResult">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">ValidationResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.ValidationResult" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="utils.ValidationResult.result">
+<span class="sig-name descname"><span class="pre">result</span></span><a class="headerlink" href="#utils.ValidationResult.result" title="Permalink to this definition">¶</a></dt>
 <dd><p>Alias for field number 0</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="utils.ValidationResult.status">
-<code class="sig-name descname"><span class="pre">status</span></code><a class="headerlink" href="#utils.ValidationResult.status" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="utils.ValidationResult.status">
+<span class="sig-name descname"><span class="pre">status</span></span><a class="headerlink" href="#utils.ValidationResult.status" title="Permalink to this definition">¶</a></dt>
 <dd><p>Alias for field number 1</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py function">
-<dt id="utils.basic_check_indata">
-<code class="sig-prename descclassname"><span class="pre">utils.</span></code><code class="sig-name descname"><span class="pre">basic_check_indata</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">indata</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference_data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prohibited</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">,</span> </span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">tuple</span><a class="reference internal" href="modules/utils.html#basic_check_indata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.basic_check_indata" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="utils.basic_check_indata">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">basic_check_indata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">indata</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference_data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prohibited</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">,</span> </span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">tuple</span><a class="reference internal" href="modules/utils.html#basic_check_indata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.basic_check_indata" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform basic checks of indata.</p>
 <ul class="simple">
 <li><p>All fields are allowed in the entity type</p></li>
@@ -83,8 +108,8 @@ values in <code class="docutils literal notranslate"><span class="pre">reference
 </dd></dl>
 
 <dl class="py function">
-<dt id="utils.check_email_uuid">
-<code class="sig-prename descclassname"><span class="pre">utils.</span></code><code class="sig-name descname"><span class="pre">check_email_uuid</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_identifier</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">uuid.UUID</span><span class="p"><span class="pre">]</span></span><a class="reference internal" href="modules/utils.html#check_email_uuid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.check_email_uuid" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="utils.check_email_uuid">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">check_email_uuid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_identifier</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">uuid.UUID</span><span class="p"><span class="pre">]</span></span><a class="reference internal" href="modules/utils.html#check_email_uuid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.check_email_uuid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if the provided user is found in the db as email or _id.</p>
 <p>If the user is found, return the user.UUID of the user.
 If the identifier is a uuid, return a user.UUID.
@@ -105,8 +130,62 @@ If the identifier is an email, return the email.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="utils.convert_keys_to_camel">
-<code class="sig-prename descclassname"><span class="pre">utils.</span></code><code class="sig-name descname"><span class="pre">convert_keys_to_camel</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chunk</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Any</span><a class="reference internal" href="modules/utils.html#convert_keys_to_camel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.convert_keys_to_camel" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="utils.check_permissions">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">check_permissions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">permissions</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_permissions</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logged_in</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">int</span><a class="reference internal" href="modules/utils.html#check_permissions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.check_permissions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform the standard permissions check for a request.</p>
+<p>Will return a status code:
+* 200: accepted
+* 401: not logged in
+* 403: permission missing</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>permissions</strong> (<em>list</em>) – The required permissions.</p></li>
+<li><p><strong>user_permissions</strong> (<em>list</em>) – List of permissions for the user.</p></li>
+<li><p><strong>logged_in</strong> (<em>bool</em>) – Whether the current user is logged in.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The suggested status code.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.commit_to_db">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">commit_to_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dbcollection</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">operation</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#commit_to_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.commit_to_db" title="Permalink to this definition">¶</a></dt>
+<dd><p>Commit to one entry in the database.</p>
+<p><code class="docutils literal notranslate"><span class="pre">_id</span></code> should be included in <code class="docutils literal notranslate"><span class="pre">data</span></code> for delete and update operations.</p>
+<p>Only uses <a href="#id1"><span class="problematic" id="id2">*</span></a>_one commands.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> – Connection to the database (client).</p></li>
+<li><p><strong>dbcollection</strong> (<em>str</em>) – Name of the target collection.</p></li>
+<li><p><strong>operation</strong> (<em>str</em>) – Operation to perform (add, edit, delete).</p></li>
+<li><p><strong>data</strong> (<em>dict</em>) – Data to commit to db.</p></li>
+<li><p><strong>id</strong> (<em>dict</em>) – The entry to perform the operation on (_id).</p></li>
+<li><p><strong>logger</strong> – The logging object to use for errors.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – Missing <code class="docutils literal notranslate"><span class="pre">_id</span></code> in <code class="docutils literal notranslate"><span class="pre">data</span></code> for delete or update, or bad operation type.</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The response from the db commit.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.convert_keys_to_camel">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">convert_keys_to_camel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chunk</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Any</span><a class="reference internal" href="modules/utils.html#convert_keys_to_camel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.convert_keys_to_camel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert keys given in snake_case to camelCase.</p>
 <p>The capitalization of the first letter is preserved.</p>
 <dl class="field-list simple">
@@ -123,8 +202,8 @@ If the identifier is an email, return the email.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="utils.gen_api_key">
-<code class="sig-prename descclassname"><span class="pre">utils.</span></code><code class="sig-name descname"><span class="pre">gen_api_key</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#gen_api_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.gen_api_key" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="utils.gen_api_key">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">gen_api_key</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#gen_api_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.gen_api_key" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate an API key with salt.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -137,8 +216,8 @@ If the identifier is an email, return the email.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="utils.gen_api_key_hash">
-<code class="sig-prename descclassname"><span class="pre">utils.</span></code><code class="sig-name descname"><span class="pre">gen_api_key_hash</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">salt</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#gen_api_key_hash"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.gen_api_key_hash" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="utils.gen_api_key_hash">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">gen_api_key_hash</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">salt</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#gen_api_key_hash"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.gen_api_key_hash" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a hash of the api_key for storing/comparing to db.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -157,8 +236,8 @@ If the identifier is an email, return the email.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="utils.gen_csrf_token">
-<code class="sig-prename descclassname"><span class="pre">utils.</span></code><code class="sig-name descname"><span class="pre">gen_csrf_token</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="reference internal" href="modules/utils.html#gen_csrf_token"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.gen_csrf_token" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="utils.gen_csrf_token">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">gen_csrf_token</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="reference internal" href="modules/utils.html#gen_csrf_token"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.gen_csrf_token" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a csrf token.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -171,8 +250,8 @@ If the identifier is an email, return the email.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="utils.get_db">
-<code class="sig-prename descclassname"><span class="pre">utils.</span></code><code class="sig-name descname"><span class="pre">get_db</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dbserver</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pymongo.mongo_client.MongoClient</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conf</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">pymongo.database.Database</span><a class="reference internal" href="modules/utils.html#get_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.get_db" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="utils.get_db">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">get_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dbserver</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pymongo.mongo_client.MongoClient</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conf</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">pymongo.database.Database</span><a class="reference internal" href="modules/utils.html#get_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.get_db" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the connection to the MongoDB database.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -191,8 +270,8 @@ If the identifier is an email, return the email.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="utils.get_dbclient">
-<code class="sig-prename descclassname"><span class="pre">utils.</span></code><code class="sig-name descname"><span class="pre">get_dbclient</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conf</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">pymongo.mongo_client.MongoClient</span><a class="reference internal" href="modules/utils.html#get_dbclient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.get_dbclient" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="utils.get_dbclient">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">get_dbclient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conf</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">pymongo.mongo_client.MongoClient</span><a class="reference internal" href="modules/utils.html#get_dbclient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.get_dbclient" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the connection to the MongoDB database server.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -208,8 +287,55 @@ If the identifier is an email, return the email.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="utils.incremental_logs">
-<code class="sig-prename descclassname"><span class="pre">utils.</span></code><code class="sig-name descname"><span class="pre">incremental_logs</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#incremental_logs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.incremental_logs" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="utils.get_entry">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">get_entry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dbcollection</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">dict</span><a class="reference internal" href="modules/utils.html#get_entry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.get_entry" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> – Connection to the database (client).</p></li>
+<li><p><strong>dbcollection</strong> (<em>str</em>) – Name of the target collection.</p></li>
+<li><p><strong>operation</strong> (<em>str</em>) – Operation to perform (add, edit, delete)</p></li>
+<li><p><strong>data</strong> (<em>dict</em>) – Data to commit to db.</p></li>
+<li><p><strong>id</strong> (<em>dict</em>) – The entry to perform the operation on (_id).</p></li>
+<li><p><strong>logger</strong> – The logging object to use for errors.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – Missing <code class="docutils literal notranslate"><span class="pre">_id</span></code> in <code class="docutils literal notranslate"><span class="pre">data</span></code> for delete or update.</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The response from the db commit.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.has_permission">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">has_permission</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">permission</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_permissions</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#has_permission"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.has_permission" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the current user permissions fulfills the requirement.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>permission</strong> (<em>str</em>) – The required permission</p></li>
+<li><p><strong>user_permissions</strong> (<em>list</em>) – List of permissions for the user.
+Should be <code class="docutils literal notranslate"><span class="pre">flask.g.permissions</span></code> for most requests.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>whether the user has the required permissions or not</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.incremental_logs">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">incremental_logs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#incremental_logs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.incremental_logs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Make an incremental log.</p>
 <p>The log starts from the first log and keeps only
 the changed fields in <code class="docutils literal notranslate"><span class="pre">data</span></code>.</p>
@@ -217,9 +343,10 @@ the changed fields in <code class="docutils literal notranslate"><span class="pr
 </dd></dl>
 
 <dl class="py function">
-<dt id="utils.is_email">
-<code class="sig-prename descclassname"><span class="pre">utils.</span></code><code class="sig-name descname"><span class="pre">is_email</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">indata</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#is_email"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.is_email" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="utils.is_email">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">is_email</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">indata</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#is_email"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.is_email" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check whether a string seems to be an email address or not.</p>
+<p>Will not do thorough checking, just a basic check that the basic components are there.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>indata</strong> (<em>str</em>) – Data to check.</p>
@@ -234,8 +361,25 @@ the changed fields in <code class="docutils literal notranslate"><span class="pr
 </dd></dl>
 
 <dl class="py function">
-<dt id="utils.make_log">
-<code class="sig-prename descclassname"><span class="pre">utils.</span></code><code class="sig-name descname"><span class="pre">make_log</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_type</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comment</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_user</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dbsession</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#make_log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.make_log" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="utils.list_to_uuid">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">list_to_uuid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uuids</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">list</span><a class="reference internal" href="modules/utils.html#list_to_uuid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.list_to_uuid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the uuids in a list to uuid.UUID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>uuids</strong> (<em>list</em>) – The uuid to be converted.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>All the provided uuids as uuid.UUID.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.make_log">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">make_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_type</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comment</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_user</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dbsession</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#make_log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.make_log" title="Permalink to this definition">¶</a></dt>
 <dd><p>Log a change in the system.</p>
 <p>Saves a complete copy of the new object.</p>
 <div class="admonition warning">
@@ -265,8 +409,43 @@ e.g. <code class="docutils literal notranslate"><span class="pre">data</span></c
 </dd></dl>
 
 <dl class="py function">
-<dt id="utils.make_timestamp">
-<code class="sig-prename descclassname"><span class="pre">utils.</span></code><code class="sig-name descname"><span class="pre">make_timestamp</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#make_timestamp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.make_timestamp" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="utils.make_log_new">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">make_log_new</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_type</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comment</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="reference internal" href="modules/utils.html#make_log_new"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.make_log_new" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log a change in the system.</p>
+<p>Saves a complete copy of the new object.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>It is assumed that all values are exactly like in the db,
+e.g. <code class="docutils literal notranslate"><span class="pre">data</span></code> should only contain permitted fields.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> – Connection to the database (client).</p></li>
+<li><p><strong>data_type</strong> (<em>str</em>) – The collection name.</p></li>
+<li><p><strong>action</strong> (<em>str</em>) – Type of action (add, edit, delete).</p></li>
+<li><p><strong>comment</strong> (<em>str</em>) – Note about why the change was done
+(e.g. “Dataset added via addDataset”).</p></li>
+<li><p><strong>active_user</strong> – The <code class="docutils literal notranslate"><span class="pre">_id</span></code> for the user performing the operation.</p></li>
+<li><p><strong>data</strong> (<em>dict</em>) – The new data for the entry.</p></li>
+<li><p><strong>logger</strong> – The logging object to use for errors.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – No data provided.</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Whether the log insertion succeeded.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.make_timestamp">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">make_timestamp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#make_timestamp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.make_timestamp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a timestamp of the current time.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -279,8 +458,8 @@ e.g. <code class="docutils literal notranslate"><span class="pre">data</span></c
 </dd></dl>
 
 <dl class="py function">
-<dt id="utils.new_uuid">
-<code class="sig-prename descclassname"><span class="pre">utils.</span></code><code class="sig-name descname"><span class="pre">new_uuid</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">uuid.UUID</span><a class="reference internal" href="modules/utils.html#new_uuid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.new_uuid" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="utils.new_uuid">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">new_uuid</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">uuid.UUID</span><a class="reference internal" href="modules/utils.html#new_uuid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.new_uuid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a uuid for a field in a MongoDB document.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -293,12 +472,73 @@ e.g. <code class="docutils literal notranslate"><span class="pre">data</span></c
 </dd></dl>
 
 <dl class="py function">
-<dt id="utils.response_json">
-<code class="sig-prename descclassname"><span class="pre">utils.</span></code><code class="sig-name descname"><span class="pre">response_json</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_structure</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#response_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.response_json" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert keys to camelCase and run <code class="docutils literal notranslate"><span class="pre">flask.jsonify()</span></code>.</p>
+<dt class="sig sig-object py" id="utils.prepare_response">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">prepare_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#prepare_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prepare_response" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepare the fields before running jsonify.</p>
+<p><code class="docutils literal notranslate"><span class="pre">data</span></code> is modified in-place.</p>
+<ul class="simple">
+<li><p>Rename <code class="docutils literal notranslate"><span class="pre">_id</span></code> to <code class="docutils literal notranslate"><span class="pre">id</span></code></p></li>
+<li><p>If available, add origin URL to the response</p></li>
+</ul>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>json_structure</strong> (<em>dict</em>) – Structure to prepare.</p>
+<dd class="field-odd"><p><strong>data</strong> (<em>dict</em>) – Structure to prepare.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.req_check_permissions">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">req_check_permissions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">permissions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#req_check_permissions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.req_check_permissions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call <code class="docutils literal notranslate"><span class="pre">check_permissions</span></code> from inside a Flask request.</p>
+<p>Convenience function to use the Flask variables.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.req_commit_to_db">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">req_commit_to_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dbcollection</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">operation</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comment</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="reference internal" href="modules/utils.html#req_commit_to_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.req_commit_to_db" title="Permalink to this definition">¶</a></dt>
+<dd><p>Commit to one entry in the database from a Flask request.</p>
+<p>Data should contain <code class="docutils literal notranslate"><span class="pre">{_id:</span> <span class="pre">uuid}}</span></code> if there is a deletion.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dbcollection</strong> (<em>str</em>) – Name of the target database collection.</p></li>
+<li><p><strong>operation</strong> (<em>str</em>) – Operation to perform (add, edit, delete).</p></li>
+<li><p><strong>data</strong> (<em>dict</em>) – Data to commit to db.</p></li>
+<li><p><strong>comment</strong> (<em>str</em>) – Custom comment for the log.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.req_get_entry">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">req_get_entry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dbcollection</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">dict</span><a class="reference internal" href="modules/utils.html#req_get_entry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.req_get_entry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Confirm that the identifier is valid and, if so, return the entry.</p>
+<p>Wrapper for usage from a Flask request.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dbcollection</strong> (<em>str</em>) – The database collection to use (e.g. <code class="docutils literal notranslate"><span class="pre">collections</span></code>).</p></li>
+<li><p><strong>identifier</strong> (<em>str</em>) – The provided identifier.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The entry from the database. None if not found.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.response_json">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">response_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#response_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.response_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepare a json response from the provided data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>date</strong> (<em>dict</em>) – Structure to make into a respone.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Prepared response containing json structure with camelBack keys.</p>
@@ -310,8 +550,8 @@ e.g. <code class="docutils literal notranslate"><span class="pre">data</span></c
 </dd></dl>
 
 <dl class="py function">
-<dt id="utils.secure_description">
-<code class="sig-prename descclassname"><span class="pre">utils.</span></code><code class="sig-name descname"><span class="pre">secure_description</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#secure_description"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.secure_description" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="utils.secure_description">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">secure_description</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#secure_description"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.secure_description" title="Permalink to this definition">¶</a></dt>
 <dd><p>Process the description to make sure it does not contain dangerous data.</p>
 <p>Current checks:
 * Escape HTML</p>
@@ -329,8 +569,8 @@ e.g. <code class="docutils literal notranslate"><span class="pre">data</span></c
 </dd></dl>
 
 <dl class="py function">
-<dt id="utils.str_to_uuid">
-<code class="sig-prename descclassname"><span class="pre">utils.</span></code><code class="sig-name descname"><span class="pre">str_to_uuid</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_uuid</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">uuid.UUID</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">uuid.UUID</span><a class="reference internal" href="modules/utils.html#str_to_uuid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.str_to_uuid" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="utils.str_to_uuid">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">str_to_uuid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_uuid</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">uuid.UUID</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">uuid.UUID</span><a class="reference internal" href="modules/utils.html#str_to_uuid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.str_to_uuid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert str uuid to uuid.UUID.</p>
 <p>Provided as a convenience function if the identifier must be changed in the future.</p>
 <dl class="field-list simple">
@@ -347,8 +587,8 @@ e.g. <code class="docutils literal notranslate"><span class="pre">data</span></c
 </dd></dl>
 
 <dl class="py function">
-<dt id="utils.user_uuid_data">
-<code class="sig-prename descclassname"><span class="pre">utils.</span></code><code class="sig-name descname"><span class="pre">user_uuid_data</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_ids</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">list</span><span class="p"><span class="pre">,</span> </span><span class="pre">uuid.UUID</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mongodb</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pymongo.database.Database</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">list</span><a class="reference internal" href="modules/utils.html#user_uuid_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.user_uuid_data" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="utils.user_uuid_data">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">user_uuid_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_ids</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">list</span><span class="p"><span class="pre">,</span> </span><span class="pre">uuid.UUID</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mongodb</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pymongo.database.Database</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">list</span><a class="reference internal" href="modules/utils.html#user_uuid_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.user_uuid_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieve some extra information about a user using a uuid as input.</p>
 <p>Note that <code class="docutils literal notranslate"><span class="pre">_id`</span></code> will be returned as <code class="docutils literal notranslate"><span class="pre">str</span></code>, not <code class="docutils literal notranslate"><span class="pre">uuid.UUID</span></code>.</p>
 <dl class="field-list simple">
@@ -368,8 +608,8 @@ e.g. <code class="docutils literal notranslate"><span class="pre">data</span></c
 </dd></dl>
 
 <dl class="py function">
-<dt id="utils.verify_api_key">
-<code class="sig-prename descclassname"><span class="pre">utils.</span></code><code class="sig-name descname"><span class="pre">verify_api_key</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#verify_api_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.verify_api_key" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="utils.verify_api_key">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">verify_api_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#verify_api_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.verify_api_key" title="Permalink to this definition">¶</a></dt>
 <dd><p>Verify an API key against the value in the database.</p>
 <p>Aborts with status 401 if the verification fails.</p>
 <dl class="field-list simple">
@@ -383,13 +623,18 @@ e.g. <code class="docutils literal notranslate"><span class="pre">data</span></c
 </dd></dl>
 
 <dl class="py function">
-<dt id="utils.verify_csrf_token">
-<code class="sig-prename descclassname"><span class="pre">utils.</span></code><code class="sig-name descname"><span class="pre">verify_csrf_token</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#verify_csrf_token"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.verify_csrf_token" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compare the csrf token from the request (header) with the one in the cookie.session.</p>
+<dt class="sig sig-object py" id="utils.verify_csrf_token">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">verify_csrf_token</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/utils.html#verify_csrf_token"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.verify_csrf_token" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compare the csrf token from the request (header) with the one in <code class="docutils literal notranslate"><span class="pre">cookie.session</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>request</strong> – The Flask request.</p>
+</dd>
+</dl>
 <p>Aborts with status 400 if the verification fails.</p>
 </dd></dl>
 
-</div>
+</section>
 
 
           </div>
@@ -461,7 +706,7 @@ e.g. <code class="docutils literal notranslate"><span class="pre">data</span></c
       &copy;2019-2021, SciLifeLab Data Centre.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
