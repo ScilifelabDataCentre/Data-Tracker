@@ -361,22 +361,39 @@ def test_get_collection_bad():
 
 def test_update_collection_permissions(mdb, collection_for_tests):
     """
-    Update a collection.
+    Confirm that only the intended users can update collections.
 
-    Test permissions.
+    Checks:
+    * DATA_MANAGEMENT can edit any collection
+    * DATA_EDIT and listed in owners required
+    * DATA_EDIT, not listed in owners - forbidden
+    * Listed in owners, not DATA_EDIT - forbidden
     """
-    # TODO: test more situations for new permissions
     session = requests.Session()
 
-    collection_uuid = collection_for_tests
-    print(mdb["collections"].find_one({"_id": collection_uuid}))
+    coll_id = collection_for_tests
+    as_user(session, USERS["data"])
+    indata = {"collection": {"title": "Update any",
+                             "editors": helpers.users_uuids()}}
+    response = make_request(
+        session,
+        f"/api/v1/collection/{coll_id}",
+        method="PATCH",
+        data=indata,
+        ret_json=True,
+    )
+    assert response.code == 200
+    assert not response.data
+    new_collection = mdb["collections"].find_one({"_id": coll_id})
+    assert new_collection["title"] == "Update any"
+    assert [str(entry) for entry in new_collection["editors"]] == helpers.users_uuids()
 
     for role in USERS:
         as_user(session, USERS[role])
-        indata = {"title": f"Test title - updated by {role}"}
+        indata = {"collection": {"title": f"Test title - updated by {role}"}}
         response = make_request(
             session,
-            f"/api/v1/collection/{collection_uuid}",
+            f"/api/v1/collection/{coll_id}",
             method="PATCH",
             data=indata,
             ret_json=True,
@@ -384,7 +401,7 @@ def test_update_collection_permissions(mdb, collection_for_tests):
         if role in ("edit", "data", "root"):
             assert response.code == 200
             assert not response.data
-            new_collection = mdb["collections"].find_one({"_id": collection_uuid})
+            new_collection = mdb["collections"].find_one({"_id": coll_id})
             assert new_collection["title"] == f"Test title - updated by {role}"
         elif role == "no-login":
             assert response.code == 401
@@ -394,93 +411,77 @@ def test_update_collection_permissions(mdb, collection_for_tests):
             assert not response.data
 
 
-def test_update_collection(mdb):
+def test_update_collection_data(mdb, collection_for_tests):
     """
-    Update existing collections.
+    Confirm that all fields can be updated correctly.
 
-    1. Add a new dataset
-    2. Add dataset (and other fields) for existing collection using edit user
-    3. Confirm correct update
-    4. Check that log was created
-    5. Perform update as data user
-    6. Confirm correct update
-    7. Confirm that log was created
-    8. Clean up
+    Checks:
+    * Make update with no content -> 200
+      - Confirm that log was not created
+    * Make update with all relevant fields changed -> 200
+      - Confirm that log was created
+    * Make sure that html in description is escaped
     """
-    uuids = add_dataset()
-    collection_info = mdb["collections"].find_one({"_id": uuids[2]})
-    user_info = mdb["users"].find_one({"auth_ids": USERS["edit"]})
-
-    indata = {
-        "description": "Test description updated",
-        "editors": [str(collection_info["editors"][0])],
-        "title": "Test title updated",
-        "datasets": [str(uuids[1])],
-    }
-    indata.update(TEST_LABEL)
-
     session = requests.Session()
-    as_user(session, USERS["edit"])
-
+    helpers.as_user(session, USERS["data"])
+    
+    coll_id = collection_for_tests
+    collection = mdb["collections"].find_one({"_id": coll_id})
+    collection_logs = list(mdb["logs"].find({"_id": coll_id, "data_type": "collection"}))
+    indata = {"collection": {}}
     response = make_request(
         session,
-        f'/api/v1/collection/{collection_info["_id"]}',
+        f"/api/v1/collection/{coll_id}",
         method="PATCH",
         data=indata,
         ret_json=True,
     )
     assert response.code == 200
-    collection = mdb["collections"].find_one({"_id": collection_info["_id"]})
-    assert collection["description"] == indata["description"]
-    assert str(collection["editors"][0]) == indata["editors"][0]
-    assert collection["title"] == indata["title"]
-    assert str(collection["datasets"][0]) == indata["datasets"][0]
+    assert not response.data
+    assert collection == mdb["collections"].find_one({"_id": coll_id})
+    assert len(collection_logs) == len(list(mdb["logs"].find({"data._id": coll_id, "data_type": "collection"})))
 
-    # log
-    assert mdb["logs"].find_one(
-        {
-            "data._id": collection_info["_id"],
-            "data_type": "collection",
-            "user": user_info["_id"],
-            "action": "edit",
-        }
-    )
-
-    as_user(session, USERS["data"])
-    user_info = mdb["users"].find_one({"auth_ids": USERS["data"]})
-
-    indata = {
-        "description": "Test description updated2",
-        "editors": [str(user_info["_id"])],
-        "title": "Test title updated",
-        "datasets": [str(uuids[1]), str(uuids[1])],
-    }
-    indata.update(TEST_LABEL)
-
+    random_datasets = [str(entry["_id"]) for entry in mdb["datasets"].aggregate([{"$sample": {"size": 5}}])]
+    indata = {"collection": {
+        "title": "Update any",
+        "description": "Some text",
+        "editors": helpers.users_uuids(),
+        "properties": {"property1": "value"},
+        "tags": ["tag1", "tag2"],
+        "datasets": random_datasets,
+    }}
     response = make_request(
         session,
-        f'/api/v1/collection/{collection_info["_id"]}',
+        f"/api/v1/collection/{coll_id}",
         method="PATCH",
         data=indata,
         ret_json=True,
     )
     assert response.code == 200
-    collection = mdb["collections"].find_one({"_id": collection_info["_id"]})
-    assert collection["description"] == indata["description"]
-    assert str(collection["editors"][0]) == indata["editors"][0]
-    assert collection["title"] == indata["title"]
-    assert str(collection["datasets"][0]) == indata["datasets"][0]
+    assert not response.data
+    collection = mdb["collections"].find_one({"_id": coll_id})
+    for field in indata["collection"]:
+        if field in ("datasets", "editors"):
+            assert indata["collection"][field] == [str(entry) for entry in collection[field]]
+        else:
+            assert collection[field] == indata["collection"][field]
+    assert len(list(mdb["logs"].find({"data._id": coll_id, "data_type": "collection"}))) == len(collection_logs) + 1
 
-    # log
-    assert mdb["logs"].find_one(
-        {
-            "data._id": collection_info["_id"],
-            "data_type": "collection",
-            "user": user_info["_id"],
-            "action": "edit",
-        }
+    indata = {"collection": {
+        "description": "<br />",
+    }}
+    response = make_request(
+        session,
+        f"/api/v1/collection/{coll_id}",
+        method="PATCH",
+        data=indata,
+        ret_json=True,
     )
-    delete_dataset(*uuids)
+    assert response.code == 200
+    assert not response.data
+    collection = mdb["collections"].find_one({"_id": coll_id})
+    assert collection["description"] == "&lt;br /&gt;"
+    assert len(list(mdb["logs"].find({"data._id": coll_id, "data_type": "collection"}))) == len(collection_logs) + 2
 
 
 def test_update_collection_bad(mdb):
@@ -622,7 +623,14 @@ def test_delete_collection(mdb):
 
 
 def test_delete_collection_bad():
-    """Attempt bad collection delete requests."""
+    """
+    Confirm that bad deletion attempts are handled correctly.
+
+    Checks:
+    * Random string as base user -> 403
+    * Random string as data user -> 404
+    * Random uuid as data user -> 404
+    """
     session = requests.Session()
 
     as_user(session, USERS["base"])
@@ -651,9 +659,9 @@ def test_delete_collection_bad():
 
 def test_get_collection_logs_permissions(mdb):
     """
-    Get collection logs.
+    Confirm that collection logs can only be accessed by the intended users.
 
-    Assert that DATA_MANAGEMENT or user in owners is required.
+    Assert that DATA_MANAGEMENT or user in editors is required.
     """
     collection_data = mdb["collections"].aggregate([{"$sample": {"size": 1}}]).next()
     user_data = mdb["users"].find_one({"_id": {"$in": collection_data["editors"]}})
