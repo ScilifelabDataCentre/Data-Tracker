@@ -128,7 +128,8 @@ def delete_collection(identifier: str):
         flask.abort(status=404)
 
     # permission check
-    if (not utils.req_check_permissions(["DATA_MANAGEMENT"])
+    if (
+        not utils.req_check_permissions(["DATA_MANAGEMENT"])
         and flask.g.current_user["_id"] not in collection["editors"]
     ):
         flask.abort(status=403)
@@ -166,8 +167,8 @@ def update_collection(identifier):
 
     # permission check
     if (
-            not utils.req_check_permissions(["DATA_MANAGEMENT"])
-            and flask.g.current_user["_id"] not in collection["editors"]
+        not utils.req_check_permissions(["DATA_MANAGEMENT"])
+        and flask.g.current_user["_id"] not in collection["editors"]
     ):
         flask.current_app.logger.debug(
             "Unauthorized update attempt (collection %s, user %s)",

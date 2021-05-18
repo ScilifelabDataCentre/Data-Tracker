@@ -9,7 +9,6 @@ import utils
 from helpers import mdb
 
 
-
 def test_is_email():
     """Test whether different inputs are considered email addresses."""
     assert utils.is_email("test@example.com")
@@ -41,13 +40,13 @@ def test_prepare_response():
     * ``url`` added
     """
     for indata, expected in (
-            ({"key": "value"}, {"key": "value"}),
-            ({"_id": "value"}, {"id": "value"}),
-            ({"_id": {"_id": "value"}}, {"id": {"id": "value"}}),
+        ({"key": "value"}, {"key": "value"}),
+        ({"_id": "value"}, {"id": "value"}),
+        ({"_id": {"_id": "value"}}, {"id": {"id": "value"}}),
     ):
         utils.prepare_response(indata)
         assert indata == expected
-    
+
     indata = {"lvl1": {"lvl2": "value"}}
     url = "https://www.example.com/api/v1/stuff"
     expected = {
@@ -110,7 +109,7 @@ def test_check_permissions():
 def test_commit_to_db(mdb):
     """
     Confirm that db commits work as intended.
-    
+
     Checks:
         * Add a collection.
         * Update the added collection.
@@ -125,12 +124,7 @@ def test_commit_to_db(mdb):
     # add
     add_data = {"title": "Test title"}
     add_data.update(helpers.TEST_LABEL)
-    add_result = utils.commit_to_db(
-        mdb,
-        "collections",
-        "add",
-        add_data
-    )
+    add_result = utils.commit_to_db(mdb, "collections", "add", add_data)
     assert add_result.acknowledged
     added_entry = mdb["collections"].find_one({"_id": add_result.inserted_id})
     for field in add_data:
@@ -138,12 +132,7 @@ def test_commit_to_db(mdb):
 
     # update
     update_data = {"_id": add_result.inserted_id, "title": "Test title (updated)"}
-    update_result = utils.commit_to_db(
-        mdb,
-        "collections",
-        "edit",
-        data=update_data
-    )
+    update_result = utils.commit_to_db(mdb, "collections", "edit", data=update_data)
     assert update_result.acknowledged
     updated_entry = mdb["collections"].find_one({"_id": update_data["_id"]})
     for field in update_data:
@@ -151,42 +140,22 @@ def test_commit_to_db(mdb):
 
     # delete
     delete_data = {"_id": update_data["_id"]}
-    delete_result = utils.commit_to_db(
-        mdb,
-        "collections",
-        "delete",
-        data=delete_data
-    )
+    delete_result = utils.commit_to_db(mdb, "collections", "delete", data=delete_data)
     assert delete_result.acknowledged
     delete_entry = mdb["collections"].find_one({"_id": delete_data["_id"]})
     assert not delete_entry
 
     # bad operation
     with pytest.raises(ValueError):
-        utils.commit_to_db(
-            mdb,
-            "collections",
-            "bad_op",
-            data=delete_data
-        )
+        utils.commit_to_db(mdb, "collections", "bad_op", data=delete_data)
 
     # missing _id for update
     with pytest.raises(ValueError):
-        utils.commit_to_db(
-            mdb,
-            "collections",
-            "edit",
-            data={"title": "new title"}
-        )
+        utils.commit_to_db(mdb, "collections", "edit", data={"title": "new title"})
 
     # missing _id for delete
     with pytest.raises(ValueError):
-        utils.commit_to_db(
-            mdb,
-            "collections",
-            "delete",
-            data={"title": "new title"}
-        )
+        utils.commit_to_db(mdb, "collections", "delete", data={"title": "new title"})
 
 
 def test_get_entry(mdb):

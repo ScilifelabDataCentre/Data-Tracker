@@ -291,4 +291,8 @@ def users_uuids():
         list: All uuids (as str) for ``USERS``.
     """
     mdb = db_connection()
-    return [str(mdb["users"].find_one({"auth_ids": USERS[entry]})["_id"]) for entry in USERS if USERS[entry]]
+    return [
+        str(mdb["users"].find_one({"auth_ids": USERS[entry]})["_id"])
+        for entry in USERS
+        if USERS[entry]
+    ]

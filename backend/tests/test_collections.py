@@ -373,8 +373,7 @@ def test_update_collection_permissions(mdb, collection_for_tests):
 
     coll_id = collection_for_tests
     as_user(session, USERS["data"])
-    indata = {"collection": {"title": "Update any",
-                             "editors": helpers.users_uuids()}}
+    indata = {"collection": {"title": "Update any", "editors": helpers.users_uuids()}}
     response = make_request(
         session,
         f"/api/v1/collection/{coll_id}",
@@ -424,10 +423,12 @@ def test_update_collection_data(mdb, collection_for_tests):
     """
     session = requests.Session()
     helpers.as_user(session, USERS["data"])
-    
+
     coll_id = collection_for_tests
     collection = mdb["collections"].find_one({"_id": coll_id})
-    collection_logs = list(mdb["logs"].find({"_id": coll_id, "data_type": "collection"}))
+    collection_logs = list(
+        mdb["logs"].find({"_id": coll_id, "data_type": "collection"})
+    )
     indata = {"collection": {}}
     response = make_request(
         session,
@@ -439,17 +440,24 @@ def test_update_collection_data(mdb, collection_for_tests):
     assert response.code == 200
     assert not response.data
     assert collection == mdb["collections"].find_one({"_id": coll_id})
-    assert len(collection_logs) == len(list(mdb["logs"].find({"data._id": coll_id, "data_type": "collection"})))
+    assert len(collection_logs) == len(
+        list(mdb["logs"].find({"data._id": coll_id, "data_type": "collection"}))
+    )
 
-    random_datasets = [str(entry["_id"]) for entry in mdb["datasets"].aggregate([{"$sample": {"size": 5}}])]
-    indata = {"collection": {
-        "title": "Update any",
-        "description": "Some text",
-        "editors": helpers.users_uuids(),
-        "properties": {"property1": "value"},
-        "tags": ["tag1", "tag2"],
-        "datasets": random_datasets,
-    }}
+    random_datasets = [
+        str(entry["_id"])
+        for entry in mdb["datasets"].aggregate([{"$sample": {"size": 5}}])
+    ]
+    indata = {
+        "collection": {
+            "title": "Update any",
+            "description": "Some text",
+            "editors": helpers.users_uuids(),
+            "properties": {"property1": "value"},
+            "tags": ["tag1", "tag2"],
+            "datasets": random_datasets,
+        }
+    }
     response = make_request(
         session,
         f"/api/v1/collection/{coll_id}",
@@ -462,14 +470,21 @@ def test_update_collection_data(mdb, collection_for_tests):
     collection = mdb["collections"].find_one({"_id": coll_id})
     for field in indata["collection"]:
         if field in ("datasets", "editors"):
-            assert indata["collection"][field] == [str(entry) for entry in collection[field]]
+            assert indata["collection"][field] == [
+                str(entry) for entry in collection[field]
+            ]
         else:
             assert collection[field] == indata["collection"][field]
-    assert len(list(mdb["logs"].find({"data._id": coll_id, "data_type": "collection"}))) == len(collection_logs) + 1
+    assert (
+        len(list(mdb["logs"].find({"data._id": coll_id, "data_type": "collection"})))
+        == len(collection_logs) + 1
+    )
 
-    indata = {"collection": {
-        "description": "<br />",
-    }}
+    indata = {
+        "collection": {
+            "description": "<br />",
+        }
+    }
     response = make_request(
         session,
         f"/api/v1/collection/{coll_id}",
@@ -481,7 +496,10 @@ def test_update_collection_data(mdb, collection_for_tests):
     assert not response.data
     collection = mdb["collections"].find_one({"_id": coll_id})
     assert collection["description"] == "&lt;br /&gt;"
-    assert len(list(mdb["logs"].find({"data._id": coll_id, "data_type": "collection"}))) == len(collection_logs) + 2
+    assert (
+        len(list(mdb["logs"].find({"data._id": coll_id, "data_type": "collection"})))
+        == len(collection_logs) + 2
+    )
 
 
 def test_update_collection_bad(mdb):
@@ -578,21 +596,23 @@ def test_update_collection_bad(mdb):
 def test_delete_collection(mdb):
     """
     Confirm that collection deletions work as intended.
-    
+
     Checks:
     * DATA_MANAGEMENT can delete any entry.
     * Users in editors with DATA_EDIT can delete the entry.
     * No other users can delete entries.
     """
     session = requests.Session()
-    collections = [entry["_id"] for entry in mdb["collections"].find({"tags": "testing"})]
+    collections = [
+        entry["_id"] for entry in mdb["collections"].find({"tags": "testing"})
+    ]
     collections.append(helpers.add_collection())
     print(collections)
     helpers.as_user(session, USERS["data"])
     for coll_id in collections:
         print(coll_id)
         response = make_request(
-            session, f'/api/v1/collection/{coll_id}', method="DELETE"
+            session, f"/api/v1/collection/{coll_id}", method="DELETE"
         )
         assert response.code == 200
         assert not response.data
@@ -604,7 +624,7 @@ def test_delete_collection(mdb):
         if role in ("data", "root", "edit"):
             continue
         response = helpers.make_request(
-            session, f'/api/v1/collection/{coll_id}', method="DELETE"
+            session, f"/api/v1/collection/{coll_id}", method="DELETE"
         )
         if role == "no-login":
             assert response.code == 401
@@ -614,9 +634,7 @@ def test_delete_collection(mdb):
         assert mdb["collections"].find_one({"_id": coll_id})
 
     helpers.as_user(session, USERS["data"])
-    response = make_request(
-        session, f'/api/v1/collection/{coll_id}', method="DELETE"
-    )
+    response = make_request(session, f"/api/v1/collection/{coll_id}", method="DELETE")
     assert response.code == 200
     assert not response.data
     assert not mdb["collections"].find_one({"_id": coll_id})

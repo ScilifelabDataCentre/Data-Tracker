@@ -627,7 +627,7 @@ def req_get_entry(dbcollection: str, identifier: str) -> dict:
     Args:
         dbcollection (str): The database collection to use (e.g. ``collections``).
         identifier (str): The provided identifier.
-    
+
     Returns:
         dict: The entry from the database. None if not found.
     """
