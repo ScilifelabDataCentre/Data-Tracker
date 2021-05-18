@@ -636,6 +636,8 @@ def req_get_entry(dbcollection: str, identifier: str) -> dict:
 
 def get_entry(db, dbcollection: str, identifier: str) -> dict:
     """
+    Confirm that the identifier is valid and, if so, return the entry.
+
     Args:
         db: Connection to the database (client).
         dbcollection (str): Name of the target collection.

@@ -136,9 +136,7 @@ def add_dataset():
 
 
 def delete_dataset(order_uuid, dataset_uuid, project_uuid):
-    """
-    Delete an order and a dataset added by ``add_dataset()``.
-    """
+    """Delete an order and a dataset added by ``add_dataset()``."""
     mongo_db = db_connection()
     mongo_db["orders"].delete_one({"_id": order_uuid})
     mongo_db["datasets"].delete_one({"_id": dataset_uuid})
@@ -149,7 +147,8 @@ def make_request(
     session, url: str, data: dict = None, method="GET", ret_json: bool = True
 ) -> dict:
     """
-    Helper method for using get/post to a url.
+    Perform a request.
+
     Args:
         session (requests.Session()): The session to use
         url: str: The url to get without {BASE_URL} prefix (but with leading /)

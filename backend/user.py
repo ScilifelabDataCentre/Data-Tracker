@@ -534,6 +534,8 @@ def get_user(user_uuid=None):
 
 def has_permission(permission: str):
     """
+    Check permission for current user.
+
     Function moved to utils.
 
     Kept until all current uses have been migrated.
