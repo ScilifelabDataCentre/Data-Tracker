@@ -42,7 +42,7 @@ def get_collection(identifier):
 
     # only show owner if owner/admin
     if not flask.g.current_user or (
-        not user.has_permission("DATA_MANAGEMENT")
+        not utils.req_has_permission("DATA_MANAGEMENT")
         and flask.g.current_user["_id"] not in result["editors"]
     ):
         flask.current_app.logger.debug(
@@ -129,7 +129,7 @@ def delete_collection(identifier: str):
 
     # permission check
     if (
-        not utils.req_check_permissions(["DATA_MANAGEMENT"])
+        utils.req_has_permission("DATA_MANAGEMENT")
         and flask.g.current_user["_id"] not in entry["editors"]
     ):
         flask.abort(status=403)
@@ -167,7 +167,7 @@ def update_collection(identifier):
 
     # permission check
     if (
-        not utils.req_check_permissions(["DATA_MANAGEMENT"])
+        utils.req_has_permission(["DATA_MANAGEMENT"])
         and flask.g.current_user["_id"] not in collection["editors"]
     ):
         flask.current_app.logger.debug(
@@ -196,7 +196,6 @@ def update_collection(identifier):
             is_different = True
             break
 
-    flask.current_app.logger.error(indata)
     if indata and is_different:
         collection.update(indata)
         result = utils.req_commit_to_db("collections", "edit", collection)
@@ -206,28 +205,13 @@ def update_collection(identifier):
     return flask.Response(status=200)
 
 
-@blueprint.route("/user", methods=["GET"])
-@user.login_required
-def list_user_collections():  # pylint: disable=too-many-branches
-    """
-    List collection owned by the user.
-
-    Returns:
-        flask.Response: JSON structure.
-    """
-    results = list(
-        flask.g.db["collections"].find({"editors": flask.g.current_user["_id"]})
-    )
-    return utils.response_json({"collections": results})
-
-
 @blueprint.route("/<identifier>/log", methods=["GET"])
 @user.login_required
 def get_collection_log(identifier: str = None):
     """
-    Get change logs for the user entry with uuid ``identifier``.
+    Get change logs for the collection matching ``identifier``.
 
-    Can be accessed by owners and admin (DATA_MANAGEMENT).
+    Can be accessed by editors (with DATA_EDIT) and admin (DATA_MANAGEMENT).
 
     Args:
         identifier (str): The uuid of the collection.
@@ -235,21 +219,21 @@ def get_collection_log(identifier: str = None):
     Returns:
         flask.Response: Logs as json.
     """
-    try:
-        collection_uuid = utils.str_to_uuid(identifier)
-    except ValueError:
-        flask.abort(status=404)
+    perm_status = utils.req_check_permissions(["DATA_EDIT"])
+    if perm_status != 200:
+        flask.abort(status=perm_status)
 
-    if not user.has_permission("DATA_MANAGEMENT"):
-        collection_data = flask.g.db["collections"].find_one({"_id": collection_uuid})
-        if not collection_data:
-            flask.abort(403)
-        if flask.g.current_user["_id"] not in collection_data["editors"]:
-            flask.abort(403)
+    collection = utils.req_get_entry("collections", identifier)
+    if not collection:
+        flask.abort(status=404)
+    flask.current_app.logger.debug(flask.g.current_user)
+    flask.current_app.logger.debug(collection)
+    if not utils.req_has_permission("DATA_MANAGEMENT") and flask.g.current_user["_id"] not in collection["editors"]:
+        flask.abort(403)
 
     collection_logs = list(
         flask.g.db["logs"].find(
-            {"data_type": "collection", "data._id": collection_uuid}
+            {"data_type": "collection", "data._id": collection["_id"]}
         )
     )
 
@@ -260,7 +244,7 @@ def get_collection_log(identifier: str = None):
 
     return utils.response_json(
         {
-            "entry_id": collection_uuid,
+            "entry_id": collection["_id"],
             "data_type": "collection",
             "logs": collection_logs,
         }

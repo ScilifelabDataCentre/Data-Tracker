@@ -45,7 +45,7 @@ def test_add_collection_permissions():
 
     * Any user with ``DATA_EDIT`` can add a collection
     """
-    indata = {"collection": {"title": "Test title"}}
+    indata = {"collection": {"title": "Test add permissions title"}}
     indata["collection"].update(TEST_LABEL)
 
     responses = make_request_all_roles(
@@ -85,7 +85,7 @@ def test_add_collection_data(mdb):
         "collection": {
             "description": "Test description",
             "editors": [str(user_info["_id"])],
-            "title": "Test title",
+            "title": "Test add title",
             "datasets": [str(ds_id)],
             "tags": [],
             "properties": {
@@ -234,9 +234,9 @@ def test_add_collection_bad():
 
     indata = {
         "collection": {
-            "description": "Test description",
+            "description": "Test bad add description",
             "editors": [str(uuid.uuid4())],
-            "title": "Test title",
+            "title": "Test bad add title",
         }
     }
     responses = make_request_all_roles(
@@ -258,7 +258,7 @@ def test_add_collection_bad():
     indata = {
         "collection": {
             "_id": str(uuid.uuid4()),
-            "title": "Test title",
+            "title": "Test bad add title",
         }
     }
     response = make_request(
@@ -267,7 +267,7 @@ def test_add_collection_bad():
     assert response.code == 403
     assert not response.data
 
-    indata = {"collection": {"datasets": [str(uuid.uuid4())], "title": "Test title"}}
+    indata = {"collection": {"datasets": [str(uuid.uuid4())], "title": "Test bad add title"}}
     response = make_request(
         session, "/api/v1/collection", method="POST", data=indata, ret_json=True
     )
@@ -365,16 +365,16 @@ def test_update_collection_permissions(mdb, collection_for_tests):
 
     Checks:
     * DATA_MANAGEMENT can edit any collection
-    * DATA_EDIT and listed in owners required
-    * DATA_EDIT, not listed in owners - forbidden
-    * Listed in owners, not DATA_EDIT - forbidden
+    * DATA_EDIT and listed in editors required
+    * Listed in editors, not DATA_EDIT - forbidden
+    * DATA_EDIT, not listed in editors - forbidden
     """
     session = requests.Session()
 
     coll_id = collection_for_tests
-    as_user(session, USERS["data"])
+    helpers.as_user(session, USERS["data"])
     indata = {"collection": {"title": "Update any", "editors": helpers.users_uuids()}}
-    response = make_request(
+    response = helpers.make_request(
         session,
         f"/api/v1/collection/{coll_id}",
         method="PATCH",
@@ -388,9 +388,9 @@ def test_update_collection_permissions(mdb, collection_for_tests):
     assert [str(entry) for entry in new_collection["editors"]] == helpers.users_uuids()
 
     for role in USERS:
-        as_user(session, USERS[role])
+        helpers.as_user(session, USERS[role])
         indata = {"collection": {"title": f"Test title - updated by {role}"}}
-        response = make_request(
+        response = helpers.make_request(
             session,
             f"/api/v1/collection/{coll_id}",
             method="PATCH",
@@ -408,6 +408,23 @@ def test_update_collection_permissions(mdb, collection_for_tests):
         else:
             assert response.code == 403
             assert not response.data
+
+    mdb["collections"].update_one({"_id": coll_id}, {"$set": {"editors": []}})
+    print(mdb["collections"].find_one({"_id": coll_id}))
+
+    helpers.as_user(session, USERS["edit"])
+    indata = {"collection": {"title": f"Test title - updated by edit"}}
+    response = helpers.make_request(
+        session,
+        f"/api/v1/collection/{coll_id}",
+        method="PATCH",
+        data=indata,
+        ret_json=True,
+    )
+    assert response.code == 403
+    assert not response.data
+    new_collection = mdb["collections"].find_one({"_id": coll_id})
+    assert new_collection["title"] != indata["collection"]["title"]
 
 
 def test_update_collection_data(mdb, collection_for_tests):
@@ -532,8 +549,8 @@ def test_update_collection_bad(mdb):
 
     indata = {
         "description": "Test description",
-        "owners": [str(uuid.uuid4())],
-        "title": "Test title",
+        "editors": [str(uuid.uuid4())],
+        "title": "Test bad update title",
     }
 
     responses = make_request_all_roles(
@@ -554,7 +571,7 @@ def test_update_collection_bad(mdb):
             assert not response.data
 
     for _ in range(2):
-        indata = {"title": "Test title"}
+        indata = {"title": "Test bad update title"}
         responses = make_request_all_roles(
             f"/api/v1/collection/{uuid.uuid4()}",
             method="PATCH",
@@ -572,7 +589,7 @@ def test_update_collection_bad(mdb):
                 assert response.code == 403
                 assert not response.data
 
-        indata = {"title": "Test title"}
+        indata = {"title": "Test bad update title"}
         responses = make_request_all_roles(
             f"/api/v1/collection/{random_string()}",
             method="PATCH",
@@ -606,11 +623,10 @@ def test_delete_collection(mdb):
     collections = [
         entry["_id"] for entry in mdb["collections"].find({"tags": "testing"})
     ]
+
     collections.append(helpers.add_collection())
-    print(collections)
     helpers.as_user(session, USERS["data"])
     for coll_id in collections:
-        print(coll_id)
         response = make_request(
             session, f"/api/v1/collection/{coll_id}", method="DELETE"
         )
@@ -622,6 +638,27 @@ def test_delete_collection(mdb):
     for role in USERS:
         helpers.as_user(session, USERS[role])
         if role in ("data", "root", "edit"):
+            continue
+        response = helpers.make_request(
+            session, f"/api/v1/collection/{coll_id}", method="DELETE"
+        )
+        if role == "no-login":
+            assert response.code == 401
+        else:
+            assert response.code == 403
+        assert not response.data
+        assert mdb["collections"].find_one({"_id": coll_id})
+    helpers.as_user(session, USERS["edit"])
+    response = make_request(session, f"/api/v1/collection/{coll_id}", method="DELETE")
+    assert response.code == 200
+    assert not response.data
+    assert not mdb["collections"].find_one({"_id": coll_id})
+
+    coll_id = helpers.add_collection()
+    mdb["collections"].update_one({"_id": coll_id}, {"$set": {"editors": []}})
+    for role in USERS:
+        helpers.as_user(session, USERS[role])
+        if role in ("data", "root"):
             continue
         response = helpers.make_request(
             session, f"/api/v1/collection/{coll_id}", method="DELETE"
@@ -679,15 +716,28 @@ def test_get_collection_logs_permissions(mdb):
     """
     Confirm that collection logs can only be accessed by the intended users.
 
-    Assert that DATA_MANAGEMENT or user in editors is required.
+    Checks:
+    * DATA_MANAGEMENT can access any log.
+    * DATA_EDIT can access entries where they are editors.
+    * User in editors, but not DATA_EDIT cannot access logs.
+    * Other users cannot access logs.
     """
-    collection_data = mdb["collections"].aggregate([{"$sample": {"size": 1}}]).next()
-    user_data = mdb["users"].find_one({"_id": {"$in": collection_data["editors"]}})
+    collections = list(mdb["collections"].aggregate([{"$sample": {"size": 5}}]))
+    session = requests.Session()
+    helpers.as_user(session, helpers.USERS["data"])
+    for collection in collections:
+        response = make_request(
+            session, f'/api/v1/collection/{collection["_id"]}/log', ret_json=True
+        )
+        assert response.code == 200
+        assert "logs" in response.data
+
+    coll_id = helpers.add_collection()
     responses = make_request_all_roles(
-        f'/api/v1/collection/{collection_data["_id"]}/log', ret_json=True
+        f'/api/v1/collection/{coll_id}/log', ret_json=True
     )
     for response in responses:
-        if response.role in ("data", "root"):
+        if response.role in ("edit", "data", "root"):
             assert response.code == 200
             assert "logs" in response.data
         elif response.role == "no-login":
@@ -697,15 +747,23 @@ def test_get_collection_logs_permissions(mdb):
             assert response.code == 403
             assert not response.data
 
-    session = requests.Session()
-
-    as_user(session, user_data["auth_ids"][0])
-    response = make_request(
-        session, f'/api/v1/collection/{collection_data["_id"]}/log', ret_json=True
-    )
-
-    assert response.code == 200
-    assert "logs" in response.data
+    base_user = mdb["users"].find_one({"auth_ids": helpers.USERS["base"]})
+    mdb["collections"].update_one({"_id": coll_id}, {"$set": {"editors": [base_user["_id"]]}})
+    for collection in collections:
+        responses = make_request_all_roles(
+            f'/api/v1/collection/{collection["_id"]}/log', ret_json=True
+        )
+        for response in responses:
+            if response.role in ("data", "root"):
+                assert response.code == 200
+                assert "logs" in response.data
+            elif response.role == "no-login":
+                assert response.code == 401
+                assert not response.data
+            else:
+                assert response.code == 403
+                assert not response.data
+    
 
 
 def test_get_collection_logs(mdb):
