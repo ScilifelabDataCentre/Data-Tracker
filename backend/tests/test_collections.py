@@ -415,7 +415,7 @@ def test_update_collection_permissions(mdb, collection_for_tests):
     print(mdb["collections"].find_one({"_id": coll_id}))
 
     helpers.as_user(session, USERS["edit"])
-    indata = {"collection": {"title": f"Test title - updated by edit"}}
+    indata = {"collection": {"title": "Test title - updated by edit"}}
     response = helpers.make_request(
         session,
         f"/api/v1/collection/{coll_id}",
