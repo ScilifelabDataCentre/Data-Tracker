@@ -95,7 +95,7 @@ export function getUserActions ({ commit, dispatch }, payload) {
 export function getEmptyEntry ({ commit, dispatch }, dataType) {
   return new Promise((resolve, reject) => {
     axios
-      .get('/api/v1/' + dataType + '/structure')
+      .get('/api/v1/schema/' + dataType)
       .then((response) => {
         commit('UPDATE_ENTRY', response.data[dataType]);
         resolve(response);
@@ -110,7 +110,7 @@ export function getEmptyEntry ({ commit, dispatch }, dataType) {
 export function getLocalEmptyEntry ({ commit, dispatch }, dataType) {
   return new Promise((resolve, reject) => {
     axios
-      .get('/api/v1/' + dataType + '/structure')
+      .get('/api/v1/schema/' + dataType)
       .then((response) => {
         resolve(response.data[dataType]);
       })

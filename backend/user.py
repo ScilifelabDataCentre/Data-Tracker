@@ -7,11 +7,9 @@ Decorators
 Helper functions
     Functions to help with user-related tasks, e.g. setting all variables at login.
 
-
 Requests
     User-related API endpoints, including login/logout and user manament.
 """
-from itertools import chain
 import functools
 import json
 
@@ -78,19 +76,6 @@ def list_users():
     result = tuple(flask.g.db["users"].find(projection=fields))
 
     return utils.response_json({"users": result})
-
-
-@blueprint.route("/structure", methods=["GET"])
-def get_user_data_structure():
-    """
-    Get an empty user entry.
-
-    Returns:
-        flask.Response: JSON structure with a list of users.
-    """
-    empty_user = structure.user()
-    empty_user["_id"] = ""
-    return utils.response_json({"user": empty_user})
 
 
 # requests
@@ -516,7 +501,7 @@ def do_login(auth_id: str):
         return False
 
     flask.session["user_id"] = user["_id"]
-    flask.session.permanent = True
+    flask.session.permanent = True  # pylint: disable=assigning-non-slot
     return True
 
 
@@ -549,21 +534,10 @@ def get_user(user_uuid=None):
 
 def has_permission(permission: str):
     """
-    Check if the current user permissions fulfills the requirement.
+    Check permission for current user.
 
-    Args:
-        permission (str): The required permission
+    Function moved to utils.
 
-    Returns:
-        bool: whether the user has the required permissions or not
+    Kept until all current uses have been migrated.
     """
-    if not flask.g.permissions and permission:
-        return False
-    user_permissions = set(
-        chain.from_iterable(
-            PERMISSIONS[permission] for permission in flask.g.permissions
-        )
-    )
-    if permission not in user_permissions:
-        return False
-    return True
+    return utils.has_permission(permission, flask.g.permissions)

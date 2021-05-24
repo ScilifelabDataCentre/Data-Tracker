@@ -350,7 +350,7 @@ def test_key_reset(mdb):
     mod_user_info = mdb.users.find_one(mod_user)
 
     session = requests.Session()
-    for i, userid in enumerate(USERS):
+    for userid in USERS:
         as_user(session, USERS[userid])
         if userid != "no-login":
             # Test modifying user's own key

@@ -6,9 +6,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Index &#8212; Data Tracker  documentation</title>
-    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="static/alabaster.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="static/documentation_options.js"></script>
     <script src="static/jquery.js"></script>
     <script src="static/underscore.js"></script>
     <script src="static/doctools.js"></script>
@@ -60,7 +60,9 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code.collection.html#collection.add_collection">add_collection() (in module collection)</a>
 </li>
-      <li><a href="code.dataset.html#dataset.add_dataset">add_dataset() (in module dataset)</a>
+      <li><a href="code.order.html#order.add_dataset">add_dataset() (in module order)</a>
+</li>
+      <li><a href="code.db_management.html#db_management.add_default_user">add_default_user() (in module db_management)</a>
 </li>
       <li><a href="code.user.html#user.add_new_user">add_new_user() (in module user)</a>
 </li>
@@ -99,7 +101,13 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="code.db_management.html#db_management.check_db">check_db() (in module db_management)</a>
+</li>
       <li><a href="code.utils.html#utils.check_email_uuid">check_email_uuid() (in module utils)</a>
+</li>
+      <li><a href="code.db_management.html#db_management.check_migrations">check_migrations() (in module db_management)</a>
+</li>
+      <li><a href="code.utils.html#utils.check_permissions">check_permissions() (in module utils)</a>
 </li>
       <li>
     collection
@@ -108,10 +116,14 @@
         <li><a href="code.collection.html#module-collection">module</a>
 </li>
       </ul></li>
-      <li><a href="code.structure.html#structure.collection">collection() (in module structure)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="code.structure.html#structure.collection">collection() (in module structure)</a>
+</li>
+      <li><a href="code.utils.html#utils.commit_to_db">commit_to_db() (in module utils)</a>
+</li>
+      <li><a href="code.utils.html#utils.CommitResult">CommitResult (class in utils)</a>
+</li>
       <li>
     config
 
@@ -129,6 +141,8 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="code.utils.html#utils.CommitResult.data">data (utils.CommitResult attribute)</a>
+</li>
       <li>
     dataset
 
@@ -138,12 +152,19 @@
       </ul></li>
       <li><a href="code.structure.html#structure.dataset">dataset() (in module structure)</a>
 </li>
+      <li>
+    db_management
+
+      <ul>
+        <li><a href="code.db_management.html#module-db_management">module</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code.collection.html#collection.delete_collection">delete_collection() (in module collection)</a>
 </li>
       <li><a href="code.dataset.html#dataset.delete_dataset">delete_dataset() (in module dataset)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code.order.html#order.delete_order">delete_order() (in module order)</a>
 </li>
       <li><a href="code.user.html#user.delete_user">delete_user() (in module user)</a>
@@ -199,7 +220,7 @@
 </li>
       <li><a href="code.collection.html#collection.get_collection">get_collection() (in module collection)</a>
 </li>
-      <li><a href="code.collection.html#collection.get_collection_data_structure">get_collection_data_structure() (in module collection)</a>
+      <li><a href="code.schema.html#schema.get_collection_data_structure">get_collection_data_structure() (in module schema)</a>
 </li>
       <li><a href="code.collection.html#collection.get_collection_log">get_collection_log() (in module collection)</a>
 </li>
@@ -209,29 +230,25 @@
 </li>
       <li><a href="code.dataset.html#dataset.get_dataset">get_dataset() (in module dataset)</a>
 </li>
-      <li><a href="code.dataset.html#dataset.get_dataset_data_structure">get_dataset_data_structure() (in module dataset)</a>
-</li>
-      <li><a href="code.dataset.html#dataset.get_dataset_log">get_dataset_log() (in module dataset)</a>
+      <li><a href="code.schema.html#schema.get_dataset_data_structure">get_dataset_data_structure() (in module schema)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="code.dataset.html#dataset.get_dataset_log">get_dataset_log() (in module dataset)</a>
+</li>
       <li><a href="code.utils.html#utils.get_db">get_db() (in module utils)</a>
 </li>
       <li><a href="code.utils.html#utils.get_dbclient">get_dbclient() (in module utils)</a>
 </li>
-      <li><a href="code.order.html#order.get_empty_order">get_empty_order() (in module order)</a>
+      <li><a href="code.utils.html#utils.get_entry">get_entry() (in module utils)</a>
 </li>
       <li><a href="code.order.html#order.get_order">get_order() (in module order)</a>
 </li>
-      <li><a href="code.order.html#order.get_order_data_structure">get_order_data_structure() (in module order)</a>
+      <li><a href="code.schema.html#schema.get_order_data_structure">get_order_data_structure() (in module schema)</a>
 </li>
       <li><a href="code.order.html#order.get_order_logs">get_order_logs() (in module order)</a>
 </li>
       <li><a href="code.user.html#user.get_permission_info">get_permission_info() (in module user)</a>
-</li>
-      <li><a href="code.collection.html#collection.get_random">get_random() (in module collection)</a>
-</li>
-      <li><a href="code.dataset.html#dataset.get_random_ds">get_random_ds() (in module dataset)</a>
 </li>
       <li><a href="code.user.html#user.get_user">get_user() (in module user)</a>
 </li>
@@ -239,7 +256,7 @@
 </li>
       <li><a href="code.user.html#user.get_user_data">get_user_data() (in module user)</a>
 </li>
-      <li><a href="code.user.html#user.get_user_data_structure">get_user_data_structure() (in module user)</a>
+      <li><a href="code.schema.html#schema.get_user_data_structure">get_user_data_structure() (in module schema)</a>
 </li>
       <li><a href="code.user.html#user.get_user_log">get_user_log() (in module user)</a>
 </li>
@@ -250,6 +267,14 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code.user.html#user.has_permission">has_permission() (in module user)</a>
+
+      <ul>
+        <li><a href="code.utils.html#utils.has_permission">(in module utils)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="code.app.html#app.heartbeat">heartbeat() (in module app)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -259,9 +284,15 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code.utils.html#utils.incremental_logs">incremental_logs() (in module utils)</a>
 </li>
+      <li><a href="code.dataset.html#dataset.info_add_dataset">info_add_dataset() (in module dataset)</a>
+</li>
+      <li><a href="code.config.html#config.init">init() (in module config)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="code.config.html#config.init">init() (in module config)</a>
+      <li><a href="code.db_management.html#db_management.init_db">init_db() (in module db_management)</a>
+</li>
+      <li><a href="code.utils.html#utils.CommitResult.ins_id">ins_id (utils.CommitResult attribute)</a>
 </li>
       <li><a href="code.utils.html#utils.is_email">is_email() (in module utils)</a>
 </li>
@@ -279,6 +310,8 @@
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="code.schema.html#schema.list_available_schemas">list_available_schemas() (in module schema)</a>
+</li>
       <li><a href="code.collection.html#collection.list_collection">list_collection() (in module collection)</a>
 </li>
       <li><a href="code.developer.html#developer.list_config">list_config() (in module developer)</a>
@@ -287,19 +320,27 @@
 </li>
       <li><a href="code.dataset.html#dataset.list_datasets">list_datasets() (in module dataset)</a>
 </li>
+      <li><a href="code.developer.html#developer.list_endpoints_formatted_text">list_endpoints_formatted_text() (in module developer)</a>
+</li>
+      <li><a href="code.developer.html#developer.list_endpoints_json">list_endpoints_json() (in module developer)</a>
+</li>
       <li><a href="code.order.html#order.list_orders">list_orders() (in module order)</a>
 </li>
       <li><a href="code.order.html#order.list_orders_user">list_orders_user() (in module order)</a>
 </li>
       <li><a href="code.developer.html#developer.list_session">list_session() (in module developer)</a>
 </li>
-      <li><a href="code.collection.html#collection.list_user_collections">list_user_collections() (in module collection)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="code.utils.html#utils.list_to_uuid">list_to_uuid() (in module utils)</a>
+</li>
+      <li><a href="code.collection.html#collection.list_user_collections">list_user_collections() (in module collection)</a>
+</li>
       <li><a href="code.dataset.html#dataset.list_user_data">list_user_data() (in module dataset)</a>
 </li>
       <li><a href="code.user.html#user.list_users">list_users() (in module user)</a>
+</li>
+      <li><a href="code.utils.html#utils.CommitResult.log">log (utils.CommitResult attribute)</a>
 </li>
       <li><a href="code.structure.html#structure.log">log() (in module structure)</a>
 </li>
@@ -321,8 +362,19 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code.utils.html#utils.make_log">make_log() (in module utils)</a>
 </li>
+      <li><a href="code.utils.html#utils.make_log_new">make_log_new() (in module utils)</a>
+</li>
       <li><a href="code.utils.html#utils.make_timestamp">make_timestamp() (in module utils)</a>
 </li>
+      <li><a href="code.migrations.html#migrations.migrate_v1_to_v2">migrate_v1_to_v2() (in module migrations)</a>
+</li>
+      <li>
+    migrations
+
+      <ul>
+        <li><a href="code.migrations.html#module-migrations">module</a>
+</li>
+      </ul></li>
       <li>
     module
 
@@ -335,9 +387,15 @@
 </li>
         <li><a href="code.dataset.html#module-dataset">dataset</a>
 </li>
+        <li><a href="code.db_management.html#module-db_management">db_management</a>
+</li>
         <li><a href="code.developer.html#module-developer">developer</a>
 </li>
+        <li><a href="code.migrations.html#module-migrations">migrations</a>
+</li>
         <li><a href="code.order.html#module-order">order</a>
+</li>
+        <li><a href="code.schema.html#module-schema">schema</a>
 </li>
         <li><a href="code.structure.html#module-structure">structure</a>
 </li>
@@ -397,6 +455,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code.order.html#order.prepare_order_response">prepare_order_response() (in module order)</a>
 </li>
+      <li><a href="code.utils.html#utils.prepare_response">prepare_response() (in module utils)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -405,8 +465,14 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code.config.html#config.read_config">read_config() (in module config)</a>
 </li>
+      <li><a href="code.utils.html#utils.req_check_permissions">req_check_permissions() (in module utils)</a>
+</li>
+      <li><a href="code.utils.html#utils.req_commit_to_db">req_commit_to_db() (in module utils)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="code.utils.html#utils.req_get_entry">req_get_entry() (in module utils)</a>
+</li>
       <li><a href="code.utils.html#utils.response_json">response_json() (in module utils)</a>
 </li>
       <li><a href="code.utils.html#utils.ValidationResult.result">result (utils.ValidationResult attribute)</a>
@@ -417,14 +483,23 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    schema
+
+      <ul>
+        <li><a href="code.schema.html#module-schema">module</a>
+</li>
+      </ul></li>
       <li><a href="code.utils.html#utils.secure_description">secure_description() (in module utils)</a>
 </li>
+      <li><a href="code.developer.html#developer.sitemap_builder">sitemap_builder() (in module developer)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code.utils.html#utils.ValidationResult.status">status (utils.ValidationResult attribute)</a>
 </li>
       <li><a href="code.developer.html#developer.stop_server">stop_server() (in module developer)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code.utils.html#utils.str_to_uuid">str_to_uuid() (in module utils)</a>
 </li>
       <li>
@@ -483,8 +558,6 @@
         <li><a href="code.validate.html#module-validate">module</a>
 </li>
       </ul></li>
-      <li><a href="code.validate.html#validate.validate_cross_references">validate_cross_references() (in module validate)</a>
-</li>
       <li><a href="code.validate.html#validate.validate_datasets">validate_datasets() (in module validate)</a>
 </li>
       <li><a href="code.validate.html#validate.validate_email">validate_email() (in module validate)</a>
@@ -492,6 +565,8 @@
       <li><a href="code.validate.html#validate.validate_field">validate_field() (in module validate)</a>
 </li>
       <li><a href="code.validate.html#validate.validate_list_of_strings">validate_list_of_strings() (in module validate)</a>
+</li>
+      <li><a href="code.validate.html#validate.validate_orcid">validate_orcid() (in module validate)</a>
 </li>
       <li><a href="code.validate.html#validate.validate_permissions">validate_permissions() (in module validate)</a>
 </li>
@@ -501,9 +576,9 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code.validate.html#validate.validate_string">validate_string() (in module validate)</a>
 </li>
-      <li><a href="code.validate.html#validate.validate_tags">validate_tags() (in module validate)</a>
+      <li><a href="code.validate.html#validate.validate_string_non_empty">validate_string_non_empty() (in module validate)</a>
 </li>
-      <li><a href="code.validate.html#validate.validate_title">validate_title() (in module validate)</a>
+      <li><a href="code.validate.html#validate.validate_tags">validate_tags() (in module validate)</a>
 </li>
       <li><a href="code.validate.html#validate.validate_url">validate_url() (in module validate)</a>
 </li>
@@ -581,7 +656,7 @@
       &copy;2019-2021, SciLifeLab Data Centre.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

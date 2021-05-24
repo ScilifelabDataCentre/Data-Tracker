@@ -1,12 +1,13 @@
 """General helper functions."""
 
-from collections import namedtuple
-from typing import Any, Union
 import datetime
 import html
 import re
 import secrets
 import uuid
+from collections import namedtuple
+from itertools import chain
+from typing import Any, Union
 
 import argon2
 import bson
@@ -14,10 +15,11 @@ import flask
 import pymongo
 
 import structure
+import user
 import validate
 
-
 ValidationResult = namedtuple("ValidationResult", ["result", "status"])
+CommitResult = namedtuple("CommitResult", ["log", "data", "ins_id"])
 
 
 def basic_check_indata(
@@ -204,6 +206,25 @@ def new_uuid() -> uuid.UUID:
     return uuid.uuid4()
 
 
+def list_to_uuid(uuids: list) -> list:
+    """
+    Convert the uuids in a list to uuid.UUID.
+
+    Args:
+        uuids (list): The uuid to be converted.
+
+    Returns:
+        list: All the provided uuids as uuid.UUID.
+    """
+    new_list = []
+    for entry in uuids:
+        if isinstance(entry, uuid.UUID):
+            new_list.append(entry)
+        else:
+            new_list.append(str_to_uuid(entry))
+    return new_list
+
+
 def str_to_uuid(in_uuid: Union[str, uuid.UUID]) -> uuid.UUID:
     """
     Convert str uuid to uuid.UUID.
@@ -276,23 +297,21 @@ def response_json(data: dict):
         flask.Response: Prepared response containing json structure with camelBack keys.
     """
     url = flask.request.path
-    return flask.jsonify(prepare_response(data, url))
+    prepare_response(data, url)
+    return flask.jsonify(data)
 
 
 def prepare_response(data: dict, url: str = ""):
     """
     Prepare the fields before running jsonify.
 
-    ``data`` is modified in-place
+    ``data`` is modified in-place.
 
     * Rename ``_id`` to ``id``
     * If available, add origin URL to the response
 
     Args:
         data (dict): Structure to prepare.
-
-    Returns:
-        dict:
     """
 
     def fix_id(chunk):
@@ -316,7 +335,6 @@ def prepare_response(data: dict, url: str = ""):
             data["url"] = url
     elif isinstance(data, (list, tuple)):
         data = fix_id(data)
-    return data
 
 
 def make_timestamp():
@@ -467,3 +485,283 @@ def user_uuid_data(
         }
         for entry in data
     ]
+
+
+def req_check_permissions(permissions):
+    """
+    Call ``check_permissions`` from inside a Flask request.
+
+    Convenience function to use the Flask variables.
+    """
+    return check_permissions(
+        permissions=permissions,
+        user_permissions=flask.g.permissions,
+        logged_in=bool(flask.g.current_user),
+    )
+
+
+def check_permissions(
+    permissions: list, user_permissions: list, logged_in: bool
+) -> int:
+    """
+    Perform the standard permissions check for a request.
+
+    Will return a status code:
+    * 200: accepted
+    * 401: not logged in
+    * 403: permission missing
+
+    Args:
+        permissions (list): The required permissions.
+        user_permissions (list): List of permissions for the user.
+        logged_in (bool): Whether the current user is logged in.
+
+    Returns:
+        int: The suggested status code.
+    """
+    if permissions and not logged_in:
+        return 401
+    if not user_permissions and permissions:
+        return 403
+    user_permissions = set(
+        chain.from_iterable(
+            user.PERMISSIONS[permission] for permission in user_permissions
+        )
+    )
+    for perm in permissions:
+        if perm not in user_permissions:
+            return 403
+    return 200
+
+
+def req_has_permission(permission: str):
+    """
+    Check if the current user permissions fulfills the requirement.
+
+    Args:
+        permission (str): The required permission
+        user_permissions (list): List of permissions for the user.
+            Should be ``flask.g.permissions`` for most requests.
+
+    Returns:
+        bool: whether the user has the required permissions or not
+    """
+    return has_permission(permission, flask.g.permissions)
+
+
+def has_permission(permission: str, user_permissions: list):
+    """
+    Check if the current user permissions fulfills the requirement.
+
+    Args:
+        permission (str): The required permission
+        user_permissions (list): List of permissions for the user.
+            Should be ``flask.g.permissions`` for most requests.
+
+    Returns:
+        bool: whether the user has the required permissions or not
+    """
+    if not user_permissions and permission:
+        return False
+    full_user_permissions = set(
+        chain.from_iterable(
+            user.PERMISSIONS[permission] for permission in user_permissions
+        )
+    )
+    if permission not in full_user_permissions:
+        return False
+    return True
+
+
+def make_log_new(
+    db: str,
+    data_type: str,
+    action: str,
+    comment: str,
+    user_id,
+    data,
+    logger=None,
+) -> bool:
+    """
+    Log a change in the system.
+
+    Saves a complete copy of the new object.
+
+    Warning:
+        It is assumed that all values are exactly like in the db,
+        e.g. ``data`` should only contain permitted fields.
+
+    Args:
+        db: Connection to the database (client).
+        data_type (str): The collection name.
+        action (str): Type of action (add, edit, delete).
+        comment (str): Note about why the change was done
+            (e.g. "Dataset added via addDataset").
+        user_id (uuid.UUID): The ``_id`` for the user performing the operation.
+        data (dict): The new data for the entry.
+        logger: The logging object to use for errors.
+
+    Raises:
+        ValueError: No data provided.
+
+    Returns:
+        bool: Whether the log insertion succeeded.
+    """
+    if not data:
+        raise ValueError("Empty data is not allowed")
+    log = structure.log()
+    logger.error(data)
+    log.update(
+        {
+            "action": action,
+            "comment": comment,
+            "data_type": data_type,
+            "data": data,
+            "user": user_id,
+        }
+    )
+    logger.error(log)
+    success = db["logs"].insert_one(log).acknowledged
+    if not success and logger:
+        logger.error(
+            "Log addition failed: A: %s C: %s D: %s DT: %s U: %s",
+            action,
+            comment,
+            data,
+            data_type,
+            user_id,
+        )
+    return success
+
+
+def req_get_entry(dbcollection: str, identifier: str) -> dict:
+    """
+    Confirm that the identifier is valid and, if so, return the entry.
+
+    Wrapper for usage from a Flask request.
+
+    Args:
+        dbcollection (str): The database collection to use (e.g. ``collections``).
+        identifier (str): The provided identifier.
+
+    Returns:
+        dict: The entry from the database. None if not found.
+    """
+    return get_entry(db=flask.g.db, dbcollection=dbcollection, identifier=identifier)
+
+
+def get_entry(db, dbcollection: str, identifier: str) -> dict:
+    """
+    Confirm that the identifier is valid and, if so, return the entry.
+
+    Args:
+        db: Connection to the database (client).
+        dbcollection (str): Name of the target collection.
+        operation (str): Operation to perform (add, edit, delete)
+        data (dict): Data to commit to db.
+        id (dict): The entry to perform the operation on (_id).
+        logger: The logging object to use for errors.
+
+    Raises:
+        ValueError: Missing ``_id`` in ``data`` for delete or update.
+
+    Returns:
+        dict: The response from the db commit.
+    """
+    try:
+        entry_uuid = str_to_uuid(identifier)
+    except ValueError:
+        return {}
+    entry = db[dbcollection].find_one({"_id": entry_uuid})
+    return entry
+
+
+def req_commit_to_db(
+    dbcollection: str,
+    operation: str,
+    data: dict = None,
+    comment: str = "",
+) -> bool:
+    """
+    Commit to one entry in the database from a Flask request.
+
+    Data should contain ``{_id: uuid}}`` if there is a deletion.
+
+    Args:
+        dbcollection (str): Name of the target database collection.
+        operation (str): Operation to perform (add, edit, delete).
+        data (dict): Data to commit to db.
+        comment (str): Custom comment for the log.
+    """
+    if not comment:
+        comment = f"{operation.capitalize()} in {dbcollection}"
+    data_res = {"ack": False, "ins_id": None}
+    result = commit_to_db(
+        flask.g.db,
+        dbcollection,
+        operation,
+        data,
+        logger=flask.current_app.logger,
+    )
+    data_res["ack"] = result.acknowledged
+    log_res = False
+
+    if data_res["ack"]:
+        if operation == "add":
+            data_res["ins_id"] = result.inserted_id
+            data = flask.g.db[dbcollection].find_one({"_id": data_res["ins_id"]})
+        log_res = make_log_new(
+            db=flask.g.db,
+            data_type=dbcollection[:-1],  # to make singular (e.g. collection|s)
+            action=operation,
+            comment=comment,
+            user_id=flask.g.current_user["_id"],
+            data=data,
+            logger=flask.current_app.logger,
+        )
+    return CommitResult(data=data_res["ack"], log=log_res, ins_id=data_res["ins_id"])
+
+
+def commit_to_db(
+    db,
+    dbcollection: str,
+    operation: str,
+    data: dict,
+    logger=None,
+):
+    """
+    Commit to one entry in the database.
+
+    ``_id`` should be included in ``data`` for delete and update operations.
+
+    Only uses *_one commands.
+
+    Args:
+        db: Connection to the database (client).
+        dbcollection (str): Name of the target collection.
+        operation (str): Operation to perform (add, edit, delete).
+        data (dict): Data to commit to db.
+        id (dict): The entry to perform the operation on (_id).
+        logger: The logging object to use for errors.
+
+    Raises:
+        ValueError: Missing ``_id`` in ``data`` for delete or update, or bad operation type.
+
+    Returns:
+        dict: The response from the db commit.
+    """
+    if operation == "add":
+        result = db[dbcollection].insert_one(data)
+    elif operation in ("delete", "edit"):
+        if "_id" not in data:
+            raise ValueError(f"_id must be included in data for {operation} operations")
+        if operation == "delete":
+            result = db[dbcollection].delete_one({"_id": data["_id"]})
+        else:
+            result = db[dbcollection].update_one({"_id": data["_id"]}, {"$set": data})
+    else:
+        raise ValueError(f"Bad operation type ({operation})")
+
+    if not result.acknowledged and logger:
+        logger.error("Database %s of %s failed", operation, dbcollection)
+    return result

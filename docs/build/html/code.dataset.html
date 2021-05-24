@@ -4,11 +4,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>dataset.py &#8212; Data Tracker  documentation</title>
-    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="static/alabaster.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="static/documentation_options.js"></script>
     <script src="static/jquery.js"></script>
     <script src="static/underscore.js"></script>
     <script src="static/doctools.js"></script>
@@ -32,23 +33,12 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="module-dataset">
+  <section id="module-dataset">
 <span id="dataset-py"></span><h1>dataset.py<a class="headerlink" href="#module-dataset" title="Permalink to this headline">¶</a></h1>
 <p>Dataset requests.</p>
 <dl class="py function">
-<dt id="dataset.add_dataset">
-<code class="sig-prename descclassname"><span class="pre">dataset.</span></code><code class="sig-name descname"><span class="pre">add_dataset</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/dataset.html#add_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dataset.add_dataset" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add a dataset to the given order.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>identifier</strong> (<em>str</em>) – The order to add the dataset to.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="dataset.build_dataset_info">
-<code class="sig-prename descclassname"><span class="pre">dataset.</span></code><code class="sig-name descname"><span class="pre">build_dataset_info</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/dataset.html#build_dataset_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dataset.build_dataset_info" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="dataset.build_dataset_info">
+<span class="sig-prename descclassname"><span class="pre">dataset.</span></span><span class="sig-name descname"><span class="pre">build_dataset_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/dataset.html#build_dataset_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dataset.build_dataset_info" title="Permalink to this definition">¶</a></dt>
 <dd><p>Query for a dataset from the database.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -64,8 +54,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt id="dataset.delete_dataset">
-<code class="sig-prename descclassname"><span class="pre">dataset.</span></code><code class="sig-name descname"><span class="pre">delete_dataset</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/dataset.html#delete_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dataset.delete_dataset" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="dataset.delete_dataset">
+<span class="sig-prename descclassname"><span class="pre">dataset.</span></span><span class="sig-name descname"><span class="pre">delete_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/dataset.html#delete_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dataset.delete_dataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete a dataset.</p>
 <p>Can be deleted only by editors or user with DATA_MANAGEMENT permissions.</p>
 <dl class="field-list simple">
@@ -76,8 +66,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt id="dataset.get_dataset">
-<code class="sig-prename descclassname"><span class="pre">dataset.</span></code><code class="sig-name descname"><span class="pre">get_dataset</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/dataset.html#get_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dataset.get_dataset" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="dataset.get_dataset">
+<span class="sig-prename descclassname"><span class="pre">dataset.</span></span><span class="sig-name descname"><span class="pre">get_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/dataset.html#get_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dataset.get_dataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieve the dataset with uuid &lt;identifier&gt;.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -93,22 +83,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt id="dataset.get_dataset_data_structure">
-<code class="sig-prename descclassname"><span class="pre">dataset.</span></code><code class="sig-name descname"><span class="pre">get_dataset_data_structure</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/dataset.html#get_dataset_data_structure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dataset.get_dataset_data_structure" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get an empty dataset entry.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>JSON structure with a list of datasets.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>flask.Response</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="dataset.get_dataset_log">
-<code class="sig-prename descclassname"><span class="pre">dataset.</span></code><code class="sig-name descname"><span class="pre">get_dataset_log</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/dataset.html#get_dataset_log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dataset.get_dataset_log" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="dataset.get_dataset_log">
+<span class="sig-prename descclassname"><span class="pre">dataset.</span></span><span class="sig-name descname"><span class="pre">get_dataset_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/dataset.html#get_dataset_log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dataset.get_dataset_log" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get change logs for the user entry with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
 <p>Can be accessed by creator (order), receiver (order), and admin (DATA_MANAGEMENT).</p>
 <dl class="field-list simple">
@@ -125,37 +101,26 @@
 </dd></dl>
 
 <dl class="py function">
-<dt id="dataset.get_random_ds">
-<code class="sig-prename descclassname"><span class="pre">dataset.</span></code><code class="sig-name descname"><span class="pre">get_random_ds</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/dataset.html#get_random_ds"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dataset.get_random_ds" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieve random dataset(s).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>amount</strong> (<em>int</em>) – number of requested datasets</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>json structure for the dataset(s)</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>flask.Response</p>
-</dd>
-</dl>
+<dt class="sig sig-object py" id="dataset.info_add_dataset">
+<span class="sig-prename descclassname"><span class="pre">dataset.</span></span><span class="sig-name descname"><span class="pre">info_add_dataset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/dataset.html#info_add_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dataset.info_add_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return information about the correct endpoint for adding datasets.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="dataset.list_datasets">
-<code class="sig-prename descclassname"><span class="pre">dataset.</span></code><code class="sig-name descname"><span class="pre">list_datasets</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/dataset.html#list_datasets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dataset.list_datasets" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="dataset.list_datasets">
+<span class="sig-prename descclassname"><span class="pre">dataset.</span></span><span class="sig-name descname"><span class="pre">list_datasets</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/dataset.html#list_datasets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dataset.list_datasets" title="Permalink to this definition">¶</a></dt>
 <dd><p>Provide a simplified list of all available datasets.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="dataset.list_user_data">
-<code class="sig-prename descclassname"><span class="pre">dataset.</span></code><code class="sig-name descname"><span class="pre">list_user_data</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/dataset.html#list_user_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dataset.list_user_data" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="dataset.list_user_data">
+<span class="sig-prename descclassname"><span class="pre">dataset.</span></span><span class="sig-name descname"><span class="pre">list_user_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/dataset.html#list_user_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dataset.list_user_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>List all datasets belonging to current user.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="dataset.update_dataset">
-<code class="sig-prename descclassname"><span class="pre">dataset.</span></code><code class="sig-name descname"><span class="pre">update_dataset</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/dataset.html#update_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dataset.update_dataset" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="dataset.update_dataset">
+<span class="sig-prename descclassname"><span class="pre">dataset.</span></span><span class="sig-name descname"><span class="pre">update_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/dataset.html#update_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dataset.update_dataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update a dataset with new values.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -170,7 +135,7 @@
 </dl>
 </dd></dl>
 
-</div>
+</section>
 
 
           </div>
@@ -242,7 +207,7 @@
       &copy;2019-2021, SciLifeLab Data Centre.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

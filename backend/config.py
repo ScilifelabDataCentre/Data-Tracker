@@ -8,6 +8,7 @@ Read settings from `./config.yaml`, `../config.yaml` or from the provided path.
 import logging
 import os
 import sys
+
 import yaml
 
 

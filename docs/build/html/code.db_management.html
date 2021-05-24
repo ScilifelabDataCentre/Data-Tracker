@@ -1,0 +1,175 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>db_management.py &#8212; Data Tracker  documentation</title>
+    <link rel="stylesheet" type="text/css" href="static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="static/documentation_options.js"></script>
+    <script src="static/jquery.js"></script>
+    <script src="static/underscore.js"></script>
+    <script src="static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="developer.py" href="code.developer.html" />
+    <link rel="prev" title="dataset.py" href="code.dataset.html" />
+   
+  <link rel="stylesheet" href="static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-db_management">
+<span id="db-management-py"></span><h1>db_management.py<a class="headerlink" href="#module-db_management" title="Permalink to this headline">¶</a></h1>
+<p>DB initialisation and migration check.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="db_management.add_default_user">
+<span class="sig-prename descclassname"><span class="pre">db_management.</span></span><span class="sig-name descname"><span class="pre">add_default_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/db_management.html#add_default_user"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#db_management.add_default_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a default user.</p>
+<p>User that will be added:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Default User&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="s1">&#39;default_user@example.com&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;permissions&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;USER_MANAGEMENT&#39;</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Api_key: 1234
+Auth_id: default::default</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="db_management.check_db">
+<span class="sig-prename descclassname"><span class="pre">db_management.</span></span><span class="sig-name descname"><span class="pre">check_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/db_management.html#check_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#db_management.check_db" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform database checks.</p>
+<ul class="simple">
+<li><p>check if first-time setup has been performed</p></li>
+<li><p>check that the data structure is up to date (migrations)</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dict</em>) – Configuration for the data tracker</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="db_management.check_migrations">
+<span class="sig-prename descclassname"><span class="pre">db_management.</span></span><span class="sig-name descname"><span class="pre">check_migrations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/db_management.html#check_migrations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#db_management.check_migrations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if any migrations need to be performed on the db.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dict</em>) – Configuration for the data tracker</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="db_management.init_db">
+<span class="sig-prename descclassname"><span class="pre">db_management.</span></span><span class="sig-name descname"><span class="pre">init_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/db_management.html#init_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#db_management.init_db" title="Permalink to this definition">¶</a></dt>
+<dd><p>Do first time-setup for the database.</p>
+<ul class="simple">
+<li><p>create a default user</p></li>
+<li><p>set current db_version</p></li>
+</ul>
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="static/SciLifeLab_symbol_green.svg" alt="Logo"/>
+            </a></p>
+<h1 class="logo"><a href="index.html">Data Tracker</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_structure.html">Data Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="implementation.html">Implementation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="development.html">Development</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="development.quick_environment.html">System for development</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="modules.html">Code reference</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="development.html">Development</a><ul>
+  <li><a href="modules.html">Code reference</a><ul>
+      <li>Previous: <a href="code.dataset.html" title="previous chapter">dataset.py</a></li>
+      <li>Next: <a href="code.developer.html" title="next chapter">developer.py</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019-2021, SciLifeLab Data Centre.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="sources/code.db_management.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

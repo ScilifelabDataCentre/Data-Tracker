@@ -4,17 +4,18 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>app.py &#8212; Data Tracker  documentation</title>
-    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="static/alabaster.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="static/documentation_options.js"></script>
     <script src="static/jquery.js"></script>
     <script src="static/underscore.js"></script>
     <script src="static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="config.py" href="code.config.html" />
+    <link rel="next" title="collection.py" href="code.collection.html" />
     <link rel="prev" title="Code reference" href="modules.html" />
    
   <link rel="stylesheet" href="static/custom.css" type="text/css" />
@@ -32,88 +33,94 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="module-app">
+  <section id="module-app">
 <span id="app-py"></span><h1>app.py<a class="headerlink" href="#module-app" title="Permalink to this headline">¶</a></h1>
 <p>Main app for the Data Tracker.</p>
 <dl class="py function">
-<dt id="app.api_base">
-<code class="sig-prename descclassname"><span class="pre">app.</span></code><code class="sig-name descname"><span class="pre">api_base</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#api_base"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.api_base" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="app.api_base">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">api_base</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#api_base"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.api_base" title="Permalink to this definition">¶</a></dt>
 <dd><p>List entities.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="app.error_bad_request">
-<code class="sig-prename descclassname"><span class="pre">app.</span></code><code class="sig-name descname"><span class="pre">error_bad_request</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#error_bad_request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.error_bad_request" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="app.error_bad_request">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">error_bad_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#error_bad_request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.error_bad_request" title="Permalink to this definition">¶</a></dt>
 <dd><p>Make sure a simple 400 is returned instead of an html page.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="app.error_forbidden">
-<code class="sig-prename descclassname"><span class="pre">app.</span></code><code class="sig-name descname"><span class="pre">error_forbidden</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#error_forbidden"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.error_forbidden" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="app.error_forbidden">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">error_forbidden</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#error_forbidden"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.error_forbidden" title="Permalink to this definition">¶</a></dt>
 <dd><p>Make sure a simple 403 is returned instead of an html page.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="app.error_not_found">
-<code class="sig-prename descclassname"><span class="pre">app.</span></code><code class="sig-name descname"><span class="pre">error_not_found</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#error_not_found"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.error_not_found" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="app.error_not_found">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">error_not_found</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#error_not_found"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.error_not_found" title="Permalink to this definition">¶</a></dt>
 <dd><p>Make sure a simple 404 is returned instead of an html page.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="app.error_unauthorized">
-<code class="sig-prename descclassname"><span class="pre">app.</span></code><code class="sig-name descname"><span class="pre">error_unauthorized</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#error_unauthorized"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.error_unauthorized" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="app.error_unauthorized">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">error_unauthorized</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#error_unauthorized"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.error_unauthorized" title="Permalink to this definition">¶</a></dt>
 <dd><p>Make sure a simple 401 is returned instead of an html page.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="app.finalize">
-<code class="sig-prename descclassname"><span class="pre">app.</span></code><code class="sig-name descname"><span class="pre">finalize</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#finalize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.finalize" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="app.finalize">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">finalize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#finalize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.finalize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finalize the response and clean up.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="app.key_login">
-<code class="sig-prename descclassname"><span class="pre">app.</span></code><code class="sig-name descname"><span class="pre">key_login</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#key_login"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.key_login" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="app.heartbeat">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">heartbeat</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#heartbeat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.heartbeat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return 200 to show that the api is active.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.key_login">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">key_login</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#key_login"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.key_login" title="Permalink to this definition">¶</a></dt>
 <dd><p>Log in using an apikey.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="app.login_types">
-<code class="sig-prename descclassname"><span class="pre">app.</span></code><code class="sig-name descname"><span class="pre">login_types</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#login_types"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.login_types" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="app.login_types">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">login_types</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#login_types"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.login_types" title="Permalink to this definition">¶</a></dt>
 <dd><p>List login types.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="app.logout">
-<code class="sig-prename descclassname"><span class="pre">app.</span></code><code class="sig-name descname"><span class="pre">logout</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#logout"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.logout" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="app.logout">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">logout</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#logout"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.logout" title="Permalink to this definition">¶</a></dt>
 <dd><p>Log out the current user.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="app.oidc_authorize">
-<code class="sig-prename descclassname"><span class="pre">app.</span></code><code class="sig-name descname"><span class="pre">oidc_authorize</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">auth_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#oidc_authorize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.oidc_authorize" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="app.oidc_authorize">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">oidc_authorize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">auth_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#oidc_authorize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.oidc_authorize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Authorize a login using OpenID Connect (e.g. Elixir AAI).</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="app.oidc_login">
-<code class="sig-prename descclassname"><span class="pre">app.</span></code><code class="sig-name descname"><span class="pre">oidc_login</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">auth_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#oidc_login"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.oidc_login" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="app.oidc_login">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">oidc_login</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">auth_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#oidc_login"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.oidc_login" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform a login using OpenID Connect (e.g. Elixir AAI).</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="app.oidc_types">
-<code class="sig-prename descclassname"><span class="pre">app.</span></code><code class="sig-name descname"><span class="pre">oidc_types</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#oidc_types"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.oidc_types" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="app.oidc_types">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">oidc_types</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#oidc_types"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.oidc_types" title="Permalink to this definition">¶</a></dt>
 <dd><p>List OpenID Connect types.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="app.prepare">
-<code class="sig-prename descclassname"><span class="pre">app.</span></code><code class="sig-name descname"><span class="pre">prepare</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#prepare"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.prepare" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="app.prepare">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">prepare</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/app.html#prepare"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.prepare" title="Permalink to this definition">¶</a></dt>
 <dd><p>Open the database connection and get the current user.</p>
 </dd></dl>
 
-</div>
+</section>
 
 
           </div>
@@ -153,7 +160,7 @@
   <li><a href="development.html">Development</a><ul>
   <li><a href="modules.html">Code reference</a><ul>
       <li>Previous: <a href="modules.html" title="previous chapter">Code reference</a></li>
-      <li>Next: <a href="code.config.html" title="next chapter">config.py</a></li>
+      <li>Next: <a href="code.collection.html" title="next chapter">collection.py</a></li>
   </ul></li>
   </ul></li>
   </ul></li>
@@ -185,7 +192,7 @@
       &copy;2019-2021, SciLifeLab Data Centre.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

@@ -6,9 +6,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>utils &#8212; Data Tracker  documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
@@ -33,13 +33,14 @@
   <h1>Source code for utils</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;General helper functions.&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">abc</span><span class="p">,</span> <span class="n">namedtuple</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">import</span> <span class="nn">datetime</span>
 <span class="kn">import</span> <span class="nn">html</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">secrets</span>
 <span class="kn">import</span> <span class="nn">uuid</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">argon2</span>
 <span class="kn">import</span> <span class="nn">bson</span>
@@ -47,10 +48,11 @@
 <span class="kn">import</span> <span class="nn">pymongo</span>
 
 <span class="kn">import</span> <span class="nn">structure</span>
+<span class="kn">import</span> <span class="nn">user</span>
 <span class="kn">import</span> <span class="nn">validate</span>
 
-
 <span class="n">ValidationResult</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;ValidationResult&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;result&quot;</span><span class="p">,</span> <span class="s2">&quot;status&quot;</span><span class="p">])</span>
+<span class="n">CommitResult</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;CommitResult&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;log&quot;</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;ins_id&quot;</span><span class="p">])</span>
 
 
 <div class="viewcode-block" id="basic_check_indata"><a class="viewcode-back" href="../code.utils.html#utils.basic_check_indata">[docs]</a><span class="k">def</span> <span class="nf">basic_check_indata</span><span class="p">(</span>
@@ -118,7 +120,10 @@
 <span class="c1"># csrf</span>
 <div class="viewcode-block" id="verify_csrf_token"><a class="viewcode-back" href="../code.utils.html#utils.verify_csrf_token">[docs]</a><span class="k">def</span> <span class="nf">verify_csrf_token</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compare the csrf token from the request (header) with the one in the cookie.session.</span>
+<span class="sd">    Compare the csrf token from the request (header) with the one in ``cookie.session``.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        request: The Flask request.</span>
 
 <span class="sd">    Aborts with status 400 if the verification fails.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -234,6 +239,25 @@
     <span class="k">return</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span></div>
 
 
+<div class="viewcode-block" id="list_to_uuid"><a class="viewcode-back" href="../code.utils.html#utils.list_to_uuid">[docs]</a><span class="k">def</span> <span class="nf">list_to_uuid</span><span class="p">(</span><span class="n">uuids</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert the uuids in a list to uuid.UUID.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        uuids (list): The uuid to be converted.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list: All the provided uuids as uuid.UUID.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">new_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">uuids</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">):</span>
+            <span class="n">new_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">new_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">str_to_uuid</span><span class="p">(</span><span class="n">entry</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">new_list</span></div>
+
+
 <div class="viewcode-block" id="str_to_uuid"><a class="viewcode-back" href="../code.utils.html#utils.str_to_uuid">[docs]</a><span class="k">def</span> <span class="nf">str_to_uuid</span><span class="p">(</span><span class="n">in_uuid</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert str uuid to uuid.UUID.</span>
@@ -264,12 +288,6 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        Any: Chunk converted to camelCase `dict`, otherwise chunk.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">chunk</span><span class="p">,</span> <span class="n">abc</span><span class="o">.</span><span class="n">Sequence</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">chunk</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">convert_keys_to_camel</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">chunk</span><span class="p">]</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">chunk</span><span class="p">,</span> <span class="n">abc</span><span class="o">.</span><span class="n">Mapping</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">chunk</span>
-
     <span class="n">new_chunk</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">chunk</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;_id&quot;</span><span class="p">:</span>
@@ -281,12 +299,14 @@
     <span class="k">return</span> <span class="n">new_chunk</span></div>
 
 
-<span class="n">REGEX</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;.*@.*\..*&quot;</span><span class="p">)}</span>
+<span class="n">REGEX</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[^@]+@[^@]+\.[^@]+&quot;</span><span class="p">)}</span>
 
 
 <div class="viewcode-block" id="is_email"><a class="viewcode-back" href="../code.utils.html#utils.is_email">[docs]</a><span class="k">def</span> <span class="nf">is_email</span><span class="p">(</span><span class="n">indata</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check whether a string seems to be an email address or not.</span>
+
+<span class="sd">    Will not do thorough checking, just a basic check that the basic components are there.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        indata (str): Data to check.</span>
@@ -296,21 +316,58 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">indata</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">False</span>
-    <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">REGEX</span><span class="p">[</span><span class="s2">&quot;email&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">indata</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">REGEX</span><span class="p">[</span><span class="s2">&quot;email&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="n">indata</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="response_json"><a class="viewcode-back" href="../code.utils.html#utils.response_json">[docs]</a><span class="k">def</span> <span class="nf">response_json</span><span class="p">(</span><span class="n">json_structure</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<div class="viewcode-block" id="response_json"><a class="viewcode-back" href="../code.utils.html#utils.response_json">[docs]</a><span class="k">def</span> <span class="nf">response_json</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Convert keys to camelCase and run ``flask.jsonify()``.</span>
+<span class="sd">    Prepare a json response from the provided data.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        json_structure (dict): Structure to prepare.</span>
+<span class="sd">        date (dict): Structure to make into a respone.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        flask.Response: Prepared response containing json structure with camelBack keys.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">data</span> <span class="o">=</span> <span class="n">convert_keys_to_camel</span><span class="p">(</span><span class="n">json_structure</span><span class="p">)</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">path</span>
+    <span class="n">prepare_response</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="prepare_response"><a class="viewcode-back" href="../code.utils.html#utils.prepare_response">[docs]</a><span class="k">def</span> <span class="nf">prepare_response</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prepare the fields before running jsonify.</span>
+
+<span class="sd">    ``data`` is modified in-place.</span>
+
+<span class="sd">    * Rename ``_id`` to ``id``</span>
+<span class="sd">    * If available, add origin URL to the response</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data (dict): Structure to prepare.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">fix_id</span><span class="p">(</span><span class="n">chunk</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Recurse over the data structure to convert any ``_id`` to ``id``.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">chunk</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s2">&quot;_id&quot;</span> <span class="ow">in</span> <span class="n">chunk</span><span class="p">:</span>
+                <span class="n">chunk</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chunk</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span>
+                <span class="k">del</span> <span class="n">chunk</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">chunk</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">chunk</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">fix_id</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">chunk</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+            <span class="n">new_list</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">entry</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">chunk</span><span class="p">):</span>
+                <span class="n">new_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fix_id</span><span class="p">(</span><span class="n">entry</span><span class="p">))</span>
+            <span class="n">chunk</span> <span class="o">=</span> <span class="n">new_list</span>
+        <span class="k">return</span> <span class="n">chunk</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">fix_id</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">url</span><span class="p">:</span>
+            <span class="n">data</span><span class="p">[</span><span class="s2">&quot;url&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">url</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">fix_id</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="make_timestamp"><a class="viewcode-back" href="../code.utils.html#utils.make_timestamp">[docs]</a><span class="k">def</span> <span class="nf">make_timestamp</span><span class="p">():</span>
@@ -461,6 +518,268 @@
         <span class="p">}</span>
         <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">data</span>
     <span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="req_check_permissions"><a class="viewcode-back" href="../code.utils.html#utils.req_check_permissions">[docs]</a><span class="k">def</span> <span class="nf">req_check_permissions</span><span class="p">(</span><span class="n">permissions</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Call ``check_permissions`` from inside a Flask request.</span>
+
+<span class="sd">    Convenience function to use the Flask variables.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">check_permissions</span><span class="p">(</span>
+        <span class="n">permissions</span><span class="p">,</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">permissions</span><span class="p">,</span> <span class="nb">bool</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span><span class="p">)</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="check_permissions"><a class="viewcode-back" href="../code.utils.html#utils.check_permissions">[docs]</a><span class="k">def</span> <span class="nf">check_permissions</span><span class="p">(</span>
+    <span class="n">permissions</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">user_permissions</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">logged_in</span><span class="p">:</span> <span class="nb">bool</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Perform the standard permissions check for a request.</span>
+
+<span class="sd">    Will return a status code:</span>
+<span class="sd">    * 200: accepted</span>
+<span class="sd">    * 401: not logged in</span>
+<span class="sd">    * 403: permission missing</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        permissions (list): The required permissions.</span>
+<span class="sd">        user_permissions (list): List of permissions for the user.</span>
+<span class="sd">        logged_in (bool): Whether the current user is logged in.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        int: The suggested status code.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">permissions</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">logged_in</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">401</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">user_permissions</span> <span class="ow">and</span> <span class="n">permissions</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">403</span>
+    <span class="n">user_permissions</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
+        <span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span>
+            <span class="n">user</span><span class="o">.</span><span class="n">PERMISSIONS</span><span class="p">[</span><span class="n">permission</span><span class="p">]</span> <span class="k">for</span> <span class="n">permission</span> <span class="ow">in</span> <span class="n">user_permissions</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="k">for</span> <span class="n">perm</span> <span class="ow">in</span> <span class="n">permissions</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">perm</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">user_permissions</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">403</span>
+    <span class="k">return</span> <span class="mi">200</span></div>
+
+
+<div class="viewcode-block" id="has_permission"><a class="viewcode-back" href="../code.utils.html#utils.has_permission">[docs]</a><span class="k">def</span> <span class="nf">has_permission</span><span class="p">(</span><span class="n">permission</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">user_permissions</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check if the current user permissions fulfills the requirement.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        permission (str): The required permission</span>
+<span class="sd">        user_permissions (list): List of permissions for the user.</span>
+<span class="sd">            Should be ``flask.g.permissions`` for most requests.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: whether the user has the required permissions or not</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">permissions</span> <span class="ow">and</span> <span class="n">permission</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="n">user_permissions</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
+        <span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span>
+            <span class="n">user</span><span class="o">.</span><span class="n">PERMISSIONS</span><span class="p">[</span><span class="n">permission</span><span class="p">]</span> <span class="k">for</span> <span class="n">permission</span> <span class="ow">in</span> <span class="n">user_permissions</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">permission</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">user_permissions</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="make_log_new"><a class="viewcode-back" href="../code.utils.html#utils.make_log_new">[docs]</a><span class="k">def</span> <span class="nf">make_log_new</span><span class="p">(</span>
+    <span class="n">db</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">data_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">action</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">comment</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">user</span><span class="p">,</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="n">logger</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Log a change in the system.</span>
+
+<span class="sd">    Saves a complete copy of the new object.</span>
+
+<span class="sd">    Warning:</span>
+<span class="sd">        It is assumed that all values are exactly like in the db,</span>
+<span class="sd">        e.g. ``data`` should only contain permitted fields.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        db: Connection to the database (client).</span>
+<span class="sd">        data_type (str): The collection name.</span>
+<span class="sd">        action (str): Type of action (add, edit, delete).</span>
+<span class="sd">        comment (str): Note about why the change was done</span>
+<span class="sd">            (e.g. &quot;Dataset added via addDataset&quot;).</span>
+<span class="sd">        active_user: The ``_id`` for the user performing the operation.</span>
+<span class="sd">        data (dict): The new data for the entry.</span>
+<span class="sd">        logger: The logging object to use for errors.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: No data provided.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: Whether the log insertion succeeded.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Empty data is not allowed&quot;</span><span class="p">)</span>
+    <span class="n">log</span> <span class="o">=</span> <span class="n">structure</span><span class="o">.</span><span class="n">log</span><span class="p">()</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="n">action</span><span class="p">,</span>
+            <span class="s2">&quot;comment&quot;</span><span class="p">:</span> <span class="n">comment</span><span class="p">,</span>
+            <span class="s2">&quot;data_type&quot;</span><span class="p">:</span> <span class="n">data_type</span><span class="p">,</span>
+            <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">,</span>
+            <span class="s2">&quot;user&quot;</span><span class="p">:</span> <span class="n">user</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">log</span><span class="p">)</span>
+    <span class="n">success</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="s2">&quot;logs&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">log</span><span class="p">)</span><span class="o">.</span><span class="n">acknowledged</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">success</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">logger</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;Log addition failed: A: </span><span class="si">%s</span><span class="s2"> C: </span><span class="si">%s</span><span class="s2"> D: </span><span class="si">%s</span><span class="s2"> DT: </span><span class="si">%s</span><span class="s2"> U: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">action</span><span class="p">,</span>
+                <span class="n">comment</span><span class="p">,</span>
+                <span class="n">data</span><span class="p">,</span>
+                <span class="n">data_type</span><span class="p">,</span>
+                <span class="n">user</span><span class="p">,</span>
+            <span class="p">)</span>
+    <span class="k">return</span> <span class="n">success</span></div>
+
+
+<div class="viewcode-block" id="req_get_entry"><a class="viewcode-back" href="../code.utils.html#utils.req_get_entry">[docs]</a><span class="k">def</span> <span class="nf">req_get_entry</span><span class="p">(</span><span class="n">dbcollection</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Confirm that the identifier is valid and, if so, return the entry.</span>
+
+<span class="sd">    Wrapper for usage from a Flask request.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        dbcollection (str): The database collection to use (e.g. ``collections``).</span>
+<span class="sd">        identifier (str): The provided identifier.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: The entry from the database. None if not found.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">get_entry</span><span class="p">(</span><span class="n">db</span><span class="o">=</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">,</span> <span class="n">dbcollection</span><span class="o">=</span><span class="n">dbcollection</span><span class="p">,</span> <span class="n">identifier</span><span class="o">=</span><span class="n">identifier</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_entry"><a class="viewcode-back" href="../code.utils.html#utils.get_entry">[docs]</a><span class="k">def</span> <span class="nf">get_entry</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">dbcollection</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Args:</span>
+<span class="sd">        db: Connection to the database (client).</span>
+<span class="sd">        dbcollection (str): Name of the target collection.</span>
+<span class="sd">        operation (str): Operation to perform (add, edit, delete)</span>
+<span class="sd">        data (dict): Data to commit to db.</span>
+<span class="sd">        id (dict): The entry to perform the operation on (_id).</span>
+<span class="sd">        logger: The logging object to use for errors.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: Missing ``_id`` in ``data`` for delete or update.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: The response from the db commit.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">entry_uuid</span> <span class="o">=</span> <span class="n">str_to_uuid</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">entry</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">dbcollection</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">entry_uuid</span><span class="p">})</span>
+    <span class="k">return</span> <span class="n">entry</span></div>
+
+
+<div class="viewcode-block" id="req_commit_to_db"><a class="viewcode-back" href="../code.utils.html#utils.req_commit_to_db">[docs]</a><span class="k">def</span> <span class="nf">req_commit_to_db</span><span class="p">(</span>
+    <span class="n">dbcollection</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">operation</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">comment</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Commit to one entry in the database from a Flask request.</span>
+
+<span class="sd">    Data should contain ``{_id: uuid}}`` if there is a deletion.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        dbcollection (str): Name of the target database collection.</span>
+<span class="sd">        operation (str): Operation to perform (add, edit, delete).</span>
+<span class="sd">        data (dict): Data to commit to db.</span>
+<span class="sd">        comment (str): Custom comment for the log.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">comment</span><span class="p">:</span>
+        <span class="n">comment</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">operation</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span><span class="si">}</span><span class="s2"> in </span><span class="si">{</span><span class="n">dbcollection</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">data_res</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;ack&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;ins_id&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">commit_to_db</span><span class="p">(</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">,</span>
+        <span class="n">dbcollection</span><span class="p">,</span>
+        <span class="n">operation</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">,</span>
+        <span class="n">logger</span><span class="o">=</span><span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">data_res</span><span class="p">[</span><span class="s2">&quot;ack&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">acknowledged</span>
+    <span class="n">log_res</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">data_res</span><span class="p">[</span><span class="s2">&quot;ack&quot;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">operation</span> <span class="o">==</span> <span class="s2">&quot;add&quot;</span><span class="p">:</span>
+            <span class="n">data_res</span><span class="p">[</span><span class="s2">&quot;ins_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">inserted_id</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="n">dbcollection</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">data_res</span><span class="p">[</span><span class="s2">&quot;ins_id&quot;</span><span class="p">]})</span>
+        <span class="n">log_res</span> <span class="o">=</span> <span class="n">make_log_new</span><span class="p">(</span>
+            <span class="n">db</span><span class="o">=</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">,</span>
+            <span class="n">data_type</span><span class="o">=</span><span class="n">dbcollection</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>  <span class="c1"># to make singular (e.g. collection|s)</span>
+            <span class="n">action</span><span class="o">=</span><span class="n">operation</span><span class="p">,</span>
+            <span class="n">comment</span><span class="o">=</span><span class="n">comment</span><span class="p">,</span>
+            <span class="n">user</span><span class="o">=</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">],</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+            <span class="n">logger</span><span class="o">=</span><span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">CommitResult</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data_res</span><span class="p">[</span><span class="s2">&quot;ack&quot;</span><span class="p">],</span> <span class="n">log</span><span class="o">=</span><span class="n">log_res</span><span class="p">,</span> <span class="n">ins_id</span><span class="o">=</span><span class="n">data_res</span><span class="p">[</span><span class="s2">&quot;ins_id&quot;</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="commit_to_db"><a class="viewcode-back" href="../code.utils.html#utils.commit_to_db">[docs]</a><span class="k">def</span> <span class="nf">commit_to_db</span><span class="p">(</span>
+    <span class="n">db</span><span class="p">,</span>
+    <span class="n">dbcollection</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">operation</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+    <span class="n">logger</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Commit to one entry in the database.</span>
+
+<span class="sd">    ``_id`` should be included in ``data`` for delete and update operations.</span>
+
+<span class="sd">    Only uses *_one commands.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        db: Connection to the database (client).</span>
+<span class="sd">        dbcollection (str): Name of the target collection.</span>
+<span class="sd">        operation (str): Operation to perform (add, edit, delete).</span>
+<span class="sd">        data (dict): Data to commit to db.</span>
+<span class="sd">        id (dict): The entry to perform the operation on (_id).</span>
+<span class="sd">        logger: The logging object to use for errors.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: Missing ``_id`` in ``data`` for delete or update, or bad operation type.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: The response from the db commit.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">operation</span> <span class="o">==</span> <span class="s2">&quot;add&quot;</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">dbcollection</span><span class="p">]</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">operation</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;delete&quot;</span><span class="p">,</span> <span class="s2">&quot;update&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="s2">&quot;_id&quot;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;_id must be included in data for </span><span class="si">{</span><span class="n">operation</span><span class="si">}</span><span class="s2"> operations&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">operation</span> <span class="o">==</span> <span class="s2">&quot;delete&quot;</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">dbcollection</span><span class="p">]</span><span class="o">.</span><span class="n">delete_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]})</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">dbcollection</span><span class="p">]</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">})</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Bad operation type (</span><span class="si">{</span><span class="n">operation</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">acknowledged</span> <span class="ow">and</span> <span class="n">logger</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Database </span><span class="si">%s</span><span class="s2"> of </span><span class="si">%s</span><span class="s2"> failed&quot;</span><span class="p">,</span> <span class="n">operation</span><span class="p">,</span> <span class="n">dbcollection</span><span class="p">)</span>
+        
+    <span class="k">return</span> <span class="n">result</span></div>
 </pre></div>
 
           </div>
@@ -524,7 +843,7 @@
       &copy;2019-2021, SciLifeLab Data Centre.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

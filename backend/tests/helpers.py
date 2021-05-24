@@ -15,7 +15,6 @@ import config
 import structure
 import utils
 
-
 CURR_DIR = os.path.realpath(__file__)
 SETTINGS = json.loads(open(f"{os.path.dirname(CURR_DIR)}/settings_tests.json").read())
 BASE_URL = f'{SETTINGS["host"]}:{SETTINGS["port"]}'
@@ -56,7 +55,7 @@ def mdb():
 
 def as_user(session: requests.Session, auth_id: str, set_csrf: bool = True) -> int:
     """
-    Helper method to log in as requested user.
+    Set the current user to the one with the provided ``auth_id``.
 
     Session changed in-place.
 
@@ -137,9 +136,7 @@ def add_dataset():
 
 
 def delete_dataset(order_uuid, dataset_uuid, project_uuid):
-    """
-    Delete an order and a dataset added by ``add_dataset()``.
-    """
+    """Delete an order and a dataset added by ``add_dataset()``."""
     mongo_db = db_connection()
     mongo_db["orders"].delete_one({"_id": order_uuid})
     mongo_db["datasets"].delete_one({"_id": dataset_uuid})
@@ -150,7 +147,8 @@ def make_request(
     session, url: str, data: dict = None, method="GET", ret_json: bool = True
 ) -> dict:
     """
-    Helper method for using get/post to a url.
+    Perform a request.
+
     Args:
         session (requests.Session()): The session to use
         url: str: The url to get without {BASE_URL} prefix (but with leading /)
@@ -219,24 +217,32 @@ def collection_for_tests():
     Yields the uuid of the added collection.
     """
     # prepare
+    ins_id = add_collection()
+    yield ins_id
     mongo_db = db_connection()
-    session = requests.Session()
-    as_user(session, USERS["data"])
-    collection_indata = structure.collection()
+    mongo_db["collections"].delete_one({"_id": ins_id})
+
+
+def add_collection():
+    """
+    Add a collection that can be used for tests.
+
+    The "edit" user is the editor.
+    """
+    mongo_db = db_connection()
+    indata = structure.collection()
     edit_user = mongo_db["users"].find_one({"auth_ids": USERS["edit"]})
-    collection_indata.update(
+    indata.update(
         {
             "description": "Added by fixture.",
             "title": "Test title from fixture",
+            "tags": ["fromFixture", "testing"],
             "editors": [edit_user["_id"]],
         }
     )
-    collection_indata.update(TEST_LABEL)
-    mongo_db["collections"].insert_one(collection_indata)
-
-    yield collection_indata["_id"]
-
-    mongo_db["collections"].delete_one({"_id": collection_indata["_id"]})
+    indata.update(TEST_LABEL)
+    mongo_db["collections"].insert_one(indata)
+    return indata["_id"]
 
 
 def random_string(min_length: int = 1, max_length: int = 150):
@@ -265,3 +271,18 @@ def parse_time(datetime_str: str):
     """
     str_format = "%a, %d %b %Y %H:%M:%S %Z"
     return datetime.datetime.strptime(datetime_str, str_format)
+
+
+def users_uuids():
+    """
+    Generate a list of the uuids of all users in ``USERS``.
+
+    Returns:
+        list: All uuids (as str) for ``USERS``.
+    """
+    mongo_db = db_connection()
+    return [
+        str(mongo_db["users"].find_one({"auth_ids": USERS[entry]})["_id"])
+        for entry in USERS
+        if USERS[entry]
+    ]

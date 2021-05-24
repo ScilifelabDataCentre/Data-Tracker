@@ -4,18 +4,19 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>collection.py &#8212; Data Tracker  documentation</title>
-    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="static/alabaster.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="static/documentation_options.js"></script>
     <script src="static/jquery.js"></script>
     <script src="static/underscore.js"></script>
     <script src="static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="structure.py" href="code.structure.html" />
-    <link rel="prev" title="order.py" href="code.order.html" />
+    <link rel="next" title="config.py" href="code.config.html" />
+    <link rel="prev" title="app.py" href="code.app.html" />
    
   <link rel="stylesheet" href="static/custom.css" type="text/css" />
   
@@ -32,12 +33,12 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="module-collection">
+  <section id="module-collection">
 <span id="collection-py"></span><h1>collection.py<a class="headerlink" href="#module-collection" title="Permalink to this headline">¶</a></h1>
 <p>Collection requests.</p>
 <dl class="py function">
-<dt id="collection.add_collection">
-<code class="sig-prename descclassname"><span class="pre">collection.</span></code><code class="sig-name descname"><span class="pre">add_collection</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/collection.html#add_collection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#collection.add_collection" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="collection.add_collection">
+<span class="sig-prename descclassname"><span class="pre">collection.</span></span><span class="sig-name descname"><span class="pre">add_collection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/collection.html#add_collection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#collection.add_collection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a collection.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -50,8 +51,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt id="collection.delete_collection">
-<code class="sig-prename descclassname"><span class="pre">collection.</span></code><code class="sig-name descname"><span class="pre">delete_collection</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/collection.html#delete_collection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#collection.delete_collection" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="collection.delete_collection">
+<span class="sig-prename descclassname"><span class="pre">collection.</span></span><span class="sig-name descname"><span class="pre">delete_collection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/collection.html#delete_collection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#collection.delete_collection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete a collection.</p>
 <p>Can be deleted only by an owner or user with DATA_MANAGEMENT permissions.</p>
 <dl class="field-list simple">
@@ -62,8 +63,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt id="collection.get_collection">
-<code class="sig-prename descclassname"><span class="pre">collection.</span></code><code class="sig-name descname"><span class="pre">get_collection</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/collection.html#get_collection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#collection.get_collection" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="collection.get_collection">
+<span class="sig-prename descclassname"><span class="pre">collection.</span></span><span class="sig-name descname"><span class="pre">get_collection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/collection.html#get_collection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#collection.get_collection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieve the collection with uuid &lt;identifier&gt;.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -79,22 +80,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt id="collection.get_collection_data_structure">
-<code class="sig-prename descclassname"><span class="pre">collection.</span></code><code class="sig-name descname"><span class="pre">get_collection_data_structure</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/collection.html#get_collection_data_structure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#collection.get_collection_data_structure" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get an empty collection entry.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>JSON structure with a list of collections.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>flask.Response</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="collection.get_collection_log">
-<code class="sig-prename descclassname"><span class="pre">collection.</span></code><code class="sig-name descname"><span class="pre">get_collection_log</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/collection.html#get_collection_log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#collection.get_collection_log" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="collection.get_collection_log">
+<span class="sig-prename descclassname"><span class="pre">collection.</span></span><span class="sig-name descname"><span class="pre">get_collection_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/collection.html#get_collection_log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#collection.get_collection_log" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get change logs for the user entry with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
 <p>Can be accessed by owners and admin (DATA_MANAGEMENT).</p>
 <dl class="field-list simple">
@@ -111,31 +98,14 @@
 </dd></dl>
 
 <dl class="py function">
-<dt id="collection.get_random">
-<code class="sig-prename descclassname"><span class="pre">collection.</span></code><code class="sig-name descname"><span class="pre">get_random</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/collection.html#get_random"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#collection.get_random" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieve random collection(s).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>amount</strong> (<em>int</em>) – number of requested collections</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>json structure for the collection(s)</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>flask.Request</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="collection.list_collection">
-<code class="sig-prename descclassname"><span class="pre">collection.</span></code><code class="sig-name descname"><span class="pre">list_collection</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/collection.html#list_collection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#collection.list_collection" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="collection.list_collection">
+<span class="sig-prename descclassname"><span class="pre">collection.</span></span><span class="sig-name descname"><span class="pre">list_collection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/collection.html#list_collection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#collection.list_collection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Provide a simplified list of all available collections.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="collection.list_user_collections">
-<code class="sig-prename descclassname"><span class="pre">collection.</span></code><code class="sig-name descname"><span class="pre">list_user_collections</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/collection.html#list_user_collections"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#collection.list_user_collections" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="collection.list_user_collections">
+<span class="sig-prename descclassname"><span class="pre">collection.</span></span><span class="sig-name descname"><span class="pre">list_user_collections</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/collection.html#list_user_collections"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#collection.list_user_collections" title="Permalink to this definition">¶</a></dt>
 <dd><p>List collection owned by the user.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -148,8 +118,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt id="collection.update_collection">
-<code class="sig-prename descclassname"><span class="pre">collection.</span></code><code class="sig-name descname"><span class="pre">update_collection</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/collection.html#update_collection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#collection.update_collection" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="collection.update_collection">
+<span class="sig-prename descclassname"><span class="pre">collection.</span></span><span class="sig-name descname"><span class="pre">update_collection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/collection.html#update_collection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#collection.update_collection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update a collection.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -164,7 +134,7 @@
 </dl>
 </dd></dl>
 
-</div>
+</section>
 
 
           </div>
@@ -203,8 +173,8 @@
   <li><a href="index.html">Documentation overview</a><ul>
   <li><a href="development.html">Development</a><ul>
   <li><a href="modules.html">Code reference</a><ul>
-      <li>Previous: <a href="code.order.html" title="previous chapter">order.py</a></li>
-      <li>Next: <a href="code.structure.html" title="next chapter">structure.py</a></li>
+      <li>Previous: <a href="code.app.html" title="previous chapter">app.py</a></li>
+      <li>Next: <a href="code.config.html" title="next chapter">config.py</a></li>
   </ul></li>
   </ul></li>
   </ul></li>
@@ -236,7 +206,7 @@
       &copy;2019-2021, SciLifeLab Data Centre.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
