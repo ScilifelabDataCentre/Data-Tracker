@@ -7,6 +7,7 @@ import os
 import random
 import re
 import string
+import uuid
 
 import pytest
 import requests
@@ -223,11 +224,14 @@ def collection_for_tests():
     mongo_db["collections"].delete_one({"_id": ins_id})
 
 
-def add_collection():
+def add_collection() -> uuid.UUID:
     """
     Add a collection that can be used for tests.
 
     The "edit" user is the editor.
+
+    Returns:
+        uuid.UUID: The _id of the collection.
     """
     mongo_db = db_connection()
     indata = structure.collection()
@@ -242,6 +246,62 @@ def add_collection():
     )
     indata.update(TEST_LABEL)
     mongo_db["collections"].insert_one(indata)
+    return indata["_id"]
+
+
+def add_order() -> uuid.UUID:
+    """
+    Add an order that can be used for tests.
+
+    The "edit" user is the editor.
+
+    Returns:
+        uuid.UUID: The _id of the order.
+    """
+    mongo_db = db_connection()
+    indata = structure.order()
+    edit_user = mongo_db["users"].find_one({"auth_ids": USERS["edit"]})
+    indata.update(
+        {
+            "description": "Added by fixture.",
+            "title": "Test title from fixture",
+            "tags": ["fromFixture", "testing"],
+            "authors": [edit_user["_id"]],
+            "generators": [edit_user["_id"]],
+            "organisation": edit_user["_id"],
+            "editors": [edit_user["_id"]],
+        }
+    )
+    indata.update(TEST_LABEL)
+    mongo_db["orders"].insert_one(indata)
+    return indata["_id"]
+
+
+def add_dataset(parent: uuid.UUID) -> uuid.UUID:
+    """
+    Add a dataset that can be used for tests.
+
+    Will be conneted to the provided order. The "edit" user is the editor.
+
+    Args:
+        parent (uuid.UUID): The order to use as parent.
+
+    Returns:
+        uuid.UUID: The _id of the dataset.
+    """
+    mongo_db = db_connection()
+    indata = structure.dataset()
+    edit_user = mongo_db["users"].find_one({"auth_ids": USERS["edit"]})
+    indata.update(
+        {
+            "description": "Added by fixture.",
+            "title": "Test title from fixture",
+            "tags": ["fromFixture", "testing"],
+        }
+    )
+    indata.update(TEST_LABEL)
+    mongo_db["datasets"].insert_one(indata)
+    mongo_db["orders"].update_one({"_id": parent}, {"$push": {"datasets": indata["_id"]}})
     return indata["_id"]
 
 
