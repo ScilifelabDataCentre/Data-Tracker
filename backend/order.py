@@ -22,10 +22,9 @@ def prepare():
 
     Make sure that the user is logged in and has the required permission.
     """
-    if not flask.g.current_user:
-        flask.abort(status=401)
-    if not user.has_permission("DATA_EDIT"):
-        flask.abort(status=403)
+    perm_status = utils.req_check_permissions(["DATA_EDIT"])
+    if perm_status != 200:
+        flask.abort(status=perm_status)
 
 
 @blueprint.route("", methods=["GET"])
@@ -36,17 +35,18 @@ def list_orders():
     Returns:
         flask.Response: JSON structure with a list of orders.
     """
-    if user.has_permission("DATA_MANAGEMENT"):
+    projection = {"_id": 1, "title": 1, "tags": 1, "properties": 1}
+    if utils.req_has_permission("DATA_MANAGEMENT"):
         orders = list(
             flask.g.db["orders"].find(
-                projection={"_id": 1, "title": 1, "tags": 1, "properties": 1}
+                projection=projection
             )
         )
     else:
         orders = list(
             flask.g.db["orders"].find(
                 {"editors": flask.g.current_user["_id"]},
-                projection={"_id": 1, "title": 1},
+                projection=projection
             )
         )
 

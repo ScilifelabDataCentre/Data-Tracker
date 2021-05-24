@@ -6,6 +6,7 @@ import requests
 
 import utils
 
+import helpers
 # avoid pylint errors because of fixtures
 # pylint: disable = redefined-outer-name, unused-import
 from helpers import (
@@ -19,11 +20,62 @@ from helpers import (
     USER_RE,
 )
 
-logging.getLogger().setLevel(logging.DEBUG)
+
+
+def test_list_all_orders(mdb):
+    """
+    Confirm that orders are listed correctly.
+
+    Checks:
+    * DATA_MANAGEMENT lists all orders
+    * DATA_EDIT gets all orders where they are editors
+    * Other users get 403 or 401
+    * Order should contain id, title, tags, properties
+    """
+    nr_orders = mdb["orders"].count_documents({})
+    responses = helpers.make_request_all_roles("/api/v1/order", ret_json=True)
+    for response in responses:
+        if response.role in ("data", "root"):
+            assert response.code == 200
+            assert len(response.data["orders"]) == nr_orders
+            assert set(response.data["orders"][0].keys()) == {
+                "id",
+                "properties",
+                "tags",
+                "title",
+            }
+        elif response.role == "no-login":
+            assert response.code == 401
+            assert not response.data
+
+        elif response.role == "edit":
+            assert response.code == 200
+            edit_orders = mdb["orders"].count_documents({"editors": helpers.USERS["edit"]})
+            assert len(response.data["orders"]) == edit_orders
+
+        else:
+            assert response.code == 403
+            assert not response.data
+
+    order_id = next(mdb["orders"].aggregate([{"$sample": {"size": 1}}]))
+    user_info = mdb["users"].find_one({"_id": order_id["editors"][0]})
+    order_count = mdb["orders"].count_documents({"editors": user_info["_id"]})
+    session = requests.Session()
+    helpers.as_user(session, user_info["auth_ids"][0])
+    response = helpers.make_request(session, "/api/v1/order", ret_json=True)
+    assert response.code == 200
+    assert len(response.data["orders"]) == order_count
+    assert set(response.data["orders"][0].keys()) == {
+        "id",
+        "properties",
+        "tags",
+        "title",
+    }
 
 
 def test_get_order_permissions(mdb):
     """
+    Confirm that .
     Test permissions for requesting a order.
 
     Request the orders using users with each unique permission to confirm
@@ -31,14 +83,13 @@ def test_get_order_permissions(mdb):
     """
     session = requests.Session()
 
-    db = mdb
     orders = list(
-        db["orders"].aggregate(
+        mdb["orders"].aggregate(
             [{"$match": {"auth_ids": USER_RE}}, {"$sample": {"size": 2}}]
         )
     )
     for order in orders:
-        owner = db["users"].find_one({"_id": order["editors"][0]})
+        owner = mdb["users"].find_one({"_id": order["editors"][0]})
         responses = make_request_all_roles(
             f'/api/v1/order/{order["_id"]}', ret_json=True
         )
@@ -811,39 +862,6 @@ def test_delete_order_bad():
         )
     assert response.code == 404
     assert not response.data
-
-
-def test_list_all_orders(mdb):
-    """
-    Check that all orders in the system are listed.
-
-    Check that the number of fields per order is correct.
-    """
-    db = mdb
-    nr_orders = db["orders"].count_documents({})
-
-    responses = make_request_all_roles("/api/v1/order", ret_json=True)
-    for response in responses:
-        if response.role in ("data", "root"):
-            assert response.code == 200
-            assert len(response.data["orders"]) == nr_orders
-            assert set(response.data["orders"][0].keys()) == {
-                "title",
-                "id",
-                "tags",
-                "properties",
-            }
-        elif response.role == "no-login":
-            assert response.code == 401
-            assert not response.data
-
-        elif response.role == "edit":
-            assert response.code == 200
-            assert len(response.data["orders"]) == 0
-
-        else:
-            assert response.code == 403
-            assert not response.data
 
 
 def test_add_dataset_permissions(mdb):
