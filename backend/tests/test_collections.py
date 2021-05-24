@@ -789,3 +789,20 @@ def test_get_collection_logs(mdb):
         assert response.data["entry_id"] == str(collection["_id"])
         assert len(response.data["logs"]) == len(logs)
         assert response.code == 200
+
+
+def test_get_collection_logs_bad(mdb):
+    """Confirm that bad identifiers return 404."""
+    session = requests.session()
+    helpers.as_user(session, helpers.USERS["data"])
+    for _ in range(3):
+        response = make_request(
+            session, f'/api/v1/collection/{uuid.uuid4()}/log', ret_json=True
+        )
+        assert response.code == 404
+        assert not response.data
+        response = make_request(
+            session, f'/api/v1/collection/{helpers.random_string()}/log', ret_json=True
+        )
+        assert response.code == 404
+        assert not response.data
