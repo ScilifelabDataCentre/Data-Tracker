@@ -622,16 +622,15 @@ def make_log_new(
     )
     logger.error(log)
     success = db["logs"].insert_one(log).acknowledged
-    if not success:
-        if logger:
-            logger.error(
-                "Log addition failed: A: %s C: %s D: %s DT: %s U: %s",
-                action,
-                comment,
-                data,
-                data_type,
-                user_id,
-            )
+    if not success and logger:
+        logger.error(
+            "Log addition failed: A: %s C: %s D: %s DT: %s U: %s",
+            action,
+            comment,
+            data,
+            data_type,
+            user_id,
+        )
     return success
 
 
@@ -672,7 +671,7 @@ def get_entry(db, dbcollection: str, identifier: str) -> dict:
     try:
         entry_uuid = str_to_uuid(identifier)
     except ValueError:
-        return None
+        return {}
     entry = db[dbcollection].find_one({"_id": entry_uuid})
     return entry
 
