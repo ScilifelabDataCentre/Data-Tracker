@@ -4,6 +4,7 @@ import uuid
 
 import requests
 
+import order
 import utils
 
 import helpers
@@ -19,7 +20,6 @@ from helpers import (
     mdb,
     USER_RE,
 )
-
 
 
 def test_list_all_orders(mdb):
@@ -75,11 +75,12 @@ def test_list_all_orders(mdb):
 
 def test_get_order_permissions(mdb):
     """
-    Confirm that .
-    Test permissions for requesting a order.
+    Confirm that only the correct users can access order information.
 
-    Request the orders using users with each unique permission to confirm
-    that the correct permissions give/prevent access.
+    Checks:
+    * DATA_MANAGEMENT can access any order
+    * DATA_EDIT can access orders where they are 
+    * Other users cannot access data
     """
     session = requests.Session()
 
@@ -90,7 +91,7 @@ def test_get_order_permissions(mdb):
     )
     for order in orders:
         owner = mdb["users"].find_one({"_id": order["editors"][0]})
-        responses = make_request_all_roles(
+        responses = helpers.make_request_all_roles(
             f'/api/v1/order/{order["_id"]}', ret_json=True
         )
         for response in responses:
@@ -103,13 +104,14 @@ def test_get_order_permissions(mdb):
                 assert response.code == 403
                 assert not response.data
 
-        as_user(session, owner["auth_id"])
+        helpers.as_user(session, owner["auth_id"])
         response = make_request(session, f'/api/v1/order/{order["_id"]}')
         assert response.code == 200
 
 
-def test_get_order(mdb):
+def test_get_order_data(mdb):
     """
+    Confirm that the retrieved data is from the correct order.
     Request multiple orders by uuid, one at a time.
 
     Request the order and confirm that it contains the correct data.
@@ -1031,3 +1033,27 @@ def test_add_dataset_bad_fields(mdb):
     )
     assert response.code == 400
     assert not response.data
+
+
+def test_prepare_order_response(mdb):
+    """
+    Confirm that the order is prepared the intended way.
+
+    Checks:
+    """
+    order_id = helpers.add_order()
+    dataset_id = helpers.add_dataset(order_id)
+    order_data = mdb["orders"].find_one({"_id": order_id})
+    user_info = {
+        "_id" : "3e013a6f-502c-40d7-8a09-69f96e0960e4",
+        "affiliation" : "Test University",
+        "contact" : "pub_Edit@example.com",
+        "name" : "Edit",
+        "orcid" : "1111-1111-1111-1111",
+        "url" : "https://www.example.com/specuser"
+    }
+    order.prepare_order_response(order_data, mdb)
+    for field in ("editors", "authors", "generators"):
+        assert order_data[field] == [user_info]
+    assert order_data["datasets"] == [{"title": "Test title from fixture", "_id": dataset_id}]
+    assert order_data["organisation"] == user_info
