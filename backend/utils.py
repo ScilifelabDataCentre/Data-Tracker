@@ -494,7 +494,9 @@ def req_check_permissions(permissions):
     Convenience function to use the Flask variables.
     """
     return check_permissions(
-        permissions, flask.g.permissions, bool(flask.g.current_user)
+        permissions=permissions,
+        user_permissions=flask.g.permissions,
+        logged_in=bool(flask.g.current_user),
     )
 
 
@@ -532,6 +534,21 @@ def check_permissions(
     return 200
 
 
+def req_has_permission(permission: str):
+    """
+    Check if the current user permissions fulfills the requirement.
+
+    Args:
+        permission (str): The required permission
+        user_permissions (list): List of permissions for the user.
+            Should be ``flask.g.permissions`` for most requests.
+
+    Returns:
+        bool: whether the user has the required permissions or not
+    """
+    return has_permission(permission, flask.g.permissions)
+
+
 def has_permission(permission: str, user_permissions: list):
     """
     Check if the current user permissions fulfills the requirement.
@@ -544,14 +561,14 @@ def has_permission(permission: str, user_permissions: list):
     Returns:
         bool: whether the user has the required permissions or not
     """
-    if not flask.g.permissions and permission:
+    if not user_permissions and permission:
         return False
-    user_permissions = set(
+    full_user_permissions = set(
         chain.from_iterable(
             user.PERMISSIONS[permission] for permission in user_permissions
         )
     )
-    if permission not in user_permissions:
+    if permission not in full_user_permissions:
         return False
     return True
 

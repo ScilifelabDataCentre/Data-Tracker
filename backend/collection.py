@@ -129,7 +129,7 @@ def delete_collection(identifier: str):
 
     # permission check
     if (
-        utils.req_has_permission("DATA_MANAGEMENT")
+        not utils.req_has_permission("DATA_MANAGEMENT")
         and flask.g.current_user["_id"] not in entry["editors"]
     ):
         flask.abort(status=403)
@@ -167,7 +167,7 @@ def update_collection(identifier):
 
     # permission check
     if (
-        utils.req_has_permission(["DATA_MANAGEMENT"])
+        not utils.req_has_permission("DATA_MANAGEMENT")
         and flask.g.current_user["_id"] not in collection["editors"]
     ):
         flask.current_app.logger.debug(
@@ -228,7 +228,10 @@ def get_collection_log(identifier: str = None):
         flask.abort(status=404)
     flask.current_app.logger.debug(flask.g.current_user)
     flask.current_app.logger.debug(collection)
-    if not utils.req_has_permission("DATA_MANAGEMENT") and flask.g.current_user["_id"] not in collection["editors"]:
+    if (
+        not utils.req_has_permission("DATA_MANAGEMENT")
+        and flask.g.current_user["_id"] not in collection["editors"]
+    ):
         flask.abort(403)
 
     collection_logs = list(

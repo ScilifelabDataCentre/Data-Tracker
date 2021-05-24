@@ -267,7 +267,9 @@ def test_add_collection_bad():
     assert response.code == 403
     assert not response.data
 
-    indata = {"collection": {"datasets": [str(uuid.uuid4())], "title": "Test bad add title"}}
+    indata = {
+        "collection": {"datasets": [str(uuid.uuid4())], "title": "Test bad add title"}
+    }
     response = make_request(
         session, "/api/v1/collection", method="POST", data=indata, ret_json=True
     )
@@ -734,7 +736,7 @@ def test_get_collection_logs_permissions(mdb):
 
     coll_id = helpers.add_collection()
     responses = make_request_all_roles(
-        f'/api/v1/collection/{coll_id}/log', ret_json=True
+        f"/api/v1/collection/{coll_id}/log", ret_json=True
     )
     for response in responses:
         if response.role in ("edit", "data", "root"):
@@ -748,7 +750,9 @@ def test_get_collection_logs_permissions(mdb):
             assert not response.data
 
     base_user = mdb["users"].find_one({"auth_ids": helpers.USERS["base"]})
-    mdb["collections"].update_one({"_id": coll_id}, {"$set": {"editors": [base_user["_id"]]}})
+    mdb["collections"].update_one(
+        {"_id": coll_id}, {"$set": {"editors": [base_user["_id"]]}}
+    )
     for collection in collections:
         responses = make_request_all_roles(
             f'/api/v1/collection/{collection["_id"]}/log', ret_json=True
@@ -763,7 +767,6 @@ def test_get_collection_logs_permissions(mdb):
             else:
                 assert response.code == 403
                 assert not response.data
-    
 
 
 def test_get_collection_logs(mdb):
