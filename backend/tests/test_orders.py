@@ -153,8 +153,6 @@ def test_get_order_data(mdb):
             elif field == "organisation":
                 assert order[field]["_id"] == data[field]["id"]
             else:
-                print(order)
-                print(data)
                 assert order[field] == data[field]
 
 
