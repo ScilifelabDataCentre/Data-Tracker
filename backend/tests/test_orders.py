@@ -50,7 +50,8 @@ def test_list_all_orders(mdb):
 
         elif response.role == "edit":
             assert response.code == 200
-            edit_orders = mdb["orders"].count_documents({"editors": helpers.USERS["edit"]})
+            edit_user = mdb["users"].find_one({"auth_ids": helpers.USERS["edit"]})
+            edit_orders = mdb["orders"].count_documents({"editors": edit_user["_id"]})
             assert len(response.data["orders"]) == edit_orders
 
         else:
