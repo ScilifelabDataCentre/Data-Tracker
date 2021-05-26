@@ -206,7 +206,7 @@ def delete_order(identifier: str):
             collections["datasets"].remove(ds)
             utils.req_make_log_new(
                 data_type="collection",
-                action=operation,
+                action="edit",
                 comment="Dataset deleted",
                 data=collection,
             )

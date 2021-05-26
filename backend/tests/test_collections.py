@@ -780,7 +780,7 @@ def test_get_collection_logs(mdb):
         assert response.code == 200
 
 
-def test_get_collection_logs_bad(mdb):
+def test_get_collection_logs_bad():
     """Confirm that bad identifiers return 404."""
     session = requests.session()
     helpers.as_user(session, helpers.USERS["data"])

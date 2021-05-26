@@ -85,14 +85,14 @@ def dataset_for_tests():
 
     Yields the uuid of the added dataset.
     """
-    uuids = add_dataset()
+    uuids = add_dataset_full()
     yield uuids[1]
 
     # cleanup
     delete_dataset(*uuids)
 
 
-def add_dataset():
+def add_dataset_full():
     """
     Add an order with a dataset.
 
@@ -288,7 +288,6 @@ def add_dataset(parent: uuid.UUID) -> uuid.UUID:
     """
     mongo_db = db_connection()
     indata = structure.dataset()
-    edit_user = mongo_db["users"].find_one({"auth_ids": USERS["edit"]})
     indata.update(
         {
             "description": "Added by fixture.",

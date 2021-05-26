@@ -31,34 +31,29 @@ def get_collection(identifier):
         flask.Request: json structure for the collection
 
     """
-    try:
-        uuid = utils.str_to_uuid(identifier)
-    except ValueError:
+    entry = utils.req_get_entry("collections", identifier)
+    if not entry:
         flask.abort(status=404)
 
-    result = flask.g.db["collections"].find_one({"_id": uuid})
-    if not result:
-        return flask.Response(status=404)
-
-    # only show owner if owner/admin
+    # only show editors if owner/admin
     if not flask.g.current_user or (
         not utils.req_has_permission("DATA_MANAGEMENT")
-        and flask.g.current_user["_id"] not in result["editors"]
+        and flask.g.current_user["_id"] not in entry["editors"]
     ):
         flask.current_app.logger.debug(
             "Not allowed to access editors field %s", flask.g.current_user
         )
-        del result["editors"]
+        del entry["editors"]
     else:
-        result["editors"] = utils.user_uuid_data(result["editors"], flask.g.db)
+        entry["editors"] = utils.user_uuid_data(entry["editors"], flask.g.db)
 
     # return {_id, _title} for datasets
-    result["datasets"] = [
+    entry["datasets"] = [
         flask.g.db.datasets.find_one({"_id": dataset}, {"title": 1})
-        for dataset in result["datasets"]
+        for dataset in entry["datasets"]
     ]
 
-    return utils.response_json({"collection": result})
+    return utils.response_json({"collection": entry})
 
 
 @blueprint.route("", methods=["POST"])
@@ -213,6 +208,8 @@ def get_collection_log(identifier: str = None):
 
     Can be accessed by editors (with DATA_EDIT) and admin (DATA_MANAGEMENT).
 
+    Deleted entries cannot be accessed.
+
     Args:
         identifier (str): The uuid of the collection.
 
@@ -226,8 +223,6 @@ def get_collection_log(identifier: str = None):
     collection = utils.req_get_entry("collections", identifier)
     if not collection:
         flask.abort(status=404)
-    flask.current_app.logger.debug(flask.g.current_user)
-    flask.current_app.logger.debug(collection)
     if (
         not utils.req_has_permission("DATA_MANAGEMENT")
         and flask.g.current_user["_id"] not in collection["editors"]

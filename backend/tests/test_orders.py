@@ -1,5 +1,4 @@
 """Tests for order requests."""
-import logging
 import uuid
 
 import requests
@@ -81,7 +80,7 @@ def test_get_order_permissions(mdb):
 
     Checks:
     * DATA_MANAGEMENT can access any order
-    * DATA_EDIT can access orders where they are 
+    * DATA_EDIT can access orders where they are
     * Other users cannot access data
     """
     session = requests.Session()
@@ -189,7 +188,7 @@ def test_get_order_bad():
 def test_get_order_logs_permissions(mdb):
     """
     Confirm that only the intended users can access the logs.
-    
+
     Checks:
     * DATA_MANAGEMENT can access logs for any order
     * DATA_EDIT required to be in editors
@@ -488,7 +487,7 @@ def test_update_order_permissions(mdb):
     """
     order_id = helpers.add_order()
     edit_user = mdb["users"].find_one({"auth_ids": USERS["edit"]})
-    indata = {"order": {"title": f"Test update order title"}}
+    indata = {"order": {"title": "Test update order title"}}
     responses = helpers.make_request_all_roles(
         f"/api/v1/order/{order_id}", method="PATCH", data=indata, ret_json=True
     )
@@ -622,7 +621,7 @@ def test_update_order_bad(mdb):
         }
     }
     responses = make_request_all_roles(
-        f'/api/v1/order/{order["_id"]}', method="PATCH", data=indata, ret_json=True
+        f"/api/v1/order/{order_id}", method="PATCH", data=indata, ret_json=True
     )
     for response in responses:
         if response.role in ("edit", "data", "root"):
@@ -640,7 +639,7 @@ def test_update_order_bad(mdb):
             "title": "Test title",
         }
         responses = make_request_all_roles(
-            f'/api/v1/order/{order["_id"]}', method="PATCH", data=indata, ret_json=True
+            f"/api/v1/order/{order_id}", method="PATCH", data=indata, ret_json=True
         )
         for response in responses:
             if response.role in ("edit", "data", "root"):
