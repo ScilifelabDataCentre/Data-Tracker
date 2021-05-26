@@ -128,15 +128,30 @@ def add_order():
     Returns:
         flask.Response: Json structure with ``_id`` of the added order.
     """
+    perm_status = utils.req_check_permissions(["DATA_EDIT"])
+    if perm_status != 200:
+        flask.abort(status=perm_status)
+
     # create new order
     new_order = structure.order()
 
-    indata = flask.request.json
+    jsondata = flask.request.json
+    if "order" not in jsondata or not isinstance(jsondata["order"], dict):
+        flask.abort(status=400)
+    indata = jsondata["order"]
 
     validation = utils.basic_check_indata(indata, new_order, ["_id", "datasets"])
     if not validation.result:
         flask.abort(status=validation.status)
 
+    # add current user to editors if no editors are defined
+    if not indata.get("editors"):
+        indata["editors"] = [flask.g.current_user["_id"]]
+    # add current user if missing and only DATA_EDIT
+    elif not utils.req_has_permission("DATA_MANAGEMENT"):
+        if flask.g.current_user["_id"] not in indata["editors"]:
+            indata["editors"].append(flask.g.current_user["_id"])
+        
     # convert all incoming uuids to uuid.UUID
     for field in ("editors", "authors", "generators"):
         if field in indata:
@@ -146,18 +161,13 @@ def add_order():
 
     new_order.update(indata)
     new_order["description"] = utils.secure_description(new_order["description"])
-
-    if not new_order["editors"]:
-        new_order["editors"].append(flask.g.current_user["_id"])
-
+    
     # add to db
-    result = flask.g.db["orders"].insert_one(new_order)
-    if not result.acknowledged:
-        flask.current_app.logger.error("Order insert failed: %s", new_order)
-    else:
-        utils.make_log("order", "add", "Order added", new_order)
+    result = utils.req_commit_to_db("orders", "add", new_order)
+    if not result.log or not result.data:
+        flask.abort(status=500)
 
-    return utils.response_json({"_id": result.inserted_id})
+    return utils.response_json({"_id": result.ins_id})
 
 
 @blueprint.route("/<identifier>", methods=["DELETE"])
