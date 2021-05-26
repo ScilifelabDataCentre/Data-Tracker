@@ -512,6 +512,7 @@ def test_update_order_data(mdb):
       * Confirm that description is escaped
       * DATA_MANAGEMENT can remove themselves from editors
       * DATA_EDIT cannot remove themselves from editors
+      * Confirm that description is escaped
       * Confirm that a log entry is created
     """
     root_user = mdb["users"].find_one({"auth_ids": USERS["root"]})
@@ -573,61 +574,38 @@ def test_update_order_data(mdb):
 
 def test_update_order_bad(mdb):
     """
-    Update an existing order.
+    Confirm that bad data is rejected.
 
-    Bad requests.
+    Checks:
+      * Bad uuid
+      * No uuid list (only str)
+      * No "orders" property with data
+      * Bad order uuid
+      * Bad order string
     """
-    db = mdb
-
-    edit_user = db["users"].find_one({"auth_ids": USERS["edit"]})
-    orders = list(
-        db["orders"].aggregate(
-            [{"$match": {"editors": edit_user["_id"]}}, {"$sample": {"size": 2}}]
-        )
+    order_id = helpers.add_order()
+    edit_user = mdb["users"].find_one({"auth_ids": USERS["edit"]})
+    indata = {"orders": {
+        "description": "Test description",
+        "authors": [str(uuid.uuid4())],
+        "title": "Test title",
+    }}
+    responses = make_request_all_roles(
+        f'/api/v1/order/{order["_id"]}', method="PATCH", data=indata, ret_json=True
     )
-
-    assert len(orders) > 0
-
-    for order in orders:
-        indata = {
-            "description": "Test description",
-            "authors": str(uuid.uuid4()),
-            "title": "Test title",
-        }
-        responses = make_request_all_roles(
-            f'/api/v1/order/{order["_id"]}', method="PATCH", data=indata, ret_json=True
-        )
-        for response in responses:
-            if response.role in ("edit", "data", "root"):
-                assert response.code == 400
-            elif response.role == "no-login":
-                assert response.code == 401
-                assert not response.data
-            else:
-                assert response.code == 403
-                assert not response.data
+    for response in responses:
+        if response.role in ("edit", "data", "root"):
+            assert response.code == 400
+        elif response.role == "no-login":
+            assert response.code == 401
+            assert not response.data
+        else:
+            assert response.code == 403
+            assert not response.data
 
         indata = {
             "description": "Test description",
-            "editors": str(edit_user["_id"]),
-            "title": "Test title",
-        }
-        responses = make_request_all_roles(
-            f'/api/v1/order/{order["_id"]}', method="PATCH", data=indata, ret_json=True
-        )
-        for response in responses:
-            if response.role in ("edit", "data", "root"):
-                assert response.code == 400
-            elif response.role == "no-login":
-                assert response.code == 401
-                assert not response.data
-            else:
-                assert response.code == 403
-                assert not response.data
-
-        indata = {
-            "description": "Test description",
-            "editors": [str(uuid.uuid4())],
+            "editors": [str(edit_user["_id"])],
             "title": "Test title",
         }
         responses = make_request_all_roles(
