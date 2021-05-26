@@ -165,10 +165,7 @@ def make_request(
     elif method == "POST":
         response = session.post(f"{BASE_URL}{url}", json=data)
     elif method == "PATCH":
-        response = session.patch(
-            f"{BASE_URL}{url}",
-            json=data,
-        )
+        response = session.patch(f"{BASE_URL}{url}", json=data,)
     elif method == "PUT":
         response = session.put(f"{BASE_URL}{url}", json=data)
     elif method == "DELETE":
@@ -301,7 +298,9 @@ def add_dataset(parent: uuid.UUID) -> uuid.UUID:
     )
     indata.update(TEST_LABEL)
     mongo_db["datasets"].insert_one(indata)
-    mongo_db["orders"].update_one({"_id": parent}, {"$push": {"datasets": indata["_id"]}})
+    mongo_db["orders"].update_one(
+        {"_id": parent}, {"$push": {"datasets": indata["_id"]}}
+    )
     return indata["_id"]
 
 

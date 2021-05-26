@@ -37,16 +37,11 @@ def list_orders():
     """
     projection = {"_id": 1, "title": 1, "tags": 1, "properties": 1}
     if utils.req_has_permission("DATA_MANAGEMENT"):
-        orders = list(
-            flask.g.db["orders"].find(
-                projection=projection
-            )
-        )
+        orders = list(flask.g.db["orders"].find(projection=projection))
     else:
         orders = list(
             flask.g.db["orders"].find(
-                {"editors": flask.g.current_user["_id"]},
-                projection=projection
+                {"editors": flask.g.current_user["_id"]}, projection=projection
             )
         )
 
@@ -151,7 +146,7 @@ def add_order():
     elif not utils.req_has_permission("DATA_MANAGEMENT"):
         if flask.g.current_user["_id"] not in indata["editors"]:
             indata["editors"].append(flask.g.current_user["_id"])
-        
+
     # convert all incoming uuids to uuid.UUID
     for field in ("editors", "authors", "generators"):
         if field in indata:
@@ -161,7 +156,7 @@ def add_order():
 
     new_order.update(indata)
     new_order["description"] = utils.secure_description(new_order["description"])
-    
+
     result = utils.req_commit_to_db("orders", "add", new_order)
     if not result.log or not result.data:
         flask.abort(status=500)
@@ -197,9 +192,15 @@ def delete_order(identifier: str):
         if not result.log or not result.data:
             flask.abort(status=500)
     # delete dataset references in all collections
-    collections = flask.g.db["collections"].find({"datasets": {"$in": {entry["datasets"]}}})
-    flask.g.db["collections"].update({}, {"$pull": {"datasets": {"$in": {entry["datasets"]}}}})
-    collections = flask.g.db["collections"].find({"datasets": {"$in": {entry["datasets"]}}})
+    collections = flask.g.db["collections"].find(
+        {"datasets": {"$in": {entry["datasets"]}}}
+    )
+    flask.g.db["collections"].update(
+        {}, {"$pull": {"datasets": {"$in": {entry["datasets"]}}}}
+    )
+    collections = flask.g.db["collections"].find(
+        {"datasets": {"$in": {entry["datasets"]}}}
+    )
     for collection in collections:
         for ds in entry["datasets"]:
             collections["datasets"].remove(ds)
@@ -207,8 +208,8 @@ def delete_order(identifier: str):
                 data_type="collection",
                 action=operation,
                 comment="Dataset deleted",
-                data=collection
-            )    
+                data=collection,
+            )
 
     result = utils.req_commit_to_db("orders", "delete", {"_id": entry["_id"]})
     if not result.log or not result.data:
@@ -241,7 +242,7 @@ def update_order(identifier: str):  # pylint: disable=too-many-branches
         and flask.g.current_user["_id"] not in order["editors"]
     ):
         flask.abort(status=403)
-        
+
     jsondata = flask.request.json
     if "order" not in jsondata or not isinstance(jsondata["order"], dict):
         flask.abort(status=400)
@@ -252,9 +253,13 @@ def update_order(identifier: str):  # pylint: disable=too-many-branches
         flask.abort(status=validation.status)
 
     # DATA_EDIT may not delete itself from editors
-    if not utils.req_has_permission("DATA_MANAGEMENT") and indata.get("editors") and str(flask.g.current_user["_id"]) not in indata["editors"]:
+    if (
+        not utils.req_has_permission("DATA_MANAGEMENT")
+        and indata.get("editors")
+        and str(flask.g.current_user["_id"]) not in indata["editors"]
+    ):
         flask.abort(status=400)
-        
+
     # convert all incoming uuids to uuid.UUID
     for field in ("editors", "authors", "generators"):
         if field in indata:

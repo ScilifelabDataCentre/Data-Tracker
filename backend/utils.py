@@ -573,12 +573,7 @@ def has_permission(permission: str, user_permissions: list):
     return True
 
 
-def req_make_log_new(
-    data_type: str,
-    action: str,
-    comment: str,
-    data: dict,
-) -> bool:
+def req_make_log_new(data_type: str, action: str, comment: str, data: dict,) -> bool:
     """
     Log a change in the system.
 
@@ -603,7 +598,7 @@ def req_make_log_new(
     return make_log_new(
         db=flask.g.db,
         data_type=data_type,  # to make singular (e.g. collection|s)
-        action=operation,
+        action=action,
         comment=comment,
         user_id=flask.g.current_user["_id"],
         data=data,
@@ -612,13 +607,7 @@ def req_make_log_new(
 
 
 def make_log_new(
-    db,
-    data_type: str,
-    action: str,
-    comment: str,
-    user_id,
-    data: dict,
-    logger=None,
+    db, data_type: str, action: str, comment: str, user_id, data: dict, logger=None,
 ) -> bool:
     """
     Log a change in the system.
@@ -715,10 +704,7 @@ def get_entry(db, dbcollection: str, identifier: str) -> dict:
 
 
 def req_commit_to_db(
-    dbcollection: str,
-    operation: str,
-    data: dict = None,
-    comment: str = "",
+    dbcollection: str, operation: str, data: dict = None, comment: str = "",
 ) -> bool:
     """
     Commit to one entry in the database from a Flask request.
@@ -735,11 +721,7 @@ def req_commit_to_db(
         comment = f"{operation.capitalize()} in {dbcollection}"
     data_res = {"ack": False, "ins_id": None}
     result = commit_to_db(
-        flask.g.db,
-        dbcollection,
-        operation,
-        data,
-        logger=flask.current_app.logger,
+        flask.g.db, dbcollection, operation, data, logger=flask.current_app.logger,
     )
     data_res["ack"] = result.acknowledged
     log_res = False
@@ -758,11 +740,7 @@ def req_commit_to_db(
 
 
 def commit_to_db(
-    db,
-    dbcollection: str,
-    operation: str,
-    data: dict,
-    logger=None,
+    db, dbcollection: str, operation: str, data: dict, logger=None,
 ):
     """
     Commit to one entry in the database.
