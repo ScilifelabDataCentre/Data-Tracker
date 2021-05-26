@@ -88,7 +88,7 @@ def test_add_collection_data(mdb):
             "title": "Test add title",
             "datasets": [str(ds_id)],
             "tags": [],
-            "properties": {"Source": "Added from test",},
+            "properties": {"Source": "Added from test"},
         }
     }
     indata["collection"].update(TEST_LABEL)
@@ -253,7 +253,7 @@ def test_add_collection_bad():
 
     session = requests.Session()
     as_user(session, USERS["data"])
-    indata = {"collection": {"_id": str(uuid.uuid4()), "title": "Test bad add title",}}
+    indata = {"collection": {"_id": str(uuid.uuid4()), "title": "Test bad add title"}}
     response = make_request(
         session, "/api/v1/collection", method="POST", data=indata, ret_json=True
     )
@@ -492,7 +492,7 @@ def test_update_collection_data(mdb, collection_for_tests):
         == len(collection_logs) + 1
     )
 
-    indata = {"collection": {"description": "<br />",}}
+    indata = {"collection": {"description": "<br />"}}
     response = make_request(
         session,
         f"/api/v1/collection/{coll_id}",

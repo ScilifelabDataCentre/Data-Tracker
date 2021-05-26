@@ -569,7 +569,11 @@ def test_update_order_data(mdb):
         assert order["editors"] == [current_user["_id"]] + user_list
         assert order["organisation"] == root_user["_id"]
 
-        indata = {"order": {"editors": [str(root_user["_id"])],}}
+        indata = {
+            "order": {
+                "editors": [str(root_user["_id"])],
+            }
+        }
         response = helpers.make_request(
             session,
             f"/api/v1/order/{order_id}",
