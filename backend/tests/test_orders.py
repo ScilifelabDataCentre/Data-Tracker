@@ -105,34 +105,34 @@ def test_get_order_permissions(mdb):
                 assert response.code == 403
                 assert not response.data
 
-        helpers.as_user(session, owner["auth_id"])
+        helpers.as_user(session, owner["auth_ids"][0])
         response = make_request(session, f'/api/v1/order/{order["_id"]}')
         assert response.code == 200
 
 
 def test_get_order_data(mdb):
     """
-    Confirm that the retrieved data is from the correct order.
-    Request multiple orders by uuid, one at a time.
+    Confirm that the retrieved data is from the correct order and contain the correct data.
 
-    Request the order and confirm that it contains the correct data.
+    Checks:
+    * Request multiple orders by uuid, one at a time.
+      - Request the order and confirm that it contains the correct data.
     """
     session = requests.Session()
     as_user(session, USERS["data"])
 
-    db = mdb
-    orders = list(db["orders"].aggregate([{"$sample": {"size": 3}}]))
+    orders = list(mdb["orders"].aggregate([{"$sample": {"size": 3}}]))
     for order in orders:
         # to simplify comparison
         order["_id"] = str(order["_id"])
         # user entries
         for key in ("authors", "generators", "editors"):
-            order[key] = utils.user_uuid_data(order[key], db)
-        order["organisation"] = utils.user_uuid_data(order["organisation"], db)[0]
+            order[key] = utils.user_uuid_data(order[key], mdb)
+        order["organisation"] = utils.user_uuid_data(order["organisation"], mdb)[0]
 
         for i, ds in enumerate(order["datasets"]):
             order["datasets"][i] = next(
-                db["datasets"].aggregate(
+                mdb["datasets"].aggregate(
                     [{"$match": {"_id": ds}}, {"$project": {"_id": 1, "title": 1}}]
                 )
             )
@@ -187,14 +187,17 @@ def test_get_order_bad():
 
 def test_get_order_logs_permissions(mdb):
     """
-    Get order logs.
-
-    Assert that DATA_MANAGEMENT or user in creator is required.
+    Confirm that only the intended users can access the logs.
+    
+    Checks:
+    * DATA_MANAGEMENT can access logs for any order
+    * DATA_EDIT required to be in editors
     """
-    db = mdb
-    order_data = db["orders"].aggregate([{"$sample": {"size": 1}}]).next()
-    user_data = db["users"].find_one({"_id": {"$in": order_data["editors"]}})
-    responses = make_request_all_roles(
+    order_data = mdb["orders"].aggregate([{"$sample": {"size": 1}}]).next()
+    edit_user = mdb["users"].find_one({"auth_ids": USERS["edit"]})
+    # in case the edit user is an editor
+    mdb["orders"].update_one({"_id": order_data["_id"]}, {"$pull": {"editors": edit_user["_id"]}})
+    responses = helpers.make_request_all_roles(
         f'/api/v1/order/{order_data["_id"]}/log', ret_json=True
     )
     for response in responses:
@@ -210,7 +213,10 @@ def test_get_order_logs_permissions(mdb):
 
     session = requests.Session()
 
-    as_user(session, user_data["auth_ids"][0])
+    mdb["orders"].update_one({"_id": order_data["_id"]}, {"$push": {"editors": edit_user["_id"]}})
+    print(mdb["orders"].find_one({"_id": order_data["_id"]}))
+    print(edit_user)
+    helpers.as_user(session, USERS["edit"])
     response = make_request(
         session, f'/api/v1/order/{order_data["_id"]}/log', ret_json=True
     )
@@ -252,7 +258,7 @@ def test_get_order_logs_bad():
         response = make_request(
             session, f"/api/v1/order/{uuid.uuid4()}/log", ret_json=True
         )
-        assert response.code == 200
+        assert response.code == 404
         response = make_request(
             session, f"/api/v1/order/{random_string()}/log", ret_json=True
         )

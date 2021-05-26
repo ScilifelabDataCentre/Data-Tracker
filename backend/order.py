@@ -53,38 +53,6 @@ def list_orders():
     return utils.response_json({"orders": orders})
 
 
-@blueprint.route("/user", defaults={"user_id": None}, methods=["GET"])
-@blueprint.route("/user/<user_id>", methods=["GET"])
-def list_orders_user(user_id: str):
-    """
-    List all orders belonging to the provided user.
-
-    Args:
-        userid (str): Uuid of user to find orders for.
-
-    Returns:
-        flask.Response: Json structure with a list of orders.
-    """
-    if user_id:
-        if not user.has_permission("OWNERS_READ"):
-            flask.abort(status=403)
-        try:
-            user_uuid = utils.str_to_uuid(user_id)
-        except ValueError:
-            return flask.abort(status=404)
-        if not flask.g.db["users"].find_one({"_id": user_uuid}):
-            return flask.abort(status=404)
-    else:  # current user
-        user_uuid = flask.session["user_id"]
-    orders = list(
-        flask.g.db["orders"].find(
-            {"editors": user_uuid}, projection={"_id": 1, "title": 1}
-        )
-    )
-
-    return utils.response_json({"orders": orders})
-
-
 @blueprint.route("/<identifier>", methods=["GET"])
 def get_order(identifier):
     """
@@ -96,24 +64,20 @@ def get_order(identifier):
         identifier (str): Uuid for the wanted order.
 
     Returns:
-        flask.Response: Json structure for the order.
+        flask.Response: JSON structure for the order.
     """
-    try:
-        uuid = utils.str_to_uuid(identifier)
-    except ValueError:
-        flask.abort(status=404)
-    order_data = flask.g.db["orders"].find_one({"_id": uuid})
-    if not order_data:
+    entry = utils.req_get_entry("orders", identifier)
+    if not entry:
         flask.abort(status=404)
     if not (
-        user.has_permission("DATA_MANAGEMENT")
-        or flask.session["user_id"] in order_data["editors"]
+        utils.req_has_permission("DATA_MANAGEMENT")
+        or flask.g.current_user["_id"] in entry["editors"]
     ):
         flask.abort(status=403)
 
-    prepare_order_response(order_data, flask.g.db)
+    prepare_order_response(entry, flask.g.db)
 
-    return utils.response_json({"order": order_data})
+    return utils.response_json({"order": entry})
 
 
 @blueprint.route("/<identifier>/log", methods=["GET"])
@@ -131,26 +95,28 @@ def get_order_logs(identifier):
     Returns:
         flask.Response: Json structure for the logs.
     """
-    try:
-        order_uuid = utils.str_to_uuid(identifier)
-    except ValueError:
+    entry = utils.req_get_entry("orders", identifier)
+    if not entry:
         flask.abort(status=404)
-
-    if not user.has_permission("DATA_MANAGEMENT"):
-        order_data = flask.g.db["orders"].find_one({"_id": order_uuid})
-        if not order_data or flask.g.current_user["_id"] not in order_data["editors"]:
-            flask.abort(403)
+    if (
+        not utils.req_has_permission("DATA_MANAGEMENT")
+        and flask.g.current_user["_id"] not in entry["editors"]
+    ):
+        flask.abort(status=403)
 
     order_logs = list(
-        flask.g.db["logs"].find({"data_type": "order", "data._id": order_uuid})
+        flask.g.db["logs"].find({"data_type": "order", "data._id": entry["_id"]})
     )
+    if not order_logs:
+        flask.abort(status=404)
+
     for log in order_logs:
         del log["data_type"]
 
     utils.incremental_logs(order_logs)
 
     return utils.response_json(
-        {"entry_id": order_uuid, "data_type": "order", "logs": order_logs}
+        {"entry_id": entry["_id"], "data_type": "order", "logs": order_logs}
     )
 
 
@@ -297,7 +263,6 @@ def update_order(identifier: str):  # pylint: disable=too-many-branches
 
 
 @blueprint.route("/<identifier>/dataset", methods=["POST"])
-@user.login_required
 def add_dataset(identifier: str):  # pylint: disable=too-many-branches
     """
     Add a dataset to the given order.
