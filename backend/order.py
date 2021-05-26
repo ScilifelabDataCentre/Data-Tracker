@@ -162,7 +162,6 @@ def add_order():
     new_order.update(indata)
     new_order["description"] = utils.secure_description(new_order["description"])
     
-    # add to db
     result = utils.req_commit_to_db("orders", "add", new_order)
     if not result.log or not result.data:
         flask.abort(status=500)
@@ -228,33 +227,40 @@ def update_order(identifier: str):  # pylint: disable=too-many-branches
     Returns:
         flask.Response: Status code of the request.
     """
-    try:
-        order_uuid = utils.str_to_uuid(identifier)
-    except ValueError:
-        return flask.abort(status=404)
+    perm_status = utils.req_check_permissions(["DATA_EDIT"])
+    if perm_status != 200:
+        flask.abort(status=perm_status)
 
-    order = flask.g.db["orders"].find_one({"_id": order_uuid})
+    order = utils.req_get_entry("orders", identifier)
     if not order:
-        return flask.abort(status=404)
-    if not (
-        user.has_permission("DATA_MANAGEMENT")
-        or flask.g.current_user["_id"] in order["editors"]
-    ):
-        return flask.abort(status=403)
+        flask.abort(status=404)
 
-    indata = flask.request.json
+    # permission check
+    if (
+        not utils.req_has_permission("DATA_MANAGEMENT")
+        and flask.g.current_user["_id"] not in order["editors"]
+    ):
+        flask.abort(status=403)
+        
+    jsondata = flask.request.json
+    if "order" not in jsondata or not isinstance(jsondata["order"], dict):
+        flask.abort(status=400)
+    indata = jsondata["order"]
+
     validation = utils.basic_check_indata(indata, order, ["_id", "datasets"])
     if not validation.result:
         flask.abort(status=validation.status)
 
+    # DATA_EDIT may not delete itself from editors
+    if not utils.req_has_permission("DATA_MANAGEMENT") and indata.get("editors") and str(flask.g.current_user["_id"]) not in indata["editors"]:
+        flask.abort(status=400)
+        
+    # convert all incoming uuids to uuid.UUID
     for field in ("editors", "authors", "generators"):
         if field in indata:
             indata[field] = [utils.str_to_uuid(entry) for entry in indata[field]]
     if indata.get("organisation"):
         indata["organisation"] = utils.str_to_uuid(indata["organisation"])
-
-    if "description" in indata:
-        indata["description"] = utils.secure_description(indata["description"])
 
     is_different = False
     for field in indata:
@@ -263,16 +269,12 @@ def update_order(identifier: str):  # pylint: disable=too-many-branches
             break
 
     order.update(indata)
+    order["description"] = utils.secure_description(order["description"])
 
-    if not order["editors"]:
-        order["editors"] = [flask.g.current_user["_id"]]
-
-    if is_different:
-        result = flask.g.db["orders"].update_one({"_id": order["_id"]}, {"$set": order})
-        if not result.acknowledged:
-            flask.current_app.logger.error("Order update failed: %s", order)
-        else:
-            utils.make_log("order", "edit", "Order updated", order)
+    if indata and is_different:
+        result = utils.req_commit_to_db("orders", "edit", order)
+        if not result.log or not result.data:
+            flask.abort(status=500)
 
     return flask.Response(status=200)
 

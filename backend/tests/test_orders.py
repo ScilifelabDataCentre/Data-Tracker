@@ -464,101 +464,111 @@ def test_add_order_bad():
 
 def test_update_order_permissions(mdb):
     """
-    Update an order.
+    Confirm orders can only be modified by the indented users.
 
-    Test permissions.
+    Checks:
+      * Order be edited by DATA_MANAGEMENT
+      * Order be edited by DATA_EDIT if user is in editors
+      * Order cannot be edited by DATA_EDIT if user is in editors
+      * Other users cannot edit order
     """
-    session = requests.Session()
+    order_id = helpers.add_order()    
+    edit_user = mdb["users"].find_one({"auth_ids": USERS["edit"]})
+    indata = {"order": {"title": f"Test update order title"}}
+    responses = helpers.make_request_all_roles(f'/api/v1/order/{order_id}',
+                                               method="PATCH",
+                                               data=indata,
+                                               ret_json=True)
+    for response in responses:
+        if response.role in ("edit", "data", "root"):
+            assert response.code == 200
+        elif response.role == "no-login":
+            assert response.code == 401
+        else:
+            assert response.code == 403
+        assert not response.data
 
-    db = mdb
-
-    edit_user = db["users"].find_one({"auth_ids": USERS["edit"]})
-
-    orders = list(
-        db["orders"].aggregate(
-            [{"$match": {"editors": edit_user["_id"]}}, {"$sample": {"size": 3}}]
-        )
-    )
-
-    for order in orders:
-        for role in USERS:
-            as_user(session, USERS[role])
-            indata = {"title": f"Test title - updated by {role}"}
-            response = make_request(
-                session,
-                f'/api/v1/order/{order["_id"]}',
-                method="PATCH",
-                data=indata,
-                ret_json=True,
-            )
-            if role in ("edit", "data", "root"):
-                assert response.code == 200
-                assert not response.data
-                new_order = db["orders"].find_one({"_id": order["_id"]})
-                assert new_order["title"] == f"Test title - updated by {role}"
-            elif role == "no-login":
-                assert response.code == 401
-                assert not response.data
-            else:
-                assert response.code == 403
-                assert not response.data
+    mdb["orders"].update_one({"_id": order_id}, {"$pull": {"editors": edit_user["_id"]}})
+    responses = helpers.make_request_all_roles(f'/api/v1/order/{order_id}',
+                                               method="PATCH",
+                                               data=indata,
+                                               ret_json=True)
+    for response in responses:
+        if response.role in ("data", "root"):
+            assert response.code == 200
+        elif response.role == "no-login":
+            assert response.code == 401
+        else:
+            assert response.code == 403
+        assert not response.data
 
 
 def test_update_order_data(mdb):
     """
-    Update existing orders.
+    Confirm that data is updated correctly.
 
-    Confirm that fields are set correctly.
-    Confirm that logs are created.
+    Checks:
+      * All fields are correctly updated
+      * Confirm that description is escaped
+      * DATA_MANAGEMENT can remove themselves from editors
+      * DATA_EDIT cannot remove themselves from editors
+      * Confirm that a log entry is created
     """
+    root_user = mdb["users"].find_one({"auth_ids": USERS["root"]})
     session = requests.Session()
 
-    db = mdb
+    for test_user in ("edit", "data"):
+        order_id = helpers.add_order()
+        current_user = mdb["users"].find_one({"auth_ids": USERS[test_user]})
+        helpers.as_user(session, USERS[test_user])
+        indata = {"order": {
+            "description": "<br />",
+            "authors": [str(root_user["_id"])],
+            "editors": [str(current_user["_id"]), str(root_user["_id"])],
+            "generators": [str(root_user["_id"])],
+            "organisation": str(root_user["_id"]),
+            "title": "Test update order title",
+            "tags": ["testing", "updated"]
+        }}
+        indata["order"].update(TEST_LABEL)
 
-    edit_user = db["users"].find_one({"auth_ids": USERS["edit"]})
-
-    orders = list(
-        db["orders"].aggregate(
-            [{"$match": {"editors": edit_user["_id"]}}, {"$sample": {"size": 2}}]
+        response = helpers.make_request(
+            session, f"/api/v1/order/{order_id}", method="PATCH", data=indata, ret_json=True
         )
-    )
-
-    assert len(orders) > 0
-
-    as_user(session, USERS["edit"])
-    for order in orders:
-        indata = {
-            "title": "Test title - updated by edit user",
-            "description": "Test description - updated by edit user",
-        }
-        indata.update(TEST_LABEL)
-
-        response = make_request(
-            session,
-            f'/api/v1/order/{order["_id"]}',
-            method="PATCH",
-            data=indata,
-            ret_json=True,
-        )
-
+        # to make comparisons shorter
+        indata = indata["order"]
         assert response.code == 200
         assert not response.data
-        new_order = db["orders"].find_one({"_id": order["_id"]})
-        new_order["_id"] = str(new_order["_id"])
-        new_order["authors"] = [str(entry) for entry in new_order["authors"]]
-        new_order["generators"] = [str(entry) for entry in new_order["generators"]]
-        new_order["organisation"] = str(new_order["organisation"])
-        new_order["datasets"] = [str(ds_uuid) for ds_uuid in new_order["datasets"]]
-        for field in indata:
-            assert new_order[field] == indata[field]
-            assert db["logs"].find_one(
-                {
-                    "data._id": order["_id"],
-                    "action": "edit",
-                    "data_type": "order",
-                    "user": edit_user["_id"],
-                }
-            )
+        order = mdb["orders"].find_one({"_id": order_id})
+        user_list = [root_user["_id"]]
+        assert order["title"] == indata["title"]
+        # confirm that description is escaped
+        assert order["description"] == "&lt;br /&gt;"
+        for field in ("authors", "generators"):
+            assert order[field] == user_list
+        assert order["editors"] == [current_user["_id"]] + user_list
+        assert order["organisation"] == root_user["_id"]
+
+        indata = {"order": {
+            "editors": [str(root_user["_id"])],
+        }}
+        response = helpers.make_request(
+            session, f"/api/v1/order/{order_id}", method="PATCH", data=indata, ret_json=True
+        )
+        log_count = 1
+        if test_user == "edit":
+            assert response.code == 400
+        elif test_user == "data":
+            assert response.code == 200
+            log_count = 2
+        assert len(list(mdb["logs"].find(
+            {
+                "data._id": order_id,
+                "action": "edit",
+                "data_type": "order",
+                "user": current_user["_id"],
+            }
+        ))) == log_count
 
 
 def test_update_order_bad(mdb):
