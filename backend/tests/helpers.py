@@ -224,11 +224,14 @@ def collection_for_tests():
     mongo_db["collections"].delete_one({"_id": ins_id})
 
 
-def add_collection() -> uuid.UUID:
+def add_collection(datasets:list = None) -> uuid.UUID:
     """
     Add a collection that can be used for tests.
 
     The "edit" user is the editor.
+
+    Args:
+      datasets (list): List of dataset uuids to use for the collection.
 
     Returns:
         uuid.UUID: The _id of the collection.
@@ -242,6 +245,7 @@ def add_collection() -> uuid.UUID:
             "title": "Test title from fixture",
             "tags": ["fromFixture", "testing"],
             "editors": [edit_user["_id"]],
+            "datasets": datasets or [],
         }
     )
     indata.update(TEST_LABEL)
