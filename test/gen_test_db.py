@@ -200,6 +200,8 @@ def gen_orders(db, nr_orders: int = 300):
 def gen_collections(db, nr_collections: int = 300):
     datasets = tuple(db["datasets"].find())
     user_re = re.compile(".*::local")
+    facility_re = re.compile("facility[0-9]*::local")
+    organisation_re = re.compile("organisation[0-9]*::local")
     facilities = tuple(db["users"].find({"auth_ids": facility_re}))
     users = tuple(
         db["users"].find({"$and": [{"auth_ids": user_re}, {"permissions": "DATA_EDIT"}]})
