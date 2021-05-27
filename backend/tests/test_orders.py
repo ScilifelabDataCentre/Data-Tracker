@@ -688,79 +688,81 @@ def test_update_order_bad(mdb):
                 assert not response.data
 
 
-def test_delete_order(mdb):
-    """
-    Add and delete orders.
 
-    * Check permissions.
-    * Delete orders added by the add tests.
-    * Confirm that related datasets are deleted.
-    * Check that logs are created correctly.
+
+def test_delete_order_permissions(mdb):
     """
+    Confirm that permissions for deleting order are correct.
+
+    Checks:
+      * DATA_MANAGER can delete any order
+      * DATA_EDIT can delete orders where they are editors
+      * Other users cannot delete any order, even if they are editors
+    """
+    order_id = helpers.add_order()
     session = requests.Session()
+    for role in helpers.USERS:
+        helpers.as_user(session, USERS[role])
+        response = helpers.make_request(
+            session, f"/api/v1/order/{order_id}", method="DELETE", ret_json=True
+        )
+        if role in ("edit", "data", "root"):
+            assert response.code == 200
+            order_id = helpers.add_order()
+        elif role == "no-login":
+            assert response.code == 401
+        else:
+            assert response.code == 403
+        assert not response.data
 
-    db = mdb
-
-    edit_user = db["users"].find_one({"auth_ids": USERS["edit"]})
-
-    orders = list(db["orders"].find(TEST_LABEL))
-    if not orders:
-        assert False
-    i = 0
-    while i < len(orders):
-        for role in USERS:
-            as_user(session, USERS[role])
-            response = make_request(
-                session, f'/api/v1/order/{orders[i]["_id"]}', method="DELETE"
-            )
-            if role in ("edit", "data", "root"):
-                if role != "edit" or edit_user["_id"] in orders[i]["editors"]:
-                    assert response.code == 200
-                    assert not response.data
-                    assert not db["orders"].find_one({"_id": orders[i]["_id"]})
-                    assert db["logs"].find_one(
-                        {
-                            "data._id": orders[i]["_id"],
-                            "action": "delete",
-                            "data_type": "order",
-                        }
-                    )
-                    for dataset_uuid in orders[i]["datasets"]:
-                        assert not db["datasets"].find_one({"_id": dataset_uuid})
-                        assert db["logs"].find_one(
-                            {
-                                "data._id": dataset_uuid,
-                                "action": "delete",
-                                "data_type": "dataset",
-                            }
-                        )
-                    i += 1
-                    if i >= len(orders):
-                        break
-                else:
-                    assert response.code == 403
-                    assert not response.data
-            elif role == "no-login":
-                assert response.code == 401
-                assert not response.data
-            else:
-                assert response.code == 403
-                assert not response.data
-
-    as_user(session, USERS["edit"])
-    response = make_request(
-        session, "/api/v1/order", data={"title": "tmp"}, method="POST"
+    edit_user = mdb["users"].find_one({"auth_ids": USERS["edit"]})
+    mdb["orders"].update_one(
+        {"_id": order_id}, {"$pull": {"editors": edit_user["_id"]}}
     )
-    assert response.code == 200
-    response = make_request(
-        session, f'/api/v1/order/{response.data["id"]}', method="DELETE"
+    helpers.as_user(session, USERS["edit"])
+    response = helpers.make_request(
+        session, f"/api/v1/order/{order_id}", method="DELETE", ret_json=True
     )
-    assert response.code == 200
+    assert response.code == 403
     assert not response.data
 
 
+def test_delete_order_data(mdb):
+    """
+    Confirm that order deletion works as intended.
+
+    Checks:
+      * Entry is deleted
+        - A delete log is created for the order
+      * Related datasets are deleted
+        - A delete log is created for each dataset
+      * References to datasets from collections are deleted
+        - An edit log is created for each collection with removed datasets
+    """
+    session = requests.Session()
+    helpers.as_user(session, helpers.USERS["data"])
+
+    order_id = helpers.add_order()
+    ds_ids = [helpers.add_dataset(order_id) for _ in range(5)]
+    extra_ds_ids = [ds["_id"] for ds in mdb["datasets"].aggregate([{"$sample": {"size": 2}}])]
+    collection_id = helpers.add_collection(ds_ids + extra_ds_ids)
+
+    response = helpers.make_request(
+        session, f"/api/v1/order/{order_id}", method="DELETE", ret_json=True
+    )
+    assert mdb["logs"].count_documents({"data_type": "order", "action": "delete", "data._id": order_id}) == 1
+    
+    assert not mdb["datasets"].find_one({"_id": ds_ids})
+    assert mdb["logs"].count_documents({"data_type": "dataset", "action": "delete", "data._id": {"$in": ds_ids}}) == len(ds_ids)
+
+    coll_data = mdb["collections"].find_one({"_id": collection_id})
+    for ds_id in ds_ids:
+        assert ds_id not in coll_data["datasets"]
+    assert mdb["logs"].find_one({"data_type": "collection", "action": "edit", "data._id": collection_id})
+
+
 def test_delete_order_bad():
-    """Attempt bad order delete requests."""
+    """Confirm that bad uuids get an appropriate response."""
     session = requests.Session()
 
     as_user(session, USERS["data"])

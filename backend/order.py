@@ -192,18 +192,14 @@ def delete_order(identifier: str):
         if not result.log or not result.data:
             flask.abort(status=500)
     # delete dataset references in all collections
-    collections = flask.g.db["collections"].find(
-        {"datasets": {"$in": {entry["datasets"]}}}
-    )
-    flask.g.db["collections"].update(
-        {}, {"$pull": {"datasets": {"$in": {entry["datasets"]}}}}
-    )
-    collections = flask.g.db["collections"].find(
-        {"datasets": {"$in": {entry["datasets"]}}}
+    collections = list(flask.g.db["collections"].find(
+        {"datasets": {"$in": entry["datasets"]}}))
+    flask.g.db["collections"].update_many(
+        {}, {"$pull": {"datasets": {"$in": entry["datasets"]}}}
     )
     for collection in collections:
         for ds in entry["datasets"]:
-            collections["datasets"].remove(ds)
+            collection["datasets"] = [ds for ds in collection["datasets"] if ds not in entry["datasets"]]
             utils.req_make_log_new(
                 data_type="collection",
                 action="edit",
