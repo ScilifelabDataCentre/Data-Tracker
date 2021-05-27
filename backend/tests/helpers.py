@@ -224,7 +224,7 @@ def collection_for_tests():
     mongo_db["collections"].delete_one({"_id": ins_id})
 
 
-def add_collection(datasets:list = None) -> uuid.UUID:
+def add_collection(datasets: list = None) -> uuid.UUID:
     """
     Add a collection that can be used for tests.
 

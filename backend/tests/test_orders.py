@@ -688,8 +688,6 @@ def test_update_order_bad(mdb):
                 assert not response.data
 
 
-
-
 def test_delete_order_permissions(mdb):
     """
     Confirm that permissions for deleting order are correct.
@@ -744,21 +742,34 @@ def test_delete_order_data(mdb):
 
     order_id = helpers.add_order()
     ds_ids = [helpers.add_dataset(order_id) for _ in range(5)]
-    extra_ds_ids = [ds["_id"] for ds in mdb["datasets"].aggregate([{"$sample": {"size": 2}}])]
+    extra_ds_ids = [
+        ds["_id"] for ds in mdb["datasets"].aggregate([{"$sample": {"size": 2}}])
+    ]
     collection_id = helpers.add_collection(ds_ids + extra_ds_ids)
 
     response = helpers.make_request(
         session, f"/api/v1/order/{order_id}", method="DELETE", ret_json=True
     )
-    assert mdb["logs"].count_documents({"data_type": "order", "action": "delete", "data._id": order_id}) == 1
-    
+    assert response.code == 200
+    assert not response.data
+    assert (
+        mdb["logs"].count_documents(
+            {"data_type": "order", "action": "delete", "data._id": order_id}
+        )
+        == 1
+    )
+
     assert not mdb["datasets"].find_one({"_id": ds_ids})
-    assert mdb["logs"].count_documents({"data_type": "dataset", "action": "delete", "data._id": {"$in": ds_ids}}) == len(ds_ids)
+    assert mdb["logs"].count_documents(
+        {"data_type": "dataset", "action": "delete", "data._id": {"$in": ds_ids}}
+    ) == len(ds_ids)
 
     coll_data = mdb["collections"].find_one({"_id": collection_id})
     for ds_id in ds_ids:
         assert ds_id not in coll_data["datasets"]
-    assert mdb["logs"].find_one({"data_type": "collection", "action": "edit", "data._id": collection_id})
+    assert mdb["logs"].find_one(
+        {"data_type": "collection", "action": "edit", "data._id": collection_id}
+    )
 
 
 def test_delete_order_bad():

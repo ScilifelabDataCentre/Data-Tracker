@@ -135,7 +135,9 @@ def test_get_dataset_bad():
         assert not response.data
 
     for _ in range(5):
-        response = helpers.make_request(session, f"/api/v1/dataset/{helpers.random_string()}")
+        response = helpers.make_request(
+            session, f"/api/v1/dataset/{helpers.random_string()}"
+        )
         assert response.code == 404
         assert not response.data
 
@@ -230,11 +232,15 @@ def test_delete_bad():
     helpers.as_user(session, helpers.USERS["data"])
     for _ in range(3):
         ds_uuid = helpers.random_string()
-        response = helpers.make_request(session, f"/api/v1/dataset/{ds_uuid}", method="DELETE")
+        response = helpers.make_request(
+            session, f"/api/v1/dataset/{ds_uuid}", method="DELETE"
+        )
         assert response.code == 404
         assert not response.data
         ds_uuid = uuid.uuid4().hex
-        response = helpers.make_request(session, f"/api/v1/dataset/{ds_uuid}", method="DELETE")
+        response = helpers.make_request(
+            session, f"/api/v1/dataset/{ds_uuid}", method="DELETE"
+        )
         assert response.code == 404
         assert not response.data
 
@@ -432,7 +438,9 @@ def test_info_add_dataset():
     """Confirm that the redirect information works as intended."""
     session = requests.session()
     helpers.as_user(session, helpers.USERS["data"])
-    response = helpers.make_request(session, "/api/v1/dataset", ret_json=False, method="POST")
+    response = helpers.make_request(
+        session, "/api/v1/dataset", ret_json=False, method="POST"
+    )
     assert (
         response.data
         == "Use http://localhost:5000/api/v1/order/-identifier-/dataset instead"
