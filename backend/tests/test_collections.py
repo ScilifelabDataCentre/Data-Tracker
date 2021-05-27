@@ -8,7 +8,6 @@ import requests
 from helpers import (
     TEST_LABEL,
     USERS,
-    add_dataset,
     as_user,
     collection_for_tests,
     delete_dataset,
@@ -516,7 +515,7 @@ def test_update_collection_bad(mdb):
 
     Bad requests.
     """
-    uuids = add_dataset()
+    uuids = helpers.add_dataset_full()
     collection_info = mdb["collections"].find_one({"_id": uuids[2]})
 
     indata = {"bad_tag": "value"}
