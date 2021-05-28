@@ -194,7 +194,7 @@ def delete_order(identifier: str):
             utils.req_make_log_new(
                 data_type="collection",
                 action="edit",
-                comment="Dataset deleted",
+                comment="Order deleted",
                 data=collection,
             )
 
@@ -270,59 +270,50 @@ def add_dataset(identifier: str):  # pylint: disable=too-many-branches
     Args:
         identifier (str): The order to add the dataset to.
     """
-    # permissions
-    indata = flask.request.json
-    try:
-        order_uuid = utils.str_to_uuid(identifier)
-    except ValueError:
-        flask.current_app.logger.debug("Incorrect order UUID (%s)", indata["order"])
-        flask.abort(status=400)
-    order = flask.g.db["orders"].find_one({"_id": order_uuid})
+    order = utils.req_get_entry("orders", identifier)
     if not order:
-        flask.current_app.logger.debug("Order (%s) not in db", indata["order"])
-        flask.abort(status=400)
-    if not (
-        user.has_permission("DATA_MANAGEMENT")
-        or flask.g.current_user["_id"] in order["editors"]
-    ):
-        return flask.abort(status=403)
+        flask.abort(status=404)
 
-    # create new dataset
-    dataset = structure.dataset()
-    validation = utils.basic_check_indata(indata, dataset, ["_id"])
+    if (
+        not utils.req_has_permission("DATA_MANAGEMENT")
+        and flask.g.current_user["_id"] not in order["editors"]
+    ):
+        flask.abort(status=403)
+        
+    new_dataset = structure.dataset()
+    
+    jsondata = flask.request.json
+    if "dataset" not in jsondata or not isinstance(jsondata["dataset"], dict):
+        flask.abort(status=400)
+    indata = jsondata["dataset"]
+    
+    validation = utils.basic_check_indata(indata, new_dataset, ["_id"])
     if not validation.result:
         flask.abort(status=validation.status)
-    dataset.update(indata)
 
-    dataset["description"] = utils.secure_description(dataset["description"])
+    indata = utils.prepare_for_db(indata)
 
-    # add to db
-    result_ds = flask.g.db["datasets"].insert_one(dataset)
-    if not result_ds.acknowledged:
-        flask.current_app.logger.error("Dataset insert failed: %s", dataset)
-    else:
-        utils.make_log(
-            "dataset", "add", f"Dataset added for order {order_uuid}", dataset
-        )
+    new_dataset.update(indata)
 
-        result_o = flask.g.db["orders"].update_one(
-            {"_id": order_uuid}, {"$push": {"datasets": dataset["_id"]}}
-        )
-        if not result_o.acknowledged:
-            flask.current_app.logger.error(
-                "Order %s insert failed: ADD dataset %s", order_uuid, dataset["_id"]
-            )
-        else:
-            order = flask.g.db["orders"].find_one({"_id": order_uuid})
+    ds_result = utils.req_commit_to_db("datasets", "add", new_dataset)
+    if not ds_result.log or not ds_result.data:
+        flask.abort(status=500)
 
-            utils.make_log(
-                "order",
-                "edit",
-                f"Dataset {result_ds.inserted_id} added for order",
-                order,
-            )
+    order_result = flask.g.db["order"].update_one({"_id": order["_id"]},
+                                                  {"$push": {"datasets": new_dataset["_id"]}})
+    if not order_result.acknowledged:
+        flask.current_app.logger.error("Failed to add dataset %s to order %s",
+                                       new_dataset["_id"], order["_id"])
+        flask.abort(status=500)
+    order["datasets"].append(new_dataset["_id"])
+    utils.req_make_log_new(
+        data_type="order",
+        action="edit",
+        comment="Dataset added",
+        data=order,
+    )
 
-    return utils.response_json({"_id": result_ds.inserted_id})
+    return utils.response_json({"_id": ds_result.ins_id})
 
 
 def prepare_order_response(order_data: dict, mongodb):
