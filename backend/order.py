@@ -281,7 +281,7 @@ def add_dataset(identifier: str):  # pylint: disable=too-many-branches
         flask.abort(status=403)
         
     new_dataset = structure.dataset()
-    
+
     jsondata = flask.request.json
     if "dataset" not in jsondata or not isinstance(jsondata["dataset"], dict):
         flask.abort(status=400)
