@@ -410,6 +410,7 @@ def test_add_order_bad():
     * No "order" field with data
     * Attempting to set _id
     * Bad field name
+    * No data
     """
     indata = {
         "order": {
@@ -465,6 +466,17 @@ def test_add_order_bad():
     responses = make_request_all_roles(
         "/api/v1/order", method="POST", data=indata, ret_json=True
     )
+    for response in responses:
+        if response.role in ("edit", "data", "root"):
+            assert response.code == 400
+        elif response.role == "no-login":
+            assert response.code == 401
+        else:
+            assert response.code == 403
+        assert not response.data
+
+    indata["order"].update(TEST_LABEL)
+    responses = make_request_all_roles("/api/v1/order", method="POST", ret_json=True)
     for response in responses:
         if response.role in ("edit", "data", "root"):
             assert response.code == 400
@@ -614,6 +626,7 @@ def test_update_order_bad(mdb):
       * No "orders" property with data
       * Bad order uuid
       * Bad order string
+      * No data
     """
     order_id = helpers.add_order()
     edit_user = mdb["users"].find_one({"auth_ids": USERS["edit"]})
@@ -655,37 +668,51 @@ def test_update_order_bad(mdb):
                 assert response.code == 403
                 assert not response.data
 
-    for _ in range(2):
-        indata = {"title": "Test title"}
-        responses = make_request_all_roles(
-            f"/api/v1/order/{uuid.uuid4()}", method="PATCH", data=indata, ret_json=True
-        )
-        for response in responses:
-            if response.role in ("edit", "data", "root"):
-                assert response.code == 404
-            elif response.role == "no-login":
-                assert response.code == 401
-                assert not response.data
-            else:
-                assert response.code == 403
-                assert not response.data
+    indata = {"order": {"title": "Test title"}}
+    responses = make_request_all_roles(
+        f"/api/v1/order/{uuid.uuid4()}", method="PATCH", data=indata, ret_json=True
+    )
+    for response in responses:
+        if response.role in ("edit", "data", "root"):
+            assert response.code == 404
+        elif response.role == "no-login":
+            assert response.code == 401
+            assert not response.data
+        else:
+            assert response.code == 403
+            assert not response.data
 
-        indata = {"title": "Test title"}
-        responses = make_request_all_roles(
-            f"/api/v1/order/{random_string}",
-            method="PATCH",
-            data=indata,
-            ret_json=True,
-        )
-        for response in responses:
-            if response.role in ("edit", "data", "root"):
-                assert response.code == 404
-            elif response.role == "no-login":
-                assert response.code == 401
-                assert not response.data
-            else:
-                assert response.code == 403
-                assert not response.data
+    indata = {"order": {"title": "Test title"}}
+    responses = make_request_all_roles(
+        f"/api/v1/order/{helpers.random_string()}",
+        method="PATCH",
+        data=indata,
+        ret_json=True,
+    )
+    for response in responses:
+        if response.role in ("edit", "data", "root"):
+            assert response.code == 404
+        elif response.role == "no-login":
+            assert response.code == 401
+            assert not response.data
+        else:
+            assert response.code == 403
+            assert not response.data
+
+    responses = make_request_all_roles(
+        f"/api/v1/order/{order_id}",
+        method="PATCH",
+        ret_json=True,
+    )
+    for response in responses:
+        if response.role in ("edit", "data", "root"):
+            assert response.code == 400
+        elif response.role == "no-login":
+            assert response.code == 401
+            assert not response.data
+        else:
+            assert response.code == 403
+            assert not response.data
 
 
 def test_delete_order_permissions(mdb):
@@ -933,6 +960,7 @@ def test_add_dataset_bad_fields():
       * Empty title
       * No title
       * Bad field name
+      * No data
       * Non-json data
     """
     order_id = helpers.add_order()
@@ -978,6 +1006,10 @@ def test_add_dataset_bad_fields():
     response = make_request(
         session, f"/api/v1/order/{order_id}/dataset", method="POST", data=indata
     )
+    assert response.code == 400
+    assert not response.data
+
+    response = make_request(session, f"/api/v1/order/{order_id}/dataset", method="POST")
     assert response.code == 400
     assert not response.data
 

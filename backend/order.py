@@ -126,7 +126,11 @@ def add_order():
     new_order = structure.order()
 
     jsondata = flask.request.json
-    if "order" not in jsondata or not isinstance(jsondata["order"], dict):
+    if (
+        not jsondata
+        or "order" not in jsondata
+        or not isinstance(jsondata["order"], dict)
+    ):
         flask.abort(status=400)
     indata = jsondata["order"]
 
@@ -225,7 +229,11 @@ def update_order(identifier: str):  # pylint: disable=too-many-branches
         flask.abort(status=403)
 
     jsondata = flask.request.json
-    if "order" not in jsondata or not isinstance(jsondata["order"], dict):
+    if (
+        not jsondata
+        or "order" not in jsondata
+        or not isinstance(jsondata["order"], dict)
+    ):
         flask.abort(status=400)
     indata = jsondata["order"]
 
@@ -281,7 +289,11 @@ def add_dataset(identifier: str):  # pylint: disable=too-many-branches
     new_dataset = structure.dataset()
 
     jsondata = flask.request.json
-    if "dataset" not in jsondata or not isinstance(jsondata["dataset"], dict):
+    if (
+        not jsondata
+        or "dataset" not in jsondata
+        or not isinstance(jsondata["dataset"], dict)
+    ):
         flask.abort(status=400)
     indata = jsondata["dataset"]
 
