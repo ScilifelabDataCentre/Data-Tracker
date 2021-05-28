@@ -1,5 +1,6 @@
 """General helper functions."""
 
+import copy
 import datetime
 import html
 import re
@@ -800,3 +801,27 @@ def commit_to_db(
     if not result.acknowledged and logger:
         logger.error("Database %s of %s failed", operation, dbcollection)
     return result
+
+
+def prepare_for_db(data: dict) -> dict:
+    """
+    Prepare incoming data for the database.
+
+    * Convert string UUIDS to uuid.UUID
+    * Escape html in ``description``
+
+    Args:
+        data (dict): The incoming data.
+
+    Returns:
+        dict: The prepared data.
+    """
+    prepared = copy.deepcopy(data)
+    for key in prepared:
+        if key in ("editors", "authors", "generators", "datasets"):
+            prepared[key] = [str_to_uuid(entry) for entry in prepared[key]]
+        elif key == "organisation":
+            prepared[key] = str_to_uuid(prepared[key])
+        elif key == "description":
+            prepared[key] = html.escape(prepared[key])
+    return prepared
