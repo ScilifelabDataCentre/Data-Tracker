@@ -90,10 +90,10 @@ def test_get_order_permissions(mdb):
             [{"$match": {"auth_ids": USER_RE}}, {"$sample": {"size": 2}}]
         )
     )
-    for order in orders:
-        owner = mdb["users"].find_one({"_id": order["editors"][0]})
+    for entry in orders:
+        owner = mdb["users"].find_one({"_id": entry["editors"][0]})
         responses = helpers.make_request_all_roles(
-            f'/api/v1/order/{order["_id"]}', ret_json=True
+            f'/api/v1/entry/{entry["_id"]}', ret_json=True
         )
         for response in responses:
             if response.role in ("data", "root"):
@@ -106,7 +106,7 @@ def test_get_order_permissions(mdb):
                 assert not response.data
 
         helpers.as_user(session, owner["auth_ids"][0])
-        response = make_request(session, f'/api/v1/order/{order["_id"]}')
+        response = make_request(session, f'/api/v1/entry/{entry["_id"]}')
         assert response.code == 200
 
 
@@ -122,38 +122,38 @@ def test_get_order_data(mdb):
     as_user(session, USERS["data"])
 
     orders = list(mdb["orders"].aggregate([{"$sample": {"size": 3}}]))
-    for order in orders:
+    for entry in orders:
         # to simplify comparison
-        order["_id"] = str(order["_id"])
+        entry["_id"] = str(entry["_id"])
         # user entries
         for key in ("authors", "generators", "editors"):
-            order[key] = utils.user_uuid_data(order[key], mdb)
-        order["organisation"] = utils.user_uuid_data(order["organisation"], mdb)[0]
+            entry[key] = utils.user_uuid_data(entry[key], mdb)
+        entry["organisation"] = utils.user_uuid_data(entry["organisation"], mdb)[0]
 
-        for i, ds in enumerate(order["datasets"]):
-            order["datasets"][i] = next(
+        for i, ds in enumerate(entry["datasets"]):
+            entry["datasets"][i] = next(
                 mdb["datasets"].aggregate(
                     [{"$match": {"_id": ds}}, {"$project": {"_id": 1, "title": 1}}]
                 )
             )
-            order["datasets"][i]["_id"] = str(order["datasets"][i]["_id"])
+            entry["datasets"][i]["_id"] = str(entry["datasets"][i]["_id"])
 
-        response = make_request(session, f'/api/v1/order/{order["_id"]}')
+        response = make_request(session, f'/api/v1/order/{entry["_id"]}')
         assert response.code == 200
         data = response.data["order"]
-        assert len(order) == len(data)
-        for field in order:
+        assert len(entry) == len(data)
+        for field in entry:
             if field in ("authors", "datasets", "generators", "editors"):
-                assert len(order[field]) == len(data[field])
-                assert set(subentry["_id"] for subentry in order[field]) == set(
+                assert len(entry[field]) == len(data[field])
+                assert set(subentry["_id"] for subentry in entry[field]) == set(
                     subentry["id"] for subentry in data[field]
                 )
             elif field == "_id":
-                assert order["_id"] == data["id"]
+                assert entry["_id"] == data["id"]
             elif field == "organisation":
-                assert order[field]["_id"] == data[field]["id"]
+                assert entry[field]["_id"] == data[field]["id"]
             else:
-                assert order[field] == data[field]
+                assert entry[field] == data[field]
 
 
 def test_get_order_bad():
@@ -238,14 +238,14 @@ def test_get_order_logs(mdb):
     session = requests.session()
     db = mdb
     orders = db["orders"].aggregate([{"$sample": {"size": 2}}])
-    for order in orders:
-        logs = list(db["logs"].find({"data_type": "order", "data._id": order["_id"]}))
+    for entry in orders:
+        logs = list(db["logs"].find({"data_type": "order", "data._id": entry["_id"]}))
         as_user(session, USERS["data"])
         response = make_request(
-            session, f'/api/v1/order/{order["_id"]}/log', ret_json=True
+            session, f'/api/v1/order/{entry["_id"]}/log', ret_json=True
         )
         assert response.data["data_type"] == "order"
-        assert response.data["entry_id"] == str(order["_id"])
+        assert response.data["entry_id"] == str(entry["_id"])
         assert len(response.data["logs"]) == len(logs)
         assert response.code == 200
 
@@ -804,8 +804,9 @@ def test_add_dataset_permissions(mdb):
     order_id = helpers.add_order()
     indata = {"dataset": {"title": "New add dataset title"}}
     indata["dataset"].update(TEST_LABEL)
-    responses = helpers.make_request_all_roles(f"/api/v1/order/{order_id}/dataset", method="POST",
-                                               data=indata, ret_json=True)
+    responses = helpers.make_request_all_roles(
+        f"/api/v1/order/{order_id}/dataset", method="POST", data=indata, ret_json=True
+    )
     for response in responses:
         if response.role in ("edit", "data", "root"):
             assert response.code == 200
@@ -821,8 +822,9 @@ def test_add_dataset_permissions(mdb):
     mdb["orders"].update_one(
         {"_id": order_id}, {"$pull": {"editors": edit_user["_id"]}}
     )
-    responses = helpers.make_request_all_roles(f"/api/v1/order/{order_id}/dataset", method="POST",
-                                               data=indata, ret_json=True)
+    responses = helpers.make_request_all_roles(
+        f"/api/v1/order/{order_id}/dataset", method="POST", data=indata, ret_json=True
+    )
     for response in responses:
         if response.role in ("data", "root"):
             assert response.code == 200
@@ -844,7 +846,13 @@ def test_add_dataset(mdb):
       * Description is escaped
     """
     order_id = helpers.add_order()
-    indata = {"dataset": {"title": "New add dataset title", "description": "<br />", "tags": ["testing", "add_dataset"]}}
+    indata = {
+        "dataset": {
+            "title": "New add dataset title",
+            "description": "<br />",
+            "tags": ["testing", "add_dataset"],
+        }
+    }
     indata["dataset"].update(TEST_LABEL)
     session = requests.session()
     helpers.as_user(session, USERS["data"])
@@ -878,7 +886,13 @@ def test_add_dataset_log(mdb):
       * An edit log is created for the order
     """
     order_id = helpers.add_order()
-    indata = {"dataset": {"title": "New add dataset title", "description": "<br />", "tags": ["testing", "add_dataset"]}}
+    indata = {
+        "dataset": {
+            "title": "New add dataset title",
+            "description": "<br />",
+            "tags": ["testing", "add_dataset"],
+        }
+    }
     indata["dataset"].update(TEST_LABEL)
     session = requests.session()
     helpers.as_user(session, USERS["data"])
@@ -894,7 +908,11 @@ def test_add_dataset_log(mdb):
     assert "id" in response.data
 
     ds_add_log_count = mdb["logs"].count_documents(
-        {"data_type": "dataset", "data._id": uuid.UUID(response.data["id"]), "action": "add"}
+        {
+            "data_type": "dataset",
+            "data._id": uuid.UUID(response.data["id"]),
+            "action": "add",
+        }
     )
     assert ds_add_log_count == 1
 
@@ -964,7 +982,11 @@ def test_add_dataset_bad_fields():
     assert not response.data
 
     indata = "hegg"
-    response = session.post(f"{helpers.BASE_URL}/api/v1/order/{order_id}/dataset", data=indata, headers={"Content-Type": "application/json"})
+    response = session.post(
+        f"{helpers.BASE_URL}/api/v1/order/{order_id}/dataset",
+        data=indata,
+        headers={"Content-Type": "application/json"},
+    )
     assert response.status_code == 400
     assert not response.text
 

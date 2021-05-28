@@ -9,7 +9,6 @@ Special permissions are required to access orders:
 import flask
 
 import structure
-import user
 import utils
 
 blueprint = flask.Blueprint("order", __name__)  # pylint: disable=invalid-name
@@ -148,7 +147,6 @@ def add_order():
 
     new_order.update(indata)
 
-
     result = utils.req_commit_to_db("orders", "add", new_order)
     if not result.log or not result.data:
         flask.abort(status=500)
@@ -279,14 +277,14 @@ def add_dataset(identifier: str):  # pylint: disable=too-many-branches
         and flask.g.current_user["_id"] not in order["editors"]
     ):
         flask.abort(status=403)
-        
+
     new_dataset = structure.dataset()
 
     jsondata = flask.request.json
     if "dataset" not in jsondata or not isinstance(jsondata["dataset"], dict):
         flask.abort(status=400)
     indata = jsondata["dataset"]
-    
+
     validation = utils.basic_check_indata(indata, new_dataset, ["_id"])
     if not validation.result:
         flask.abort(status=validation.status)
@@ -299,11 +297,13 @@ def add_dataset(identifier: str):  # pylint: disable=too-many-branches
     if not ds_result.log or not ds_result.data:
         flask.abort(status=500)
 
-    order_result = flask.g.db["order"].update_one({"_id": order["_id"]},
-                                                  {"$push": {"datasets": new_dataset["_id"]}})
+    order_result = flask.g.db["order"].update_one(
+        {"_id": order["_id"]}, {"$push": {"datasets": new_dataset["_id"]}}
+    )
     if not order_result.acknowledged:
-        flask.current_app.logger.error("Failed to add dataset %s to order %s",
-                                       new_dataset["_id"], order["_id"])
+        flask.current_app.logger.error(
+            "Failed to add dataset %s to order %s", new_dataset["_id"], order["_id"]
+        )
         flask.abort(status=500)
     order["datasets"].append(new_dataset["_id"])
     utils.req_make_log_new(
