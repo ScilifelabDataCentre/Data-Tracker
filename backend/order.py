@@ -148,14 +148,10 @@ def add_order():
             indata["editors"].append(flask.g.current_user["_id"])
 
     # convert all incoming uuids to uuid.UUID
-    for field in ("editors", "authors", "generators"):
-        if field in indata:
-            indata[field] = [utils.str_to_uuid(entry) for entry in indata[field]]
-    if indata.get("organisation"):
-        indata["organisation"] = utils.str_to_uuid(indata["organisation"])
+    indata = utils.prepare_for_db(indata)
 
     new_order.update(indata)
-    new_order["description"] = utils.secure_description(new_order["description"])
+
 
     result = utils.req_commit_to_db("orders", "add", new_order)
     if not result.log or not result.data:
@@ -260,11 +256,7 @@ def update_order(identifier: str):  # pylint: disable=too-many-branches
         flask.abort(status=400)
 
     # convert all incoming uuids to uuid.UUID
-    for field in ("editors", "authors", "generators"):
-        if field in indata:
-            indata[field] = [utils.str_to_uuid(entry) for entry in indata[field]]
-    if indata.get("organisation"):
-        indata["organisation"] = utils.str_to_uuid(indata["organisation"])
+    indata = utils.prepare_for_db(indata)
 
     is_different = False
     for field in indata:
@@ -273,7 +265,6 @@ def update_order(identifier: str):  # pylint: disable=too-many-branches
             break
 
     order.update(indata)
-    order["description"] = utils.secure_description(order["description"])
 
     if indata and is_different:
         result = utils.req_commit_to_db("orders", "edit", order)
