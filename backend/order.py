@@ -123,10 +123,6 @@ def add_order():
     Returns:
         flask.Response: Json structure with ``_id`` of the added order.
     """
-    perm_status = utils.req_check_permissions(["DATA_EDIT"])
-    if perm_status != 200:
-        flask.abort(status=perm_status)
-
     # create new order
     new_order = structure.order()
 
