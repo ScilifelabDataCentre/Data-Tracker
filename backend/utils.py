@@ -649,7 +649,6 @@ def make_log_new(
     if not data:
         raise ValueError("Empty data is not allowed")
     log = structure.log()
-    logger.error(data)
     log.update(
         {
             "action": action,
@@ -659,7 +658,6 @@ def make_log_new(
             "user": user_id,
         }
     )
-    logger.error(log)
     success = db["logs"].insert_one(log).acknowledged
     if not success and logger:
         logger.error(
