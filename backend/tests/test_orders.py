@@ -970,18 +970,22 @@ def test_prepare_order_response(mdb):
     order_id = helpers.add_order()
     dataset_id = helpers.add_dataset(order_id)
     order_data = mdb["orders"].find_one({"_id": order_id})
-    user_info = {
-        "_id": "3e013a6f-502c-40d7-8a09-69f96e0960e4",
-        "affiliation": "Test University",
-        "contact": "pub_Edit@example.com",
-        "name": "Edit",
-        "orcid": "1111-1111-1111-1111",
-        "url": "https://www.example.com/specuser",
+    user_fields = {
+        "_id": 1,
+        "affiliation": 1,
+        "contact": 1,
+        "name": 1,
+        "orcid": 1,
+        "url": 1,
     }
+    edit_user = mdb["users"].find_one(
+        {"auth_ids": helpers.USERS["edit"]}, projection=user_fields
+    )
+    edit_user["_id"] = str(edit_user["_id"])
     order.prepare_order_response(order_data, mdb)
     for field in ("editors", "authors", "generators"):
-        assert order_data[field] == [user_info]
+        assert order_data[field] == [edit_user]
     assert order_data["datasets"] == [
         {"title": "Test title from fixture", "_id": dataset_id}
     ]
-    assert order_data["organisation"] == user_info
+    assert order_data["organisation"] == edit_user
