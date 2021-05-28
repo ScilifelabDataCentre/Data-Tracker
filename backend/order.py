@@ -164,10 +164,6 @@ def delete_order(identifier: str):
     Returns:
         flask.Response: Status code
     """
-    perm_status = utils.req_check_permissions(["DATA_EDIT"])
-    if perm_status != 200:
-        flask.abort(status=perm_status)
-
     entry = utils.req_get_entry("orders", identifier)
     if not entry:
         flask.abort(status=404)
@@ -219,10 +215,6 @@ def update_order(identifier: str):  # pylint: disable=too-many-branches
     Returns:
         flask.Response: Status code of the request.
     """
-    perm_status = utils.req_check_permissions(["DATA_EDIT"])
-    if perm_status != 200:
-        flask.abort(status=perm_status)
-
     order = utils.req_get_entry("orders", identifier)
     if not order:
         flask.abort(status=404)
