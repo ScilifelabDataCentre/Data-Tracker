@@ -142,9 +142,11 @@ def add_order():
     if not indata.get("editors"):
         indata["editors"] = [flask.g.current_user["_id"]]
     # add current user if missing and only DATA_EDIT
-    elif not utils.req_has_permission("DATA_MANAGEMENT"):
-        if flask.g.current_user["_id"] not in indata["editors"]:
-            indata["editors"].append(flask.g.current_user["_id"])
+    elif (
+        not utils.req_has_permission("DATA_MANAGEMENT")
+        and flask.g.current_user["_id"] not in indata["editors"]
+    ):
+        indata["editors"].append(flask.g.current_user["_id"])
 
     # convert all incoming uuids to uuid.UUID
     indata = utils.prepare_for_db(indata)
@@ -189,16 +191,15 @@ def delete_order(identifier: str):
         {}, {"$pull": {"datasets": {"$in": entry["datasets"]}}}
     )
     for collection in collections:
-        for ds in entry["datasets"]:
-            collection["datasets"] = [
-                ds for ds in collection["datasets"] if ds not in entry["datasets"]
-            ]
-            utils.req_make_log_new(
-                data_type="collection",
-                action="edit",
-                comment="Order deleted",
-                data=collection,
-            )
+        collection["datasets"] = [
+            ds for ds in collection["datasets"] if ds not in entry["datasets"]
+        ]
+        utils.req_make_log_new(
+            data_type="collection",
+            action="edit",
+            comment="Order deleted",
+            data=collection,
+        )
 
     result = utils.req_commit_to_db("orders", "delete", {"_id": entry["_id"]})
     if not result.log or not result.data:
