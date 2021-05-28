@@ -1,5 +1,6 @@
 """General helper functions."""
 
+import copy
 import datetime
 import html
 import re
@@ -573,13 +574,51 @@ def has_permission(permission: str, user_permissions: list):
     return True
 
 
+def req_make_log_new(
+    data_type: str,
+    action: str,
+    comment: str,
+    data: dict,
+) -> bool:
+    """
+    Log a change in the system.
+
+    Wrapper for Flask requests.
+
+    Saves a complete copy of the new object.
+
+    Warning:
+        It is assumed that all values are exactly like in the db,
+        e.g. ``data`` should only contain permitted fields.
+
+    Args:
+        data_type (str): The collection name.
+        action (str): Type of action (add, edit, delete).
+        comment (str): Note about why the change was done
+            (e.g. "Dataset added via addDataset").
+        data (dict): The new data for the entry.
+
+    Returns:
+        bool: Whether the log insertion succeeded.
+    """
+    return make_log_new(
+        db=flask.g.db,
+        data_type=data_type,  # to make singular (e.g. collection|s)
+        action=action,
+        comment=comment,
+        user_id=flask.g.current_user["_id"],
+        data=data,
+        logger=flask.current_app.logger,
+    )
+
+
 def make_log_new(
-    db: str,
+    db,
     data_type: str,
     action: str,
     comment: str,
     user_id,
-    data,
+    data: dict,
     logger=None,
 ) -> bool:
     """
@@ -610,7 +649,6 @@ def make_log_new(
     if not data:
         raise ValueError("Empty data is not allowed")
     log = structure.log()
-    logger.error(data)
     log.update(
         {
             "action": action,
@@ -620,7 +658,6 @@ def make_log_new(
             "user": user_id,
         }
     )
-    logger.error(log)
     success = db["logs"].insert_one(log).acknowledged
     if not success and logger:
         logger.error(
@@ -710,14 +747,11 @@ def req_commit_to_db(
         if operation == "add":
             data_res["ins_id"] = result.inserted_id
             data = flask.g.db[dbcollection].find_one({"_id": data_res["ins_id"]})
-        log_res = make_log_new(
-            db=flask.g.db,
+        log_res = req_make_log_new(
             data_type=dbcollection[:-1],  # to make singular (e.g. collection|s)
             action=operation,
             comment=comment,
-            user_id=flask.g.current_user["_id"],
             data=data,
-            logger=flask.current_app.logger,
         )
     return CommitResult(data=data_res["ack"], log=log_res, ins_id=data_res["ins_id"])
 
@@ -765,3 +799,27 @@ def commit_to_db(
     if not result.acknowledged and logger:
         logger.error("Database %s of %s failed", operation, dbcollection)
     return result
+
+
+def prepare_for_db(data: dict) -> dict:
+    """
+    Prepare incoming data for the database.
+
+    * Convert string UUIDS to uuid.UUID
+    * Escape html in ``description``
+
+    Args:
+        data (dict): The incoming data.
+
+    Returns:
+        dict: The prepared data.
+    """
+    prepared = copy.deepcopy(data)
+    for key in prepared:
+        if key in ("editors", "authors", "generators", "datasets"):
+            prepared[key] = [str_to_uuid(entry) for entry in prepared[key]]
+        elif key == "organisation":
+            prepared[key] = str_to_uuid(prepared[key])
+        elif key == "description":
+            prepared[key] = html.escape(prepared[key])
+    return prepared

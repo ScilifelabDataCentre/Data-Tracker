@@ -182,3 +182,23 @@ def test_get_entry(mdb):
     for _ in range(3):
         assert not utils.get_entry(mdb, "collections", str(uuid.uuid4()))
         assert not utils.get_entry(mdb, "collections", helpers.random_string())
+
+
+def test_prepare_for_db():
+    """Confirm that the data is correctly prepared."""
+    expected = {
+        "authors": [uuid.uuid4()],
+        "datasets": [uuid.uuid4()],
+        "generators": [uuid.uuid4()],
+        "editors": [uuid.uuid4()],
+        "description": "&lt;br /&gt;",
+        "tags": ["testing"],
+    }
+    indata = {"description": "<br />", "tags": ["testing"]}
+    for key in expected:
+        if key in ("editors", "authors", "generators", "datasets"):
+            indata[key] = [str(expected[key][0])]
+        elif key == "organisation":
+            indata[key] = str(expected[key])
+    print(indata)
+    assert utils.prepare_for_db(indata) == expected

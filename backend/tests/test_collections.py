@@ -8,7 +8,6 @@ import requests
 from helpers import (
     TEST_LABEL,
     USERS,
-    add_dataset,
     as_user,
     collection_for_tests,
     delete_dataset,
@@ -88,9 +87,7 @@ def test_add_collection_data(mdb):
             "title": "Test add title",
             "datasets": [str(ds_id)],
             "tags": [],
-            "properties": {
-                "Source": "Added from test",
-            },
+            "properties": {"Source": "Added from test"},
         }
     }
     indata["collection"].update(TEST_LABEL)
@@ -172,9 +169,8 @@ def test_add_collection_bad():
             assert response.code == 403
             assert not response.data
 
-    indata = {}
     responses = make_request_all_roles(
-        "/api/v1/collection", method="POST", data=indata, ret_json=True
+        "/api/v1/collection", method="POST", ret_json=True
     )
     for response in responses:
         if response.role == "no-login":
@@ -255,12 +251,7 @@ def test_add_collection_bad():
 
     session = requests.Session()
     as_user(session, USERS["data"])
-    indata = {
-        "collection": {
-            "_id": str(uuid.uuid4()),
-            "title": "Test bad add title",
-        }
-    }
+    indata = {"collection": {"_id": str(uuid.uuid4()), "title": "Test bad add title"}}
     response = make_request(
         session, "/api/v1/collection", method="POST", data=indata, ret_json=True
     )
@@ -499,11 +490,7 @@ def test_update_collection_data(mdb, collection_for_tests):
         == len(collection_logs) + 1
     )
 
-    indata = {
-        "collection": {
-            "description": "<br />",
-        }
-    }
+    indata = {"collection": {"description": "<br />"}}
     response = make_request(
         session,
         f"/api/v1/collection/{coll_id}",
@@ -521,19 +508,20 @@ def test_update_collection_data(mdb, collection_for_tests):
     )
 
 
-def test_update_collection_bad(mdb):
+def test_update_collection_bad():
     """
-    Update an existing collection.
+    Confirm that bad inputs are handled gracefully.
 
-    Bad requests.
+    Checks:
+      * Bad field
+      * Bad uuid in list
+      * No data
+      * Bad collection identifiers (uuid, random text)
     """
-    uuids = add_dataset()
-    collection_info = mdb["collections"].find_one({"_id": uuids[2]})
-
+    coll_id = helpers.add_collection()
     indata = {"bad_tag": "value"}
-
     responses = make_request_all_roles(
-        f'/api/v1/collection/{collection_info["_id"]}',
+        f"/api/v1/collection/{coll_id}",
         method="PATCH",
         data=indata,
         ret_json=True,
@@ -554,9 +542,8 @@ def test_update_collection_bad(mdb):
         "editors": [str(uuid.uuid4())],
         "title": "Test bad update title",
     }
-
     responses = make_request_all_roles(
-        f'/api/v1/collection/{collection_info["_id"]}',
+        f"/api/v1/collection/{coll_id}",
         method="PATCH",
         data=indata,
         ret_json=True,
@@ -572,44 +559,57 @@ def test_update_collection_bad(mdb):
             assert response.code == 403
             assert not response.data
 
-    for _ in range(2):
-        indata = {"title": "Test bad update title"}
-        responses = make_request_all_roles(
-            f"/api/v1/collection/{uuid.uuid4()}",
-            method="PATCH",
-            data=indata,
-            ret_json=True,
-        )
-        for response in responses:
-            if response.role == "no-login":
-                assert response.code == 401
-                assert not response.data
-            elif response.role in ("edit", "root", "data"):
-                assert response.code == 404
-                assert not response.data
-            else:
-                assert response.code == 403
-                assert not response.data
+    responses = make_request_all_roles(
+        f"/api/v1/collection/{coll_id}",
+        method="PATCH",
+        ret_json=True,
+    )
+    for response in responses:
+        if response.role in ("edit", "data", "root"):
+            assert response.code == 400
+            assert not response.data
+        elif response.role == "no-login":
+            assert response.code == 401
+            assert not response.data
+        else:
+            assert response.code == 403
+            assert not response.data
 
-        indata = {"title": "Test bad update title"}
-        responses = make_request_all_roles(
-            f"/api/v1/collection/{random_string()}",
-            method="PATCH",
-            data=indata,
-            ret_json=True,
-        )
-        for response in responses:
-            if response.role == "no-login":
-                assert response.code == 401
-                assert not response.data
-            elif response.role in ("edit", "root", "data"):
-                assert response.code == 404
-                assert not response.data
-            else:
-                assert response.code == 403
-                assert not response.data
+    indata = {"title": "Test bad update title"}
+    responses = make_request_all_roles(
+        f"/api/v1/collection/{uuid.uuid4()}",
+        method="PATCH",
+        data=indata,
+        ret_json=True,
+    )
+    for response in responses:
+        if response.role == "no-login":
+            assert response.code == 401
+            assert not response.data
+        elif response.role in ("edit", "root", "data"):
+            assert response.code == 404
+            assert not response.data
+        else:
+            assert response.code == 403
+            assert not response.data
 
-    delete_dataset(*uuids)
+    indata = {"title": "Test bad update title"}
+    responses = make_request_all_roles(
+        f"/api/v1/collection/{random_string()}",
+        method="PATCH",
+        data=indata,
+        ret_json=True,
+    )
+    for response in responses:
+        if response.role == "no-login":
+            assert response.code == 401
+            assert not response.data
+        elif response.role in ("edit", "root", "data"):
+            assert response.code == 404
+            assert not response.data
+        else:
+            assert response.code == 403
+            assert not response.data
 
 
 def test_delete_collection(mdb):
@@ -791,18 +791,18 @@ def test_get_collection_logs(mdb):
         assert response.code == 200
 
 
-def test_get_collection_logs_bad(mdb):
+def test_get_collection_logs_bad():
     """Confirm that bad identifiers return 404."""
     session = requests.session()
     helpers.as_user(session, helpers.USERS["data"])
     for _ in range(3):
         response = make_request(
-            session, f'/api/v1/collection/{uuid.uuid4()}/log', ret_json=True
+            session, f"/api/v1/collection/{uuid.uuid4()}/log", ret_json=True
         )
         assert response.code == 404
         assert not response.data
         response = make_request(
-            session, f'/api/v1/collection/{helpers.random_string()}/log', ret_json=True
+            session, f"/api/v1/collection/{helpers.random_string()}/log", ret_json=True
         )
         assert response.code == 404
         assert not response.data

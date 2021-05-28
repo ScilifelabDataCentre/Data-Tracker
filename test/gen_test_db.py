@@ -199,7 +199,12 @@ def gen_orders(db, nr_orders: int = 300):
 
 def gen_collections(db, nr_collections: int = 300):
     datasets = tuple(db["datasets"].find())
-    users = tuple(db["users"].find({"affiliation": {"$ne": "Test University"}}))
+    user_re = re.compile(".*::local")
+    facility_re = re.compile("facility[0-9]*::local")
+    facilities = tuple(db["users"].find({"auth_ids": facility_re}))
+    users = tuple(
+        db["users"].find({"$and": [{"auth_ids": user_re}, {"permissions": "DATA_EDIT"}]})
+    )
     for i in range(1, nr_collections + 1):
         collection = structure.collection()
         changes = {
@@ -207,9 +212,10 @@ def gen_collections(db, nr_collections: int = 300):
             "datasets": [
                 random.choice(datasets)["_id"] for _ in range(random.randint(0, 5))
             ],
-            "editors": list(
-                set(random.choice(users)["_id"] for _ in range(random.randint(1, 3)))
-            ),
+            "editors": [
+                random.choice(users + facilities)["_id"]
+                for _ in range(random.randint(1, 5))
+            ],
             "title": f"Collection {i} Title",
         }
         if random.random() > 0.4:
