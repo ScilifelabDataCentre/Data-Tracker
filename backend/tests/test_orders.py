@@ -794,48 +794,44 @@ def test_delete_order_bad():
 
 def test_add_dataset_permissions(mdb):
     """
-    Add a dataset using .post(addDataset).
+    Confirm that permissions for adding datasets are correct.
 
-    Confirm that permissions are handled correctly.
+    Checks:
+      * DATA_MANAGEMENT can add datasets to any order
+      * DATA_EDIT can add datasets to orders where they are editors
+      * No other users can add datasets
     """
-    session = requests.Session()
+    order_id = helpers.add_order()
+    indata = {"dataset": {"title": "New add dataset title"}}
+    responses = helpers.make_request_all_roles(f"/api/v1/order/{order_id}/dataset", method="POST",
+                                               data=indata, ret_json=True)
+    for response in responses:
+        if response.role in ("edit", "data", "root"):
+            assert response.code == 200
+            assert "id" in response.data
+        elif response.role == "no-login":
+            assert response.code == 401
+            assert not response.data
+        else:
+            assert response.code == 403
+            assert not response.data
 
-    db = mdb
-    orders = db["orders"].aggregate([{"$sample": {"size": 2}}])
-    for order in orders:
-        indata = {"title": "Test title"}
-        indata.update(TEST_LABEL)
-
-        responses = make_request_all_roles(
-            f"/api/v1/order/{str(order['_id'])}/dataset",
-            method="POST",
-            data=indata,
-            ret_json=True,
-        )
-        for response in responses:
-            if response.role in ("data", "root"):
-                assert response.code == 200
-                assert "id" in response.data
-                assert len(response.data["id"]) == 36
-            elif response.role == "no-login":
-                assert response.code == 401
-                assert not response.data
-            else:
-                assert response.code == 403
-                assert not response.data
-
-        # as order editor
-        owner = db["users"].find_one({"_id": order["editors"][0]})
-        as_user(session, owner["auth_ids"][0])
-        response = make_request(
-            session,
-            f"/api/v1/order/{str(order['_id'])}/dataset",
-            method="POST",
-            data=indata,
-        )
-        assert response.code == 200
-        assert "id" in response.data
-        assert len(response.data["id"]) == 36
+    edit_user = mdb["users"].find_one({"auth_ids": USERS["edit"]})
+    mdb["orders"].update_one(
+        {"_id": order_id}, {"$pull": {"editors": edit_user["_id"]}}
+    )
+    responses = helpers.make_request_all_roles(f"/api/v1/order/{order_id}/dataset", method="POST",
+                                               data=indata, ret_json=True)
+    for response in responses:
+        if response.role in ("data", "root"):
+            assert response.code == 200
+            assert "id" in response.data
+        elif response.role == "no-login":
+            assert response.code == 401
+            assert not response.data
+        else:
+            assert response.code == 403
+            assert not response.data
 
 
 def test_add_dataset(mdb):
