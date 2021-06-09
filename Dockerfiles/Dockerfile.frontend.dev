@@ -2,7 +2,7 @@ FROM node:14-alpine
 
 RUN yarn global add @quasar/cli
 
-COPY ./frontend/package.json /package.json
+COPY .frontend/package.json /package.json
 RUN yarn install
 
 ADD ./frontend  /code/
