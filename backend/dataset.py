@@ -60,52 +60,55 @@ def delete_dataset(identifier: str):
 
     Args:
         identifier (str): The dataset uuid.
-    """
-    try:
-        ds_uuid = utils.str_to_uuid(identifier)
-    except ValueError:
-        return flask.abort(status=404)
-    dataset = flask.g.db["datasets"].find_one({"_id": ds_uuid})
-    if not dataset:
+    """ 
+    perm_status = utils.req_check_permissions(["DATA_EDIT"])
+    if perm_status != 200:
+        flask.abort(status=perm_status)
+
+    ds = utils.req_get_entry("datasets", identifier)
+    if not ds:
         flask.abort(status=404)
 
     # permission check
-    order = flask.g.db["orders"].find_one({"datasets": ds_uuid})
+    order = flask.g.db["orders"].find_one({"datasets": ds["_id"]})
+    # permission check
     if (
-        not user.has_permission("DATA_MANAGEMENT")
+        not utils.req_has_permission("DATA_MANAGEMENT")
         and flask.g.current_user["_id"] not in order["editors"]
     ):
         flask.abort(status=403)
 
-    result = flask.g.db["datasets"].delete_one({"_id": ds_uuid})
-    if not result.acknowledged:
-        flask.current_app.logger.error("Failed to delete dataset %s", ds_uuid)
-        return flask.Response(status=500)
-    utils.make_log("dataset", "delete", "Deleted dataset", data={"_id": ds_uuid})
+    result = utils.req_commit_to_db("datasets", "delete", {"_id": ds["_id"]})
+    if not result.log or not result.data:
+        flask.abort(status=500)
 
-    for entry in flask.g.db["orders"].find({"datasets": ds_uuid}):
-        result = flask.g.db["orders"].update_one(
-            {"_id": entry["_id"]}, {"$pull": {"datasets": ds_uuid}}
+    collections = list(
+        flask.g.db["collections"].find({"datasets": ds["_id"]})
+    )
+    flask.g.db["collections"].update_many(
+        {}, {"$pull": {"datasets": ds["_id"]}}
+    )
+    for collection in collections:
+        collection["datasets"] = [
+            collection["datasets"].remove(ds["_id"])
+        ]
+        utils.req_make_log_new(
+            data_type="collection",
+            action="edit",
+            comment="Dataset deleted",
+            data=collection,
         )
-        if not result.acknowledged:
-            flask.current_app.logger.error(
-                "Failed to delete dataset %s in order %s", ds_uuid, entry["_id"]
-            )
-            return flask.Response(status=500)
-        new_data = flask.g.db["orders"].find_one({"_id": entry["_id"]})
-        utils.make_log("order", "edit", f"Deleted dataset {ds_uuid}", new_data)
 
-    for entry in flask.g.db["collections"].find({"datasets": ds_uuid}):
-        flask.g.db["collections"].update_one(
-            {"_id": entry["_id"]}, {"$pull": {"datasets": ds_uuid}}
-        )
-        if not result.acknowledged:
-            flask.current_app.logger.error(
-                "Failed to delete dataset %s in project %s", ds_uuid, entry["_id"]
-            )
-            return flask.Response(status=500)
-        new_data = flask.g.db["collections"].find_one({"_id": entry["_id"]})
-        utils.make_log("collection", "edit", f"Deleted dataset {ds_uuid}", new_data)
+    flask.g.db["orders"].update_one(
+        {}, {"$pull": {"datasets": ds["_id"]}}
+    )
+    order["datasets"].remove(ds["_id"])
+    utils.req_make_log_new(
+        data_type="order",
+        action="edit",
+        comment="Dataset deleted",
+        data=order,
+    )
 
     return flask.Response(status=200)
 
