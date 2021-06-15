@@ -11,6 +11,7 @@
         <q-toolbar-title>
           Data Tracker
         </q-toolbar-title>
+        <q-space />
         <q-btn dense
                flat
                no-wrap
@@ -19,7 +20,8 @@
                target="_blank"
                rel="noopener"
                href="https://www.scilifelab.se/data/">
-          <q-avatar size="2em">
+          <q-avatar square
+                    size="2em">
             <img :src="require('../assets/scilifelab_symbol_white.svg')"
                  alt="SciLifeLab logo"/>
           </q-avatar>
