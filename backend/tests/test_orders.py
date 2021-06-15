@@ -751,6 +751,17 @@ def test_delete_order_permissions(mdb):
     assert response.code == 403
     assert not response.data
 
+    base_user = mdb["users"].find_one({"auth_ids": USERS["base"]})
+    mdb["orders"].update_one(
+        {"_id": order_id}, {"$push": {"editors": base_user["_id"]}}
+    )
+    helpers.as_user(session, USERS["base"])
+    response = helpers.make_request(
+        session, f"/api/v1/order/{order_id}", method="DELETE", ret_json=True
+    )
+    assert response.code == 403
+    assert not response.data
+
 
 def test_delete_order_data(mdb):
     """
