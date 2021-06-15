@@ -310,7 +310,7 @@ def add_dataset(identifier: str):  # pylint: disable=too-many-branches
     if not ds_result.log or not ds_result.data:
         flask.abort(status=500)
 
-    order_result = flask.g.db["order"].update_one(
+    order_result = flask.g.db["orders"].update_one(
         {"_id": order["_id"]}, {"$push": {"datasets": new_dataset["_id"]}}
     )
     if not order_result.acknowledged:
