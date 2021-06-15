@@ -891,6 +891,7 @@ def test_add_dataset_data(mdb):
 
     Checks:
       * All values can be set correctly
+      * All existing datasets are still there
       * Description is escaped
     """
     order_id = helpers.add_order()
@@ -917,12 +918,24 @@ def test_add_dataset_data(mdb):
     assert len(response.data["id"]) == 36
 
     added_ds = mdb["datasets"].find_one({"_id": uuid.UUID(response.data["id"])})
-    print(added_ds, indata)
     for key in indata["dataset"]:
         if key == "description":
             assert added_ds[key] == "&lt;br /&gt;"
         else:
             assert added_ds[key] == indata["dataset"][key]
+
+    response = helpers.make_request(
+        session,
+        f"/api/v1/order/{order_id}/dataset",
+        method="POST",
+        data=indata,
+        ret_json=True,
+    )
+    assert response.code == 200
+    assert "id" in response.data
+    assert len(response.data["id"]) == 36
+    order_info = mdb["orders"].find_one({"_id": order_id})
+    assert len(order_info["datasets"]) == 2
 
 
 def test_add_dataset_log(mdb):
