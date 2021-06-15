@@ -89,7 +89,7 @@ def dataset_for_tests():
     yield uuids[1]
 
     # cleanup
-    delete_dataset(*uuids)
+    delete_fixture_dataset(*uuids)
 
 
 def add_dataset_full():
@@ -136,7 +136,7 @@ def add_dataset_full():
     return (order_indata["_id"], dataset_indata["_id"], collection_indata["_id"])
 
 
-def delete_dataset(order_uuid, dataset_uuid, project_uuid):
+def delete_fixture_dataset(order_uuid, dataset_uuid, project_uuid):
     """Delete an order and a dataset added by ``add_dataset()``."""
     mongo_db = db_connection()
     mongo_db["orders"].delete_one({"_id": order_uuid})
