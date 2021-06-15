@@ -11,7 +11,8 @@ from helpers import (
     dataset_for_tests,
     TEST_LABEL,
     mdb,
-    delete_dataset,
+    add_dataset,
+    delete_fixture_dataset,
 )
 
 
@@ -99,7 +100,12 @@ def test_list_user_datasets_no_datasets():
 
 
 def test_get_dataset_get_permissions(mdb):
-    """Test permissions for requesting a dataset."""
+    """
+    Confirm that anyone can access any dataset.
+
+    Tests:
+      * Get random dataset, confirm that everyone can access it
+    """
     orders = list(mdb["datasets"].aggregate([{"$sample": {"size": 2}}]))
     for order in orders:
         responses = helpers.make_request_all_roles(
@@ -111,7 +117,13 @@ def test_get_dataset_get_permissions(mdb):
 
 
 def test_get_dataset(mdb):
-    """Request multiple datasets by uuid, one at a time."""
+    """
+    Confirm that datasets are returned correctly.
+
+    Tests:
+      * Confirm that the correct dataset is returned
+      * Confirm that the dataset is not listed in ``related``
+    """
     session = requests.Session()
     for _ in range(10):
         orig = mdb["datasets"].aggregate([{"$sample": {"size": 1}}]).next()
@@ -124,9 +136,10 @@ def test_get_dataset(mdb):
 
 def test_get_dataset_bad():
     """
-    Request datasets using bad identifiers.
+    Confirm that non-existing datasets return 404.
 
-    All are expected to return 404.
+    Tests:
+      * Generate random identifiers, confirm they return 404
     """
     session = requests.Session()
     for _ in range(5):
@@ -144,12 +157,13 @@ def test_get_dataset_bad():
 
 def test_delete_dataset(mdb):
     """
-    Add and delete datasets.
+    Confirm that datasets are deleted correctly.
 
-    * Check permissions.
-    * Delete orders added by the add tests.
-    * Confirm that related dataset entries in orders and projects are deleted.
-    * Check that logs are created correctly.
+    Tests:
+      * Check permissions.
+      * Delete orders added by the add tests.
+      * Confirm that related dataset entries in orders and projects are deleted.
+      * Check that logs are created correctly.
     """
     session = requests.Session()
 
@@ -157,6 +171,7 @@ def test_delete_dataset(mdb):
 
     datasets = list(mdb["datasets"].find(TEST_LABEL))
     if not datasets:
+        # warn if the testing is not performed
         assert False
     i = 0
     while i < len(datasets):
@@ -219,7 +234,7 @@ def test_delete_dataset(mdb):
 
     assert i > 0
     for uuid_group in uuids:
-        delete_dataset(*uuid_group)
+        delete_fixture_dataset(*uuid_group)
 
 
 def test_delete_bad():
