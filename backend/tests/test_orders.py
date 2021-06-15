@@ -537,7 +537,6 @@ def test_update_order_data(mdb):
       * Confirm that description is escaped
       * DATA_MANAGEMENT can remove themselves from editors
       * DATA_EDIT cannot remove themselves from editors
-      * Confirm that description is escaped
       * Confirm that a log entry is created
     """
     root_user = mdb["users"].find_one({"auth_ids": USERS["root"]})
