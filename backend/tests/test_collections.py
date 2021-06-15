@@ -10,7 +10,7 @@ from helpers import (
     USERS,
     as_user,
     collection_for_tests,
-    delete_dataset,
+    random_string,
     make_request,
     make_request_all_roles,
     mdb,
