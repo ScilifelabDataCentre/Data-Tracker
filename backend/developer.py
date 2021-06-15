@@ -59,9 +59,7 @@ def csrf_test():
 @blueprint.route("/test_datasets")
 def get_added_ds():
     """Get datasets added during testing."""
-    added = list(
-        flask.g.db["datasets"].find({"description": "Test dataset"}, {"_id": 1})
-    )
+    added = list(flask.g.db["datasets"].find({"description": "Test dataset"}, {"_id": 1}))
     return flask.jsonify({"datasets": added})
 
 
@@ -109,9 +107,7 @@ def sitemap_builder() -> list:
     endpoints = []
     for rule in flask.current_app.url_map.iter_rules():
         methods = ",".join(rule.methods)
-        endpoints.append(
-            {"endpoint": rule.endpoint, "methods": methods, "route": str(rule)}
-        )
+        endpoints.append({"endpoint": rule.endpoint, "methods": methods, "route": str(rule)})
     endpoints.sort(key=lambda x: x["route"])
     return endpoints
 

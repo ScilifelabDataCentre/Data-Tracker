@@ -11,9 +11,7 @@ blueprint = flask.Blueprint("dataset", __name__)  # pylint: disable=invalid-name
 def list_datasets():
     """Provide a simplified list of all available datasets."""
     results = list(
-        flask.g.db["datasets"].find(
-            projection={"title": 1, "_id": 1, "tags": 1, "properties": 1}
-        )
+        flask.g.db["datasets"].find(projection={"title": 1, "_id": 1, "tags": 1, "properties": 1})
     )
     return utils.response_json({"datasets": results})
 
@@ -23,9 +21,7 @@ def list_datasets():
 def list_user_data():
     """List all datasets belonging to current user."""
     user_orders = list(
-        flask.g.db["orders"].find(
-            {"editors": flask.session["user_id"]}, {"datasets": 1}
-        )
+        flask.g.db["orders"].find({"editors": flask.session["user_id"]}, {"datasets": 1})
     )
     uuids = list(ds for entry in user_orders for ds in entry["datasets"])
     user_datasets = list(flask.g.db["datasets"].find({"_id": {"$in": uuids}}))
@@ -136,11 +132,7 @@ def update_dataset(identifier):
         flask.abort(status=403)
 
     jsondata = flask.request.json
-    if (
-        not jsondata
-        or "dataset" not in jsondata
-        or not isinstance(jsondata["dataset"], dict)
-    ):
+    if not jsondata or "dataset" not in jsondata or not isinstance(jsondata["dataset"], dict):
         flask.abort(status=400)
     indata = jsondata["dataset"]
 
@@ -192,9 +184,7 @@ def get_dataset_log(identifier: str = None):
         if flask.g.current_user["_id"] not in order_data["editors"]:
             flask.abort(403)
 
-    dataset_logs = list(
-        flask.g.db["logs"].find({"data_type": "dataset", "data._id": dataset_uuid})
-    )
+    dataset_logs = list(flask.g.db["logs"].find({"data_type": "dataset", "data._id": dataset_uuid}))
     for log in dataset_logs:
         del log["data_type"]
 
@@ -235,10 +225,7 @@ def build_dataset_info(identifier: str):
         return None
     order = flask.g.db["orders"].find_one({"datasets": dataset_uuid})
 
-    if (
-        user.has_permission("DATA_MANAGEMENT")
-        or flask.g.db.current_user["id"] in order["editors"]
-    ):
+    if user.has_permission("DATA_MANAGEMENT") or flask.g.db.current_user["id"] in order["editors"]:
         dataset["order"] = order["_id"]
     dataset["related"] = list(
         flask.g.db["datasets"].find({"_id": {"$in": order["datasets"]}}, {"title": 1})
@@ -256,7 +243,5 @@ def build_dataset_info(identifier: str):
         dataset[field] = utils.user_uuid_data(order[field], flask.g.db)
 
     dataset["organisation"] = utils.user_uuid_data(order[field], flask.g.db)
-    dataset["organisation"] = (
-        dataset["organisation"][0] if dataset["organisation"] else ""
-    )
+    dataset["organisation"] = dataset["organisation"][0] if dataset["organisation"] else ""
     return dataset

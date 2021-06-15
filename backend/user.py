@@ -120,9 +120,7 @@ def gen_new_api_key(identifier: str = None):
         flask.Response: The new API key
     """
     flask.current_app.logger.error(flask.g.current_user["_id"])
-    if identifier != str(flask.g.current_user["_id"]) and not has_permission(
-        "USER_MANAGEMENT"
-    ):
+    if identifier != str(flask.g.current_user["_id"]) and not has_permission("USER_MANAGEMENT"):
         flask.abort(403)
     try:
         user_uuid = utils.str_to_uuid(identifier)
@@ -137,13 +135,9 @@ def gen_new_api_key(identifier: str = None):
     new_hash = utils.gen_api_key_hash(apikey.key, apikey.salt)
     new_values = {"api_key": new_hash, "api_salt": apikey.salt}
     user_data.update(new_values)
-    result = flask.g.db["users"].update_one(
-        {"_id": user_data["_id"]}, {"$set": new_values}
-    )
+    result = flask.g.db["users"].update_one({"_id": user_data["_id"]}, {"$set": new_values})
     if not result.acknowledged:
-        flask.current_app.logger.error(
-            "Updating API key for user %s failed", user_data["_id"]
-        )
+        flask.current_app.logger.error("Updating API key for user %s failed", user_data["_id"])
         flask.Response(status=500)
     else:
         utils.make_log("user", "edit", "New API key", user_data)
@@ -291,9 +285,7 @@ def update_current_user_info():
 
     user_data.update(indata)
 
-    result = flask.g.db["users"].update_one(
-        {"_id": user_data["_id"]}, {"$set": user_data}
-    )
+    result = flask.g.db["users"].update_one({"_id": user_data["_id"]}, {"$set": user_data})
     if not result.acknowledged:
         flask.current_app.logger.error("User self-update failed: %s", indata)
         flask.Response(status=500)
@@ -353,9 +345,7 @@ def update_user_info(identifier: str):
             break
 
     if indata and is_different:
-        result = flask.g.db["users"].update_one(
-            {"_id": user_data["_id"]}, {"$set": indata}
-        )
+        result = flask.g.db["users"].update_one({"_id": user_data["_id"]}, {"$set": indata})
         if not result.acknowledged:
             flask.current_app.logger.error("User update failed: %s", indata)
             flask.Response(status=500)
@@ -380,9 +370,7 @@ def get_user_log(identifier: str):
     Returns:
         flask.Response: Information about the user as json.
     """
-    if str(flask.g.current_user["_id"]) != identifier and not has_permission(
-        "USER_MANAGEMENT"
-    ):
+    if str(flask.g.current_user["_id"]) != identifier and not has_permission("USER_MANAGEMENT"):
         flask.abort(403)
 
     try:
@@ -390,18 +378,14 @@ def get_user_log(identifier: str):
     except ValueError:
         flask.abort(status=404)
 
-    user_logs = list(
-        flask.g.db["logs"].find({"data_type": "user", "data._id": user_uuid})
-    )
+    user_logs = list(flask.g.db["logs"].find({"data_type": "user", "data._id": user_uuid}))
 
     for log in user_logs:
         del log["data_type"]
 
     utils.incremental_logs(user_logs)
 
-    return utils.response_json(
-        {"entry_id": user_uuid, "data_type": "user", "logs": user_logs}
-    )
+    return utils.response_json({"entry_id": user_uuid, "data_type": "user", "logs": user_logs})
 
 
 @blueprint.route("/<identifier>/actions", methods=["GET"])
@@ -421,9 +405,7 @@ def get_user_actions(identifier: str):
     if identifier is None:
         identifier = str(flask.g.current_user["_id"])
 
-    if str(flask.g.current_user["_id"]) != identifier and not has_permission(
-        "USER_MANAGEMENT"
-    ):
+    if str(flask.g.current_user["_id"]) != identifier and not has_permission("USER_MANAGEMENT"):
         flask.abort(403)
 
     try:
@@ -464,9 +446,7 @@ def add_new_user(user_info: dict):
             )
             flask.Response(status=500)
         else:
-            utils.make_log(
-                "user", "edit", "Add OIDC entry to auth_ids", db_user, no_user=True
-            )
+            utils.make_log("user", "edit", "Add OIDC entry to auth_ids", db_user, no_user=True)
 
     else:
         new_user = structure.user()
@@ -481,9 +461,7 @@ def add_new_user(user_info: dict):
             )
             flask.Response(status=500)
         else:
-            utils.make_log(
-                "user", "add", "Creating new user from OAuth", new_user, no_user=True
-            )
+            utils.make_log("user", "add", "Creating new user from OAuth", new_user, no_user=True)
 
 
 def do_login(auth_id: str):

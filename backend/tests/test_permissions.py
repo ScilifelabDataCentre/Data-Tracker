@@ -19,9 +19,7 @@ def test_request_no_permissions_required():
 
 def test_request_login_required():
     """Request target with no permission requirements apart from being logged in."""
-    responses = helpers.make_request_all_roles(
-        "/api/v1/developer/loginhello", ret_json=True
-    )
+    responses = helpers.make_request_all_roles("/api/v1/developer/loginhello", ret_json=True)
     for response in responses:
         if response.role != "no-login":
             assert response.code == 200
@@ -33,9 +31,7 @@ def test_request_login_required():
 
 def test_request_permission_data_edit():
     """Request requiring DATA_EDIT permissions."""
-    responses = helpers.make_request_all_roles(
-        "/api/v1/developer/hello/DATA_EDIT", ret_json=True
-    )
+    responses = helpers.make_request_all_roles("/api/v1/developer/hello/DATA_EDIT", ret_json=True)
     for response in responses:
         if response.role in ("edit", "data", "root"):
             assert response.code == 200
@@ -47,9 +43,7 @@ def test_request_permission_data_edit():
 
 def test_request_permission_owners_read():
     """Request requiring OWNERS_READ permissions."""
-    responses = helpers.make_request_all_roles(
-        "/api/v1/developer/hello/OWNERS_READ", ret_json=True
-    )
+    responses = helpers.make_request_all_roles("/api/v1/developer/hello/OWNERS_READ", ret_json=True)
     for response in responses:
         if response.role in ("owners", "data", "root"):
             assert response.code == 200

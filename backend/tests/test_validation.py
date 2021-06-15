@@ -47,10 +47,7 @@ def test_validate_auth_ids():
 def test_validate_authors(mdb):
     """Confirm that only valid users are accepted."""
     validator = validate.VALIDATION_MAPPER["authors"]
-    test_users = [
-        str(entry["_id"])
-        for entry in mdb["users"].aggregate([{"$sample": {"size": 5}}])
-    ]
+    test_users = [str(entry["_id"]) for entry in mdb["users"].aggregate([{"$sample": {"size": 5}}])]
 
     assert validator([], db=mdb)
     assert validator(test_users, db=mdb)
@@ -91,8 +88,7 @@ def test_validate_datasets(mdb):
     """Confirm that only valid users are accepted."""
     validator = validate.VALIDATION_MAPPER["datasets"]
     test_datasets = [
-        str(entry["_id"])
-        for entry in mdb["datasets"].aggregate([{"$sample": {"size": 5}}])
+        str(entry["_id"]) for entry in mdb["datasets"].aggregate([{"$sample": {"size": 5}}])
     ]
 
     assert validator([], db=mdb)
@@ -135,10 +131,7 @@ def test_validate_description():
 def test_validate_editors(mdb):
     """Confirm that only valid users are accepted."""
     validator = validate.VALIDATION_MAPPER["editors"]
-    test_users = [
-        str(entry["_id"])
-        for entry in mdb["users"].aggregate([{"$sample": {"size": 5}}])
-    ]
+    test_users = [str(entry["_id"]) for entry in mdb["users"].aggregate([{"$sample": {"size": 5}}])]
 
     assert validator(test_users, db=mdb)
     assert validator(test_users[:1], db=mdb)
@@ -194,10 +187,7 @@ def test_validate_field():
 def test_validate_generators(mdb):
     """Confirm that only valid users are accepted."""
     validator = validate.VALIDATION_MAPPER["editors"]
-    test_users = [
-        str(entry["_id"])
-        for entry in mdb["users"].aggregate([{"$sample": {"size": 5}}])
-    ]
+    test_users = [str(entry["_id"]) for entry in mdb["users"].aggregate([{"$sample": {"size": 5}}])]
 
     assert validator([], db=mdb)
     assert validator(test_users, db=mdb)
@@ -264,10 +254,7 @@ def test_validate_orcid():
 def test_validate_organisation(mdb):
     """Confirm that only valid users are accepted."""
     validator = validate.VALIDATION_MAPPER["organisation"]
-    test_users = [
-        str(entry["_id"])
-        for entry in mdb["users"].aggregate([{"$sample": {"size": 5}}])
-    ]
+    test_users = [str(entry["_id"]) for entry in mdb["users"].aggregate([{"$sample": {"size": 5}}])]
 
     assert validator("", db=mdb)
     assert validator(test_users[0], db=mdb)

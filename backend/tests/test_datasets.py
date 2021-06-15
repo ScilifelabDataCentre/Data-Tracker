@@ -62,14 +62,10 @@ def test_list_user_datasets_with_datasets(mdb):
     orders = mdb["orders"].aggregate(
         [{"$match": {"datasets": {"$not": {"$size": 0}}}}, {"$sample": {"size": 2}}]
     )
-    user_uuids = list(
-        itertools.chain.from_iterable(order["editors"] for order in orders)
-    )
+    user_uuids = list(itertools.chain.from_iterable(order["editors"] for order in orders))
     users = mdb["users"].find({"_id": {"$in": list(user_uuids)}})
     for user in users:
-        user_orders = list(
-            mdb["orders"].find({"editors": user["_id"]}, {"datasets": 1})
-        )
+        user_orders = list(mdb["orders"].find({"editors": user["_id"]}, {"datasets": 1}))
         user_datasets = list(
             itertools.chain.from_iterable(order["datasets"] for order in user_orders)
         )
@@ -79,9 +75,7 @@ def test_list_user_datasets_with_datasets(mdb):
         response = helpers.make_request(session, "/api/v1/dataset/user")
         assert response.code == 200
         assert len(user_datasets) == len(response.data["datasets"])
-        assert set(entry["id"] for entry in response.data["datasets"]) == set(
-            user_datasets
-        )
+        assert set(entry["id"] for entry in response.data["datasets"]) == set(user_datasets)
 
 
 def test_get_dataset_get_permissions(mdb):
@@ -93,9 +87,7 @@ def test_get_dataset_get_permissions(mdb):
     """
     orders = list(mdb["datasets"].aggregate([{"$sample": {"size": 2}}]))
     for order in orders:
-        responses = helpers.make_request_all_roles(
-            f'/api/v1/dataset/{order["_id"]}', ret_json=True
-        )
+        responses = helpers.make_request_all_roles(f'/api/v1/dataset/{order["_id"]}', ret_json=True)
         for response in responses:
             assert response.data["dataset"]
             assert response.code == 200
@@ -133,9 +125,7 @@ def test_get_dataset_bad():
         assert not response.data
 
     for _ in range(5):
-        response = helpers.make_request(
-            session, f"/api/v1/dataset/{helpers.random_string()}"
-        )
+        response = helpers.make_request(session, f"/api/v1/dataset/{helpers.random_string()}")
         assert response.code == 404
         assert not response.data
 
@@ -168,9 +158,7 @@ def test_delete_dataset_permissions(mdb):
         assert not response.data
 
     edit_user = mdb["users"].find_one({"auth_ids": helpers.USERS["edit"]})
-    mdb["orders"].update_one(
-        {"_id": order_id}, {"$pull": {"editors": edit_user["_id"]}}
-    )
+    mdb["orders"].update_one({"_id": order_id}, {"$pull": {"editors": edit_user["_id"]}})
     helpers.as_user(session, helpers.USERS["edit"])
     response = helpers.make_request(
         session, f"/api/v1/dataset/{ds_id}", method="DELETE", ret_json=True
@@ -179,9 +167,7 @@ def test_delete_dataset_permissions(mdb):
     assert not response.data
 
     base_user = mdb["users"].find_one({"auth_ids": helpers.USERS["base"]})
-    mdb["orders"].update_one(
-        {"_id": order_id}, {"$push": {"editors": base_user["_id"]}}
-    )
+    mdb["orders"].update_one({"_id": order_id}, {"$push": {"editors": base_user["_id"]}})
     helpers.as_user(session, helpers.USERS["base"])
     response = helpers.make_request(
         session, f"/api/v1/dataset/{ds_id}", method="DELETE", ret_json=True
@@ -206,15 +192,11 @@ def test_delete_dataset(mdb):
     coll_id2 = helpers.add_collection([ds_id])
 
     helpers.as_user(session, helpers.USERS["edit"])
-    response = helpers.make_request(
-        session, f"/api/v1/dataset/{ds_id}", method="DELETE"
-    )
+    response = helpers.make_request(session, f"/api/v1/dataset/{ds_id}", method="DELETE")
     assert response.code == 200
     assert not mdb["datasets"].find_one({"_id": ds_id})
     assert (
-        mdb["logs"].count_documents(
-            {"data_type": "dataset", "action": "delete", "data._id": ds_id}
-        )
+        mdb["logs"].count_documents({"data_type": "dataset", "action": "delete", "data._id": ds_id})
         == 1
     )
     assert not mdb["orders"].find_one({"datasets": ds_id})
@@ -244,9 +226,7 @@ def test_delete_dataset(mdb):
 
     # clean up added datasets
     for ds in mdb["datasets"].find(TEST_LABEL):
-        response = helpers.make_request(
-            session, f'/api/v1/dataset/{ds["_id"]}', method="DELETE"
-        )
+        response = helpers.make_request(session, f'/api/v1/dataset/{ds["_id"]}', method="DELETE")
         if response.code == 200:
             assert not mdb["datasets"].find_one({"_id": ds["_id"]})
             assert not mdb["orders"].find_one({"datasets": ds["_id"]})
@@ -255,9 +235,7 @@ def test_delete_dataset(mdb):
     helpers.as_user(session, helpers.USERS["data"])
     # clean up added datasets
     for ds in mdb["datasets"].find(TEST_LABEL):
-        response = helpers.make_request(
-            session, f'/api/v1/dataset/{ds["_id"]}', method="DELETE"
-        )
+        response = helpers.make_request(session, f'/api/v1/dataset/{ds["_id"]}', method="DELETE")
         assert response.code == 200
         assert not mdb["datasets"].find_one({"_id": ds["_id"]})
         assert not mdb["orders"].find_one({"datasets": ds["_id"]})
@@ -270,16 +248,12 @@ def test_delete_bad():
     helpers.as_user(session, helpers.USERS["data"])
     for _ in range(3):
         ds_uuid = helpers.random_string()
-        response = helpers.make_request(
-            session, f"/api/v1/dataset/{ds_uuid}", method="DELETE"
-        )
+        response = helpers.make_request(session, f"/api/v1/dataset/{ds_uuid}", method="DELETE")
         assert response.code == 404
         assert not response.data
 
         ds_uuid = uuid.uuid4()
-        response = helpers.make_request(
-            session, f"/api/v1/dataset/{ds_uuid}", method="DELETE"
-        )
+        response = helpers.make_request(session, f"/api/v1/dataset/{ds_uuid}", method="DELETE")
         assert response.code == 404
         assert not response.data
 
@@ -312,9 +286,7 @@ def test_dataset_update_permissions(mdb):
 
     indata = {"dataset": {"title": "Updated dataset permissions title 2"}}
     edit_user = mdb["users"].find_one({"auth_ids": helpers.USERS["edit"]})
-    mdb["orders"].update_one(
-        {"_id": order_id}, {"$pull": {"editors": edit_user["_id"]}}
-    )
+    mdb["orders"].update_one({"_id": order_id}, {"$pull": {"editors": edit_user["_id"]}})
     helpers.as_user(session, helpers.USERS["edit"])
     response = helpers.make_request(
         session, f"/api/v1/dataset/{ds_id}", method="PATCH", data=indata
@@ -323,9 +295,7 @@ def test_dataset_update_permissions(mdb):
     assert not response.data
 
     base_user = mdb["users"].find_one({"auth_ids": helpers.USERS["base"]})
-    mdb["orders"].update_one(
-        {"_id": order_id}, {"$push": {"editors": base_user["_id"]}}
-    )
+    mdb["orders"].update_one({"_id": order_id}, {"$push": {"editors": base_user["_id"]}})
     helpers.as_user(session, helpers.USERS["base"])
     response = helpers.make_request(
         session, f"/api/v1/dataset/{ds_id}", method="PATCH", data=indata
@@ -382,9 +352,7 @@ def test_dataset_update_data(mdb):
     dataset = mdb["datasets"].find_one({"_id": ds_id})
     assert dataset["title"] == indata["dataset"]["title"]
     assert dataset["description"] == "&lt;br /&gt;"
-    assert mdb["logs"].find_one(
-        {"data._id": ds_id, "action": "edit", "data_type": "dataset"}
-    )
+    assert mdb["logs"].find_one({"data._id": ds_id, "action": "edit", "data_type": "dataset"})
 
 
 def test_dataset_update_bad(dataset_for_tests):
@@ -449,9 +417,7 @@ def test_get_dataset_logs_permissions(mdb):
     """
     dataset_data = mdb["datasets"].aggregate([{"$sample": {"size": 1}}]).next()
     order_data = mdb["orders"].find_one({"datasets": dataset_data["_id"]})
-    user_data = mdb["users"].find_one(
-        {"$or": [{"_id": {"$in": order_data["editors"]}}]}
-    )
+    user_data = mdb["users"].find_one({"$or": [{"_id": {"$in": order_data["editors"]}}]})
     responses = helpers.make_request_all_roles(
         f'/api/v1/dataset/{dataset_data["_id"]}/log', ret_json=True
     )
@@ -486,9 +452,7 @@ def test_get_dataset_logs(mdb):
     session = requests.session()
     datasets = mdb["datasets"].aggregate([{"$sample": {"size": 2}}])
     for dataset in datasets:
-        logs = list(
-            mdb["logs"].find({"data_type": "dataset", "data._id": dataset["_id"]})
-        )
+        logs = list(mdb["logs"].find({"data_type": "dataset", "data._id": dataset["_id"]}))
         helpers.as_user(session, helpers.USERS["data"])
         response = helpers.make_request(
             session, f'/api/v1/dataset/{dataset["_id"]}/log', ret_json=True
@@ -503,10 +467,5 @@ def test_info_add_dataset():
     """Confirm that the redirect information works as intended."""
     session = requests.session()
     helpers.as_user(session, helpers.USERS["data"])
-    response = helpers.make_request(
-        session, "/api/v1/dataset", ret_json=False, method="POST"
-    )
-    assert (
-        response.data
-        == "Use http://localhost:5000/api/v1/order/-identifier-/dataset instead"
-    )
+    response = helpers.make_request(session, "/api/v1/dataset", ret_json=False, method="POST")
+    assert response.data == "Use http://localhost:5000/api/v1/order/-identifier-/dataset instead"
