@@ -891,7 +891,7 @@ def test_add_dataset_data(mdb):
 
     Checks:
       * All values can be set correctly
-      * All existing datasets are still there
+      * Dataset is added correctly to the order
       * Description is escaped
     """
     order_id = helpers.add_order()
@@ -916,6 +916,8 @@ def test_add_dataset_data(mdb):
     assert response.code == 200
     assert "id" in response.data
     assert len(response.data["id"]) == 36
+    order_info = mdb["orders"].find_one({"_id": order_id})
+    assert len(order_info["datasets"]) == 1
 
     added_ds = mdb["datasets"].find_one({"_id": uuid.UUID(response.data["id"])})
     for key in indata["dataset"]:
