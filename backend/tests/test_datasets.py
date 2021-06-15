@@ -325,13 +325,8 @@ def test_dataset_update_permissions(mdb):
     assert not response.data
 
 
-
 def test_dataset_update_empty(dataset_for_tests):
-    """
-    Confirm response 400 to an empty update request
-
-    Should require at least Steward or being the owner of the dataset.
-    """
+    """Confirm response 400 to an empty update request."""
     ds_uuid = dataset_for_tests
     indata = {}
     responses = helpers.make_request_all_roles(
@@ -339,7 +334,7 @@ def test_dataset_update_empty(dataset_for_tests):
     )
     for response in responses:
         if response.role in ("edit", "data", "root"):
-            assert response.code == 200
+            assert response.code == 400
         elif response.role == "no-login":
             assert response.code == 401
         else:
@@ -347,69 +342,68 @@ def test_dataset_update_empty(dataset_for_tests):
         assert not response.data
 
 
-def test_dataset_update(mdb, dataset_for_tests):
+def test_dataset_update_data(mdb):
     """
-    Update a dataset multiple times. Confirm that the update is done correctly.
+    Confirm that the dataset is updated correctly.
 
-    Should require at least Steward.
+    Tests:
+      * All fields are correctly updated
+      * Confirm that description is escaped
+      * Confirm that a log entry is created
     """
-    ds_uuid = dataset_for_tests
-    indata = {
-        "description": "Test description - updated",
-        "title": "Test title - updated",
-    }
-    indata.update(TEST_LABEL)
-
     session = requests.Session()
+    ds_id = helpers.add_dataset(helpers.add_order())
+
+    indata = {"dataset": {
+        "description": "<br />",
+        "title": "Test title - dataset update data",
+    }}
+    indata["dataset"].update(TEST_LABEL)
+
     helpers.as_user(session, helpers.USERS["data"])
 
     response = helpers.make_request(
-        session, f"/api/v1/dataset/{ds_uuid}", method="PATCH", data=indata
+        session, f"/api/v1/dataset/{ds_id}", method="PATCH", data=indata
     )
     assert response.code == 200
     assert not response.data
 
-    dataset = mdb["datasets"].find_one({"_id": ds_uuid})
-    for field in indata:
-        assert dataset[field] == indata[field]
+    dataset = mdb["datasets"].find_one({"_id": ds_id})
+    assert dataset["title"] == indata["dataset"]["title"]
+    assert dataset["description"] == "&lt;br /&gt;"
     assert mdb["logs"].find_one(
-        {"data._id": ds_uuid, "action": "edit", "data_type": "dataset"}
+        {"data._id": ds_id, "action": "edit", "data_type": "dataset"}
     )
 
 
 def test_dataset_update_bad(dataset_for_tests):
-    """
-    Confirm that bad requests will be rejected.
+    """Confirm that bad requests will be rejected."""
+    indata = {"dataset": {"title": "Updated title"}}
+    ds_uuid = helpers.random_string()
+    responses = helpers.make_request_all_roles(
+        f"/api/v1/dataset/{ds_uuid}", method="PATCH", data=indata
+    )
+    for response in responses:
+        if response.role in ("edit", "data", "root"):
+            assert response.code == 404
+        elif response.role == "no-login":
+            assert response.code == 401
+        else:
+            assert response.code == 403
+            assert not response.data
 
-    Should require at least Steward.
-    """
-    for _ in range(2):
-        indata = {"title": "Updated title"}
-        ds_uuid = helpers.random_string()
-        responses = helpers.make_request_all_roles(
-            f"/api/v1/dataset/{ds_uuid}", method="PATCH", data=indata
-        )
-        for response in responses:
-            if response.role in ("base", "edit", "data", "root"):
-                assert response.code == 404
-            elif response.role == "no-login":
-                assert response.code == 401
-            else:
-                assert response.code == 404
-                assert not response.data
-
-        ds_uuid = uuid.uuid4().hex
-        responses = helpers.make_request_all_roles(
-            f"/api/v1/dataset/{ds_uuid}", method="PATCH", data=indata
-        )
-        for response in responses:
-            if response.role in ("base", "edit", "data", "root"):
-                assert response.code == 404
-            elif response.role == "no-login":
-                assert response.code == 401
-            else:
-                assert response.code == 404
-                assert not response.data
+    ds_uuid = uuid.uuid4().hex
+    responses = helpers.make_request_all_roles(
+        f"/api/v1/dataset/{ds_uuid}", method="PATCH", data=indata
+    )
+    for response in responses:
+        if response.role in ("edit", "data", "root"):
+            assert response.code == 404
+        elif response.role == "no-login":
+            assert response.code == 401
+        else:
+            assert response.code == 403
+            assert not response.data
 
     ds_uuid = dataset_for_tests
     session = requests.Session()
@@ -421,14 +415,14 @@ def test_dataset_update_bad(dataset_for_tests):
     assert response.code == 400
     assert not response.data
 
-    indata = {"extra": "asd"}
+    indata = {"dataset": {"extra": "asd"}}
     response = helpers.make_request(
         session, f"/api/v1/dataset/{ds_uuid}", method="PATCH", data=indata
     )
     assert response.code == 400
     assert not response.data
 
-    indata = {"timestamp": "asd"}
+    indata = {"dataset": {"timestamp": "asd"}}
     response = helpers.make_request(
         session, f"/api/v1/dataset/{ds_uuid}", method="PATCH", data=indata
     )
