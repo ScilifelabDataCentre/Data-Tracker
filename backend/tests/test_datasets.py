@@ -207,7 +207,7 @@ def test_delete_dataset(mdb):
 
     helpers.as_user(session, helpers.USERS["edit"])
     response = helpers.make_request(
-        session, f'/api/v1/dataset/{ds_id}', method="DELETE"
+        session, f"/api/v1/dataset/{ds_id}", method="DELETE"
     )
     assert response.code == 200
     assert not mdb["datasets"].find_one({"_id": ds_id})
@@ -220,14 +220,24 @@ def test_delete_dataset(mdb):
     assert not mdb["orders"].find_one({"datasets": ds_id})
     assert (
         mdb["logs"].count_documents(
-            {"data_type": "order", "comment": "Dataset deleted", "action": "edit", "data._id": order_id}
+            {
+                "data_type": "order",
+                "comment": "Dataset deleted",
+                "action": "edit",
+                "data._id": order_id,
+            }
         )
         == 1
     )
     assert not mdb["collections"].find_one({"datasets": ds_id})
     assert (
         mdb["logs"].count_documents(
-            {"data_type": "collection", "comment": "Dataset deleted", "action": "edit", "data._id": {"$in": (coll_id, coll_id2)}}
+            {
+                "data_type": "collection",
+                "comment": "Dataset deleted",
+                "action": "edit",
+                "data._id": {"$in": (coll_id, coll_id2)},
+            }
         )
         == 2
     )
@@ -286,7 +296,7 @@ def test_dataset_update_permissions(mdb):
     session = requests.Session()
     order_id = helpers.add_order()
     ds_id = helpers.add_dataset(order_id)
-    
+
     indata = {"dataset": {"title": "Updated dataset permissions title"}}
     responses = helpers.make_request_all_roles(
         f"/api/v1/dataset/{ds_id}", method="PATCH", data=indata
@@ -299,7 +309,6 @@ def test_dataset_update_permissions(mdb):
         else:
             assert response.code == 403
         assert not response.data
-
 
     indata = {"dataset": {"title": "Updated dataset permissions title 2"}}
     edit_user = mdb["users"].find_one({"auth_ids": helpers.USERS["edit"]})
@@ -354,10 +363,12 @@ def test_dataset_update_data(mdb):
     session = requests.Session()
     ds_id = helpers.add_dataset(helpers.add_order())
 
-    indata = {"dataset": {
-        "description": "<br />",
-        "title": "Test title - dataset update data",
-    }}
+    indata = {
+        "dataset": {
+            "description": "<br />",
+            "title": "Test title - dataset update data",
+        }
+    }
     indata["dataset"].update(TEST_LABEL)
 
     helpers.as_user(session, helpers.USERS["data"])

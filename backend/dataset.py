@@ -60,7 +60,7 @@ def delete_dataset(identifier: str):
 
     Args:
         identifier (str): The dataset uuid.
-    """ 
+    """
     perm_status = utils.req_check_permissions(["DATA_EDIT"])
     if perm_status != 200:
         flask.abort(status=perm_status)
@@ -85,16 +85,10 @@ def delete_dataset(identifier: str):
     if not result.log or not result.data:
         flask.abort(status=500)
 
-    collections = list(
-        flask.g.db["collections"].find({"datasets": ds["_id"]})
-    )
-    flask.g.db["collections"].update_many(
-        {}, {"$pull": {"datasets": ds["_id"]}}
-    )
+    collections = list(flask.g.db["collections"].find({"datasets": ds["_id"]}))
+    flask.g.db["collections"].update_many({}, {"$pull": {"datasets": ds["_id"]}})
     for collection in collections:
-        collection["datasets"] = [
-            collection["datasets"].remove(ds["_id"])
-        ]
+        collection["datasets"] = [collection["datasets"].remove(ds["_id"])]
         utils.req_make_log_new(
             data_type="collection",
             action="edit",
@@ -102,9 +96,7 @@ def delete_dataset(identifier: str):
             data=collection,
         )
 
-    flask.g.db["orders"].update_many(
-        {}, {"$pull": {"datasets": ds["_id"]}}
-    )
+    flask.g.db["orders"].update_many({}, {"$pull": {"datasets": ds["_id"]}})
     order["datasets"].remove(ds["_id"])
     utils.req_make_log_new(
         data_type="order",
