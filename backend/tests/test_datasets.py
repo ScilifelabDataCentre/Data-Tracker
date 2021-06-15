@@ -84,21 +84,6 @@ def test_list_user_datasets_with_datasets(mdb):
         )
 
 
-def test_list_user_datasets_no_datasets():
-    """
-    Confirm that users with no datasets get the correct response.
-
-    Tests:
-
-      * Select a few users, confirm that no datasets are returned as intended
-    """
-    # *::testers should have no datasets
-    responses = helpers.make_request_all_roles("/api/v1/dataset/user", ret_json=True)
-    for response in responses:
-        if response.role != "no-login":
-            assert len(response.data["datasets"]) == 0
-
-
 def test_get_dataset_get_permissions(mdb):
     """
     Confirm that anyone can access any dataset.
