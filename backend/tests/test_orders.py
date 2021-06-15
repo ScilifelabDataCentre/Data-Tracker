@@ -809,6 +809,16 @@ def test_delete_order_data(mdb):
         {"data_type": "collection", "action": "edit", "data._id": collection_id}
     )
 
+    # clean up added orders
+    for order in mdb["orders"].find(TEST_LABEL):
+        response = helpers.make_request(
+            session, f'/api/v1/order/{order["_id"]}', method="DELETE"
+        )
+        assert response.code == 200
+        assert not mdb["orders"].find_one({"_id": order["_id"]})
+        assert not mdb["datasets"].find_one({"_id": {"$in": order["datasets"]}})
+        assert not mdb["collections"].find_one({"datasets": {"$in": order["datasets"]}})
+
 
 def test_delete_order_bad():
     """Confirm that bad uuids get an appropriate response."""
@@ -840,7 +850,7 @@ def test_add_dataset_permissions(mdb):
       * No other users can add datasets
     """
     order_id = helpers.add_order()
-    indata = {"dataset": {"title": "New add dataset title"}}
+    indata = {"dataset": {"title": "New add dataset permissions title"}}
     indata["dataset"].update(TEST_LABEL)
     responses = helpers.make_request_all_roles(
         f"/api/v1/order/{order_id}/dataset", method="POST", data=indata, ret_json=True
@@ -875,7 +885,7 @@ def test_add_dataset_permissions(mdb):
             assert not response.data
 
 
-def test_add_dataset(mdb):
+def test_add_dataset_data(mdb):
     """
     Confirm that values are set correctly and logs are created.
 
@@ -886,7 +896,7 @@ def test_add_dataset(mdb):
     order_id = helpers.add_order()
     indata = {
         "dataset": {
-            "title": "New add dataset title",
+            "title": "New add dataset data title",
             "description": "<br />",
             "tags": ["testing", "add_dataset"],
         }
@@ -926,7 +936,7 @@ def test_add_dataset_log(mdb):
     order_id = helpers.add_order()
     indata = {
         "dataset": {
-            "title": "New add dataset title",
+            "title": "New add dataset log title",
             "description": "<br />",
             "tags": ["testing", "add_dataset"],
         }
