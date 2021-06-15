@@ -255,11 +255,7 @@ def test_delete_dataset(mdb):
 
 
 def test_delete_bad():
-    """
-    Bad deletion requests.
-
-    Should require at least Steward.
-    """
+    """Confirm that bad identifiers return 404."""
     session = requests.Session()
     helpers.as_user(session, helpers.USERS["data"])
     for _ in range(3):
@@ -269,7 +265,8 @@ def test_delete_bad():
         )
         assert response.code == 404
         assert not response.data
-        ds_uuid = uuid.uuid4().hex
+
+        ds_uuid = uuid.uuid4()
         response = helpers.make_request(
             session, f"/api/v1/dataset/{ds_uuid}", method="DELETE"
         )
@@ -277,16 +274,22 @@ def test_delete_bad():
         assert not response.data
 
 
-def test_dataset_update_permissions(dataset_for_tests):
+def test_dataset_update_permissions(mdb):
     """
-    Test the permissions for the request.
+    Confirm that permissions for updating datasets are correct.
 
-    Should require at least Steward or being the owner of the dataset.
+    Checks:
+      * DATA_MANAGER can update any dataset
+      * DATA_EDIT can update datasets where they are editors (in the order)
+      * Other users cannot update any dataset, even if they are editors
     """
-    ds_uuid = dataset_for_tests
-    indata = {"title": "Updated title"}
+    session = requests.Session()
+    order_id = helpers.add_order()
+    ds_id = helpers.add_dataset(order_id)
+    
+    indata = {"dataset": {"title": "Updated dataset permissions title"}}
     responses = helpers.make_request_all_roles(
-        f"/api/v1/dataset/{ds_uuid}", method="PATCH", data=indata
+        f"/api/v1/dataset/{ds_id}", method="PATCH", data=indata
     )
     for response in responses:
         if response.role in ("edit", "data", "root"):
@@ -296,6 +299,31 @@ def test_dataset_update_permissions(dataset_for_tests):
         else:
             assert response.code == 403
         assert not response.data
+
+
+    indata = {"dataset": {"title": "Updated dataset permissions title 2"}}
+    edit_user = mdb["users"].find_one({"auth_ids": helpers.USERS["edit"]})
+    mdb["orders"].update_one(
+        {"_id": order_id}, {"$pull": {"editors": edit_user["_id"]}}
+    )
+    helpers.as_user(session, helpers.USERS["edit"])
+    response = helpers.make_request(
+        session, f"/api/v1/dataset/{ds_id}", method="PATCH", data=indata
+    )
+    assert response.code == 403
+    assert not response.data
+
+    base_user = mdb["users"].find_one({"auth_ids": helpers.USERS["base"]})
+    mdb["orders"].update_one(
+        {"_id": order_id}, {"$push": {"editors": base_user["_id"]}}
+    )
+    helpers.as_user(session, helpers.USERS["base"])
+    response = helpers.make_request(
+        session, f"/api/v1/dataset/{ds_id}", method="PATCH", data=indata
+    )
+    assert response.code == 403
+    assert not response.data
+
 
 
 def test_dataset_update_empty(dataset_for_tests):
