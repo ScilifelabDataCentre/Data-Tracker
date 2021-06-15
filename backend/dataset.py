@@ -71,6 +71,9 @@ def delete_dataset(identifier: str):
 
     # permission check
     order = flask.g.db["orders"].find_one({"datasets": ds["_id"]})
+    if not order:
+        flask.current_app.logger.error("Dataset without parent order: %s", ds["_id"])
+        flask.current_app.logger.error(ds)
     # permission check
     if (
         not utils.req_has_permission("DATA_MANAGEMENT")
@@ -99,7 +102,7 @@ def delete_dataset(identifier: str):
             data=collection,
         )
 
-    flask.g.db["orders"].update_one(
+    flask.g.db["orders"].update_many(
         {}, {"$pull": {"datasets": ds["_id"]}}
     )
     order["datasets"].remove(ds["_id"])
@@ -125,29 +128,35 @@ def update_dataset(identifier):
     Returns:
         flask.Response: success: 200, failure: 400
     """
-    try:
-        ds_uuid = utils.str_to_uuid(identifier)
-    except ValueError:
-        return flask.abort(status=404)
-    dataset = flask.g.db["datasets"].find_one({"_id": ds_uuid})
+    perm_status = utils.req_check_permissions(["DATA_EDIT"])
+    if perm_status != 200:
+        flask.abort(status=perm_status)
+
+    dataset = utils.req_get_entry("datasets", identifier)
     if not dataset:
         flask.abort(status=404)
     # permissions
-    order = flask.g.db["orders"].find_one({"datasets": ds_uuid})
+    order = flask.g.db["orders"].find_one({"datasets": dataset["_id"]})
     if (
         not user.has_permission("DATA_MANAGEMENT")
         and flask.g.current_user["_id"] not in order["editors"]
     ):
         flask.abort(status=403)
 
-    indata = flask.request.json
+    jsondata = flask.request.json
+    if (
+        not jsondata
+        or "dataset" not in jsondata
+        or not isinstance(jsondata["dataset"], dict)
+    ):
+        flask.abort(status=400)
+    indata = jsondata["dataset"]
 
     validation = utils.basic_check_indata(indata, dataset, prohibited=("_id"))
-    if not validation[0]:
-        flask.abort(status=validation[1])
+    if not validation.result:
+        flask.abort(status=validation.status)
 
-    if "description" in indata:
-        indata["description"] = utils.secure_description(indata["description"])
+    indata = utils.prepare_for_db(indata)
 
     is_different = False
     for field in indata:
@@ -155,16 +164,12 @@ def update_dataset(identifier):
             is_different = True
             break
 
-    if is_different:
-        result = flask.g.db["datasets"].update_one(
-            {"_id": dataset["_id"]}, {"$set": indata}
-        )
-        if not result.acknowledged:
-            flask.current_app.logger.error("Dataset update failed: %s", dataset)
+    dataset.update(indata)
+
+    if indata and is_different:
+        result = utils.req_commit_to_db("datasets", "edit", dataset)
+        if not result.log or not result.data:
             flask.abort(status=500)
-        else:
-            dataset.update(indata)
-            utils.make_log("dataset", "edit", "Dataset updated", dataset)
 
     return flask.Response(status=200)
 
