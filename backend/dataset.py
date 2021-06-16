@@ -187,10 +187,15 @@ def get_dataset_log(identifier: str = None):
         flask.current_app.logger.error("Dataset without parent order: %s", dataset["_id"])
         flask.abort(500)
 
-    if not utils.req_has_permission("DATA_MANAGEMENT") and flask.g.current_user["_id"] not in order_data["editors"]:
+    if (
+        not utils.req_has_permission("DATA_MANAGEMENT")
+        and flask.g.current_user["_id"] not in order_data["editors"]
+    ):
         flask.abort(403)
 
-    dataset_logs = list(flask.g.db["logs"].find({"data_type": "dataset", "data._id": dataset["_id"]}))
+    dataset_logs = list(
+        flask.g.db["logs"].find({"data_type": "dataset", "data._id": dataset["_id"]})
+    )
     for log in dataset_logs:
         del log["data_type"]
 
