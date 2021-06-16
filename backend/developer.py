@@ -4,6 +4,7 @@ import copy
 import flask
 
 import user
+import utils
 
 blueprint = flask.Blueprint("developer", __name__)  # pylint: disable=invalid-name
 
@@ -44,7 +45,7 @@ def permission_hello(permission: str):
     Args:
         permission (str): The permission to test for.
     """
-    if not user.has_permission(permission):
+    if not utils.req_has_permission(permission):
         flask.abort(status=403)
 
     return flask.jsonify({"test": "success"})

@@ -64,12 +64,12 @@ def list_users():
 
     Admin access should be required.
     """
-    if not has_permission("USER_SEARCH"):
+    if not utils.req_has_permission("USER_SEARCH"):
         flask.abort(403)
 
     fields = {"api_key": 0, "api_salt": 0}
 
-    if not has_permission("USER_MANAGEMENT"):
+    if not utils.req_has_permission("USER_MANAGEMENT"):
         fields["auth_ids"] = 0
         fields["permissions"] = 0
 
@@ -119,8 +119,7 @@ def gen_new_api_key(identifier: str = None):
     Returns:
         flask.Response: The new API key
     """
-    flask.current_app.logger.error(flask.g.current_user["_id"])
-    if identifier != str(flask.g.current_user["_id"]) and not has_permission("USER_MANAGEMENT"):
+    if identifier != str(flask.g.current_user["_id"]) and not utils.req_has_permission("USER_MANAGEMENT"):
         flask.abort(403)
     try:
         user_uuid = utils.str_to_uuid(identifier)
@@ -157,7 +156,7 @@ def get_user_data(identifier: str):
     Returns:
         flask.Response: Information about the user as json.
     """
-    if not has_permission("USER_MANAGEMENT"):
+    if not utils.req_has_permission("USER_MANAGEMENT"):
         flask.abort(403)
 
     try:
@@ -186,7 +185,7 @@ def add_user():
     Returns:
         flask.Response: Information about the user as json.
     """
-    if not has_permission("USER_ADD"):
+    if not utils.req_has_permission("USER_ADD"):
         flask.abort(403)
 
     new_user = structure.user()
@@ -209,7 +208,7 @@ def add_user():
         flask.current_app.logger.debug("User already exists")
         flask.abort(status=400)
 
-    if not has_permission("USER_MANAGEMENT") and "permissions" in indata:
+    if not utils.req_has_permission("USER_MANAGEMENT") and "permissions" in indata:
         flask.current_app.logger.debug("USER_MANAGEMENT required for permissions")
         flask.abort(403)
 
@@ -239,7 +238,7 @@ def delete_user(identifier: str):
     Returns:
         flask.Response: Response code.
     """
-    if not has_permission("USER_MANAGEMENT"):
+    if not utils.req_has_permission("USER_MANAGEMENT"):
         flask.abort(403)
 
     try:
@@ -307,7 +306,7 @@ def update_user_info(identifier: str):
     Returns:
         flask.Response: Response code.
     """
-    if not has_permission("USER_MANAGEMENT"):
+    if not utils.req_has_permission("USER_MANAGEMENT"):
         flask.abort(403)
 
     try:
@@ -370,7 +369,7 @@ def get_user_log(identifier: str):
     Returns:
         flask.Response: Information about the user as json.
     """
-    if str(flask.g.current_user["_id"]) != identifier and not has_permission("USER_MANAGEMENT"):
+    if str(flask.g.current_user["_id"]) != identifier and not utils.req_has_permission("USER_MANAGEMENT"):
         flask.abort(403)
 
     try:
@@ -405,7 +404,7 @@ def get_user_actions(identifier: str):
     if identifier is None:
         identifier = str(flask.g.current_user["_id"])
 
-    if str(flask.g.current_user["_id"]) != identifier and not has_permission("USER_MANAGEMENT"):
+    if str(flask.g.current_user["_id"]) != identifier and not utils.req_has_permission("USER_MANAGEMENT"):
         flask.abort(403)
 
     try:
@@ -508,14 +507,3 @@ def get_user(user_uuid=None):
         if user:
             return user
     return None
-
-
-def has_permission(permission: str):
-    """
-    Check permission for current user.
-
-    Function moved to utils.
-
-    Kept until all current uses have been migrated.
-    """
-    return utils.has_permission(permission, flask.g.permissions)
