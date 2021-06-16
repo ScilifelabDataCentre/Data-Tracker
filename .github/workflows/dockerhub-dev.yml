@@ -18,14 +18,14 @@ jobs:
       - name: Push backend to Docker Hub
         uses: docker/build-push-action@v2
         with:
-          file: k8s/Dockerfile.backend
+          file: Dockerfiles/Dockerfile.backend
           context: .
           push: true
           tags: scilifelabdatacentre/data-tracker-backend:dev
       - name: Push frontend to Docker Hub
         uses: docker/build-push-action@v2
         with:
-          file: k8s/Dockerfile.frontend
+          file: Dockerfiles/Dockerfile.frontend
           context: .
           push: true
           tags: scilifelabdatacentre/data-tracker-frontend:dev
