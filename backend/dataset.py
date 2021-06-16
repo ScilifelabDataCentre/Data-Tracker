@@ -126,7 +126,7 @@ def update_dataset(identifier):
     # permissions
     order = flask.g.db["orders"].find_one({"datasets": dataset["_id"]})
     if (
-        not user.has_permission("DATA_MANAGEMENT")
+        not utils.req_has_permission("DATA_MANAGEMENT")
         and flask.g.current_user["_id"] not in order["editors"]
     ):
         flask.abort(status=403)
@@ -164,7 +164,9 @@ def get_dataset_log(identifier: str = None):
     """
     Get change logs for the user entry with uuid ``identifier``.
 
-    Can be accessed by creator (order), receiver (order), and admin (DATA_MANAGEMENT).
+    Can be accessed by editors with DATA_EDIT and admin (DATA_MANAGEMENT).
+
+    Logs for deleted datasets cannot be accessed.
 
     Args:
         identifier (str): The uuid of the dataset.
@@ -172,26 +174,30 @@ def get_dataset_log(identifier: str = None):
     Returns:
         flask.Response: Logs as json.
     """
-    try:
-        dataset_uuid = utils.str_to_uuid(identifier)
-    except ValueError:
+    perm_status = utils.req_check_permissions(["DATA_EDIT"])
+    if perm_status != 200:
+        flask.abort(status=perm_status)
+
+    dataset = utils.req_get_entry("datasets", identifier)
+    if not dataset:
         flask.abort(status=404)
 
-    if not user.has_permission("DATA_MANAGEMENT"):
-        order_data = flask.g.db["orders"].find_one({"datasets": dataset_uuid})
-        if not order_data:
-            flask.abort(403)
-        if flask.g.current_user["_id"] not in order_data["editors"]:
-            flask.abort(403)
+    order_data = flask.g.db["orders"].find_one({"datasets": dataset["_id"]})
+    if not order_data:
+        flask.current_app.logger.error("Dataset without parent order: %s", dataset["_id"])
+        flask.abort(500)
 
-    dataset_logs = list(flask.g.db["logs"].find({"data_type": "dataset", "data._id": dataset_uuid}))
+    if not utils.req_has_permission("DATA_MANAGEMENT") and flask.g.current_user["_id"] not in order_data["editors"]:
+        flask.abort(403)
+
+    dataset_logs = list(flask.g.db["logs"].find({"data_type": "dataset", "data._id": dataset["_id"]}))
     for log in dataset_logs:
         del log["data_type"]
 
     utils.incremental_logs(dataset_logs)
 
     return utils.response_json(
-        {"entry_id": dataset_uuid, "data_type": "dataset", "logs": dataset_logs}
+        {"entry_id": dataset["_id"], "data_type": "dataset", "logs": dataset_logs}
     )
 
 
