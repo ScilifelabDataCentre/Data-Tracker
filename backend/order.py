@@ -98,9 +98,7 @@ def get_order_logs(identifier):
     ):
         flask.abort(status=403)
 
-    order_logs = list(
-        flask.g.db["logs"].find({"data_type": "order", "data._id": entry["_id"]})
-    )
+    order_logs = list(flask.g.db["logs"].find({"data_type": "order", "data._id": entry["_id"]}))
     if not order_logs:
         flask.abort(status=404)
 
@@ -109,9 +107,7 @@ def get_order_logs(identifier):
 
     utils.incremental_logs(order_logs)
 
-    return utils.response_json(
-        {"entry_id": entry["_id"], "data_type": "order", "logs": order_logs}
-    )
+    return utils.response_json({"entry_id": entry["_id"], "data_type": "order", "logs": order_logs})
 
 
 @blueprint.route("", methods=["POST"])
@@ -126,11 +122,7 @@ def add_order():
     new_order = structure.order()
 
     jsondata = flask.request.json
-    if (
-        not jsondata
-        or "order" not in jsondata
-        or not isinstance(jsondata["order"], dict)
-    ):
+    if not jsondata or "order" not in jsondata or not isinstance(jsondata["order"], dict):
         flask.abort(status=400)
     indata = jsondata["order"]
 
@@ -184,12 +176,8 @@ def delete_order(identifier: str):
         if not result.log or not result.data:
             flask.abort(status=500)
     # delete dataset references in all collections
-    collections = list(
-        flask.g.db["collections"].find({"datasets": {"$in": entry["datasets"]}})
-    )
-    flask.g.db["collections"].update_many(
-        {}, {"$pull": {"datasets": {"$in": entry["datasets"]}}}
-    )
+    collections = list(flask.g.db["collections"].find({"datasets": {"$in": entry["datasets"]}}))
+    flask.g.db["collections"].update_many({}, {"$pull": {"datasets": {"$in": entry["datasets"]}}})
     for collection in collections:
         collection["datasets"] = [
             ds for ds in collection["datasets"] if ds not in entry["datasets"]
@@ -230,11 +218,7 @@ def update_order(identifier: str):  # pylint: disable=too-many-branches
         flask.abort(status=403)
 
     jsondata = flask.request.json
-    if (
-        not jsondata
-        or "order" not in jsondata
-        or not isinstance(jsondata["order"], dict)
-    ):
+    if not jsondata or "order" not in jsondata or not isinstance(jsondata["order"], dict):
         flask.abort(status=400)
     indata = jsondata["order"]
 
@@ -290,11 +274,7 @@ def add_dataset(identifier: str):  # pylint: disable=too-many-branches
     new_dataset = structure.dataset()
 
     jsondata = flask.request.json
-    if (
-        not jsondata
-        or "dataset" not in jsondata
-        or not isinstance(jsondata["dataset"], dict)
-    ):
+    if not jsondata or "dataset" not in jsondata or not isinstance(jsondata["dataset"], dict):
         flask.abort(status=400)
     indata = jsondata["dataset"]
 
@@ -310,7 +290,7 @@ def add_dataset(identifier: str):  # pylint: disable=too-many-branches
     if not ds_result.log or not ds_result.data:
         flask.abort(status=500)
 
-    order_result = flask.g.db["order"].update_one(
+    order_result = flask.g.db["orders"].update_one(
         {"_id": order["_id"]}, {"$push": {"datasets": new_dataset["_id"]}}
     )
     if not order_result.acknowledged:
@@ -354,7 +334,5 @@ def prepare_order_response(order_data: dict, mongodb):
 
     # convert dataset list into {title, _id}
     order_data["datasets"] = list(
-        mongodb["datasets"].find(
-            {"_id": {"$in": order_data["datasets"]}}, {"_id": 1, "title": 1}
-        )
+        mongodb["datasets"].find({"_id": {"$in": order_data["datasets"]}}, {"_id": 1, "title": 1})
     )

@@ -29,9 +29,7 @@ def test_is_email():
 def test_secure_description():
     """Confirm that html is escaped."""
     indata = '# Title *bold* <a href="http://www.example.com">Link</a>'
-    expected = (
-        "# Title *bold* &lt;a href=&quot;http://www.example.com&quot;&gt;Link&lt;/a&gt;"
-    )
+    expected = "# Title *bold* &lt;a href=&quot;http://www.example.com&quot;&gt;Link&lt;/a&gt;"
     assert utils.secure_description(indata) == expected
 
 
@@ -59,12 +57,8 @@ def test_prepare_response():
     utils.prepare_response(indata, url)
     assert indata == expected
 
-    indata = {
-        "list": [{"_id": "value"}, {"_id": "value"}, {"_id": "value"}, {"_id": "value"}]
-    }
-    expected = {
-        "list": [{"id": "value"}, {"id": "value"}, {"id": "value"}, {"id": "value"}]
-    }
+    indata = {"list": [{"_id": "value"}, {"_id": "value"}, {"_id": "value"}, {"_id": "value"}]}
+    expected = {"list": [{"id": "value"}, {"id": "value"}, {"id": "value"}, {"id": "value"}]}
     utils.prepare_response(indata)
     assert indata == expected
 
@@ -79,12 +73,8 @@ def test_prepare_response():
     utils.prepare_response(indata)
     assert indata == expected
 
-    indata = {
-        "list": ({"_id": "value"}, {"_id": "value"}, {"_id": "value"}, {"_id": "value"})
-    }
-    expected = {
-        "list": [{"id": "value"}, {"id": "value"}, {"id": "value"}, {"id": "value"}]
-    }
+    indata = {"list": ({"_id": "value"}, {"_id": "value"}, {"_id": "value"}, {"_id": "value"})}
+    expected = {"list": [{"id": "value"}, {"id": "value"}, {"id": "value"}, {"id": "value"}]}
     utils.prepare_response(indata)
     assert indata == expected
 

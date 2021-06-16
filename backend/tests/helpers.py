@@ -32,9 +32,7 @@ USERS = {
     "root": "root::testers",
 }
 
-Response = collections.namedtuple(
-    "Response", ["data", "code", "role"], defaults=[None, None, None]
-)
+Response = collections.namedtuple("Response", ["data", "code", "role"], defaults=[None, None, None])
 
 FACILITY_RE = re.compile("facility[0-9]*::local")
 ORGANISATION_RE = re.compile("organisation[0-9]*::local")
@@ -89,7 +87,7 @@ def dataset_for_tests():
     yield uuids[1]
 
     # cleanup
-    delete_dataset(*uuids)
+    delete_fixture_dataset(*uuids)
 
 
 def add_dataset_full():
@@ -102,9 +100,7 @@ def add_dataset_full():
     mongo_db = db_connection()
     # prepare
     order_indata = structure.order()
-    order_indata.update(
-        {"description": "Added by fixture.", "title": "Test title from fixture"}
-    )
+    order_indata.update({"description": "Added by fixture.", "title": "Test title from fixture"})
     order_indata.update(TEST_LABEL)
     edit_user = mongo_db["users"].find_one({"auth_ids": USERS["edit"]})
     order_indata["authors"] = [edit_user["_id"]]
@@ -113,9 +109,7 @@ def add_dataset_full():
     order_indata["organisation"] = edit_user["_id"]
 
     dataset_indata = structure.dataset()
-    dataset_indata.update(
-        {"description": "Added by fixture.", "title": "Test title from fixture"}
-    )
+    dataset_indata.update({"description": "Added by fixture.", "title": "Test title from fixture"})
     dataset_indata.update(TEST_LABEL)
 
     collection_indata = structure.collection()
@@ -136,7 +130,7 @@ def add_dataset_full():
     return (order_indata["_id"], dataset_indata["_id"], collection_indata["_id"])
 
 
-def delete_dataset(order_uuid, dataset_uuid, project_uuid):
+def delete_fixture_dataset(order_uuid, dataset_uuid, project_uuid):
     """Delete an order and a dataset added by ``add_dataset()``."""
     mongo_db = db_connection()
     mongo_db["orders"].delete_one({"_id": order_uuid})
@@ -144,9 +138,7 @@ def delete_dataset(order_uuid, dataset_uuid, project_uuid):
     mongo_db["projects"].delete_one({"_id": project_uuid})
 
 
-def make_request(
-    session, url: str, data: dict = None, method="GET", ret_json: bool = True
-) -> dict:
+def make_request(session, url: str, data: dict = None, method="GET", ret_json: bool = True) -> dict:
     """
     Perform a request.
 
@@ -304,9 +296,7 @@ def add_dataset(parent: uuid.UUID) -> uuid.UUID:
     )
     indata.update(TEST_LABEL)
     mongo_db["datasets"].insert_one(indata)
-    mongo_db["orders"].update_one(
-        {"_id": parent}, {"$push": {"datasets": indata["_id"]}}
-    )
+    mongo_db["orders"].update_one({"_id": parent}, {"$push": {"datasets": indata["_id"]}})
     return indata["_id"]
 
 

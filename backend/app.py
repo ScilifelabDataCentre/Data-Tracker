@@ -56,9 +56,7 @@ def prepare():
         if flask.request.method != "GET":
             utils.verify_csrf_token()
         flask.g.current_user = user.get_current_user()
-        flask.g.permissions = (
-            flask.g.current_user["permissions"] if flask.g.current_user else None
-        )
+        flask.g.permissions = flask.g.current_user["permissions"] if flask.g.current_user else None
 
 
 @app.after_request
@@ -79,9 +77,7 @@ def finalize(response):
 @app.route("/api/v1")
 def api_base():
     """List entities."""
-    return flask.jsonify(
-        {"entities": ["dataset", "order", "collection", "user", "login"]}
-    )
+    return flask.jsonify({"entities": ["dataset", "order", "collection", "user", "login"]})
 
 
 @app.route("/api/heartbeat")

@@ -1,4 +1,0 @@
-FROM mongo:latest
-
-ENV MONGO_INITDB_ROOT_USERNAME mongoadmin
-ENV MONGO_INITDB_ROOT_PASSWORD mongopassword

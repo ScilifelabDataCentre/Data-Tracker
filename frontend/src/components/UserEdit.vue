@@ -303,6 +303,7 @@ export default {
       this.userDataSaveError = false;
       this.userDataSaveWaiting = true;
       let toSubmit = {};
+      toSubmit.name = this.userData.name;
       toSubmit.affiliation = this.userData.affiliation;
       toSubmit.email = this.userData.email;
       toSubmit.contact = this.userData.contact;

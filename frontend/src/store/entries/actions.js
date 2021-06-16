@@ -145,7 +145,7 @@ export function saveEntry (context, payload) {
     if (payload.id === '') {
       axios
         .post('/api/v1/' + payload.dataType,
-              payload.data,
+              {[payload.dataType]: payload.data},
               {
                 headers: getCsrfHeader(),
               })
@@ -159,7 +159,7 @@ export function saveEntry (context, payload) {
     else if (payload.dataType === 'newDataset') {
       axios
         .post('/api/v1/order/' + payload.id + '/dataset',
-              payload.data,
+              {'dataset': payload.data},
               {
                 headers: getCsrfHeader(),
               })
@@ -169,7 +169,7 @@ export function saveEntry (context, payload) {
     else {
       axios
         .patch('/api/v1/' + payload.dataType + '/' + payload.id,
-               payload.data,
+               {[payload.dataType]: payload.data},
                {
                  headers: getCsrfHeader(),
                })
@@ -188,7 +188,7 @@ export function addDataset (context, payload) {
   return new Promise((resolve, reject) => {
     axios
       .post('/api/v1/order' + payload.uuid + '/dataset',
-            payload.data,
+            {'dataset': payload.data},
             {
               headers: getCsrfHeader(),
             })

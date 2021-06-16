@@ -23,9 +23,7 @@ ValidationResult = namedtuple("ValidationResult", ["result", "status"])
 CommitResult = namedtuple("CommitResult", ["log", "data", "ins_id"])
 
 
-def basic_check_indata(
-    indata: dict, reference_data: dict, prohibited: Union[tuple, list]
-) -> tuple:
+def basic_check_indata(indata: dict, reference_data: dict, prohibited: Union[tuple, list]) -> tuple:
     """
     Perform basic checks of indata.
 
@@ -47,11 +45,7 @@ def basic_check_indata(
     if prohibited is None:
         prohibited = []
 
-    if (
-        "title" in reference_data
-        and not reference_data["title"]
-        and not indata.get("title")
-    ):
+    if "title" in reference_data and not reference_data["title"] and not indata.get("title"):
         flask.current_app.logger.debug("Title empty")
         return ValidationResult(result=False, status=400)
 
@@ -62,9 +56,7 @@ def basic_check_indata(
         if key not in reference_data:
             flask.current_app.logger.debug("Bad key (%s)", key)
             return ValidationResult(result=False, status=400)
-        if indata[key] != reference_data[key] and not validate.validate_field(
-            key, indata[key]
-        ):
+        if indata[key] != reference_data[key] and not validate.validate_field(key, indata[key]):
             return ValidationResult(result=False, status=400)
     return ValidationResult(result=True, status=200)
 
@@ -178,9 +170,7 @@ def get_dbclient(conf) -> pymongo.mongo_client.MongoClient:
     )
 
 
-def get_db(
-    dbserver: pymongo.mongo_client.MongoClient, conf
-) -> pymongo.database.Database:
+def get_db(dbserver: pymongo.mongo_client.MongoClient, conf) -> pymongo.database.Database:
     """
     Get the connection to the MongoDB database.
 
@@ -191,9 +181,7 @@ def get_db(
     Returns:
         pymongo.database.Database: The database connection.
     """
-    codec_options = bson.codec_options.CodecOptions(
-        uuid_representation=bson.binary.STANDARD
-    )
+    codec_options = bson.codec_options.CodecOptions(uuid_representation=bson.binary.STANDARD)
     return dbserver.get_database(conf["mongo"]["db"], codec_options=(codec_options))
 
 
@@ -501,9 +489,7 @@ def req_check_permissions(permissions):
     )
 
 
-def check_permissions(
-    permissions: list, user_permissions: list, logged_in: bool
-) -> int:
+def check_permissions(permissions: list, user_permissions: list, logged_in: bool) -> int:
     """
     Perform the standard permissions check for a request.
 
@@ -525,9 +511,7 @@ def check_permissions(
     if not user_permissions and permissions:
         return 403
     user_permissions = set(
-        chain.from_iterable(
-            user.PERMISSIONS[permission] for permission in user_permissions
-        )
+        chain.from_iterable(user.PERMISSIONS[permission] for permission in user_permissions)
     )
     for perm in permissions:
         if perm not in user_permissions:
@@ -565,9 +549,7 @@ def has_permission(permission: str, user_permissions: list):
     if not user_permissions and permission:
         return False
     full_user_permissions = set(
-        chain.from_iterable(
-            user.PERMISSIONS[permission] for permission in user_permissions
-        )
+        chain.from_iterable(user.PERMISSIONS[permission] for permission in user_permissions)
     )
     if permission not in full_user_permissions:
         return False
