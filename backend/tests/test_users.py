@@ -278,12 +278,14 @@ def test_add_user(mdb):
             assert response.code == 403
             assert not response.data
 
-    indata = {"user": {
-        "affiliation": "Added University",
-        "name": "Added name",
-        "email": "user2@added.example.com",
-        "permissions": ["DATA_EDIT"],
-    }}
+    indata = {
+        "user": {
+            "affiliation": "Added University",
+            "name": "Added name",
+            "email": "user2@added.example.com",
+            "permissions": ["DATA_EDIT"],
+        }
+    }
     session = requests.session()
     as_user(session, USERS["edit"])
     response = make_request(session, "/api/v1/user", ret_json=True, method="POST", data=indata)

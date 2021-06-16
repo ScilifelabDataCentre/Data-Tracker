@@ -773,12 +773,12 @@ def test_delete_order_data(mdb):
     )
 
     # clean up added orders
-    for order in mdb["orders"].find(TEST_LABEL):
-        response = helpers.make_request(session, f'/api/v1/order/{order["_id"]}', method="DELETE")
+    for entry in mdb["orders"].find(TEST_LABEL):
+        response = helpers.make_request(session, f'/api/v1/order/{entry["_id"]}', method="DELETE")
         assert response.code == 200
-        assert not mdb["orders"].find_one({"_id": order["_id"]})
-        assert not mdb["datasets"].find_one({"_id": {"$in": order["datasets"]}})
-        assert not mdb["collections"].find_one({"datasets": {"$in": order["datasets"]}})
+        assert not mdb["orders"].find_one({"_id": entry["_id"]})
+        assert not mdb["datasets"].find_one({"_id": {"$in": entry["datasets"]}})
+        assert not mdb["collections"].find_one({"datasets": {"$in": entry["datasets"]}})
 
 
 def test_delete_order_bad():

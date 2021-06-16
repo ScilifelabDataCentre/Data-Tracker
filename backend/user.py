@@ -11,7 +11,6 @@ Requests
     User-related API endpoints, including login/logout and user manament.
 """
 import functools
-import json
 
 import flask
 
@@ -119,7 +118,9 @@ def gen_new_api_key(identifier: str = None):
     Returns:
         flask.Response: The new API key
     """
-    if identifier != str(flask.g.current_user["_id"]) and not utils.req_has_permission("USER_MANAGEMENT"):
+    if identifier != str(flask.g.current_user["_id"]) and not utils.req_has_permission(
+        "USER_MANAGEMENT"
+    ):
         flask.abort(403)
     try:
         user_uuid = utils.str_to_uuid(identifier)
@@ -219,7 +220,7 @@ def add_user():
 
     new_user.update(indata)
 
-    new_user["auth_ids"] = [f'email']
+    new_user["auth_ids"] = [new_user["email"]]
 
     result = utils.req_commit_to_db("users", "add", new_user)
     if not result.log or not result.data:
@@ -362,7 +363,9 @@ def get_user_log(identifier: str):
     Returns:
         flask.Response: Information about the user as json.
     """
-    if str(flask.g.current_user["_id"]) != identifier and not utils.req_has_permission("USER_MANAGEMENT"):
+    if str(flask.g.current_user["_id"]) != identifier and not utils.req_has_permission(
+        "USER_MANAGEMENT"
+    ):
         flask.abort(403)
 
     try:
@@ -397,7 +400,9 @@ def get_user_actions(identifier: str):
     if identifier == "me":
         identifier = str(flask.g.current_user["_id"])
 
-    if str(flask.g.current_user["_id"]) != identifier and not utils.req_has_permission("USER_MANAGEMENT"):
+    if str(flask.g.current_user["_id"]) != identifier and not utils.req_has_permission(
+        "USER_MANAGEMENT"
+    ):
         flask.abort(403)
 
     try:
