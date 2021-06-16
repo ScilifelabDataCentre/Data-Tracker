@@ -54,8 +54,6 @@
 </template>
 
 <script>
-import { openURL } from 'quasar'
-
 import MainDrawerContent from 'components/MainDrawerContent.vue'
 
 export default {
@@ -86,12 +84,6 @@ export default {
   
   created () {
     this.$store.dispatch('currentUser/getInfo');
-  },
-
-  methods: {
-    onClick: function (link) {
-      openURL(link)
-    }
   },
 }
 </script>
