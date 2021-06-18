@@ -21,11 +21,11 @@ jobs:
           file: Dockerfiles/Dockerfile.backend
           context: .
           push: true
-          tags: scilifelabdatacentre/data-tracker-backend:$GITHUB_REF
+          tags: scilifelabdatacentre/data-tracker-backend:${{ github.ref }}
       - name: Push frontend to Docker Hub
         uses: docker/build-push-action@v2
         with:
           file: Dockerfiles/Dockerfile.frontend
           context: .
           push: true
-          tags: scilifelabdatacentre/data-tracker-frontend:$GITHUB_REF
+          tags: scilifelabdatacentre/data-tracker-frontend:${{ github.ref }}
