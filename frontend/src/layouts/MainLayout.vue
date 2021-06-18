@@ -11,6 +11,7 @@
         <q-toolbar-title>
           Data Tracker
         </q-toolbar-title>
+        <q-space />
         <q-btn dense
                flat
                no-wrap
@@ -19,7 +20,8 @@
                target="_blank"
                rel="noopener"
                href="https://www.scilifelab.se/data/">
-          <q-avatar size="2em">
+          <q-avatar square
+                    size="2em">
             <img :src="require('../assets/scilifelab_symbol_white.svg')"
                  alt="SciLifeLab logo"/>
           </q-avatar>
@@ -27,8 +29,9 @@
       </q-toolbar>
       <q-toolbar inset>
         <q-breadcrumbs active-color="white" style="font-size: 16px">
-          <q-breadcrumbs-el icon="home" :to="{ 'name': 'Home' }"/>
+          <q-breadcrumbs-el icon="home" :to="{ 'name': 'Home' }" />
           <q-breadcrumbs-el v-for="(part, i) in breadcrumbs"
+                            class="text-weight-bold"
                             :key="part"
                             :label="part"
                             :to="'/' + breadcrumbs.slice(0, i+1).join('/')"/>
@@ -52,8 +55,6 @@
 </template>
 
 <script>
-import { openURL } from 'quasar'
-
 import MainDrawerContent from 'components/MainDrawerContent.vue'
 
 export default {
@@ -84,12 +85,6 @@ export default {
   
   created () {
     this.$store.dispatch('currentUser/getInfo');
-  },
-
-  methods: {
-    onClick: function (link) {
-      openURL(link)
-    }
   },
 }
 </script>

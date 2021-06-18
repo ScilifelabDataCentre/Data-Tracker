@@ -85,7 +85,7 @@ export default {
   watch: {
     value: function(val) {
       if (val)
-        if (val && (this.uuid !== '' || this.dataType === 'me')) {
+        if (val && (this.uuid !== '')) {
           this.$store.dispatch('entries/resetEntryLog')
             .then(() => {
               this.$store.dispatch('entries/getEntryLog', {'id': this.uuid,

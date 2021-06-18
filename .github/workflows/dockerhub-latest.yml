@@ -1,29 +1,32 @@
-name: Docker Image CI
-
+name: Publish Docker image
 on:
   push:
     branches:
       - master
-
 jobs:
-  build:
+  push_to_registry:
     if: github.repository == 'ScilifelabDataCentre/Data-Tracker'
+    name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Publish backend to Docker Hub
-        uses: elgohr/Publish-Docker-Github-Action@master
+      - name: Check out the repo
+        uses: actions/checkout@v2
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v1
         with:
-          name: scilifelabdatacentre/data-tracker-backend
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-          dockerfile: k8s/Dockerfile-backend
-          tags: "latest"
-      - name: Publish frontend to Docker Hub
-        uses: elgohr/Publish-Docker-Github-Action@master
+      - name: Push backend to Docker Hub
+        uses: docker/build-push-action@v2
         with:
-          name: scilifelabdatacentre/data-tracker-frontend
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-          dockerfile: k8s/Dockerfile-frontend
-          tags: "latest"
+          file: Dockerfiles/Dockerfile.backend
+          context: .
+          push: true
+          tags: scilifelabdatacentre/data-tracker-backend:latest
+      - name: Push frontend to Docker Hub
+        uses: docker/build-push-action@v2
+        with:
+          file: Dockerfiles/Dockerfile.frontend
+          context: .
+          push: true
+          tags: scilifelabdatacentre/data-tracker-frontend:latest

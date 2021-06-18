@@ -7,6 +7,7 @@ import os
 import random
 import re
 import string
+import uuid
 
 import pytest
 import requests
@@ -14,7 +15,6 @@ import requests
 import config
 import structure
 import utils
-
 
 CURR_DIR = os.path.realpath(__file__)
 SETTINGS = json.loads(open(f"{os.path.dirname(CURR_DIR)}/settings_tests.json").read())
@@ -32,9 +32,7 @@ USERS = {
     "root": "root::testers",
 }
 
-Response = collections.namedtuple(
-    "Response", ["data", "code", "role"], defaults=[None, None, None]
-)
+Response = collections.namedtuple("Response", ["data", "code", "role"], defaults=[None, None, None])
 
 FACILITY_RE = re.compile("facility[0-9]*::local")
 ORGANISATION_RE = re.compile("organisation[0-9]*::local")
@@ -56,7 +54,7 @@ def mdb():
 
 def as_user(session: requests.Session, auth_id: str, set_csrf: bool = True) -> int:
     """
-    Helper method to log in as requested user.
+    Set the current user to the one with the provided ``auth_id``.
 
     Session changed in-place.
 
@@ -85,14 +83,14 @@ def dataset_for_tests():
 
     Yields the uuid of the added dataset.
     """
-    uuids = add_dataset()
+    uuids = add_dataset_full()
     yield uuids[1]
 
     # cleanup
-    delete_dataset(*uuids)
+    delete_fixture_dataset(*uuids)
 
 
-def add_dataset():
+def add_dataset_full():
     """
     Add an order with a dataset.
 
@@ -102,9 +100,7 @@ def add_dataset():
     mongo_db = db_connection()
     # prepare
     order_indata = structure.order()
-    order_indata.update(
-        {"description": "Added by fixture.", "title": "Test title from fixture"}
-    )
+    order_indata.update({"description": "Added by fixture.", "title": "Test title from fixture"})
     order_indata.update(TEST_LABEL)
     edit_user = mongo_db["users"].find_one({"auth_ids": USERS["edit"]})
     order_indata["authors"] = [edit_user["_id"]]
@@ -113,9 +109,7 @@ def add_dataset():
     order_indata["organisation"] = edit_user["_id"]
 
     dataset_indata = structure.dataset()
-    dataset_indata.update(
-        {"description": "Added by fixture.", "title": "Test title from fixture"}
-    )
+    dataset_indata.update({"description": "Added by fixture.", "title": "Test title from fixture"})
     dataset_indata.update(TEST_LABEL)
 
     collection_indata = structure.collection()
@@ -136,21 +130,18 @@ def add_dataset():
     return (order_indata["_id"], dataset_indata["_id"], collection_indata["_id"])
 
 
-def delete_dataset(order_uuid, dataset_uuid, project_uuid):
-    """
-    Delete an order and a dataset added by ``add_dataset()``.
-    """
+def delete_fixture_dataset(order_uuid, dataset_uuid, project_uuid):
+    """Delete an order and a dataset added by ``add_dataset()``."""
     mongo_db = db_connection()
     mongo_db["orders"].delete_one({"_id": order_uuid})
     mongo_db["datasets"].delete_one({"_id": dataset_uuid})
     mongo_db["projects"].delete_one({"_id": project_uuid})
 
 
-def make_request(
-    session, url: str, data: dict = None, method="GET", ret_json: bool = True
-) -> dict:
+def make_request(session, url: str, data: dict = None, method="GET", ret_json: bool = True) -> dict:
     """
-    Helper method for using get/post to a url.
+    Perform a request.
+
     Args:
         session (requests.Session()): The session to use
         url: str: The url to get without {BASE_URL} prefix (but with leading /)
@@ -219,24 +210,94 @@ def collection_for_tests():
     Yields the uuid of the added collection.
     """
     # prepare
+    ins_id = add_collection()
+    yield ins_id
     mongo_db = db_connection()
-    session = requests.Session()
-    as_user(session, USERS["data"])
-    collection_indata = structure.collection()
+    mongo_db["collections"].delete_one({"_id": ins_id})
+
+
+def add_collection(datasets: list = None) -> uuid.UUID:
+    """
+    Add a collection that can be used for tests.
+
+    The "edit" user is the editor.
+
+    Args:
+      datasets (list): List of dataset uuids to use for the collection.
+
+    Returns:
+        uuid.UUID: The _id of the collection.
+    """
+    mongo_db = db_connection()
+    indata = structure.collection()
     edit_user = mongo_db["users"].find_one({"auth_ids": USERS["edit"]})
-    collection_indata.update(
+    indata.update(
         {
             "description": "Added by fixture.",
             "title": "Test title from fixture",
+            "tags": ["fromFixture", "testing"],
+            "editors": [edit_user["_id"]],
+            "datasets": datasets or [],
+        }
+    )
+    indata.update(TEST_LABEL)
+    mongo_db["collections"].insert_one(indata)
+    return indata["_id"]
+
+
+def add_order() -> uuid.UUID:
+    """
+    Add an order that can be used for tests.
+
+    The "edit" user is the editor.
+
+    Returns:
+        uuid.UUID: The _id of the order.
+    """
+    mongo_db = db_connection()
+    indata = structure.order()
+    edit_user = mongo_db["users"].find_one({"auth_ids": USERS["edit"]})
+    indata.update(
+        {
+            "description": "Added by fixture.",
+            "title": "Test title from fixture",
+            "tags": ["fromFixture", "testing"],
+            "authors": [edit_user["_id"]],
+            "generators": [edit_user["_id"]],
+            "organisation": edit_user["_id"],
             "editors": [edit_user["_id"]],
         }
     )
-    collection_indata.update(TEST_LABEL)
-    mongo_db["collections"].insert_one(collection_indata)
+    indata.update(TEST_LABEL)
+    mongo_db["orders"].insert_one(indata)
+    return indata["_id"]
 
-    yield collection_indata["_id"]
 
-    mongo_db["collections"].delete_one({"_id": collection_indata["_id"]})
+def add_dataset(parent: uuid.UUID) -> uuid.UUID:
+    """
+    Add a dataset that can be used for tests.
+
+    Will be conneted to the provided order. The "edit" user is the editor.
+
+    Args:
+        parent (uuid.UUID): The order to use as parent.
+
+    Returns:
+        uuid.UUID: The _id of the dataset.
+    """
+    mongo_db = db_connection()
+    indata = structure.dataset()
+    indata.update(
+        {
+            "description": "Added by fixture.",
+            "title": "Test title from fixture",
+            "tags": ["fromFixture", "testing"],
+        }
+    )
+    indata.update(TEST_LABEL)
+    mongo_db["datasets"].insert_one(indata)
+    mongo_db["orders"].update_one({"_id": parent}, {"$push": {"datasets": indata["_id"]}})
+    return indata["_id"]
 
 
 def random_string(min_length: int = 1, max_length: int = 150):
@@ -265,3 +326,18 @@ def parse_time(datetime_str: str):
     """
     str_format = "%a, %d %b %Y %H:%M:%S %Z"
     return datetime.datetime.strptime(datetime_str, str_format)
+
+
+def users_uuids():
+    """
+    Generate a list of the uuids of all users in ``USERS``.
+
+    Returns:
+        list: All uuids (as str) for ``USERS``.
+    """
+    mongo_db = db_connection()
+    return [
+        str(mongo_db["users"].find_one({"auth_ids": USERS[entry]})["_id"])
+        for entry in USERS
+        if USERS[entry]
+    ]

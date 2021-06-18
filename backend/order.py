@@ -9,7 +9,6 @@ Special permissions are required to access orders:
 import flask
 
 import structure
-import user
 import utils
 
 blueprint = flask.Blueprint("order", __name__)  # pylint: disable=invalid-name
@@ -22,10 +21,9 @@ def prepare():
 
     Make sure that the user is logged in and has the required permission.
     """
-    if not flask.g.current_user:
-        flask.abort(status=401)
-    if not user.has_permission("DATA_EDIT"):
-        flask.abort(status=403)
+    perm_status = utils.req_check_permissions(["DATA_EDIT"])
+    if perm_status != 200:
+        flask.abort(status=perm_status)
 
 
 @blueprint.route("", methods=["GET"])
@@ -36,51 +34,15 @@ def list_orders():
     Returns:
         flask.Response: JSON structure with a list of orders.
     """
-    if user.has_permission("DATA_MANAGEMENT"):
-        orders = list(
-            flask.g.db["orders"].find(
-                projection={"_id": 1, "title": 1, "tags": 1, "properties": 1}
-            )
-        )
+    projection = {"_id": 1, "title": 1, "tags": 1, "properties": 1}
+    if utils.req_has_permission("DATA_MANAGEMENT"):
+        orders = list(flask.g.db["orders"].find(projection=projection))
     else:
         orders = list(
             flask.g.db["orders"].find(
-                {"editors": flask.g.current_user["_id"]},
-                projection={"_id": 1, "title": 1},
+                {"editors": flask.g.current_user["_id"]}, projection=projection
             )
         )
-
-    return utils.response_json({"orders": orders})
-
-
-@blueprint.route("/user", defaults={"user_id": None}, methods=["GET"])
-@blueprint.route("/user/<user_id>", methods=["GET"])
-def list_orders_user(user_id: str):
-    """
-    List all orders belonging to the provided user.
-
-    Args:
-        userid (str): Uuid of user to find orders for.
-
-    Returns:
-        flask.Response: Json structure with a list of orders.
-    """
-    if user_id:
-        if not user.has_permission("OWNERS_READ"):
-            flask.abort(status=403)
-        try:
-            user_uuid = utils.str_to_uuid(user_id)
-        except ValueError:
-            return flask.abort(status=404)
-        if not flask.g.db["users"].find_one({"_id": user_uuid}):
-            return flask.abort(status=404)
-    else:  # current user
-        user_uuid = flask.session["user_id"]
-    orders = list(
-        flask.g.db["orders"].find(
-            {"editors": user_uuid}, projection={"_id": 1, "title": 1}
-        )
-    )
 
     return utils.response_json({"orders": orders})
 
@@ -96,24 +58,20 @@ def get_order(identifier):
         identifier (str): Uuid for the wanted order.
 
     Returns:
-        flask.Response: Json structure for the order.
+        flask.Response: JSON structure for the order.
     """
-    try:
-        uuid = utils.str_to_uuid(identifier)
-    except ValueError:
-        flask.abort(status=404)
-    order_data = flask.g.db["orders"].find_one({"_id": uuid})
-    if not order_data:
+    entry = utils.req_get_entry("orders", identifier)
+    if not entry:
         flask.abort(status=404)
     if not (
-        user.has_permission("DATA_MANAGEMENT")
-        or flask.session["user_id"] in order_data["editors"]
+        utils.req_has_permission("DATA_MANAGEMENT")
+        or flask.g.current_user["_id"] in entry["editors"]
     ):
         flask.abort(status=403)
 
-    prepare_order_response(order_data, flask.g.db)
+    prepare_order_response(entry, flask.g.db)
 
-    return utils.response_json({"order": order_data})
+    return utils.response_json({"order": entry})
 
 
 @blueprint.route("/<identifier>/log", methods=["GET"])
@@ -131,40 +89,25 @@ def get_order_logs(identifier):
     Returns:
         flask.Response: Json structure for the logs.
     """
-    try:
-        order_uuid = utils.str_to_uuid(identifier)
-    except ValueError:
+    entry = utils.req_get_entry("orders", identifier)
+    if not entry:
+        flask.abort(status=404)
+    if (
+        not utils.req_has_permission("DATA_MANAGEMENT")
+        and flask.g.current_user["_id"] not in entry["editors"]
+    ):
+        flask.abort(status=403)
+
+    order_logs = list(flask.g.db["logs"].find({"data_type": "order", "data._id": entry["_id"]}))
+    if not order_logs:
         flask.abort(status=404)
 
-    if not user.has_permission("DATA_MANAGEMENT"):
-        order_data = flask.g.db["orders"].find_one({"_id": order_uuid})
-        if not order_data or flask.g.current_user["_id"] not in order_data["editors"]:
-            flask.abort(403)
-
-    order_logs = list(
-        flask.g.db["logs"].find({"data_type": "order", "data._id": order_uuid})
-    )
     for log in order_logs:
         del log["data_type"]
 
     utils.incremental_logs(order_logs)
 
-    return utils.response_json(
-        {"entry_id": order_uuid, "data_type": "order", "logs": order_logs}
-    )
-
-
-@blueprint.route("/structure", methods=["GET"])
-def get_order_data_structure():
-    """
-    Get an empty order entry.
-
-    Returns:
-        flask.Response: JSON structure with a list of orders.
-    """
-    empty_order = structure.order()
-    empty_order["_id"] = ""
-    return utils.response_json({"order": empty_order})
+    return utils.response_json({"entry_id": entry["_id"], "data_type": "order", "logs": order_logs})
 
 
 @blueprint.route("", methods=["POST"])
@@ -178,33 +121,35 @@ def add_order():
     # create new order
     new_order = structure.order()
 
-    indata = flask.request.json
+    jsondata = flask.request.json
+    if not jsondata or "order" not in jsondata or not isinstance(jsondata["order"], dict):
+        flask.abort(status=400)
+    indata = jsondata["order"]
 
     validation = utils.basic_check_indata(indata, new_order, ["_id", "datasets"])
     if not validation.result:
         flask.abort(status=validation.status)
 
+    # add current user to editors if no editors are defined
+    if not indata.get("editors"):
+        indata["editors"] = [flask.g.current_user["_id"]]
+    # add current user if missing and only DATA_EDIT
+    elif (
+        not utils.req_has_permission("DATA_MANAGEMENT")
+        and flask.g.current_user["_id"] not in indata["editors"]
+    ):
+        indata["editors"].append(flask.g.current_user["_id"])
+
     # convert all incoming uuids to uuid.UUID
-    for field in ("editors", "authors", "generators"):
-        if field in indata:
-            indata[field] = [utils.str_to_uuid(entry) for entry in indata[field]]
-    if indata.get("organisation"):
-        indata["organisation"] = utils.str_to_uuid(indata["organisation"])
+    indata = utils.prepare_for_db(indata)
 
     new_order.update(indata)
-    new_order["description"] = utils.secure_description(new_order["description"])
 
-    if not new_order["editors"]:
-        new_order["editors"].append(flask.g.current_user["_id"])
+    result = utils.req_commit_to_db("orders", "add", new_order)
+    if not result.log or not result.data:
+        flask.abort(status=500)
 
-    # add to db
-    result = flask.g.db["orders"].insert_one(new_order)
-    if not result.acknowledged:
-        flask.current_app.logger.error("Order insert failed: %s", new_order)
-    else:
-        utils.make_log("order", "add", "Order added", new_order)
-
-    return utils.response_json({"_id": result.inserted_id})
+    return utils.response_json({"_id": result.ins_id})
 
 
 @blueprint.route("/<identifier>", methods=["DELETE"])
@@ -215,37 +160,38 @@ def delete_order(identifier: str):
     Returns:
         flask.Response: Status code
     """
-    try:
-        order_uuid = utils.str_to_uuid(identifier)
-    except ValueError:
+    entry = utils.req_get_entry("orders", identifier)
+    if not entry:
         flask.abort(status=404)
-    order = flask.g.db["orders"].find_one({"_id": order_uuid})
-    if not order:
-        flask.abort(status=404)
+
+    # permission check
     if (
-        not user.has_permission("DATA_MANAGEMENT")
-        and flask.g.current_user["_id"] not in order["editors"]
+        not utils.req_has_permission("DATA_MANAGEMENT")
+        and flask.g.current_user["_id"] not in entry["editors"]
     ):
         flask.abort(status=403)
 
-    for dataset_uuid in order["datasets"]:
-        result = flask.g.db["datasets"].delete_one({"_id": dataset_uuid})
-        if not result.acknowledged:
-            flask.current_app.logger.error(
-                "Dataset %s delete failed (order %s deletion):",
-                dataset_uuid,
-                order_uuid,
-            )
+    for dataset_uuid in entry["datasets"]:
+        result = utils.req_commit_to_db("datasets", "delete", {"_id": dataset_uuid})
+        if not result.log or not result.data:
             flask.abort(status=500)
-        else:
-            utils.make_log("dataset", "delete", "Deleting order", {"_id": dataset_uuid})
-    result = flask.g.db["orders"].delete_one(order)
-    if not result.acknowledged:
-        flask.current_app.logger.error("Order deletion failed: %s", order_uuid)
-        flask.abort(status=500)
-    else:
-        utils.make_log("order", "delete", "Order deleted", {"_id": order_uuid})
+    # delete dataset references in all collections
+    collections = list(flask.g.db["collections"].find({"datasets": {"$in": entry["datasets"]}}))
+    flask.g.db["collections"].update_many({}, {"$pull": {"datasets": {"$in": entry["datasets"]}}})
+    for collection in collections:
+        collection["datasets"] = [
+            ds for ds in collection["datasets"] if ds not in entry["datasets"]
+        ]
+        utils.req_make_log_new(
+            data_type="collection",
+            action="edit",
+            comment="Order deleted",
+            data=collection,
+        )
 
+    result = utils.req_commit_to_db("orders", "delete", {"_id": entry["_id"]})
+    if not result.log or not result.data:
+        flask.abort(status=500)
     return flask.Response(status=200)
 
 
@@ -260,33 +206,36 @@ def update_order(identifier: str):  # pylint: disable=too-many-branches
     Returns:
         flask.Response: Status code of the request.
     """
-    try:
-        order_uuid = utils.str_to_uuid(identifier)
-    except ValueError:
-        return flask.abort(status=404)
-
-    order = flask.g.db["orders"].find_one({"_id": order_uuid})
+    order = utils.req_get_entry("orders", identifier)
     if not order:
-        return flask.abort(status=404)
-    if not (
-        user.has_permission("DATA_MANAGEMENT")
-        or flask.g.current_user["_id"] in order["editors"]
-    ):
-        return flask.abort(status=403)
+        flask.abort(status=404)
 
-    indata = flask.request.json
+    # permission check
+    if (
+        not utils.req_has_permission("DATA_MANAGEMENT")
+        and flask.g.current_user["_id"] not in order["editors"]
+    ):
+        flask.abort(status=403)
+
+    jsondata = flask.request.json
+    if not jsondata or "order" not in jsondata or not isinstance(jsondata["order"], dict):
+        flask.abort(status=400)
+    indata = jsondata["order"]
+
     validation = utils.basic_check_indata(indata, order, ["_id", "datasets"])
     if not validation.result:
         flask.abort(status=validation.status)
 
-    for field in ("editors", "authors", "generators"):
-        if field in indata:
-            indata[field] = [utils.str_to_uuid(entry) for entry in indata[field]]
-    if indata.get("organisation"):
-        indata["organisation"] = utils.str_to_uuid(indata["organisation"])
+    # DATA_EDIT may not delete itself from editors
+    if (
+        not utils.req_has_permission("DATA_MANAGEMENT")
+        and indata.get("editors")
+        and str(flask.g.current_user["_id"]) not in indata["editors"]
+    ):
+        flask.abort(status=400)
 
-    if "description" in indata:
-        indata["description"] = utils.secure_description(indata["description"])
+    # convert all incoming uuids to uuid.UUID
+    indata = utils.prepare_for_db(indata)
 
     is_different = False
     for field in indata:
@@ -296,21 +245,15 @@ def update_order(identifier: str):  # pylint: disable=too-many-branches
 
     order.update(indata)
 
-    if not order["editors"]:
-        order["editors"] = [flask.g.current_user["_id"]]
-
-    if is_different:
-        result = flask.g.db["orders"].update_one({"_id": order["_id"]}, {"$set": order})
-        if not result.acknowledged:
-            flask.current_app.logger.error("Order update failed: %s", order)
-        else:
-            utils.make_log("order", "edit", "Order updated", order)
+    if indata and is_different:
+        result = utils.req_commit_to_db("orders", "edit", order)
+        if not result.log or not result.data:
+            flask.abort(status=500)
 
     return flask.Response(status=200)
 
 
 @blueprint.route("/<identifier>/dataset", methods=["POST"])
-@user.login_required
 def add_dataset(identifier: str):  # pylint: disable=too-many-branches
     """
     Add a dataset to the given order.
@@ -318,59 +261,52 @@ def add_dataset(identifier: str):  # pylint: disable=too-many-branches
     Args:
         identifier (str): The order to add the dataset to.
     """
-    # permissions
-    indata = flask.request.json
-    try:
-        order_uuid = utils.str_to_uuid(identifier)
-    except ValueError:
-        flask.current_app.logger.debug("Incorrect order UUID (%s)", indata["order"])
-        flask.abort(status=400)
-    order = flask.g.db["orders"].find_one({"_id": order_uuid})
+    order = utils.req_get_entry("orders", identifier)
     if not order:
-        flask.current_app.logger.debug("Order (%s) not in db", indata["order"])
-        flask.abort(status=400)
-    if not (
-        user.has_permission("DATA_MANAGEMENT")
-        or flask.g.current_user["_id"] in order["editors"]
-    ):
-        return flask.abort(status=403)
+        flask.abort(status=404)
 
-    # create new dataset
-    dataset = structure.dataset()
-    validation = utils.basic_check_indata(indata, dataset, ["_id"])
+    if (
+        not utils.req_has_permission("DATA_MANAGEMENT")
+        and flask.g.current_user["_id"] not in order["editors"]
+    ):
+        flask.abort(status=403)
+
+    new_dataset = structure.dataset()
+
+    jsondata = flask.request.json
+    if not jsondata or "dataset" not in jsondata or not isinstance(jsondata["dataset"], dict):
+        flask.abort(status=400)
+    indata = jsondata["dataset"]
+
+    validation = utils.basic_check_indata(indata, new_dataset, ["_id"])
     if not validation.result:
         flask.abort(status=validation.status)
-    dataset.update(indata)
 
-    dataset["description"] = utils.secure_description(dataset["description"])
+    indata = utils.prepare_for_db(indata)
 
-    # add to db
-    result_ds = flask.g.db["datasets"].insert_one(dataset)
-    if not result_ds.acknowledged:
-        flask.current_app.logger.error("Dataset insert failed: %s", dataset)
-    else:
-        utils.make_log(
-            "dataset", "add", f"Dataset added for order {order_uuid}", dataset
+    new_dataset.update(indata)
+
+    ds_result = utils.req_commit_to_db("datasets", "add", new_dataset)
+    if not ds_result.log or not ds_result.data:
+        flask.abort(status=500)
+
+    order_result = flask.g.db["orders"].update_one(
+        {"_id": order["_id"]}, {"$push": {"datasets": new_dataset["_id"]}}
+    )
+    if not order_result.acknowledged:
+        flask.current_app.logger.error(
+            "Failed to add dataset %s to order %s", new_dataset["_id"], order["_id"]
         )
+        flask.abort(status=500)
+    order["datasets"].append(new_dataset["_id"])
+    utils.req_make_log_new(
+        data_type="order",
+        action="edit",
+        comment="Dataset added",
+        data=order,
+    )
 
-        result_o = flask.g.db["orders"].update_one(
-            {"_id": order_uuid}, {"$push": {"datasets": dataset["_id"]}}
-        )
-        if not result_o.acknowledged:
-            flask.current_app.logger.error(
-                "Order %s insert failed: ADD dataset %s", order_uuid, dataset["_id"]
-            )
-        else:
-            order = flask.g.db["orders"].find_one({"_id": order_uuid})
-
-            utils.make_log(
-                "order",
-                "edit",
-                f"Dataset {result_ds.inserted_id} added for order",
-                order,
-            )
-
-    return utils.response_json({"_id": result_ds.inserted_id})
+    return utils.response_json({"_id": ds_result.ins_id})
 
 
 def prepare_order_response(order_data: dict, mongodb):
@@ -398,7 +334,5 @@ def prepare_order_response(order_data: dict, mongodb):
 
     # convert dataset list into {title, _id}
     order_data["datasets"] = list(
-        mongodb["datasets"].find(
-            {"_id": {"$in": order_data["datasets"]}}, {"_id": 1, "title": 1}
-        )
+        mongodb["datasets"].find({"_id": {"$in": order_data["datasets"]}}, {"_id": 1, "title": 1})
     )

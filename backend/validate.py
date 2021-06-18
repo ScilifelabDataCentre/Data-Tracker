@@ -4,9 +4,9 @@ Validators for indata.
 Indata can be sent to ``validate_field``, which will use the corresponding
 functions to check each field.
 """
-from typing import Any
 import re
 import uuid
+from typing import Any
 
 import flask
 
@@ -42,9 +42,7 @@ def validate_field(field_key: str, field_value: Any, testing=False) -> bool:
         return False
     except ValueError as err:
         if not testing:
-            flask.current_app.logger.debug(
-                "Indata validation failed: %s - %s", field_key, err
-            )
+            flask.current_app.logger.debug("Indata validation failed: %s - %s", field_key, err)
         return False
     return True
 

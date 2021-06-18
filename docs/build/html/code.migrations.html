@@ -1,0 +1,139 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>migrations.py &#8212; Data Tracker  documentation</title>
+    <link rel="stylesheet" type="text/css" href="static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="static/documentation_options.js"></script>
+    <script src="static/jquery.js"></script>
+    <script src="static/underscore.js"></script>
+    <script src="static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="order.py" href="code.order.html" />
+    <link rel="prev" title="developer.py" href="code.developer.html" />
+   
+  <link rel="stylesheet" href="static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-migrations">
+<span id="migrations-py"></span><h1>migrations.py<a class="headerlink" href="#module-migrations" title="Permalink to this headline">¶</a></h1>
+<p>Database migrations.</p>
+<p>Each migration should be a function changing property names etc.</p>
+<p><code class="docutils literal notranslate"><span class="pre">MIGRATIONS</span></code> contain all migrations.
+To migrate the database from version <code class="docutils literal notranslate"><span class="pre">X</span></code> to version <code class="docutils literal notranslate"><span class="pre">Y`,</span>
+<span class="pre">run</span> <span class="pre">all</span> <span class="pre">migrations</span> <span class="pre">in</span> <span class="pre">``MIGRATIONS[current_version:</span> <span class="pre">software_version]</span></code>.
+Version 1 to 2 should run <code class="docutils literal notranslate"><span class="pre">MIGRATIONS[1:2]</span></code>, i.e. the function at
+<code class="docutils literal notranslate"><span class="pre">MIGRATIONS[1]</span></code> should be run.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="migrations.migrate_v1_to_v2">
+<span class="sig-prename descclassname"><span class="pre">migrations.</span></span><span class="sig-name descname"><span class="pre">migrate_v1_to_v2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/migrations.html#migrate_v1_to_v2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#migrations.migrate_v1_to_v2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the database fields to match the changes in the data structure.</p>
+<ul class="simple">
+<li><p>Rename all <code class="docutils literal notranslate"><span class="pre">ORDERS</span></code> permissions to <code class="docutils literal notranslate"><span class="pre">DATA_EDIT</span></code> to match the updated permission names</p></li>
+<li><p>Remove the <code class="docutils literal notranslate"><span class="pre">cross_references</span></code> field from collections and datasets</p></li>
+</ul>
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="static/SciLifeLab_symbol_green.svg" alt="Logo"/>
+            </a></p>
+<h1 class="logo"><a href="index.html">Data Tracker</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_structure.html">Data Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="implementation.html">Implementation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="development.html">Development</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="development.quick_environment.html">System for development</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="modules.html">Code reference</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="development.html">Development</a><ul>
+  <li><a href="modules.html">Code reference</a><ul>
+      <li>Previous: <a href="code.developer.html" title="previous chapter">developer.py</a></li>
+      <li>Next: <a href="code.order.html" title="next chapter">order.py</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019-2021, SciLifeLab Data Centre.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="sources/code.migrations.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

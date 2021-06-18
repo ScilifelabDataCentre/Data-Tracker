@@ -7,13 +7,10 @@ Decorators
 Helper functions
     Functions to help with user-related tasks, e.g. setting all variables at login.
 
-
 Requests
     User-related API endpoints, including login/logout and user manament.
 """
-from itertools import chain
 import functools
-import json
 
 import flask
 
@@ -66,31 +63,18 @@ def list_users():
 
     Admin access should be required.
     """
-    if not has_permission("USER_SEARCH"):
+    if not utils.req_has_permission("USER_SEARCH"):
         flask.abort(403)
 
     fields = {"api_key": 0, "api_salt": 0}
 
-    if not has_permission("USER_MANAGEMENT"):
+    if not utils.req_has_permission("USER_MANAGEMENT"):
         fields["auth_ids"] = 0
         fields["permissions"] = 0
 
     result = tuple(flask.g.db["users"].find(projection=fields))
 
     return utils.response_json({"users": result})
-
-
-@blueprint.route("/structure", methods=["GET"])
-def get_user_data_structure():
-    """
-    Get an empty user entry.
-
-    Returns:
-        flask.Response: JSON structure with a list of users.
-    """
-    empty_user = structure.user()
-    empty_user["_id"] = ""
-    return utils.response_json({"user": empty_user})
 
 
 # requests
@@ -122,7 +106,6 @@ def get_current_user_info():
 
 
 # requests
-@blueprint.route("/me/apikey", methods=["POST"])
 @blueprint.route("/<identifier>/apikey", methods=["POST"])
 @login_required
 def gen_new_api_key(identifier: str = None):
@@ -135,32 +118,26 @@ def gen_new_api_key(identifier: str = None):
     Returns:
         flask.Response: The new API key
     """
-    if not identifier:
-        user_data = flask.g.current_user
-    else:
-        if not has_permission("USER_MANAGEMENT"):
-            flask.abort(403)
-        try:
-            user_uuid = utils.str_to_uuid(identifier)
-        except ValueError:
-            flask.abort(status=404)
-
-        if not (
-            user_data := flask.g.db["users"].find_one({"_id": user_uuid})
-        ):  # pylint: disable=superfluous-parens
-            flask.abort(status=404)
+    if identifier != str(flask.g.current_user["_id"]) and not utils.req_has_permission(
+        "USER_MANAGEMENT"
+    ):
+        flask.abort(403)
+    try:
+        user_uuid = utils.str_to_uuid(identifier)
+    except ValueError:
+        flask.abort(status=404)
+    if not (
+        user_data := flask.g.db["users"].find_one({"_id": user_uuid})
+    ):  # pylint: disable=superfluous-parens
+        flask.abort(status=404)
 
     apikey = utils.gen_api_key()
     new_hash = utils.gen_api_key_hash(apikey.key, apikey.salt)
     new_values = {"api_key": new_hash, "api_salt": apikey.salt}
     user_data.update(new_values)
-    result = flask.g.db["users"].update_one(
-        {"_id": user_data["_id"]}, {"$set": new_values}
-    )
+    result = flask.g.db["users"].update_one({"_id": user_data["_id"]}, {"$set": new_values})
     if not result.acknowledged:
-        flask.current_app.logger.error(
-            "Updating API key for user %s failed", user_data["_id"]
-        )
+        flask.current_app.logger.error("Updating API key for user %s failed", user_data["_id"])
         flask.Response(status=500)
     else:
         utils.make_log("user", "edit", "New API key", user_data)
@@ -180,7 +157,7 @@ def get_user_data(identifier: str):
     Returns:
         flask.Response: Information about the user as json.
     """
-    if not has_permission("USER_MANAGEMENT"):
+    if not utils.req_has_permission("USER_MANAGEMENT"):
         flask.abort(403)
 
     try:
@@ -209,19 +186,24 @@ def add_user():
     Returns:
         flask.Response: Information about the user as json.
     """
-    if not has_permission("USER_ADD"):
+    if not utils.req_has_permission("USER_ADD"):
         flask.abort(403)
 
     new_user = structure.user()
-    try:
-        indata = flask.json.loads(flask.request.data)
-    except json.decoder.JSONDecodeError:
+    jsondata = flask.request.json
+    if not jsondata.get("user") or not isinstance(jsondata["user"], dict):
         flask.abort(status=400)
+    indata = jsondata["user"]
+
     validation = utils.basic_check_indata(
         indata, new_user, ("_id", "api_key", "api_salt", "auth_ids")
     )
     if not validation.result:
         flask.abort(status=validation.status)
+
+    indata = utils.prepare_for_db(indata)
+    if not indata:
+        flask.abort(status=400)
 
     if "email" not in indata:
         flask.current_app.logger.debug("Email must be set")
@@ -232,22 +214,19 @@ def add_user():
         flask.current_app.logger.debug("User already exists")
         flask.abort(status=400)
 
-    if not has_permission("USER_MANAGEMENT") and "permissions" in indata:
+    if not utils.req_has_permission("USER_MANAGEMENT") and "permissions" in indata:
         flask.current_app.logger.debug("USER_MANAGEMENT required for permissions")
         flask.abort(403)
 
     new_user.update(indata)
 
-    new_user["auth_ids"] = [f'{new_user["_id"]}::local']
+    new_user["auth_ids"] = [new_user["email"]]
 
-    result = flask.g.db["users"].insert_one(new_user)
-    if not result.acknowledged:
-        flask.current_app.logger.error("User Addition failed: %s", new_user["email"])
-        flask.Response(status=500)
-    else:
-        utils.make_log("user", "add", "User added by admin", new_user)
+    result = utils.req_commit_to_db("users", "add", new_user)
+    if not result.log or not result.data:
+        flask.abort(status=500)
 
-    return utils.response_json({"_id": result.inserted_id})
+    return utils.response_json({"_id": result.ins_id})
 
 
 @blueprint.route("/<identifier>", methods=["DELETE"])
@@ -262,23 +241,17 @@ def delete_user(identifier: str):
     Returns:
         flask.Response: Response code.
     """
-    if not has_permission("USER_MANAGEMENT"):
-        flask.abort(403)
+    perm_status = utils.req_check_permissions(["USER_MANAGEMENT"])
+    if perm_status != 200:
+        flask.abort(status=perm_status)
 
-    try:
-        user_uuid = utils.str_to_uuid(identifier)
-    except ValueError:
+    user_info = utils.req_get_entry("users", identifier)
+    if not user_info:
         flask.abort(status=404)
 
-    if not flask.g.db["users"].find_one({"_id": user_uuid}):
-        flask.abort(status=404)
-
-    result = flask.g.db["users"].delete_one({"_id": user_uuid})
-    if not result.acknowledged:
-        flask.current_app.logger.error("User deletion failed: %s", user_uuid)
-        flask.Response(status=500)
-    else:
-        utils.make_log("user", "delete", "User delete", {"_id": user_uuid})
+    result = utils.req_commit_to_db("users", "delete", {"_id": user_info["_id"]})
+    if not result.log or not result.data:
+        flask.abort(status=500)
 
     return flask.Response(status=200)
 
@@ -294,28 +267,29 @@ def update_current_user_info():
     """
     user_data = flask.g.current_user
 
-    try:
-        indata = flask.json.loads(flask.request.data)
-    except json.decoder.JSONDecodeError:
+    jsondata = flask.request.json
+    if not jsondata.get("user") or not isinstance(jsondata["user"], dict):
         flask.abort(status=400)
+    indata = jsondata["user"]
     validation = utils.basic_check_indata(
         indata,
         user_data,
         ("_id", "api_key", "api_salt", "auth_ids", "email", "permissions"),
     )
-    if not validation[0]:
-        flask.abort(status=validation[1])
+    if not validation.result:
+        flask.abort(status=validation.status)
 
+    is_different = False
+    for field in indata:
+        if indata[field] != user_data[field]:
+            is_different = True
+            break
     user_data.update(indata)
 
-    result = flask.g.db["users"].update_one(
-        {"_id": user_data["_id"]}, {"$set": user_data}
-    )
-    if not result.acknowledged:
-        flask.current_app.logger.error("User self-update failed: %s", indata)
-        flask.Response(status=500)
-    else:
-        utils.make_log("user", "edit", "User self-updated", user_data)
+    if is_different:
+        result = utils.req_commit_to_db("users", "edit", user_data)
+        if not result.log or not result.data:
+            flask.abort(status=500)
 
     return flask.Response(status=200)
 
@@ -326,41 +300,38 @@ def update_user_info(identifier: str):
     """
     Update the information about a user.
 
+    Requires USER_MANAGEMENT.
+
     Args:
         identifier (str): The uuid of the user to modify.
 
     Returns:
         flask.Response: Response code.
     """
-    if not has_permission("USER_MANAGEMENT"):
-        flask.abort(403)
+    perm_status = utils.req_check_permissions(["USER_MANAGEMENT"])
+    if perm_status != 200:
+        flask.abort(status=perm_status)
 
-    try:
-        user_uuid = utils.str_to_uuid(identifier)
-    except ValueError:
+    user_data = utils.req_get_entry("users", identifier)
+    if not user_data:
         flask.abort(status=404)
 
-    if not (
-        user_data := flask.g.db["users"].find_one({"_id": user_uuid})
-    ):  # pylint: disable=superfluous-parens
-        flask.abort(status=404)
-
-    try:
-        indata = flask.json.loads(flask.request.data)
-    except json.decoder.JSONDecodeError:
+    jsondata = flask.request.json
+    if not jsondata.get("user") or not isinstance(jsondata["user"], dict):
         flask.abort(status=400)
+    indata = jsondata["user"]
+
     validation = utils.basic_check_indata(
         indata, user_data, ("_id", "api_key", "api_salt", "auth_ids")
     )
-
     if not validation.result:
         flask.abort(status=validation.status)
 
     if "email" in indata:
         old_user = flask.g.db["users"].find_one({"email": indata["email"]})
-        if old_user and old_user["_id"] != user_data["_id"]:
+        if old_user.get("_id") != user_data["_id"]:
             flask.current_app.logger.debug("User already exists")
-            flask.abort(status=400)
+            flask.abort(status=409)
 
     # Avoid "updating" and making log if there are no changes
     is_different = False
@@ -368,25 +339,19 @@ def update_user_info(identifier: str):
         if indata[field] != user_data[field]:
             is_different = True
             break
+    user_data.update(indata)
 
-    if indata and is_different:
-        result = flask.g.db["users"].update_one(
-            {"_id": user_data["_id"]}, {"$set": indata}
-        )
-        if not result.acknowledged:
-            flask.current_app.logger.error("User update failed: %s", indata)
-            flask.Response(status=500)
-        else:
-            user_data.update(indata)
-            utils.make_log("user", "edit", "User updated", user_data)
+    if is_different:
+        result = utils.req_commit_to_db("users", "edit", user_data)
+        if not result.log or not result.data:
+            flask.abort(status=500)
 
     return flask.Response(status=200)
 
 
-@blueprint.route("/me/log", methods=["GET"])
 @blueprint.route("/<identifier>/log", methods=["GET"])
 @login_required
-def get_user_log(identifier: str = None):
+def get_user_log(identifier: str):
     """
     Get change logs for the user entry with uuid ``identifier``.
 
@@ -398,10 +363,7 @@ def get_user_log(identifier: str = None):
     Returns:
         flask.Response: Information about the user as json.
     """
-    if identifier is None:
-        identifier = str(flask.g.current_user["_id"])
-
-    if str(flask.g.current_user["_id"]) != identifier and not has_permission(
+    if str(flask.g.current_user["_id"]) != identifier and not utils.req_has_permission(
         "USER_MANAGEMENT"
     ):
         flask.abort(403)
@@ -411,24 +373,19 @@ def get_user_log(identifier: str = None):
     except ValueError:
         flask.abort(status=404)
 
-    user_logs = list(
-        flask.g.db["logs"].find({"data_type": "user", "data._id": user_uuid})
-    )
+    user_logs = list(flask.g.db["logs"].find({"data_type": "user", "data._id": user_uuid}))
 
     for log in user_logs:
         del log["data_type"]
 
     utils.incremental_logs(user_logs)
 
-    return utils.response_json(
-        {"entry_id": user_uuid, "data_type": "user", "logs": user_logs}
-    )
+    return utils.response_json({"entry_id": user_uuid, "data_type": "user", "logs": user_logs})
 
 
-@blueprint.route("/me/actions", methods=["GET"])
 @blueprint.route("/<identifier>/actions", methods=["GET"])
 @login_required
-def get_user_actions(identifier: str = None):
+def get_user_actions(identifier: str):
     """
     Get a list of actions (changes) by the user entry with uuid ``identifier``.
 
@@ -440,10 +397,10 @@ def get_user_actions(identifier: str = None):
     Returns:
         flask.Response: Information about the user as json.
     """
-    if identifier is None:
+    if identifier == "me":
         identifier = str(flask.g.current_user["_id"])
 
-    if str(flask.g.current_user["_id"]) != identifier and not has_permission(
+    if str(flask.g.current_user["_id"]) != identifier and not utils.req_has_permission(
         "USER_MANAGEMENT"
     ):
         flask.abort(403)
@@ -486,9 +443,7 @@ def add_new_user(user_info: dict):
             )
             flask.Response(status=500)
         else:
-            utils.make_log(
-                "user", "edit", "Add OIDC entry to auth_ids", db_user, no_user=True
-            )
+            utils.make_log("user", "edit", "Add OIDC entry to auth_ids", db_user, no_user=True)
 
     else:
         new_user = structure.user()
@@ -503,9 +458,7 @@ def add_new_user(user_info: dict):
             )
             flask.Response(status=500)
         else:
-            utils.make_log(
-                "user", "add", "Creating new user from OAuth", new_user, no_user=True
-            )
+            utils.make_log("user", "add", "Creating new user from OAuth", new_user, no_user=True)
 
 
 def do_login(auth_id: str):
@@ -523,7 +476,7 @@ def do_login(auth_id: str):
         return False
 
     flask.session["user_id"] = user["_id"]
-    flask.session.permanent = True
+    flask.session.permanent = True  # pylint: disable=assigning-non-slot
     return True
 
 
@@ -552,25 +505,3 @@ def get_user(user_uuid=None):
         if user:
             return user
     return None
-
-
-def has_permission(permission: str):
-    """
-    Check if the current user permissions fulfills the requirement.
-
-    Args:
-        permission (str): The required permission
-
-    Returns:
-        bool: whether the user has the required permissions or not
-    """
-    if not flask.g.permissions and permission:
-        return False
-    user_permissions = set(
-        chain.from_iterable(
-            PERMISSIONS[permission] for permission in flask.g.permissions
-        )
-    )
-    if permission not in user_permissions:
-        return False
-    return True

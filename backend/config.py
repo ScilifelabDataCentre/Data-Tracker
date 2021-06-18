@@ -8,6 +8,7 @@ Read settings from `./config.yaml`, `../config.yaml` or from the provided path.
 import logging
 import os
 import sys
+
 import yaml
 
 
@@ -66,9 +67,7 @@ def init() -> dict:
         for oidc_entry in config["oidc"]:
             base_name = oidc_entry.upper()
             for conf_part in config["oidc"][oidc_entry]:
-                config[f"{base_name}_{conf_part.upper()}"] = config["oidc"][oidc_entry][
-                    conf_part
-                ]
+                config[f"{base_name}_{conf_part.upper()}"] = config["oidc"][oidc_entry][conf_part]
     config["oidc_names"] = config["oidc"].keys()
     del config["oidc"]
 

@@ -4,11 +4,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Implementation &#8212; Data Tracker  documentation</title>
-    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="static/alabaster.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="static/documentation_options.js"></script>
     <script src="static/jquery.js"></script>
     <script src="static/underscore.js"></script>
     <script src="static/doctools.js"></script>
@@ -32,9 +33,9 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="implementation">
+  <section id="implementation">
 <h1>Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="permissions">
+<section id="permissions">
 <span id="permissions-section"></span><h2>Permissions<a class="headerlink" href="#permissions" title="Permalink to this headline">¶</a></h2>
 <ul>
 <li><p>Permissions are managed by topics.</p></li>
@@ -54,7 +55,7 @@
 - It is not defined as a decorator, as it may sometimes need to coexist with an ownership check.
 - At the beginning of a request, run e.g. <code class="docutils literal notranslate"><span class="pre">user.permission_required('OWNERS_READ')</span></code>.</p></li>
 </ul>
-<div class="section" id="current-units">
+<section id="current-units">
 <h3>Current units<a class="headerlink" href="#current-units" title="Permalink to this headline">¶</a></h3>
 <dl class="simple">
 <dt>LOGGED_IN</dt><dd><p>Task require a logged in user (e.g. show user info). Use the decorator <code class="docutils literal notranslate"><span class="pre">user.login_required</span></code>.</p>
@@ -72,24 +73,24 @@
 <dt>USER_MANAGEMENT</dt><dd><p>May modify any user. Includes <cite>USER_ADD</cite> and <cite>USER_SEARCH</cite>.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="csrf">
+</section>
+</section>
+<section id="csrf">
 <h2>CSRF<a class="headerlink" href="#csrf" title="Permalink to this headline">¶</a></h2>
 <p>A csrf cookie with the name <code class="docutils literal notranslate"><span class="pre">_csrf_token</span></code> is set the first time a request is made to the system. It must be included with the header <code class="docutils literal notranslate"><span class="pre">X-CSRFToken</span></code> for any non-<code class="docutils literal notranslate"><span class="pre">GET</span></code> request.</p>
 <p>All cookies are deleted upon logout.</p>
-</div>
-<div class="section" id="testing">
+</section>
+<section id="testing">
 <h2>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
 <p>All tests are available at <code class="docutils literal notranslate"><span class="pre">backend/tests</span></code>.</p>
-</div>
-<div class="section" id="api-keys">
+</section>
+<section id="api-keys">
 <h2>API Keys<a class="headerlink" href="#api-keys" title="Permalink to this headline">¶</a></h2>
 <p>The keys are generated using <code class="docutils literal notranslate"><span class="pre">secrets.token_hex(48)</span></code>.</p>
 <p>Include a 8-byte randomized salt when calculating hash.</p>
 <p>Store the token using <code class="docutils literal notranslate"><span class="pre">hashlib.sha512(token).hexdigest()</span></code>.</p>
-</div>
-</div>
+</section>
+</section>
 
 
           </div>
@@ -159,7 +160,7 @@
       &copy;2019-2021, SciLifeLab Data Centre.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

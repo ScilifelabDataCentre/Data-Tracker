@@ -242,6 +242,8 @@ export default {
           .then((data) => this.userData = data)
           .catch(() => this.loadingError = true)
           .finally(() => this.isLoading = false);
+        for (const key in this.permissions)
+          this.permissions[key] = false;
       }
       else {
         this.$store.dispatch('entries/getLocalEntry', {'id': this.uuid,
@@ -301,6 +303,7 @@ export default {
       this.userDataSaveError = false;
       this.userDataSaveWaiting = true;
       let toSubmit = {};
+      toSubmit.name = this.userData.name;
       toSubmit.affiliation = this.userData.affiliation;
       toSubmit.email = this.userData.email;
       toSubmit.contact = this.userData.contact;

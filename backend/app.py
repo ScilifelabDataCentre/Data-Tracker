@@ -4,17 +4,20 @@ import json
 import logging
 
 import flask
+from authlib.integrations.flask_client import OAuth
 
+import collection
 import config
 import dataset
+import db_management
 import developer
 import order
-import collection
+import schema
 import user
 import utils
-import db_management
 
-from authlib.integrations.flask_client import OAuth
+# avoid pylint warnings for using slots on g and session
+# pylint: disable=assigning-non-slot
 
 app = flask.Flask(__name__)  # pylint: disable=invalid-name
 appconf = config.init()
@@ -28,6 +31,7 @@ app.register_blueprint(dataset.blueprint, url_prefix="/api/v1/dataset")
 app.register_blueprint(order.blueprint, url_prefix="/api/v1/order")
 app.register_blueprint(collection.blueprint, url_prefix="/api/v1/collection")
 app.register_blueprint(user.blueprint, url_prefix="/api/v1/user")
+app.register_blueprint(schema.blueprint, url_prefix="/api/v1/schema")
 
 
 oauth = OAuth(app)
@@ -52,9 +56,7 @@ def prepare():
         if flask.request.method != "GET":
             utils.verify_csrf_token()
         flask.g.current_user = user.get_current_user()
-        flask.g.permissions = (
-            flask.g.current_user["permissions"] if flask.g.current_user else None
-        )
+        flask.g.permissions = flask.g.current_user["permissions"] if flask.g.current_user else None
 
 
 @app.after_request
@@ -75,9 +77,7 @@ def finalize(response):
 @app.route("/api/v1")
 def api_base():
     """List entities."""
-    return flask.jsonify(
-        {"entities": ["dataset", "order", "collection", "user", "login"]}
-    )
+    return flask.jsonify({"entities": ["dataset", "order", "collection", "user", "login"]})
 
 
 @app.route("/api/heartbeat")

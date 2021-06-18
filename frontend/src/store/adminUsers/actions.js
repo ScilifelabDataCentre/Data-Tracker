@@ -58,7 +58,7 @@ export function saveUser (context, payload) {
     if (uuid === '') {
       axios
         .post('/api/v1/user',
-              payload,
+              {"user": payload},
               {
                 headers: getCsrfHeader(),
               })
@@ -72,7 +72,7 @@ export function saveUser (context, payload) {
     else {
       axios
         .patch('/api/v1/user' + uuid,
-               payload,
+               {"user": payload},
                {
                  headers: getCsrfHeader(),
                })

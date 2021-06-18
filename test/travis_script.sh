@@ -42,7 +42,7 @@ echo '>>> Test 2: Pytest'
 COVERAGE_FILE=.coverage_pytest PYTHONPATH=$PYTHONPATH:backend/ py.test backend/ --cov=backend/
 
 echo '>>> Test 3: Code evaluation'
-black --check backend/*py
+black -l 100 --check backend/*py
 pydocstyle backend/*py
 flake8 backend/*py
 pylint backend/*py
