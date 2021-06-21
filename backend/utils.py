@@ -805,3 +805,19 @@ def prepare_for_db(data: dict) -> dict:
         elif key == "description":
             prepared[key] = html.escape(prepared[key])
     return prepared
+
+
+def prepare_permissions(in_perms: list) -> list:
+    """
+    Generate a full list of permissions for the user.
+
+    Args:
+        in_perms (list): The raw list of permissions from the user entry.
+
+    Returns:
+        list: The complete list of permissions for the user.
+    """
+    new_perms = set()
+    for entry in in_perms:
+        new_perms.update(user.PERMISSIONS[entry])
+    return list(new_perms)

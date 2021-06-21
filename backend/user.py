@@ -173,6 +173,8 @@ def get_user_data(identifier: str):
     del user_info["api_key"]
     del user_info["api_salt"]
 
+    user_info["permissions"] = utils.prepare_permissions(user_info["permissions"])
+
     return utils.response_json({"user": user_info})
 
 
