@@ -40,8 +40,6 @@ Current topics
 
     {
       "DATA_EDIT": ("DATA_EDIT", "USER_ADD", "USER_SEARCH"),
-      "DATA_LIST": ("DATA_LIST"),
-      "STATISTICS": ("STATISTICS"),
       "OWNERS_READ": ("OWNERS_READ",),
       "USER_ADD": ("USER_ADD",),
       "USER_SEARCH": ("USER_SEARCH",),
