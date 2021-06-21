@@ -750,7 +750,7 @@ def commit_to_db(
 
     ``_id`` should be included in ``data`` for delete and update operations.
 
-    Only uses \*_one commands.
+    Only uses <type>_one commands for the db.
 
     Args:
         db: Connection to the database (client).
