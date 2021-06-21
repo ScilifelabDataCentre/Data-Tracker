@@ -26,6 +26,21 @@ Order
        * Add a new order.
        * Returns the ``uuid`` of the added order.
 
+       ::
+
+          {
+            "order": {
+              "title": "New title",
+              "description": "Text as **Markdown**",
+              "authors": ["271206a2-86e7-406a-b881-6b3abc94fd2f"],
+              "generators": ["271206a2-86e7-406a-b881-6b3abc94fd2f"],
+              "organisation": "271206a2-86e7-406a-b881-6b3abc94fd2f",
+              "editors": ["271206a2-86e7-406a-b881-6b3abc94fd2f"],
+              "tags": ["Tag"],
+              "properties": {"Key": "Value"},
+            }
+          }
+
 
 .. function:: /order/<uuid>
 
@@ -38,12 +53,38 @@ Order
     **PATCH**
        * Update the order ``uuid``.
 
+       ::
+
+          {
+            "order": {
+              "title": "New title",
+              "description": "Text as **Markdown**",
+              "authors": ["271206a2-86e7-406a-b881-6b3abc94fd2f"],
+              "generators": ["271206a2-86e7-406a-b881-6b3abc94fd2f"],
+              "organisation": "271206a2-86e7-406a-b881-6b3abc94fd2f",
+              "editors": ["271206a2-86e7-406a-b881-6b3abc94fd2f"],
+              "tags": ["Tag"],
+              "properties": {"Key": "Value"},
+            }
+          }
+
 
 .. function:: /order/<uuid>/dataset
 
     **POST**
        * Add a new dataset for the order ``uuid``.
        * Returns the ``uuid`` of the added dataset.
+
+       ::
+
+          {
+            "dataset": {
+              "title": "New title",
+              "description": "Text as **Markdown**",
+              "tags": ["Tag"],
+              "properties": {"Key": "Value"},
+            }
+          }
     
 
 .. function:: /order/<uuid>/log
@@ -72,6 +113,17 @@ Dataset
     **PATCH**
        * Update the dataset ``uuid``.
 
+       ::
+
+          {
+            "dataset": {
+              "title": "New title",
+              "description": "Text as **Markdown**",
+              "tags": ["Tag"],
+              "properties": {"Key": "Value"},
+            }
+          }
+
 
 .. function:: /dataset/<uuid>/log
 
@@ -90,6 +142,18 @@ Collection
     **POST**
        * Add a new collection.
 
+       ::
+
+          {
+            "collection": {
+              "title": "New title",
+              "description": "Text as **Markdown**",
+              "tags": ["Tag"],
+              "properties": {"Key": "Value"},
+              "editors": ["271206a2-86e7-406a-b881-6b3abc94fd2f"],
+            }
+          }
+
 
 .. function:: /collection/<uuid>
 
@@ -101,6 +165,18 @@ Collection
 
     **PATCH**
        * Update the collection ``uuid``.
+
+       ::
+
+          {
+            "collection": {
+              "title": "New title",
+              "description": "Text as **Markdown**",
+              "tags": ["Tag"],
+              "properties": {"Key": "Value"},
+              "editors": ["271206a2-86e7-406a-b881-6b3abc94fd2f"],
+            }
+          }
 
 
 .. function:: /collection/<uuid>/log
@@ -122,6 +198,18 @@ Current User
 
     **PATCH**
        * Update information for the current user.
+
+       ::
+
+          {
+            "user: {
+              "affiliation": "University A",
+              "name": "First Last",
+              "orcid": "1111-1111-1111-1115",
+              "contact": "Street 1, 234 56 City",
+              "url": "https://www.example.com",
+            }
+          }
 
 
 Look Up Users
@@ -146,6 +234,19 @@ Look Up Users
     **POST**
        * Add a new user.
 
+       ::
+
+          {
+            "user: {
+              "affiliation": "University A",
+              "name": "First Last",
+              "orcid": "1111-1111-1111-1115",
+              "contact": "Street 1, 234 56 City",
+              "url": "https://www.example.com",
+              "email": "name@example.com",
+            }
+          }
+
 
 .. function:: /user/<uuid>
 
@@ -154,6 +255,21 @@ Look Up Users
 
     **PATCH**
        * Update information about the user ``uuid``.
+
+
+       ::
+
+          {
+            "user: {
+              "affiliation": "University A",
+              "name": "First Last",
+              "orcid": "1111-1111-1111-1115",
+              "contact": "Street 1, 234 56 City",
+              "url": "https://www.example.com",
+              "email": "name@example.com",
+            }
+          }
+
 
     **DELETE**
        * Delete the user ``uuid``.
