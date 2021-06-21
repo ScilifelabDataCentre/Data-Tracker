@@ -1,0 +1,141 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Configuration &#8212; Data Tracker  documentation</title>
+    <link rel="stylesheet" type="text/css" href="static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="static/documentation_options.js"></script>
+    <script src="static/jquery.js"></script>
+    <script src="static/underscore.js"></script>
+    <script src="static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Data Structure" href="data_structure.html" />
+    <link rel="prev" title="System Design" href="design.html" />
+   
+  <link rel="stylesheet" href="static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="configuration">
+<h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
+<p>A sample configuration file is available with the name <code class="docutils literal notranslate"><span class="pre">config.yaml.sample</span></code>. A sample setup can be seen in the <code class="docutils literal notranslate"><span class="pre">docker-compose.yml</span></code> file.</p>
+<dl class="simple">
+<dt>mongo.host</dt><dd><p>Hostname for the database, e.g. <code class="docutils literal notranslate"><span class="pre">localhost</span></code>.</p>
+</dd>
+<dt>mongo.port</dt><dd><p>Port for the database, e.g. <code class="docutils literal notranslate"><span class="pre">27017</span></code>.</p>
+</dd>
+<dt>mongo.user</dt><dd><p>Username for the user, e.g. <code class="docutils literal notranslate"><span class="pre">mongoadmin</span></code>.</p>
+</dd>
+<dt>mongo.password</dt><dd><p>Password for the user, e.g. <code class="docutils literal notranslate"><span class="pre">password</span></code>.</p>
+</dd>
+<dt>mongo.db</dt><dd><p>The name of the database to use, e.g. <code class="docutils literal notranslate"><span class="pre">data-tracker</span></code>.</p>
+</dd>
+<dt>flask.secret</dt><dd><p>The key used to sign e.g. session cookies, e.g. <code class="docutils literal notranslate"><span class="pre">ijltvEY9lSRu4E4moHfguY-r41ORr6kd</span></code>.</p>
+</dd>
+<dt>dev_mode.api</dt><dd><p>Whether the <code class="docutils literal notranslate"><span class="pre">/development</span></code> part of the API should be activated, enabling e.g. password-less logins. It is required to run the backend tests.</p>
+</dd>
+<dt>dev_mode.testing</dt><dd><p>Whether the <code class="docutils literal notranslate"><span class="pre">development</span></code> environment for the backend should be activated, including e.g. debugger and automatic code reloads.</p>
+</dd>
+<dt>oidc</dt><dd><p>Lists the OpenID Connect entries. The key used will be the text on the log in button in the frontend. Example: <code class="docutils literal notranslate"><span class="pre">Google</span></code></p>
+</dd>
+<dt>oidc.&lt;entry&gt;.client_secret</dt><dd><p>The client secret of the OpenID Connect entry, e.g. <code class="docutils literal notranslate"><span class="pre">_sXt7JawgD4Jnz7zDHEW65OPko9oTRT4</span></code></p>
+</dd>
+<dt>oidc.&lt;entry&gt;.client_id</dt><dd><p>The client id of the OpenID Connect entry, e.g. <code class="docutils literal notranslate"><span class="pre">TP4PdbcZJ1pDicpkU7UzjOP2GfhK_Ld7XaZG4qtMjdAHICJ-y6A7CTTUlDQE</span></code></p>
+</dd>
+<dt>oidc.&lt;entry&gt;.server_metadata_url</dt><dd><p>The url for the configuration of the OpenID Connect entry, e.g. <code class="docutils literal notranslate"><span class="pre">https://accounts.google.com/.well-known/openid-configuration</span></code></p>
+</dd>
+</dl>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="static/SciLifeLab_symbol_green.svg" alt="Logo"/>
+            </a></p>
+<h1 class="logo"><a href="index.html">Data Tracker</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="design.html">System Design</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_structure.html">Data Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="design.html" title="previous chapter">System Design</a></li>
+      <li>Next: <a href="data_structure.html" title="next chapter">Data Structure</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019-2021, SciLifeLab Data Centre.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="sources/configuration.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

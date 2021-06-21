@@ -100,9 +100,7 @@
         <span class="k">for</span> <span class="n">oidc_entry</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;oidc&quot;</span><span class="p">]:</span>
             <span class="n">base_name</span> <span class="o">=</span> <span class="n">oidc_entry</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
             <span class="k">for</span> <span class="n">conf_part</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;oidc&quot;</span><span class="p">][</span><span class="n">oidc_entry</span><span class="p">]:</span>
-                <span class="n">config</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">conf_part</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;oidc&quot;</span><span class="p">][</span><span class="n">oidc_entry</span><span class="p">][</span>
-                    <span class="n">conf_part</span>
-                <span class="p">]</span>
+                <span class="n">config</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">conf_part</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;oidc&quot;</span><span class="p">][</span><span class="n">oidc_entry</span><span class="p">][</span><span class="n">conf_part</span><span class="p">]</span>
     <span class="n">config</span><span class="p">[</span><span class="s2">&quot;oidc_names&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;oidc&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
     <span class="k">del</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;oidc&quot;</span><span class="p">]</span>
 
@@ -132,9 +130,10 @@
 
 <h3>Navigation</h3>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../design.html">System Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../data_structure.html">Data Structure</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../implementation.html">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../development.html">Development</a></li>
 </ul>
 
@@ -173,7 +172,7 @@
       &copy;2019-2021, SciLifeLab Data Centre.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

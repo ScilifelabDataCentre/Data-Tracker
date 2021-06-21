@@ -4,8 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>developer.py &#8212; Data Tracker  documentation</title>
     <link rel="stylesheet" type="text/css" href="static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="static/alabaster.css" />
@@ -15,8 +14,8 @@
     <script src="static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="order.py" href="code.order.html" />
-    <link rel="prev" title="dataset.py" href="code.dataset.html" />
+    <link rel="next" title="migrations.py" href="code.migrations.html" />
+    <link rel="prev" title="db_management.py" href="code.db_management.html" />
    
   <link rel="stylesheet" href="static/custom.css" type="text/css" />
   
@@ -33,7 +32,7 @@
 
           <div class="body" role="main">
             
-  <section id="module-developer">
+  <div class="section" id="module-developer">
 <span id="developer-py"></span><h1>developer.py<a class="headerlink" href="#module-developer" title="Permalink to this headline">¶</a></h1>
 <p>Routes and functions intended to aid development and testing.</p>
 <dl class="py function">
@@ -114,14 +113,14 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="developer.sitemap_builder">
-<span class="sig-prename descclassname"><span class="pre">developer.</span></span><span class="sig-name descname"><span class="pre">sitemap_builder</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">dict</span><a class="reference internal" href="modules/developer.html#sitemap_builder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#developer.sitemap_builder" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">developer.</span></span><span class="sig-name descname"><span class="pre">sitemap_builder</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">list</span><a class="reference internal" href="modules/developer.html#sitemap_builder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#developer.sitemap_builder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Build a sitemap.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>All routes/methods/endpoints</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p>dict</p>
+<dd class="field-even"><p>list</p>
 </dd>
 </dl>
 </dd></dl>
@@ -132,7 +131,7 @@
 <dd><p>Shutdown the flask server.</p>
 </dd></dl>
 
-</section>
+</div>
 
 
           </div>
@@ -155,9 +154,10 @@
 
 <h3>Navigation</h3>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="design.html">System Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_structure.html">Data Structure</a></li>
-<li class="toctree-l1"><a class="reference internal" href="implementation.html">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="development.html">Development</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="development.quick_environment.html">System for development</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="modules.html">Code reference</a></li>
@@ -171,8 +171,8 @@
   <li><a href="index.html">Documentation overview</a><ul>
   <li><a href="development.html">Development</a><ul>
   <li><a href="modules.html">Code reference</a><ul>
-      <li>Previous: <a href="code.dataset.html" title="previous chapter">dataset.py</a></li>
-      <li>Next: <a href="code.order.html" title="next chapter">order.py</a></li>
+      <li>Previous: <a href="code.db_management.html" title="previous chapter">db_management.py</a></li>
+      <li>Next: <a href="code.migrations.html" title="next chapter">migrations.py</a></li>
   </ul></li>
   </ul></li>
   </ul></li>
@@ -204,7 +204,7 @@
       &copy;2019-2021, SciLifeLab Data Centre.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

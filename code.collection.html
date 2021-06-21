@@ -4,8 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>collection.py &#8212; Data Tracker  documentation</title>
     <link rel="stylesheet" type="text/css" href="static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="static/alabaster.css" />
@@ -33,7 +32,7 @@
 
           <div class="body" role="main">
             
-  <section id="module-collection">
+  <div class="section" id="module-collection">
 <span id="collection-py"></span><h1>collection.py<a class="headerlink" href="#module-collection" title="Permalink to this headline">¶</a></h1>
 <p>Collection requests.</p>
 <dl class="py function">
@@ -82,8 +81,9 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="collection.get_collection_log">
 <span class="sig-prename descclassname"><span class="pre">collection.</span></span><span class="sig-name descname"><span class="pre">get_collection_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/collection.html#get_collection_log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#collection.get_collection_log" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get change logs for the user entry with uuid <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
-<p>Can be accessed by owners and admin (DATA_MANAGEMENT).</p>
+<dd><p>Get change logs for the collection matching <code class="docutils literal notranslate"><span class="pre">identifier</span></code>.</p>
+<p>Can be accessed by editors (with DATA_EDIT) and admin (DATA_MANAGEMENT).</p>
+<p>Deleted entries cannot be accessed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>identifier</strong> (<em>str</em>) – The uuid of the collection.</p>
@@ -104,20 +104,6 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="collection.list_user_collections">
-<span class="sig-prename descclassname"><span class="pre">collection.</span></span><span class="sig-name descname"><span class="pre">list_user_collections</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="modules/collection.html#list_user_collections"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#collection.list_user_collections" title="Permalink to this definition">¶</a></dt>
-<dd><p>List collection owned by the user.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>JSON structure.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>flask.Response</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="collection.update_collection">
 <span class="sig-prename descclassname"><span class="pre">collection.</span></span><span class="sig-name descname"><span class="pre">update_collection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/collection.html#update_collection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#collection.update_collection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update a collection.</p>
@@ -134,7 +120,7 @@
 </dl>
 </dd></dl>
 
-</section>
+</div>
 
 
           </div>
@@ -157,9 +143,10 @@
 
 <h3>Navigation</h3>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="design.html">System Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_structure.html">Data Structure</a></li>
-<li class="toctree-l1"><a class="reference internal" href="implementation.html">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="development.html">Development</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="development.quick_environment.html">System for development</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="modules.html">Code reference</a></li>
@@ -206,7 +193,7 @@
       &copy;2019-2021, SciLifeLab Data Centre.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

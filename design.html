@@ -1,0 +1,176 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>System Design &#8212; Data Tracker  documentation</title>
+    <link rel="stylesheet" type="text/css" href="static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="static/documentation_options.js"></script>
+    <script src="static/jquery.js"></script>
+    <script src="static/underscore.js"></script>
+    <script src="static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Configuration" href="configuration.html" />
+    <link rel="prev" title="Data Tracker" href="index.html" />
+   
+  <link rel="stylesheet" href="static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="system-design">
+<h1>System Design<a class="headerlink" href="#system-design" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="vision">
+<h2>Vision<a class="headerlink" href="#vision" title="Permalink to this headline">¶</a></h2>
+<p>It is very difficult to track the output and impact of the facilities at SciLifeLab. The Data Tracker is intended as an attempt to improve this by providing all generated data with unique identifiers that can be used to refer to the generated data.</p>
+<p>The Data Tracker is designed based on the concept of three entities <strong>orders</strong>, <strong>datasets</strong>, and <strong>collections</strong>.</p>
+<p>An <strong>order</strong> is simply an order to a facility. It may be a request for a microscope image, whole-genome sequencing of multiple samples, protein quantification, or any other service provided by a facility. Each <strong>order</strong> is expected to generate one or more <strong>datasets</strong>. Each dataset may refer to one or more analysed samples. All <strong>datasets</strong> generated from the same <strong>order</strong> are considered to be related. <strong>Datasets</strong> can be grouped together using <strong>collections</strong>, e.g. to show that orders from different facilities all are connected to the same research project.</p>
+<p><strong>Orders</strong> are intended to be private, while all information about <strong>datasets</strong> and <strong>collections</strong> is public.</p>
+<p>All three entities will get one or more unique identifier, with the option of generating DOIs for specific datasets and collections.</p>
+</div>
+<div class="section" id="implementation">
+<h2>Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h2>
+<p>The Data Tracker is implemented as a backend in Flask. All interactions with the system are intended to be done via the API, but a frontend (written in Quasar) is also available to simplify visualisation and usage.</p>
+<p>The data structure is listed on the <a class="reference internal" href="data_structure.html#data-structure"><span class="std std-ref">Data Structure</span></a> page.</p>
+<div class="section" id="permissions">
+<span id="permissions-section"></span><h3>Permissions<a class="headerlink" href="#permissions" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>The permissions system is based on topics</p></li>
+<li><p>The topics are defined as key-value pairs
+* The value is the key and any other topics covered by the topic, e.g. <code class="docutils literal notranslate"><span class="pre">DATA_MANAGEMENT</span></code> also gives <code class="docutils literal notranslate"><span class="pre">DATA_EDIT</span></code> and <code class="docutils literal notranslate"><span class="pre">USER_ADD</span></code></p></li>
+<li><p>The topics are defined in <code class="docutils literal notranslate"><span class="pre">user.py</span></code></p></li>
+</ul>
+<div class="section" id="current-topics">
+<h4>Current topics<a class="headerlink" href="#current-topics" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;DATA_EDIT&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;DATA_EDIT&quot;</span><span class="p">,</span> <span class="s2">&quot;USER_ADD&quot;</span><span class="p">,</span> <span class="s2">&quot;USER_SEARCH&quot;</span><span class="p">),</span>
+  <span class="s2">&quot;OWNERS_READ&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;OWNERS_READ&quot;</span><span class="p">,),</span>
+  <span class="s2">&quot;USER_ADD&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;USER_ADD&quot;</span><span class="p">,),</span>
+  <span class="s2">&quot;USER_SEARCH&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;USER_SEARCH&quot;</span><span class="p">,),</span>
+  <span class="s2">&quot;USER_MANAGEMENT&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;USER_MANAGEMENT&quot;</span><span class="p">,</span> <span class="s2">&quot;USER_ADD&quot;</span><span class="p">,</span> <span class="s2">&quot;USER_SEARCH&quot;</span><span class="p">),</span>
+  <span class="s2">&quot;DATA_MANAGEMENT&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;DATA_EDIT&quot;</span><span class="p">,</span> <span class="s2">&quot;OWNERS_READ&quot;</span><span class="p">,</span> <span class="s2">&quot;DATA_MANAGEMENT&quot;</span><span class="p">),</span>
+ <span class="p">}</span>
+</pre></div>
+</div>
+<dl class="simple">
+<dt>DATA_EDIT</dt><dd><p>May create, edit, and delete orders, datasets, and collections if listed as an editor for the order.</p>
+</dd>
+<dt>DATA_MANAGEMENT</dt><dd><p>May modify any order, dataset, or project.</p>
+</dd>
+<dt>OWNERS_READ</dt><dd><p>May access all entity owner information.</p>
+</dd>
+<dt>USER_ADD</dt><dd><p>May add users.</p>
+</dd>
+<dt>USER_SEARCH</dt><dd><p>May list and search for users.</p>
+</dd>
+<dt>USER_MANAGEMENT</dt><dd><p>May modify any user. Includes <cite>USER_ADD</cite> and <cite>USER_SEARCH</cite>.</p>
+</dd>
+</dl>
+</div>
+</div>
+<div class="section" id="authorisation">
+<h3>Authorisation<a class="headerlink" href="#authorisation" title="Permalink to this headline">¶</a></h3>
+<p>Access is granted either via a session cookie or by including the users API key in the <code class="docutils literal notranslate"><span class="pre">X-API-Key</span></code> header. If a session is used, the value of the cookie <code class="docutils literal notranslate"><span class="pre">_csrf_token</span></code> must be included with the header <code class="docutils literal notranslate"><span class="pre">X-CSRFToken</span></code> for any non-<code class="docutils literal notranslate"><span class="pre">GET</span></code> requests.</p>
+<p>All cookies are deleted upon logout.</p>
+</div>
+<div class="section" id="testing">
+<h3>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h3>
+<p>All backend tests are available in the folder <code class="docutils literal notranslate"><span class="pre">backend/tests</span></code>.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="static/SciLifeLab_symbol_green.svg" alt="Logo"/>
+            </a></p>
+<h1 class="logo"><a href="index.html">Data Tracker</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">System Design</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#vision">Vision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#implementation">Implementation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_structure.html">Data Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Data Tracker</a></li>
+      <li>Next: <a href="configuration.html" title="next chapter">Configuration</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019-2021, SciLifeLab Data Centre.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="sources/design.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
