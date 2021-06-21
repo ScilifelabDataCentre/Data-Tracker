@@ -280,7 +280,7 @@ Summary
 +--------------+-------------------------------------+-------------------+---------+
 | email        | Email address for the user          | Must be non-empty | Hidden  |
 +--------------+-------------------------------------+-------------------+---------+
-| email_public | Email address to show publicly      | Empty             | Visible |
+| contact      | Contact information                 | Empty             | Visible |
 +--------------+-------------------------------------+-------------------+---------+
 | name         | Name of the user                    | Must be non-empty | Visible |
 +--------------+-------------------------------------+-------------------+---------+
