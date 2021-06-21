@@ -18,7 +18,7 @@ export function getInfo ({ commit }) {
 
 export function updateInfo(context, payload) {
   return axios.patch('/api/v1/user/me',
-                     payload,
+                     {'user': payload},
                      {
                        headers: getCsrfHeader(),
                      });
