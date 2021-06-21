@@ -121,13 +121,9 @@ def gen_new_api_key(identifier: str = None):
         "USER_MANAGEMENT"
     ):
         flask.abort(403)
-    try:
-        user_uuid = utils.str_to_uuid(identifier)
-    except ValueError:
-        flask.abort(status=404)
-    if not (
-        user_data := flask.g.db["users"].find_one({"_id": user_uuid})
-    ):  # pylint: disable=superfluous-parens
+
+    user_data = utils.req_get_entry("users", identifier)
+    if not user_data:
         flask.abort(status=404)
 
     apikey = utils.gen_api_key()
