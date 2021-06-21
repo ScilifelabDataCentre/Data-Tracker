@@ -9,8 +9,7 @@
             :key="link.title"
             v-bind="link" />
 
-  <div v-if="currentUser.permissions.includes('USER_MANAGEMENT') || 
-             currentUser.permissions.includes('DATA_EDIT')">
+  <div v-if="currentUser.permissions.includes('USER_MANAGEMENT')">
     <q-item-label header> Admin </q-item-label>
     <NavEntry v-bind="adminUserLink" />
   </div>

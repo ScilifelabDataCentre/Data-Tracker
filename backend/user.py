@@ -21,8 +21,6 @@ blueprint = flask.Blueprint("user", __name__)  # pylint: disable=invalid-name
 
 PERMISSIONS = {
     "DATA_EDIT": ("DATA_EDIT", "USER_ADD", "USER_SEARCH"),
-    "DATA_LIST": ("DATA_LIST"),
-    "STATISTICS": ("STATISTICS"),
     "OWNERS_READ": ("OWNERS_READ",),
     "USER_ADD": ("USER_ADD",),
     "USER_SEARCH": ("USER_SEARCH",),
@@ -102,6 +100,7 @@ def get_current_user_info():
         for field in outstructure:
             if field in data:
                 outstructure[field] = data[field]
+    outstructure["permissions"] = utils.prepare_permissions(outstructure["permissions"])
     return utils.response_json({"user": outstructure})
 
 
@@ -122,13 +121,9 @@ def gen_new_api_key(identifier: str = None):
         "USER_MANAGEMENT"
     ):
         flask.abort(403)
-    try:
-        user_uuid = utils.str_to_uuid(identifier)
-    except ValueError:
-        flask.abort(status=404)
-    if not (
-        user_data := flask.g.db["users"].find_one({"_id": user_uuid})
-    ):  # pylint: disable=superfluous-parens
+
+    user_data = utils.req_get_entry("users", identifier)
+    if not user_data:
         flask.abort(status=404)
 
     apikey = utils.gen_api_key()
@@ -173,6 +168,8 @@ def get_user_data(identifier: str):
     # The hash and salt should never leave the system
     del user_info["api_key"]
     del user_info["api_salt"]
+
+    user_info["permissions"] = utils.prepare_permissions(user_info["permissions"])
 
     return utils.response_json({"user": user_info})
 
@@ -329,7 +326,7 @@ def update_user_info(identifier: str):
 
     if "email" in indata:
         old_user = flask.g.db["users"].find_one({"email": indata["email"]})
-        if old_user.get("_id") != user_data["_id"]:
+        if old_user and old_user.get("_id") != user_data["_id"]:
             flask.current_app.logger.debug("User already exists")
             flask.abort(status=409)
 

@@ -8,7 +8,7 @@
                filled
                stack-label
                label="UUID"
-               :value="currentUser._id"
+               :value="currentUser.id"
                class="q-my-sm"
                disable />
       <q-input outlined
@@ -173,7 +173,8 @@ export default {
     },
 
     trimUserData () {
-      delete this.userData.authIds;
+      delete this.userData.id;
+      delete this.userData.auth_ids;
       delete this.userData.email;
       delete this.userData.permissions;
     },

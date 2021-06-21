@@ -1,8 +1,10 @@
+.. _data_structure:
+
 **************
 Data Structure
 **************
 
-The Data Tracker is based on a few main components:
+The data entities used in the Data Tracker:
 
 * Order
 * Dataset
@@ -11,39 +13,33 @@ The Data Tracker is based on a few main components:
 * Log
 
 
-General
-=======
-
-* ``Title`` may never be empty.
-
-
 Terminology
 ===========
 
-* Fields:
+* Properties:
 
-  - Fields in the documents for the datatype/collection.
+  - Properties in the documents for the datatype/collection.
 
-* Computed fields:
+* Inherited properties:
 
-  - Values that are either calculated or retrieved from documents in other collection(s).
-  - Included when the entity is requested via API.
+  - Properties that are either calculated or retrieved from documents in other collection(s).
+  - Included when the entity is requested via API, but is not part of the entry in the database.
 
 
 
 Order
 =====
 
-* Requires special permission to add (``ORDERS_SPECIAL``)
+* Requires special permission to access (``DATA_EDIT``)
 * May only be accessed and modified by users listed in ``editors`` or users with ``DATA_MANAGEMENT``.
 * Can have any number of associated datasets.
-* Deleting an order will delete all owned datasets.
+* Deleting an order will delete all associated datasets.
 
 Summary
 -------
 
 +---------------+-----------------------------------------------------+-------------------+-----------------------+
-| Field         | Description                                         | Default           | Public                |
+| Property      | Description                                         | Default           | Public                |
 +===============+=====================================================+===================+=======================+
 | _id           | UUID of the Entry                                   | Set by system     | Hidden                |
 +---------------+-----------------------------------------------------+-------------------+-----------------------+
@@ -51,24 +47,24 @@ Summary
 +---------------+-----------------------------------------------------+-------------------+-----------------------+
 | description   | Description in markdown                             | Empty             | Hidden                |
 +---------------+-----------------------------------------------------+-------------------+-----------------------+
-| generators    | List of users who generated data                    | Entry creator     | Visible (via dataset) |
+| generators    | List of users who generated data                    | Empty             | Visible (via dataset) |
 +---------------+-----------------------------------------------------+-------------------+-----------------------+
-| authors       | List of users responsible for e.g. samples (e.g PI) | Entry creator     | Visible (via dataset) |
+| authors       | List of users responsible for e.g. samples (e.g PI) | Empty             | Visible (via dataset) |
 +---------------+-----------------------------------------------------+-------------------+-----------------------+
-| organisation  | User who is data controller                         | Entry creator     | Visible (via dataset) |
+| organisation  | User who is data controller                         | Empty             | Visible (via dataset) |
 +---------------+-----------------------------------------------------+-------------------+-----------------------+
 | editors       | List of users who can edit the order and datasets   | Entry creator     | Hidden                |
 +---------------+-----------------------------------------------------+-------------------+-----------------------+
 | datasets      | List of associated datasets                         | Empty             | Visible (via dataset) |
 +---------------+-----------------------------------------------------+-------------------+-----------------------+
-| tags_standard | Tags defined in the system                          | Empty             | Hidden                |
+| tags          | Text-based tags for metadata                        | Empty             | Hidden                |
 +---------------+-----------------------------------------------------+-------------------+-----------------------+
-| tags_user     | Tags defined by the users                           | Empty             | Hidden                |
+| properties    | Key-value pairs for metadata                        | Empty             | Hidden                |
 +---------------+-----------------------------------------------------+-------------------+-----------------------+
 
 
-Fields
-------
+Properties
+----------
 
 :_id:
     * UUID of the entry.
@@ -89,7 +85,7 @@ Fields
 
       - Access may be limited by other settings.
 
-    * **Default:** The user that created the entry.
+    * **Default:** Empty
 :authors:
     * List of ``users``.
 
@@ -99,10 +95,10 @@ Fields
 
       - Access may be limited by other settings.
 
-    * **Default:** The user that created the entry.
+    * **Default:** Empty
 :organisation:
     * A single ``user`` who is the data controller for the datasets generated from the order (e.g. a University).
-    * **Default:** The user that created the entry.
+    * **Default:** Empty
 :editors:
     * List of ``users``.
     * Users that may edit the order and dataset entries. May add datasets to an order.
@@ -111,18 +107,18 @@ Fields
     * List of datasets associated to the order.
     * Cannot be modified directly but must be modified through specialised means.
     * **Default:** Empty
-:tags_standard:
-    * A standard set of tags that are defined by the system.
+:tags:
+    * Text strings for metadata
     * **Default:** Empty
-:tags_user:
-    * User-defined tags for the system.
+:properties:
+    * Key-value pairs for metadata
     * **Default:** Empty
 
 
 Dataset
 =======
 
-* Dataset generated by e.g. facility.
+* Dataset generated by e.g. a facility.
 * A dataset must be associated with **one** order.
 * Multiple datasets may be associated with the same order.
 
@@ -131,7 +127,7 @@ Dataset
   -  Once associated with an order, it will stay so.
 
 * Can have identifier(s) (e.g. DOIs).
-* Will use some fields from its order:
+* Will use some properties from its order:
 
   - ``generators``
   - ``authors``
@@ -142,7 +138,7 @@ Summary
 -------
 
 +------------------+----------------------------------+-------------------+---------+
-| Field            | Description                      | Default           | Public  |
+| Property         | Description                      | Default           | Public  |
 +==================+==================================+===================+=========+
 | _id              | UUID of the Entry                | Set by system     | Visible |
 +------------------+----------------------------------+-------------------+---------+
@@ -150,16 +146,14 @@ Summary
 +------------------+----------------------------------+-------------------+---------+
 | description      | Description in markdown          | Empty             | Visible |
 +------------------+----------------------------------+-------------------+---------+
-| tags_standard    | Tags defined in the system       | Empty             | Visible |
+| tags             | Text-based tags for metadata     | Empty             | Visible |
 +------------------+----------------------------------+-------------------+---------+
-| tags_user        | Tags defined by the users        | Empty             | Visible |
-+------------------+----------------------------------+-------------------+---------+
-| cross_references | External identifiers, links etc. | Empty             | Visible |
+| properties       | Key-value pairs for metadata     | Empty             | Visible |
 +------------------+----------------------------------+-------------------+---------+
 
 
-Fields
-------
+Properties
+----------
 :_id:
     * UUID of the entry.
     * Set by the system upon entry creation, never modified.
@@ -170,20 +164,16 @@ Fields
     * Entry description.
     * May use markdown for formatting.
     * **Default:** Empty
-:tags_standard:
-    * A standard set of tags that are defined by the system.
+:tags:
+    * Text strings for metadata
     * **Default:** Empty
-:tags_user:
-    * User-defined tags for the system.
-    * **Default:** Empty
-:cross_references:
-    * External references to the data.
-    * E.g. DOIs or database IDs.
+:properties:
+    * Key-value pairs for metadata
     * **Default:** Empty
 
 
-Computed fields
----------------
+Inherited properties
+--------------------
 :related:
     * ``datasets`` from order, except the current dataset.
 :collections:
@@ -194,7 +184,8 @@ Computed fields
     * ``authors`` from order.
 :organisation:
     * ``organisation`` from order.
-
+:editors:
+    * ``editors`` from order (only for ``DATA_MANAGEMENT`` and ``editors``)
 
 Collection
 ==========
@@ -210,7 +201,7 @@ Summary
 -------
 
 +------------------+---------------------------------------------------+-------------------+---------+
-| Field            | Description                                       | Default           | Public  |
+| Property         | Description                                       | Default           | Public  |
 +==================+===================================================+===================+=========+
 | _id              | UUID of the Entry                                 | Set by system     | Visible |
 +------------------+---------------------------------------------------+-------------------+---------+
@@ -220,18 +211,16 @@ Summary
 +------------------+---------------------------------------------------+-------------------+---------+
 | description      | Description in markdown                           | Empty             | Visible |
 +------------------+---------------------------------------------------+-------------------+---------+
-| tags_standard    | Tags defined in the system                        | Empty             | Visible |
+| tags             | Text-based tags for metadata                      | Empty             | Visible |
 +------------------+---------------------------------------------------+-------------------+---------+
-| tags_user        | Tags defined by the users                         | Empty             | Visible |
-+------------------+---------------------------------------------------+-------------------+---------+
-| cross_references | External identifiers, links etc.                  | Empty             | Visible |
+| properties       | Key-value pairs for metadata                      | Empty             | Visible |
 +------------------+---------------------------------------------------+-------------------+---------+
 | editors          | List of users who can edit the collection         | Entry creator     | Hidden  |
 +------------------+---------------------------------------------------+-------------------+---------+
 
 
-Fields
-------
+Properties
+----------
 :_id:
     * UUID of the collection.
     * Set by the system upon entry creation, never modified.
@@ -242,15 +231,11 @@ Fields
     * Entry description.
     * May use markdown for formatting.
     * **Default:** Empty
-:tags_standard:
-    * A standard set of tags that are defined by the system.
+:tags:
+    * Text strings for metadata
     * **Default:** Empty
-:tags_user:
-    * User-defined tags for the system.
-    * **Default:** Empty
-:cross_references:
-    * External references to the data.
-    * E.g. DOIs or database IDs.
+:properties:
+    * Key-value pairs for metadata
     * **Default:** Empty
 :editors:
     * List of ``users``.
@@ -259,7 +244,6 @@ Fields
       - May add datasets to an order.
 
     * **Default:** The user that created the entry.
-
 
 
 User
@@ -273,19 +257,16 @@ User
 
   - On first login, the user will be added to db.
 
-* API can also be accessed using an API key.
-
-  - API key may be generated by any user.
-
 * A user with the permission ``USER_MANAGEMENT`` can create and modify users.
-* A user with the permission ``ORDER_USERS`` can create and modify "partial" users.
+* A user with the permission ``USER_ADD`` can create users.
+* A user with the permission ``USER_SEARCH`` can list users.
 
 
 Summary
 -------
 
 +--------------+-------------------------------------+-------------------+---------+
-| Field        | Description                         | Default           | Public  |
+| Property     | Description                         | Default           | Public  |
 +==============+=====================================+===================+=========+
 | _id          | UUID of the Entry                   | Set by system     | Hidden  |
 +--------------+-------------------------------------+-------------------+---------+
@@ -299,7 +280,7 @@ Summary
 +--------------+-------------------------------------+-------------------+---------+
 | email        | Email address for the user          | Must be non-empty | Hidden  |
 +--------------+-------------------------------------+-------------------+---------+
-| email_public | Email address to show publicly      | Empty             | Visible |
+| contact      | Contact information                 | Empty             | Visible |
 +--------------+-------------------------------------+-------------------+---------+
 | name         | Name of the user                    | Must be non-empty | Visible |
 +--------------+-------------------------------------+-------------------+---------+
@@ -311,8 +292,8 @@ Summary
 +--------------+-------------------------------------+-------------------+---------+
 
 
-Fields
-------
+Properties
+----------
 
 :_id:
     * UUID of the entry.
@@ -365,7 +346,7 @@ Summary
 -------
 
 +-------------+--------------------------------------------+-------------------+
-| Field       | Description                                | Default           |
+| Property    | Description                                | Default           |
 +=============+============================================+===================+
 | _id         | UUID of the Entry                          | Set by system     |
 +-------------+--------------------------------------------+-------------------+
@@ -383,8 +364,8 @@ Summary
 +-------------+--------------------------------------------+-------------------+
 
 
-Fields
-------
+Properties
+----------
 
 :_id:
     * UUID of the entry.

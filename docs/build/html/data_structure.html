@@ -4,8 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Data Structure &#8212; Data Tracker  documentation</title>
     <link rel="stylesheet" type="text/css" href="static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="static/alabaster.css" />
@@ -15,8 +14,8 @@
     <script src="static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Implementation" href="implementation.html" />
-    <link rel="prev" title="API" href="api.html" />
+    <link rel="next" title="API" href="api.html" />
+    <link rel="prev" title="Configuration" href="configuration.html" />
    
   <link rel="stylesheet" href="static/custom.css" type="text/css" />
   
@@ -33,9 +32,9 @@
 
           <div class="body" role="main">
             
-  <section id="data-structure">
-<h1>Data Structure<a class="headerlink" href="#data-structure" title="Permalink to this headline">¶</a></h1>
-<p>The Data Tracker is based on a few main components:</p>
+  <div class="section" id="data-structure">
+<span id="id1"></span><h1>Data Structure<a class="headerlink" href="#data-structure" title="Permalink to this headline">¶</a></h1>
+<p>The data entities used in the Data Tracker:</p>
 <ul class="simple">
 <li><p>Order</p></li>
 <li><p>Dataset</p></li>
@@ -43,37 +42,31 @@
 <li><p>User</p></li>
 <li><p>Log</p></li>
 </ul>
-<section id="general">
-<h2>General<a class="headerlink" href="#general" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">Title</span></code> may never be empty.</p></li>
-</ul>
-</section>
-<section id="terminology">
+<div class="section" id="terminology">
 <h2>Terminology<a class="headerlink" href="#terminology" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>Fields:</p>
+<li><p>Properties:</p>
 <ul>
-<li><p>Fields in the documents for the datatype/collection.</p></li>
+<li><p>Properties in the documents for the datatype/collection.</p></li>
 </ul>
 </li>
-<li><p>Computed fields:</p>
+<li><p>Inherited properties:</p>
 <ul>
-<li><p>Values that are either calculated or retrieved from documents in other collection(s).</p></li>
-<li><p>Included when the entity is requested via API.</p></li>
+<li><p>Properties that are either calculated or retrieved from documents in other collection(s).</p></li>
+<li><p>Included when the entity is requested via API, but is not part of the entry in the database.</p></li>
 </ul>
 </li>
 </ul>
-</section>
-<section id="order">
+</div>
+<div class="section" id="order">
 <h2>Order<a class="headerlink" href="#order" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>Requires special permission to add (<code class="docutils literal notranslate"><span class="pre">ORDERS_SPECIAL</span></code>)</p></li>
+<li><p>Requires special permission to access (<code class="docutils literal notranslate"><span class="pre">DATA_EDIT</span></code>)</p></li>
 <li><p>May only be accessed and modified by users listed in <code class="docutils literal notranslate"><span class="pre">editors</span></code> or users with <code class="docutils literal notranslate"><span class="pre">DATA_MANAGEMENT</span></code>.</p></li>
 <li><p>Can have any number of associated datasets.</p></li>
-<li><p>Deleting an order will delete all owned datasets.</p></li>
+<li><p>Deleting an order will delete all associated datasets.</p></li>
 </ul>
-<section id="summary">
+<div class="section" id="summary">
 <h3>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h3>
 <table class="docutils align-default">
 <colgroup>
@@ -83,7 +76,7 @@
 <col style="width: 21%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Field</p></th>
+<tr class="row-odd"><th class="head"><p>Property</p></th>
 <th class="head"><p>Description</p></th>
 <th class="head"><p>Default</p></th>
 <th class="head"><p>Public</p></th>
@@ -107,17 +100,17 @@
 </tr>
 <tr class="row-odd"><td><p>generators</p></td>
 <td><p>List of users who generated data</p></td>
-<td><p>Entry creator</p></td>
+<td><p>Empty</p></td>
 <td><p>Visible (via dataset)</p></td>
 </tr>
 <tr class="row-even"><td><p>authors</p></td>
 <td><p>List of users responsible for e.g. samples (e.g PI)</p></td>
-<td><p>Entry creator</p></td>
+<td><p>Empty</p></td>
 <td><p>Visible (via dataset)</p></td>
 </tr>
 <tr class="row-odd"><td><p>organisation</p></td>
 <td><p>User who is data controller</p></td>
-<td><p>Entry creator</p></td>
+<td><p>Empty</p></td>
 <td><p>Visible (via dataset)</p></td>
 </tr>
 <tr class="row-even"><td><p>editors</p></td>
@@ -130,21 +123,21 @@
 <td><p>Empty</p></td>
 <td><p>Visible (via dataset)</p></td>
 </tr>
-<tr class="row-even"><td><p>tags_standard</p></td>
-<td><p>Tags defined in the system</p></td>
+<tr class="row-even"><td><p>tags</p></td>
+<td><p>Text-based tags for metadata</p></td>
 <td><p>Empty</p></td>
 <td><p>Hidden</p></td>
 </tr>
-<tr class="row-odd"><td><p>tags_user</p></td>
-<td><p>Tags defined by the users</p></td>
+<tr class="row-odd"><td><p>properties</p></td>
+<td><p>Key-value pairs for metadata</p></td>
 <td><p>Empty</p></td>
 <td><p>Hidden</p></td>
 </tr>
 </tbody>
 </table>
-</section>
-<section id="fields">
-<h3>Fields<a class="headerlink" href="#fields" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="properties">
+<h3>Properties<a class="headerlink" href="#properties" title="Permalink to this headline">¶</a></h3>
 <dl class="field-list simple">
 <dt class="field-odd">_id</dt>
 <dd class="field-odd"><ul class="simple">
@@ -174,7 +167,7 @@
 <li><p>Access may be limited by other settings.</p></li>
 </ul>
 </li>
-<li><p><strong>Default:</strong> The user that created the entry.</p></li>
+<li><p><strong>Default:</strong> Empty</p></li>
 </ul>
 </dd>
 <dt class="field-odd">authors</dt>
@@ -186,13 +179,13 @@
 <li><p>Access may be limited by other settings.</p></li>
 </ul>
 </li>
-<li><p><strong>Default:</strong> The user that created the entry.</p></li>
+<li><p><strong>Default:</strong> Empty</p></li>
 </ul>
 </dd>
 <dt class="field-even">organisation</dt>
 <dd class="field-even"><ul class="simple">
 <li><p>A single <code class="docutils literal notranslate"><span class="pre">user</span></code> who is the data controller for the datasets generated from the order (e.g. a University).</p></li>
-<li><p><strong>Default:</strong> The user that created the entry.</p></li>
+<li><p><strong>Default:</strong> Empty</p></li>
 </ul>
 </dd>
 <dt class="field-odd">editors</dt>
@@ -209,25 +202,25 @@
 <li><p><strong>Default:</strong> Empty</p></li>
 </ul>
 </dd>
-<dt class="field-odd">tags_standard</dt>
+<dt class="field-odd">tags</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p>A standard set of tags that are defined by the system.</p></li>
+<li><p>Text strings for metadata</p></li>
 <li><p><strong>Default:</strong> Empty</p></li>
 </ul>
 </dd>
-<dt class="field-even">tags_user</dt>
+<dt class="field-even">properties</dt>
 <dd class="field-even"><ul class="simple">
-<li><p>User-defined tags for the system.</p></li>
+<li><p>Key-value pairs for metadata</p></li>
 <li><p><strong>Default:</strong> Empty</p></li>
 </ul>
 </dd>
 </dl>
-</section>
-</section>
-<section id="dataset">
+</div>
+</div>
+<div class="section" id="dataset">
 <h2>Dataset<a class="headerlink" href="#dataset" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>Dataset generated by e.g. facility.</p></li>
+<li><p>Dataset generated by e.g. a facility.</p></li>
 <li><p>A dataset must be associated with <strong>one</strong> order.</p></li>
 <li><p>Multiple datasets may be associated with the same order.</p></li>
 <li><p>The association to a specific order cannot be changed.</p>
@@ -236,7 +229,7 @@
 </ul>
 </li>
 <li><p>Can have identifier(s) (e.g. DOIs).</p></li>
-<li><p>Will use some fields from its order:</p>
+<li><p>Will use some properties from its order:</p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">generators</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">authors</span></code></p></li>
@@ -245,8 +238,8 @@
 </ul>
 </li>
 </ul>
-<section id="id1">
-<h3>Summary<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id2">
+<h3>Summary<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 23%" />
@@ -255,7 +248,7 @@
 <col style="width: 11%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Field</p></th>
+<tr class="row-odd"><th class="head"><p>Property</p></th>
 <th class="head"><p>Description</p></th>
 <th class="head"><p>Default</p></th>
 <th class="head"><p>Public</p></th>
@@ -277,26 +270,21 @@
 <td><p>Empty</p></td>
 <td><p>Visible</p></td>
 </tr>
-<tr class="row-odd"><td><p>tags_standard</p></td>
-<td><p>Tags defined in the system</p></td>
+<tr class="row-odd"><td><p>tags</p></td>
+<td><p>Text-based tags for metadata</p></td>
 <td><p>Empty</p></td>
 <td><p>Visible</p></td>
 </tr>
-<tr class="row-even"><td><p>tags_user</p></td>
-<td><p>Tags defined by the users</p></td>
-<td><p>Empty</p></td>
-<td><p>Visible</p></td>
-</tr>
-<tr class="row-odd"><td><p>cross_references</p></td>
-<td><p>External identifiers, links etc.</p></td>
+<tr class="row-even"><td><p>properties</p></td>
+<td><p>Key-value pairs for metadata</p></td>
 <td><p>Empty</p></td>
 <td><p>Visible</p></td>
 </tr>
 </tbody>
 </table>
-</section>
-<section id="id2">
-<h3>Fields<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="id3">
+<h3>Properties<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <dl class="field-list simple">
 <dt class="field-odd">_id</dt>
 <dd class="field-odd"><ul class="simple">
@@ -317,29 +305,22 @@
 <li><p><strong>Default:</strong> Empty</p></li>
 </ul>
 </dd>
-<dt class="field-even">tags_standard</dt>
+<dt class="field-even">tags</dt>
 <dd class="field-even"><ul class="simple">
-<li><p>A standard set of tags that are defined by the system.</p></li>
+<li><p>Text strings for metadata</p></li>
 <li><p><strong>Default:</strong> Empty</p></li>
 </ul>
 </dd>
-<dt class="field-odd">tags_user</dt>
+<dt class="field-odd">properties</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p>User-defined tags for the system.</p></li>
-<li><p><strong>Default:</strong> Empty</p></li>
-</ul>
-</dd>
-<dt class="field-even">cross_references</dt>
-<dd class="field-even"><ul class="simple">
-<li><p>External references to the data.</p></li>
-<li><p>E.g. DOIs or database IDs.</p></li>
+<li><p>Key-value pairs for metadata</p></li>
 <li><p><strong>Default:</strong> Empty</p></li>
 </ul>
 </dd>
 </dl>
-</section>
-<section id="computed-fields">
-<h3>Computed fields<a class="headerlink" href="#computed-fields" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="inherited-properties">
+<h3>Inherited properties<a class="headerlink" href="#inherited-properties" title="Permalink to this headline">¶</a></h3>
 <dl class="field-list simple">
 <dt class="field-odd">related</dt>
 <dd class="field-odd"><ul class="simple">
@@ -366,10 +347,15 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">organisation</span></code> from order.</p></li>
 </ul>
 </dd>
+<dt class="field-even">editors</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">editors</span></code> from order (only for <code class="docutils literal notranslate"><span class="pre">DATA_MANAGEMENT</span></code> and <code class="docutils literal notranslate"><span class="pre">editors</span></code>)</p></li>
+</ul>
+</dd>
 </dl>
-</section>
-</section>
-<section id="collection">
+</div>
+</div>
+<div class="section" id="collection">
 <h2>Collection<a class="headerlink" href="#collection" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>May be created by any users.</p></li>
@@ -378,8 +364,8 @@
 <li><p>Provides a way of grouping datasets before publication.</p></li>
 <li><p>Should aid requesting a DOI from Figshare for the collection.</p></li>
 </ul>
-<section id="id3">
-<h3>Summary<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id4">
+<h3>Summary<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 19%" />
@@ -388,7 +374,7 @@
 <col style="width: 9%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Field</p></th>
+<tr class="row-odd"><th class="head"><p>Property</p></th>
 <th class="head"><p>Description</p></th>
 <th class="head"><p>Default</p></th>
 <th class="head"><p>Public</p></th>
@@ -415,31 +401,26 @@
 <td><p>Empty</p></td>
 <td><p>Visible</p></td>
 </tr>
-<tr class="row-even"><td><p>tags_standard</p></td>
-<td><p>Tags defined in the system</p></td>
+<tr class="row-even"><td><p>tags</p></td>
+<td><p>Text-based tags for metadata</p></td>
 <td><p>Empty</p></td>
 <td><p>Visible</p></td>
 </tr>
-<tr class="row-odd"><td><p>tags_user</p></td>
-<td><p>Tags defined by the users</p></td>
+<tr class="row-odd"><td><p>properties</p></td>
+<td><p>Key-value pairs for metadata</p></td>
 <td><p>Empty</p></td>
 <td><p>Visible</p></td>
 </tr>
-<tr class="row-even"><td><p>cross_references</p></td>
-<td><p>External identifiers, links etc.</p></td>
-<td><p>Empty</p></td>
-<td><p>Visible</p></td>
-</tr>
-<tr class="row-odd"><td><p>editors</p></td>
+<tr class="row-even"><td><p>editors</p></td>
 <td><p>List of users who can edit the collection</p></td>
 <td><p>Entry creator</p></td>
 <td><p>Hidden</p></td>
 </tr>
 </tbody>
 </table>
-</section>
-<section id="id4">
-<h3>Fields<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="id5">
+<h3>Properties<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <dl class="field-list simple">
 <dt class="field-odd">_id</dt>
 <dd class="field-odd"><ul class="simple">
@@ -460,27 +441,20 @@
 <li><p><strong>Default:</strong> Empty</p></li>
 </ul>
 </dd>
-<dt class="field-even">tags_standard</dt>
+<dt class="field-even">tags</dt>
 <dd class="field-even"><ul class="simple">
-<li><p>A standard set of tags that are defined by the system.</p></li>
+<li><p>Text strings for metadata</p></li>
 <li><p><strong>Default:</strong> Empty</p></li>
 </ul>
 </dd>
-<dt class="field-odd">tags_user</dt>
+<dt class="field-odd">properties</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p>User-defined tags for the system.</p></li>
+<li><p>Key-value pairs for metadata</p></li>
 <li><p><strong>Default:</strong> Empty</p></li>
 </ul>
 </dd>
-<dt class="field-even">cross_references</dt>
+<dt class="field-even">editors</dt>
 <dd class="field-even"><ul class="simple">
-<li><p>External references to the data.</p></li>
-<li><p>E.g. DOIs or database IDs.</p></li>
-<li><p><strong>Default:</strong> Empty</p></li>
-</ul>
-</dd>
-<dt class="field-odd">editors</dt>
-<dd class="field-odd"><ul class="simple">
 <li><p>List of <code class="docutils literal notranslate"><span class="pre">users</span></code>.</p></li>
 <li><p>Users that may edit the collection.</p>
 <ul>
@@ -491,9 +465,9 @@
 </ul>
 </dd>
 </dl>
-</section>
-</section>
-<section id="user">
+</div>
+</div>
+<div class="section" id="user">
 <h2>User<a class="headerlink" href="#user" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Everyone using the system is a user.</p>
@@ -506,16 +480,12 @@
 <li><p>On first login, the user will be added to db.</p></li>
 </ul>
 </li>
-<li><p>API can also be accessed using an API key.</p>
-<ul>
-<li><p>API key may be generated by any user.</p></li>
-</ul>
-</li>
 <li><p>A user with the permission <code class="docutils literal notranslate"><span class="pre">USER_MANAGEMENT</span></code> can create and modify users.</p></li>
-<li><p>A user with the permission <code class="docutils literal notranslate"><span class="pre">ORDER_USERS</span></code> can create and modify “partial” users.</p></li>
+<li><p>A user with the permission <code class="docutils literal notranslate"><span class="pre">USER_ADD</span></code> can create users.</p></li>
+<li><p>A user with the permission <code class="docutils literal notranslate"><span class="pre">USER_SEARCH</span></code> can list users.</p></li>
 </ul>
-<section id="id5">
-<h3>Summary<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id6">
+<h3>Summary<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 18%" />
@@ -524,7 +494,7 @@
 <col style="width: 11%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Field</p></th>
+<tr class="row-odd"><th class="head"><p>Property</p></th>
 <th class="head"><p>Description</p></th>
 <th class="head"><p>Default</p></th>
 <th class="head"><p>Public</p></th>
@@ -561,8 +531,8 @@
 <td><p>Must be non-empty</p></td>
 <td><p>Hidden</p></td>
 </tr>
-<tr class="row-even"><td><p>email_public</p></td>
-<td><p>Email address to show publicly</p></td>
+<tr class="row-even"><td><p>contact</p></td>
+<td><p>Contact information</p></td>
 <td><p>Empty</p></td>
 <td><p>Visible</p></td>
 </tr>
@@ -588,9 +558,9 @@
 </tr>
 </tbody>
 </table>
-</section>
-<section id="id6">
-<h3>Fields<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="id7">
+<h3>Properties<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
 <dl class="field-list simple">
 <dt class="field-odd">_id</dt>
 <dd class="field-odd"><ul class="simple">
@@ -649,7 +619,7 @@
 </dd>
 <dt class="field-even">permissions</dt>
 <dd class="field-even"><ul class="simple">
-<li><p>A list of the extra permissions the user has (see <a class="reference internal" href="implementation.html#permissions-section"><span class="std std-ref">Permissions</span></a>).</p></li>
+<li><p>A list of the extra permissions the user has (see <a class="reference internal" href="design.html#permissions-section"><span class="std std-ref">Permissions</span></a>).</p></li>
 </ul>
 </dd>
 <dt class="field-odd">url</dt>
@@ -660,9 +630,9 @@
 </ul>
 </dd>
 </dl>
-</section>
-</section>
-<section id="log">
+</div>
+</div>
+<div class="section" id="log">
 <h2>Log<a class="headerlink" href="#log" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Whenever an entry (<code class="docutils literal notranslate"><span class="pre">order</span></code>, <code class="docutils literal notranslate"><span class="pre">dataset</span></code>, <code class="docutils literal notranslate"><span class="pre">collection</span></code>, or <code class="docutils literal notranslate"><span class="pre">user</span></code>) is changed, a log should be written.</p></li>
@@ -675,8 +645,8 @@
 </ul>
 </li>
 </ul>
-<section id="id7">
-<h3>Summary<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id8">
+<h3>Summary<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 17%" />
@@ -684,7 +654,7 @@
 <col style="width: 25%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Field</p></th>
+<tr class="row-odd"><th class="head"><p>Property</p></th>
 <th class="head"><p>Description</p></th>
 <th class="head"><p>Default</p></th>
 </tr>
@@ -720,9 +690,9 @@
 </tr>
 </tbody>
 </table>
-</section>
-<section id="id8">
-<h3>Fields<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="id9">
+<h3>Properties<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
 <dl class="field-list simple">
 <dt class="field-odd">_id</dt>
 <dd class="field-odd"><ul class="simple">
@@ -773,9 +743,9 @@
 </ul>
 </dd>
 </dl>
-</section>
-</section>
-</section>
+</div>
+</div>
+</div>
 
 
           </div>
@@ -798,9 +768,9 @@
 
 <h3>Navigation</h3>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="design.html">System Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Data Structure</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#general">General</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#terminology">Terminology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#order">Order</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#dataset">Dataset</a></li>
@@ -809,7 +779,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#log">Log</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="implementation.html">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
 </ul>
 
@@ -817,8 +787,8 @@
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="api.html" title="previous chapter">API</a></li>
-      <li>Next: <a href="implementation.html" title="next chapter">Implementation</a></li>
+      <li>Previous: <a href="configuration.html" title="previous chapter">Configuration</a></li>
+      <li>Next: <a href="api.html" title="next chapter">API</a></li>
   </ul></li>
 </ul>
 </div>
@@ -848,7 +818,7 @@
       &copy;2019-2021, SciLifeLab Data Centre.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

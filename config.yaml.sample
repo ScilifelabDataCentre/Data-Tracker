@@ -7,7 +7,6 @@ mongo:
   db: "tracker"
 
 flask:
-  port: 5000
   secret: "secret"
 
 dev_mode:

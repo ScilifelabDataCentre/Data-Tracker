@@ -87,7 +87,7 @@ def verify_csrf_token():
 
     Aborts with status 400 if the verification fails.
     """
-    token = flask.request.headers.get("X-CSRFToken")
+    token = flask.request.headers.get("X-CSRF-Token")
     if not token or (token != flask.request.cookies.get("_csrf_token")):
         flask.current_app.logger.warning("Bad csrf token received")
         flask.abort(status=400)
@@ -750,7 +750,7 @@ def commit_to_db(
 
     ``_id`` should be included in ``data`` for delete and update operations.
 
-    Only uses *_one commands.
+    Only uses <type>_one commands for the db.
 
     Args:
         db: Connection to the database (client).
@@ -805,3 +805,19 @@ def prepare_for_db(data: dict) -> dict:
         elif key == "description":
             prepared[key] = html.escape(prepared[key])
     return prepared
+
+
+def prepare_permissions(in_perms: list) -> list:
+    """
+    Generate a full list of permissions for the user.
+
+    Args:
+        in_perms (list): The raw list of permissions from the user entry.
+
+    Returns:
+        list: The complete list of permissions for the user.
+    """
+    new_perms = set()
+    for entry in in_perms:
+        new_perms.update(user.PERMISSIONS[entry])
+    return list(new_perms)

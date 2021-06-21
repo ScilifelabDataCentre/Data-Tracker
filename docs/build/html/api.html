@@ -4,8 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>API &#8212; Data Tracker  documentation</title>
     <link rel="stylesheet" type="text/css" href="static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="static/alabaster.css" />
@@ -15,8 +14,8 @@
     <script src="static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Data Structure" href="data_structure.html" />
-    <link rel="prev" title="Data Tracker" href="index.html" />
+    <link rel="next" title="Development" href="development.html" />
+    <link rel="prev" title="Data Structure" href="data_structure.html" />
    
   <link rel="stylesheet" href="static/custom.css" type="text/css" />
   
@@ -33,12 +32,12 @@
 
           <div class="body" role="main">
             
-  <section id="api">
+  <div class="section" id="api">
 <h1>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h1>
-<section id="version-1">
+<div class="section" id="version-1">
 <h2>Version 1<a class="headerlink" href="#version-1" title="Permalink to this headline">¶</a></h2>
 <p>Base URL for the API is <code class="docutils literal notranslate"><span class="pre">&lt;url&gt;/api/v1/</span></code>. All API description have the base implied before the first <code class="docutils literal notranslate"><span class="pre">/</span></code>.</p>
-<section id="order">
+<div class="section" id="order">
 <h3>Order<a class="headerlink" href="#order" title="Permalink to this headline">¶</a></h3>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -46,8 +45,8 @@
 </div>
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">/order/</span></span></dt>
-<dd><dl class="simple">
+<span class="sig-name descname"><span class="pre">/order</span></span></dt>
+<dd><dl>
 <dt><strong>GET</strong></dt><dd><ul class="simple">
 <li><p>Get a list of all orders where the user is <code class="docutils literal notranslate"><span class="pre">editor</span></code>.</p></li>
 <li><p>All orders will be listed for a user with <code class="docutils literal notranslate"><span class="pre">DATA_MANAGEMENT</span></code>.</p></li>
@@ -57,14 +56,28 @@
 <li><p>Add a new order.</p></li>
 <li><p>Returns the <code class="docutils literal notranslate"><span class="pre">uuid</span></code> of the added order.</p></li>
 </ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;order&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;New title&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Text as **Markdown**&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;authors&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;271206a2-86e7-406a-b881-6b3abc94fd2f&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;generators&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;271206a2-86e7-406a-b881-6b3abc94fd2f&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;organisation&quot;</span><span class="p">:</span> <span class="s2">&quot;271206a2-86e7-406a-b881-6b3abc94fd2f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;editors&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;271206a2-86e7-406a-b881-6b3abc94fd2f&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Tag&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;Key&quot;</span><span class="p">:</span> <span class="s2">&quot;Value&quot;</span><span class="p">},</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">/order/&lt;uuid&gt;/</span></span></dt>
-<dd><dl class="simple">
+<span class="sig-name descname"><span class="pre">/order/&lt;uuid&gt;</span></span></dt>
+<dd><dl>
 <dt><strong>GET</strong></dt><dd><ul class="simple">
 <li><p>Get information about the order <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p></li>
 </ul>
@@ -76,25 +89,49 @@
 <dt><strong>PATCH</strong></dt><dd><ul class="simple">
 <li><p>Update the order <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p></li>
 </ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;order&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;New title&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Text as **Markdown**&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;authors&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;271206a2-86e7-406a-b881-6b3abc94fd2f&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;generators&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;271206a2-86e7-406a-b881-6b3abc94fd2f&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;organisation&quot;</span><span class="p">:</span> <span class="s2">&quot;271206a2-86e7-406a-b881-6b3abc94fd2f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;editors&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;271206a2-86e7-406a-b881-6b3abc94fd2f&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Tag&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;Key&quot;</span><span class="p">:</span> <span class="s2">&quot;Value&quot;</span><span class="p">},</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">/order/&lt;uuid&gt;/dataset/</span></span></dt>
-<dd><dl class="simple">
+<span class="sig-name descname"><span class="pre">/order/&lt;uuid&gt;/dataset</span></span></dt>
+<dd><dl>
 <dt><strong>POST</strong></dt><dd><ul class="simple">
 <li><p>Add a new dataset for the order <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p></li>
 <li><p>Returns the <code class="docutils literal notranslate"><span class="pre">uuid</span></code> of the added dataset.</p></li>
 </ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;dataset&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;New title&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Text as **Markdown**&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Tag&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;Key&quot;</span><span class="p">:</span> <span class="s2">&quot;Value&quot;</span><span class="p">},</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">/order/&lt;uuid&gt;/log/</span></span></dt>
+<span class="sig-name descname"><span class="pre">/order/&lt;uuid&gt;/log</span></span></dt>
 <dd><dl class="simple">
 <dt><strong>GET</strong></dt><dd><ul class="simple">
 <li><p>Get a list of changes for the order <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p></li>
@@ -103,12 +140,12 @@
 </dl>
 </dd></dl>
 
-</section>
-<section id="dataset">
+</div>
+<div class="section" id="dataset">
 <h3>Dataset<a class="headerlink" href="#dataset" title="Permalink to this headline">¶</a></h3>
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">/dataset/</span></span></dt>
+<span class="sig-name descname"><span class="pre">/dataset</span></span></dt>
 <dd><dl class="simple">
 <dt><strong>GET</strong></dt><dd><ul class="simple">
 <li><p>Get a list of all datasets.</p></li>
@@ -119,8 +156,8 @@
 
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">/dataset/&lt;uuid&gt;/</span></span></dt>
-<dd><dl class="simple">
+<span class="sig-name descname"><span class="pre">/dataset/&lt;uuid&gt;</span></span></dt>
+<dd><dl>
 <dt><strong>GET</strong></dt><dd><ul class="simple">
 <li><p>Get information about the dataset <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p></li>
 </ul>
@@ -132,13 +169,23 @@
 <dt><strong>PATCH</strong></dt><dd><ul class="simple">
 <li><p>Update the dataset <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p></li>
 </ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;dataset&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;New title&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Text as **Markdown**&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Tag&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;Key&quot;</span><span class="p">:</span> <span class="s2">&quot;Value&quot;</span><span class="p">},</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">/dataset/&lt;uuid&gt;/log/</span></span></dt>
+<span class="sig-name descname"><span class="pre">/dataset/&lt;uuid&gt;/log</span></span></dt>
 <dd><dl class="simple">
 <dt><strong>GET</strong></dt><dd><ul class="simple">
 <li><p>Get a list of changes done to the dataset <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p></li>
@@ -147,13 +194,13 @@
 </dl>
 </dd></dl>
 
-</section>
-<section id="collection">
+</div>
+<div class="section" id="collection">
 <h3>Collection<a class="headerlink" href="#collection" title="Permalink to this headline">¶</a></h3>
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">/collection/</span></span></dt>
-<dd><dl class="simple">
+<span class="sig-name descname"><span class="pre">/collection</span></span></dt>
+<dd><dl>
 <dt><strong>GET</strong></dt><dd><ul class="simple">
 <li><p>Get a list of all collections.</p></li>
 </ul>
@@ -161,14 +208,25 @@
 <dt><strong>POST</strong></dt><dd><ul class="simple">
 <li><p>Add a new collection.</p></li>
 </ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;collection&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;New title&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Text as **Markdown**&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Tag&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;Key&quot;</span><span class="p">:</span> <span class="s2">&quot;Value&quot;</span><span class="p">},</span>
+    <span class="s2">&quot;editors&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;271206a2-86e7-406a-b881-6b3abc94fd2f&quot;</span><span class="p">],</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">/collection/&lt;uuid&gt;/</span></span></dt>
-<dd><dl class="simple">
+<span class="sig-name descname"><span class="pre">/collection/&lt;uuid&gt;</span></span></dt>
+<dd><dl>
 <dt><strong>GET</strong></dt><dd><ul class="simple">
 <li><p>Get information about the collection <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p></li>
 </ul>
@@ -180,13 +238,24 @@
 <dt><strong>PATCH</strong></dt><dd><ul class="simple">
 <li><p>Update the collection <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p></li>
 </ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;collection&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;New title&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Text as **Markdown**&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Tag&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;Key&quot;</span><span class="p">:</span> <span class="s2">&quot;Value&quot;</span><span class="p">},</span>
+    <span class="s2">&quot;editors&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;271206a2-86e7-406a-b881-6b3abc94fd2f&quot;</span><span class="p">],</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">/collection/&lt;uuid&gt;/log/</span></span></dt>
+<span class="sig-name descname"><span class="pre">/collection/&lt;uuid&gt;/log</span></span></dt>
 <dd><dl class="simple">
 <dt><strong>GET</strong></dt><dd><ul class="simple">
 <li><p>Get a list of changes done to the collection <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p></li>
@@ -195,15 +264,15 @@
 </dl>
 </dd></dl>
 
-</section>
-<section id="user">
+</div>
+<div class="section" id="user">
 <h3>User<a class="headerlink" href="#user" title="Permalink to this headline">¶</a></h3>
-<section id="current-user">
+<div class="section" id="current-user">
 <h4>Current User<a class="headerlink" href="#current-user" title="Permalink to this headline">¶</a></h4>
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">/user/me/</span></span></dt>
-<dd><dl class="simple">
+<span class="sig-name descname"><span class="pre">/user/me</span></span></dt>
+<dd><dl>
 <dt><strong>GET</strong></dt><dd><ul class="simple">
 <li><p>Get information about the current user.</p></li>
 </ul>
@@ -211,79 +280,23 @@
 <dt><strong>PATCH</strong></dt><dd><ul class="simple">
 <li><p>Update information for the current user.</p></li>
 </ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;user: {</span>
+    <span class="s2">&quot;affiliation&quot;</span><span class="p">:</span> <span class="s2">&quot;University A&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;First Last&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;orcid&quot;</span><span class="p">:</span> <span class="s2">&quot;1111-1111-1111-1115&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;contact&quot;</span><span class="p">:</span> <span class="s2">&quot;Street 1, 234 56 City&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;https://www.example.com&quot;</span><span class="p">,</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">/user/me/apikey/</span></span></dt>
-<dd><dl class="simple">
-<dt><strong>POST</strong></dt><dd><ul class="simple">
-<li><p>Generate a new API key for the current user.</p></li>
-<li><p>The new API key is returned.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">/user/me/log/</span></span></dt>
-<dd><dl class="simple">
-<dt><strong>GET</strong></dt><dd><ul class="simple">
-<li><p>Get a list of changes done to the current user.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">/user/me/actions/</span></span></dt>
-<dd><dl class="simple">
-<dt><strong>GET</strong></dt><dd><ul class="simple">
-<li><p>Get a list of changes done by the current user.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">/user/me/orders/</span></span></dt>
-<dd><dl class="simple">
-<dt><strong>GET</strong></dt><dd><ul class="simple">
-<li><p>Get a list of orders where the current user is listed as <code class="docutils literal notranslate"><span class="pre">editor</span></code>.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">/user/me/datasets/</span></span></dt>
-<dd><dl class="simple">
-<dt><strong>GET</strong></dt><dd><ul class="simple">
-<li><p>Get a list of datasets where the current user is listed as <code class="docutils literal notranslate"><span class="pre">editor</span></code>.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">/user/me/collections/</span></span></dt>
-<dd><dl class="simple">
-<dt><strong>GET</strong></dt><dd><ul class="simple">
-<li><p>Get a list of collections where the current user is listed as <code class="docutils literal notranslate"><span class="pre">editor</span></code>.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-</section>
-<section id="look-up-users">
+</div>
+<div class="section" id="look-up-users">
 <h4>Look Up Users<a class="headerlink" href="#look-up-users" title="Permalink to this headline">¶</a></h4>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -291,12 +304,12 @@
 </div>
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">/user/</span></span></dt>
+<span class="sig-name descname"><span class="pre">/user</span></span></dt>
 <dd><div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Only for users with <code class="docutils literal notranslate"><span class="pre">USER_SEARCH</span></code> or <code class="docutils literal notranslate"><span class="pre">USER_MANAGEMENT</span></code>.</p>
 </div>
-<dl class="simple">
+<dl>
 <dt><strong>GET</strong></dt><dd><ul class="simple">
 <li><p>Get a list of all users.</p></li>
 <li><p>Users with <code class="docutils literal notranslate"><span class="pre">USER_SEARCH</span></code> will get a limited set of fields.</p></li>
@@ -305,14 +318,26 @@
 <dt><strong>POST</strong></dt><dd><ul class="simple">
 <li><p>Add a new user.</p></li>
 </ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;user: {</span>
+    <span class="s2">&quot;affiliation&quot;</span><span class="p">:</span> <span class="s2">&quot;University A&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;First Last&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;orcid&quot;</span><span class="p">:</span> <span class="s2">&quot;1111-1111-1111-1115&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;contact&quot;</span><span class="p">:</span> <span class="s2">&quot;Street 1, 234 56 City&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;https://www.example.com&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="s2">&quot;name@example.com&quot;</span><span class="p">,</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">/user/&lt;uuid&gt;/</span></span></dt>
-<dd><dl class="simple">
+<span class="sig-name descname"><span class="pre">/user/&lt;uuid&gt;</span></span></dt>
+<dd><dl>
 <dt><strong>GET</strong></dt><dd><ul class="simple">
 <li><p>Get information about the user <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p></li>
 </ul>
@@ -320,6 +345,18 @@
 <dt><strong>PATCH</strong></dt><dd><ul class="simple">
 <li><p>Update information about the user <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p></li>
 </ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;user: {</span>
+    <span class="s2">&quot;affiliation&quot;</span><span class="p">:</span> <span class="s2">&quot;University A&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;First Last&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;orcid&quot;</span><span class="p">:</span> <span class="s2">&quot;1111-1111-1111-1115&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;contact&quot;</span><span class="p">:</span> <span class="s2">&quot;Street 1, 234 56 City&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;https://www.example.com&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="s2">&quot;name@example.com&quot;</span><span class="p">,</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 </dd>
 <dt><strong>DELETE</strong></dt><dd><ul class="simple">
 <li><p>Delete the user <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p></li>
@@ -330,7 +367,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">/user/&lt;uuid&gt;/apikey/</span></span></dt>
+<span class="sig-name descname"><span class="pre">/user/&lt;uuid&gt;/apikey</span></span></dt>
 <dd><dl class="simple">
 <dt><strong>POST</strong></dt><dd><ul class="simple">
 <li><p>Generate a new API key for the user <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p></li>
@@ -342,7 +379,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">/user/&lt;uuid&gt;/log/</span></span></dt>
+<span class="sig-name descname"><span class="pre">/user/&lt;uuid&gt;/log</span></span></dt>
 <dd><dl class="simple">
 <dt><strong>GET</strong></dt><dd><ul class="simple">
 <li><p>Get a list of changes done to the user <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p></li>
@@ -353,7 +390,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">/user/&lt;uuid&gt;/actions/</span></span></dt>
+<span class="sig-name descname"><span class="pre">/user/&lt;uuid&gt;/actions</span></span></dt>
 <dd><dl class="simple">
 <dt><strong>GET</strong></dt><dd><ul class="simple">
 <li><p>Get a list of changes done by the user with <code class="docutils literal notranslate"><span class="pre">uuid</span></code>.</p></li>
@@ -362,45 +399,12 @@
 </dl>
 </dd></dl>
 
-<dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">/user/&lt;uuid&gt;/orders/</span></span></dt>
-<dd><dl class="simple">
-<dt><strong>GET</strong></dt><dd><ul class="simple">
-<li><p>Get a list of orders where the user <code class="docutils literal notranslate"><span class="pre">uuid</span></code> is listed as <code class="docutils literal notranslate"><span class="pre">editor</span></code>.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">/user/&lt;uuid&gt;/datasets/</span></span></dt>
-<dd><dl class="simple">
-<dt><strong>GET</strong></dt><dd><ul class="simple">
-<li><p>Get a list of datasets where the user <code class="docutils literal notranslate"><span class="pre">uuid</span></code> is listed as <code class="docutils literal notranslate"><span class="pre">editor</span></code>.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">/user/&lt;uuid&gt;/collections/</span></span></dt>
-<dd><dl class="simple">
-<dt><strong>GET</strong></dt><dd><ul class="simple">
-<li><p>Get a list of collections where the user <code class="docutils literal notranslate"><span class="pre">uuid</span></code> is listed as <code class="docutils literal notranslate"><span class="pre">editor</span></code>.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-</section>
-<section id="log-in-log-out">
+</div>
+<div class="section" id="log-in-log-out">
 <h4>Log In/Log Out<a class="headerlink" href="#log-in-log-out" title="Permalink to this headline">¶</a></h4>
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">/logout/</span></span></dt>
+<span class="sig-name descname"><span class="pre">/logout</span></span></dt>
 <dd><dl class="simple">
 <dt><strong>GET</strong></dt><dd><ul class="simple">
 <li><p>Log out the current user.</p></li>
@@ -411,7 +415,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">/login/oidc/&lt;auth_name&gt;/login/</span></span></dt>
+<span class="sig-name descname"><span class="pre">/login/oidc/&lt;auth_name&gt;</span></span></dt>
 <dd><dl class="simple">
 <dt><strong>GET</strong></dt><dd><ul class="simple">
 <li><p>Log in using OpenID Connect (e.g. Elixir AAI) for service <code class="docutils literal notranslate"><span class="pre">auth_name</span></code>.</p></li>
@@ -422,7 +426,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">/login/oidc/&lt;auth_name&gt;/authorize/</span></span></dt>
+<span class="sig-name descname"><span class="pre">/login/oidc/&lt;auth_name&gt;/authorize</span></span></dt>
 <dd><dl class="simple">
 <dt><strong>GET</strong></dt><dd><ul class="simple">
 <li><p>Authorize using OpenID Connect (e.g. Elixir AAI) for service <code class="docutils literal notranslate"><span class="pre">auth_name</span></code> (via <code class="docutils literal notranslate"><span class="pre">login</span></code>).</p></li>
@@ -433,7 +437,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">/login/apikey/</span></span></dt>
+<span class="sig-name descname"><span class="pre">/login/apikey</span></span></dt>
 <dd><dl class="simple">
 <dt><strong>GET</strong></dt><dd><ul class="simple">
 <li><p>Log in using <code class="docutils literal notranslate"><span class="pre">auth_id</span></code> + <code class="docutils literal notranslate"><span class="pre">api_key</span></code>.</p></li>
@@ -442,10 +446,10 @@
 </dl>
 </dd></dl>
 
-</section>
-</section>
-</section>
-</section>
+</div>
+</div>
+</div>
+</div>
 
 
           </div>
@@ -468,12 +472,13 @@
 
 <h3>Navigation</h3>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="design.html">System Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_structure.html">Data Structure</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#version-1">Version 1</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="data_structure.html">Data Structure</a></li>
-<li class="toctree-l1"><a class="reference internal" href="implementation.html">Implementation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
 </ul>
 
@@ -481,8 +486,8 @@
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="index.html" title="previous chapter">Data Tracker</a></li>
-      <li>Next: <a href="data_structure.html" title="next chapter">Data Structure</a></li>
+      <li>Previous: <a href="data_structure.html" title="previous chapter">Data Structure</a></li>
+      <li>Next: <a href="development.html" title="next chapter">Development</a></li>
   </ul></li>
 </ul>
 </div>
@@ -512,7 +517,7 @@
       &copy;2019-2021, SciLifeLab Data Centre.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

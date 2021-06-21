@@ -266,12 +266,8 @@
 <h2 id="H">H</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="code.user.html#user.has_permission">has_permission() (in module user)</a>
-
-      <ul>
-        <li><a href="code.utils.html#utils.has_permission">(in module utils)</a>
+      <li><a href="code.utils.html#utils.has_permission">has_permission() (in module utils)</a>
 </li>
-      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code.app.html#app.heartbeat">heartbeat() (in module app)</a>
@@ -326,15 +322,11 @@
 </li>
       <li><a href="code.order.html#order.list_orders">list_orders() (in module order)</a>
 </li>
-      <li><a href="code.order.html#order.list_orders_user">list_orders_user() (in module order)</a>
-</li>
       <li><a href="code.developer.html#developer.list_session">list_session() (in module developer)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code.utils.html#utils.list_to_uuid">list_to_uuid() (in module utils)</a>
-</li>
-      <li><a href="code.collection.html#collection.list_user_collections">list_user_collections() (in module collection)</a>
 </li>
       <li><a href="code.dataset.html#dataset.list_user_data">list_user_data() (in module dataset)</a>
 </li>
@@ -453,7 +445,11 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="code.utils.html#utils.prepare_for_db">prepare_for_db() (in module utils)</a>
+</li>
       <li><a href="code.order.html#order.prepare_order_response">prepare_order_response() (in module order)</a>
+</li>
+      <li><a href="code.utils.html#utils.prepare_permissions">prepare_permissions() (in module utils)</a>
 </li>
       <li><a href="code.utils.html#utils.prepare_response">prepare_response() (in module utils)</a>
 </li>
@@ -469,9 +465,13 @@
 </li>
       <li><a href="code.utils.html#utils.req_commit_to_db">req_commit_to_db() (in module utils)</a>
 </li>
+      <li><a href="code.utils.html#utils.req_get_entry">req_get_entry() (in module utils)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="code.utils.html#utils.req_get_entry">req_get_entry() (in module utils)</a>
+      <li><a href="code.utils.html#utils.req_has_permission">req_has_permission() (in module utils)</a>
+</li>
+      <li><a href="code.utils.html#utils.req_make_log_new">req_make_log_new() (in module utils)</a>
 </li>
       <li><a href="code.utils.html#utils.response_json">response_json() (in module utils)</a>
 </li>
@@ -617,9 +617,10 @@
 
 <h3>Navigation</h3>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="design.html">System Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_structure.html">Data Structure</a></li>
-<li class="toctree-l1"><a class="reference internal" href="implementation.html">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
 </ul>
 
@@ -656,7 +657,7 @@
       &copy;2019-2021, SciLifeLab Data Centre.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

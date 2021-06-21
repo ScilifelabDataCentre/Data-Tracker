@@ -54,12 +54,8 @@
 <span class="sd">    * Remove the ``cross_references`` field from collections and datasets</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Renaming ORDERS to DATA_EDIT&quot;</span><span class="p">)</span>
-    <span class="n">db</span><span class="p">[</span><span class="s2">&quot;users&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update_many</span><span class="p">(</span>
-        <span class="p">{</span><span class="s2">&quot;permissions&quot;</span><span class="p">:</span> <span class="s2">&quot;ORDERS&quot;</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$push&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;permissions&quot;</span><span class="p">:</span> <span class="s2">&quot;DATA_EDIT&quot;</span><span class="p">}}</span>
-    <span class="p">)</span>
-    <span class="n">db</span><span class="p">[</span><span class="s2">&quot;users&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update_many</span><span class="p">(</span>
-        <span class="p">{</span><span class="s2">&quot;permissions&quot;</span><span class="p">:</span> <span class="s2">&quot;ORDERS&quot;</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$pull&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;permissions&quot;</span><span class="p">:</span> <span class="s2">&quot;ORDERS&quot;</span><span class="p">}}</span>
-    <span class="p">)</span>
+    <span class="n">db</span><span class="p">[</span><span class="s2">&quot;users&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update_many</span><span class="p">({</span><span class="s2">&quot;permissions&quot;</span><span class="p">:</span> <span class="s2">&quot;ORDERS&quot;</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$push&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;permissions&quot;</span><span class="p">:</span> <span class="s2">&quot;DATA_EDIT&quot;</span><span class="p">}})</span>
+    <span class="n">db</span><span class="p">[</span><span class="s2">&quot;users&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update_many</span><span class="p">({</span><span class="s2">&quot;permissions&quot;</span><span class="p">:</span> <span class="s2">&quot;ORDERS&quot;</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$pull&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;permissions&quot;</span><span class="p">:</span> <span class="s2">&quot;ORDERS&quot;</span><span class="p">}})</span>
     <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Removing the cross_references field&quot;</span><span class="p">)</span>
     <span class="n">db</span><span class="p">[</span><span class="s2">&quot;collections&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update_many</span><span class="p">({},</span> <span class="p">{</span><span class="s2">&quot;$unset&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;cross_references&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">}})</span>
     <span class="n">db</span><span class="p">[</span><span class="s2">&quot;datasets&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update_many</span><span class="p">({},</span> <span class="p">{</span><span class="s2">&quot;$unset&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;cross_references&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">}})</span></div>
@@ -89,9 +85,10 @@
 
 <h3>Navigation</h3>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../design.html">System Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../data_structure.html">Data Structure</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../implementation.html">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../development.html">Development</a></li>
 </ul>
 
@@ -130,7 +127,7 @@
       &copy;2019-2021, SciLifeLab Data Centre.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
