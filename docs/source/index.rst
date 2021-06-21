@@ -7,8 +7,9 @@ The Data Tracker is intended to become a system for tracking datasets generated 
    :maxdepth: 2
 
    design
-   api
+   configuration
    data_structure
+   api
    development
 
 
