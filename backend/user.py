@@ -21,8 +21,6 @@ blueprint = flask.Blueprint("user", __name__)  # pylint: disable=invalid-name
 
 PERMISSIONS = {
     "DATA_EDIT": ("DATA_EDIT", "USER_ADD", "USER_SEARCH"),
-    "DATA_LIST": ("DATA_LIST"),
-    "STATISTICS": ("STATISTICS"),
     "OWNERS_READ": ("OWNERS_READ",),
     "USER_ADD": ("USER_ADD",),
     "USER_SEARCH": ("USER_SEARCH",),
@@ -102,6 +100,7 @@ def get_current_user_info():
         for field in outstructure:
             if field in data:
                 outstructure[field] = data[field]
+    outstructure["permissions"] = utils.prepare_permissions(outstructure["permissions"])
     return utils.response_json({"user": outstructure})
 
 
