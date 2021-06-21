@@ -87,7 +87,7 @@ def verify_csrf_token():
 
     Aborts with status 400 if the verification fails.
     """
-    token = flask.request.headers.get("X-CSRFToken")
+    token = flask.request.headers.get("X-CSRF-Token")
     if not token or (token != flask.request.cookies.get("_csrf_token")):
         flask.current_app.logger.warning("Bad csrf token received")
         flask.abort(status=400)
@@ -750,7 +750,7 @@ def commit_to_db(
 
     ``_id`` should be included in ``data`` for delete and update operations.
 
-    Only uses *_one commands.
+    Only uses \*_one commands.
 
     Args:
         db: Connection to the database (client).

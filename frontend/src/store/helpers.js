@@ -8,7 +8,7 @@ export function getCsrfHeader() {
       c = c.substring(1);
     }
     if (c.indexOf(name) == 0) {
-      return {'X-CSRFToken': c.substring(name.length, c.length)};
+      return {'X-CSRF-Token': c.substring(name.length, c.length)};
     }
   }
   return "";
