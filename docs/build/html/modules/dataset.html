@@ -44,9 +44,7 @@
 <span class="k">def</span> <span class="nf">list_datasets</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;Provide a simplified list of all available datasets.&quot;&quot;&quot;</span>
     <span class="n">results</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
-        <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;datasets&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span>
-            <span class="n">projection</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
-        <span class="p">)</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;datasets&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">response_json</span><span class="p">({</span><span class="s2">&quot;datasets&quot;</span><span class="p">:</span> <span class="n">results</span><span class="p">})</span></div>
 
@@ -56,9 +54,7 @@
 <span class="k">def</span> <span class="nf">list_user_data</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;List all datasets belonging to current user.&quot;&quot;&quot;</span>
     <span class="n">user_orders</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
-        <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;orders&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span>
-            <span class="p">{</span><span class="s2">&quot;editors&quot;</span><span class="p">:</span> <span class="n">flask</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="s2">&quot;user_id&quot;</span><span class="p">]},</span> <span class="p">{</span><span class="s2">&quot;datasets&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
-        <span class="p">)</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;orders&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">&quot;editors&quot;</span><span class="p">:</span> <span class="n">flask</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="s2">&quot;user_id&quot;</span><span class="p">]},</span> <span class="p">{</span><span class="s2">&quot;datasets&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
     <span class="p">)</span>
     <span class="n">uuids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">ds</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">user_orders</span> <span class="k">for</span> <span class="n">ds</span> <span class="ow">in</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;datasets&quot;</span><span class="p">])</span>
     <span class="n">user_datasets</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;datasets&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$in&quot;</span><span class="p">:</span> <span class="n">uuids</span><span class="p">}}))</span>
@@ -94,51 +90,49 @@
 <span class="sd">    Args:</span>
 <span class="sd">        identifier (str): The dataset uuid.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">ds_uuid</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">str_to_uuid</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">404</span><span class="p">)</span>
-    <span class="n">dataset</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;datasets&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">ds_uuid</span><span class="p">})</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">dataset</span><span class="p">:</span>
+    <span class="n">perm_status</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">req_check_permissions</span><span class="p">([</span><span class="s2">&quot;DATA_EDIT&quot;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">perm_status</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="n">perm_status</span><span class="p">)</span>
+
+    <span class="n">ds</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">req_get_entry</span><span class="p">(</span><span class="s2">&quot;datasets&quot;</span><span class="p">,</span> <span class="n">identifier</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">ds</span><span class="p">:</span>
         <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">404</span><span class="p">)</span>
 
     <span class="c1"># permission check</span>
-    <span class="n">order</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;orders&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;datasets&quot;</span><span class="p">:</span> <span class="n">ds_uuid</span><span class="p">})</span>
+    <span class="n">order</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;orders&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;datasets&quot;</span><span class="p">:</span> <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]})</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">order</span><span class="p">:</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Dataset without parent order: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">])</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
+    <span class="c1"># permission check</span>
     <span class="k">if</span> <span class="p">(</span>
-        <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">has_permission</span><span class="p">(</span><span class="s2">&quot;DATA_MANAGEMENT&quot;</span><span class="p">)</span>
+        <span class="ow">not</span> <span class="n">utils</span><span class="o">.</span><span class="n">req_has_permission</span><span class="p">(</span><span class="s2">&quot;DATA_MANAGEMENT&quot;</span><span class="p">)</span>
         <span class="ow">and</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">order</span><span class="p">[</span><span class="s2">&quot;editors&quot;</span><span class="p">]</span>
     <span class="p">):</span>
         <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">403</span><span class="p">)</span>
 
-    <span class="n">result</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;datasets&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">delete_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">ds_uuid</span><span class="p">})</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">acknowledged</span><span class="p">:</span>
-        <span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Failed to delete dataset </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">ds_uuid</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
-    <span class="n">utils</span><span class="o">.</span><span class="n">make_log</span><span class="p">(</span><span class="s2">&quot;dataset&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">,</span> <span class="s2">&quot;Deleted dataset&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">ds_uuid</span><span class="p">})</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">req_commit_to_db</span><span class="p">(</span><span class="s2">&quot;datasets&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]})</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">log</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
 
-    <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;orders&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">&quot;datasets&quot;</span><span class="p">:</span> <span class="n">ds_uuid</span><span class="p">}):</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;orders&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
-            <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]},</span> <span class="p">{</span><span class="s2">&quot;$pull&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;datasets&quot;</span><span class="p">:</span> <span class="n">ds_uuid</span><span class="p">}}</span>
+    <span class="n">collections</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;collections&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">&quot;datasets&quot;</span><span class="p">:</span> <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]}))</span>
+    <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;collections&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update_many</span><span class="p">({},</span> <span class="p">{</span><span class="s2">&quot;$pull&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;datasets&quot;</span><span class="p">:</span> <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]}})</span>
+    <span class="k">for</span> <span class="n">collection</span> <span class="ow">in</span> <span class="n">collections</span><span class="p">:</span>
+        <span class="n">collection</span><span class="p">[</span><span class="s2">&quot;datasets&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">collection</span><span class="p">[</span><span class="s2">&quot;datasets&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">])]</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">req_make_log_new</span><span class="p">(</span>
+            <span class="n">data_type</span><span class="o">=</span><span class="s2">&quot;collection&quot;</span><span class="p">,</span>
+            <span class="n">action</span><span class="o">=</span><span class="s2">&quot;edit&quot;</span><span class="p">,</span>
+            <span class="n">comment</span><span class="o">=</span><span class="s2">&quot;Dataset deleted&quot;</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">collection</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">acknowledged</span><span class="p">:</span>
-            <span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="s2">&quot;Failed to delete dataset </span><span class="si">%s</span><span class="s2"> in order </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">ds_uuid</span><span class="p">,</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span>
-            <span class="p">)</span>
-            <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
-        <span class="n">new_data</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;orders&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]})</span>
-        <span class="n">utils</span><span class="o">.</span><span class="n">make_log</span><span class="p">(</span><span class="s2">&quot;order&quot;</span><span class="p">,</span> <span class="s2">&quot;edit&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Deleted dataset </span><span class="si">{</span><span class="n">ds_uuid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">new_data</span><span class="p">)</span>
 
-    <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;collections&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">&quot;datasets&quot;</span><span class="p">:</span> <span class="n">ds_uuid</span><span class="p">}):</span>
-        <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;collections&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
-            <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]},</span> <span class="p">{</span><span class="s2">&quot;$pull&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;datasets&quot;</span><span class="p">:</span> <span class="n">ds_uuid</span><span class="p">}}</span>
-        <span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">acknowledged</span><span class="p">:</span>
-            <span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="s2">&quot;Failed to delete dataset </span><span class="si">%s</span><span class="s2"> in project </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">ds_uuid</span><span class="p">,</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span>
-            <span class="p">)</span>
-            <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
-        <span class="n">new_data</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;collections&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]})</span>
-        <span class="n">utils</span><span class="o">.</span><span class="n">make_log</span><span class="p">(</span><span class="s2">&quot;collection&quot;</span><span class="p">,</span> <span class="s2">&quot;edit&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Deleted dataset </span><span class="si">{</span><span class="n">ds_uuid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">new_data</span><span class="p">)</span>
+    <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;orders&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update_many</span><span class="p">({},</span> <span class="p">{</span><span class="s2">&quot;$pull&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;datasets&quot;</span><span class="p">:</span> <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]}})</span>
+    <span class="n">order</span><span class="p">[</span><span class="s2">&quot;datasets&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">])</span>
+    <span class="n">utils</span><span class="o">.</span><span class="n">req_make_log_new</span><span class="p">(</span>
+        <span class="n">data_type</span><span class="o">=</span><span class="s2">&quot;order&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;edit&quot;</span><span class="p">,</span>
+        <span class="n">comment</span><span class="o">=</span><span class="s2">&quot;Dataset deleted&quot;</span><span class="p">,</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+    <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span></div>
 
@@ -155,29 +149,31 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        flask.Response: success: 200, failure: 400</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">ds_uuid</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">str_to_uuid</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">404</span><span class="p">)</span>
-    <span class="n">dataset</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;datasets&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">ds_uuid</span><span class="p">})</span>
+    <span class="n">perm_status</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">req_check_permissions</span><span class="p">([</span><span class="s2">&quot;DATA_EDIT&quot;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">perm_status</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="n">perm_status</span><span class="p">)</span>
+
+    <span class="n">dataset</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">req_get_entry</span><span class="p">(</span><span class="s2">&quot;datasets&quot;</span><span class="p">,</span> <span class="n">identifier</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">dataset</span><span class="p">:</span>
         <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">404</span><span class="p">)</span>
     <span class="c1"># permissions</span>
-    <span class="n">order</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;orders&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;datasets&quot;</span><span class="p">:</span> <span class="n">ds_uuid</span><span class="p">})</span>
+    <span class="n">order</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;orders&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;datasets&quot;</span><span class="p">:</span> <span class="n">dataset</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]})</span>
     <span class="k">if</span> <span class="p">(</span>
-        <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">has_permission</span><span class="p">(</span><span class="s2">&quot;DATA_MANAGEMENT&quot;</span><span class="p">)</span>
+        <span class="ow">not</span> <span class="n">utils</span><span class="o">.</span><span class="n">req_has_permission</span><span class="p">(</span><span class="s2">&quot;DATA_MANAGEMENT&quot;</span><span class="p">)</span>
         <span class="ow">and</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">order</span><span class="p">[</span><span class="s2">&quot;editors&quot;</span><span class="p">]</span>
     <span class="p">):</span>
         <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">403</span><span class="p">)</span>
 
-    <span class="n">indata</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">json</span>
+    <span class="n">jsondata</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">json</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">jsondata</span> <span class="ow">or</span> <span class="s2">&quot;dataset&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">jsondata</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">jsondata</span><span class="p">[</span><span class="s2">&quot;dataset&quot;</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+    <span class="n">indata</span> <span class="o">=</span> <span class="n">jsondata</span><span class="p">[</span><span class="s2">&quot;dataset&quot;</span><span class="p">]</span>
 
     <span class="n">validation</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">basic_check_indata</span><span class="p">(</span><span class="n">indata</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">prohibited</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">))</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">validation</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
-        <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="n">validation</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">validation</span><span class="o">.</span><span class="n">result</span><span class="p">:</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="n">validation</span><span class="o">.</span><span class="n">status</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="s2">&quot;description&quot;</span> <span class="ow">in</span> <span class="n">indata</span><span class="p">:</span>
-        <span class="n">indata</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">secure_description</span><span class="p">(</span><span class="n">indata</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">])</span>
+    <span class="n">indata</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">prepare_for_db</span><span class="p">(</span><span class="n">indata</span><span class="p">)</span>
 
     <span class="n">is_different</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">indata</span><span class="p">:</span>
@@ -185,16 +181,12 @@
             <span class="n">is_different</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">break</span>
 
-    <span class="k">if</span> <span class="n">is_different</span><span class="p">:</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;datasets&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
-            <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">dataset</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="n">indata</span><span class="p">}</span>
-        <span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">acknowledged</span><span class="p">:</span>
-            <span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Dataset update failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dataset</span><span class="p">)</span>
+    <span class="n">dataset</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">indata</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">indata</span> <span class="ow">and</span> <span class="n">is_different</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">req_commit_to_db</span><span class="p">(</span><span class="s2">&quot;datasets&quot;</span><span class="p">,</span> <span class="s2">&quot;edit&quot;</span><span class="p">,</span> <span class="n">dataset</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">log</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
             <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">dataset</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">indata</span><span class="p">)</span>
-            <span class="n">utils</span><span class="o">.</span><span class="n">make_log</span><span class="p">(</span><span class="s2">&quot;dataset&quot;</span><span class="p">,</span> <span class="s2">&quot;edit&quot;</span><span class="p">,</span> <span class="s2">&quot;Dataset updated&quot;</span><span class="p">,</span> <span class="n">dataset</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span></div>
 
@@ -205,7 +197,9 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get change logs for the user entry with uuid ``identifier``.</span>
 
-<span class="sd">    Can be accessed by creator (order), receiver (order), and admin (DATA_MANAGEMENT).</span>
+<span class="sd">    Can be accessed by editors with DATA_EDIT and admin (DATA_MANAGEMENT).</span>
+
+<span class="sd">    Logs for deleted datasets cannot be accessed.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        identifier (str): The uuid of the dataset.</span>
@@ -213,20 +207,27 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        flask.Response: Logs as json.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">dataset_uuid</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">str_to_uuid</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+    <span class="n">perm_status</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">req_check_permissions</span><span class="p">([</span><span class="s2">&quot;DATA_EDIT&quot;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">perm_status</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="n">perm_status</span><span class="p">)</span>
+
+    <span class="n">dataset</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">req_get_entry</span><span class="p">(</span><span class="s2">&quot;datasets&quot;</span><span class="p">,</span> <span class="n">identifier</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">dataset</span><span class="p">:</span>
         <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">404</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">has_permission</span><span class="p">(</span><span class="s2">&quot;DATA_MANAGEMENT&quot;</span><span class="p">):</span>
-        <span class="n">order_data</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;orders&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;datasets&quot;</span><span class="p">:</span> <span class="n">dataset_uuid</span><span class="p">})</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">order_data</span><span class="p">:</span>
-            <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="mi">403</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">order_data</span><span class="p">[</span><span class="s2">&quot;editors&quot;</span><span class="p">]:</span>
-            <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="mi">403</span><span class="p">)</span>
+    <span class="n">order_data</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;orders&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;datasets&quot;</span><span class="p">:</span> <span class="n">dataset</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]})</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">order_data</span><span class="p">:</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">current_app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Dataset without parent order: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dataset</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">])</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="mi">500</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="ow">not</span> <span class="n">utils</span><span class="o">.</span><span class="n">req_has_permission</span><span class="p">(</span><span class="s2">&quot;DATA_MANAGEMENT&quot;</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">order_data</span><span class="p">[</span><span class="s2">&quot;editors&quot;</span><span class="p">]</span>
+    <span class="p">):</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="mi">403</span><span class="p">)</span>
 
     <span class="n">dataset_logs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
-        <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;logs&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">&quot;data_type&quot;</span><span class="p">:</span> <span class="s2">&quot;dataset&quot;</span><span class="p">,</span> <span class="s2">&quot;data._id&quot;</span><span class="p">:</span> <span class="n">dataset_uuid</span><span class="p">})</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;logs&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">&quot;data_type&quot;</span><span class="p">:</span> <span class="s2">&quot;dataset&quot;</span><span class="p">,</span> <span class="s2">&quot;data._id&quot;</span><span class="p">:</span> <span class="n">dataset</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]})</span>
     <span class="p">)</span>
     <span class="k">for</span> <span class="n">log</span> <span class="ow">in</span> <span class="n">dataset_logs</span><span class="p">:</span>
         <span class="k">del</span> <span class="n">log</span><span class="p">[</span><span class="s2">&quot;data_type&quot;</span><span class="p">]</span>
@@ -234,7 +235,7 @@
     <span class="n">utils</span><span class="o">.</span><span class="n">incremental_logs</span><span class="p">(</span><span class="n">dataset_logs</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">response_json</span><span class="p">(</span>
-        <span class="p">{</span><span class="s2">&quot;entry_id&quot;</span><span class="p">:</span> <span class="n">dataset_uuid</span><span class="p">,</span> <span class="s2">&quot;data_type&quot;</span><span class="p">:</span> <span class="s2">&quot;dataset&quot;</span><span class="p">,</span> <span class="s2">&quot;logs&quot;</span><span class="p">:</span> <span class="n">dataset_logs</span><span class="p">}</span>
+        <span class="p">{</span><span class="s2">&quot;entry_id&quot;</span><span class="p">:</span> <span class="n">dataset</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">],</span> <span class="s2">&quot;data_type&quot;</span><span class="p">:</span> <span class="s2">&quot;dataset&quot;</span><span class="p">,</span> <span class="s2">&quot;logs&quot;</span><span class="p">:</span> <span class="n">dataset_logs</span><span class="p">}</span>
     <span class="p">)</span></div>
 
 
@@ -269,7 +270,7 @@
     <span class="n">order</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;orders&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;datasets&quot;</span><span class="p">:</span> <span class="n">dataset_uuid</span><span class="p">})</span>
 
     <span class="k">if</span> <span class="p">(</span>
-        <span class="n">user</span><span class="o">.</span><span class="n">has_permission</span><span class="p">(</span><span class="s2">&quot;DATA_MANAGEMENT&quot;</span><span class="p">)</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">req_has_permission</span><span class="p">(</span><span class="s2">&quot;DATA_MANAGEMENT&quot;</span><span class="p">)</span>
         <span class="ow">or</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">current_user</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">order</span><span class="p">[</span><span class="s2">&quot;editors&quot;</span><span class="p">]</span>
     <span class="p">):</span>
         <span class="n">dataset</span><span class="p">[</span><span class="s2">&quot;order&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">order</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span>
@@ -282,16 +283,14 @@
     <span class="p">)</span>
     <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;editors&quot;</span><span class="p">,</span> <span class="s2">&quot;generators&quot;</span><span class="p">,</span> <span class="s2">&quot;authors&quot;</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">field</span> <span class="o">==</span> <span class="s2">&quot;editors&quot;</span> <span class="ow">and</span> <span class="p">(</span>
-            <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">has_permission</span><span class="p">(</span><span class="s2">&quot;DATA_MANAGEMENT&quot;</span><span class="p">)</span>
+            <span class="ow">not</span> <span class="n">utils</span><span class="o">.</span><span class="n">req_has_permission</span><span class="p">(</span><span class="s2">&quot;DATA_MANAGEMENT&quot;</span><span class="p">)</span>
             <span class="ow">and</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">current_user</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">order</span><span class="p">[</span><span class="n">field</span><span class="p">]</span>
         <span class="p">):</span>
             <span class="k">continue</span>
         <span class="n">dataset</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">user_uuid_data</span><span class="p">(</span><span class="n">order</span><span class="p">[</span><span class="n">field</span><span class="p">],</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">)</span>
 
     <span class="n">dataset</span><span class="p">[</span><span class="s2">&quot;organisation&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">user_uuid_data</span><span class="p">(</span><span class="n">order</span><span class="p">[</span><span class="n">field</span><span class="p">],</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="p">)</span>
-    <span class="n">dataset</span><span class="p">[</span><span class="s2">&quot;organisation&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">dataset</span><span class="p">[</span><span class="s2">&quot;organisation&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">dataset</span><span class="p">[</span><span class="s2">&quot;organisation&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
-    <span class="p">)</span>
+    <span class="n">dataset</span><span class="p">[</span><span class="s2">&quot;organisation&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="s2">&quot;organisation&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">dataset</span><span class="p">[</span><span class="s2">&quot;organisation&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
     <span class="k">return</span> <span class="n">dataset</span></div>
 </pre></div>
 
@@ -315,9 +314,10 @@
 
 <h3>Navigation</h3>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../design.html">System Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../data_structure.html">Data Structure</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../implementation.html">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../development.html">Development</a></li>
 </ul>
 
@@ -356,7 +356,7 @@
       &copy;2019-2021, SciLifeLab Data Centre.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

@@ -4,8 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Data Tracker &#8212; Data Tracker  documentation</title>
     <link rel="stylesheet" type="text/css" href="static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="static/alabaster.css" />
@@ -15,7 +14,7 @@
     <script src="static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="API" href="api.html" />
+    <link rel="next" title="System Design" href="design.html" />
    
   <link rel="stylesheet" href="static/custom.css" type="text/css" />
   
@@ -32,16 +31,18 @@
 
           <div class="body" role="main">
             
-  <section id="data-tracker">
+  <div class="section" id="data-tracker">
 <h1>Data Tracker<a class="headerlink" href="#data-tracker" title="Permalink to this headline">¶</a></h1>
+<p>The Data Tracker is intended to become a system for tracking datasets generated at SciLifeLab facilities by giving them persistent identifiers that can be used for refering to specific datasets.</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="api.html">API</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="api.html#version-1">Version 1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="design.html">System Design</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="design.html#vision">Vision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="design.html#implementation">Implementation</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_structure.html">Data Structure</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="data_structure.html#general">General</a></li>
 <li class="toctree-l2"><a class="reference internal" href="data_structure.html#terminology">Terminology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="data_structure.html#order">Order</a></li>
 <li class="toctree-l2"><a class="reference internal" href="data_structure.html#dataset">Dataset</a></li>
@@ -50,11 +51,8 @@
 <li class="toctree-l2"><a class="reference internal" href="data_structure.html#log">Log</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="implementation.html">Implementation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="implementation.html#permissions">Permissions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="implementation.html#csrf">CSRF</a></li>
-<li class="toctree-l2"><a class="reference internal" href="implementation.html#testing">Testing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="implementation.html#api-keys">API Keys</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api.html#version-1">Version 1</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="development.html">Development</a><ul>
@@ -64,15 +62,15 @@
 </li>
 </ul>
 </div>
-</section>
-<section id="indices-and-tables">
+</div>
+<div class="section" id="indices-and-tables">
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
 <li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
 <li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
 </ul>
-</section>
+</div>
 
 
           </div>
@@ -95,9 +93,10 @@
 
 <h3>Navigation</h3>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="design.html">System Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_structure.html">Data Structure</a></li>
-<li class="toctree-l1"><a class="reference internal" href="implementation.html">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
 </ul>
 
@@ -105,7 +104,7 @@
 <h3>Related Topics</h3>
 <ul>
   <li><a href="#">Documentation overview</a><ul>
-      <li>Next: <a href="api.html" title="next chapter">API</a></li>
+      <li>Next: <a href="design.html" title="next chapter">System Design</a></li>
   </ul></li>
 </ul>
 </div>
@@ -135,7 +134,7 @@
       &copy;2019-2021, SciLifeLab Data Centre.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
