@@ -20,10 +20,10 @@ dev_mode.api
 dev_mode.testing
   Whether the ``development`` environment for the backend should be activated, including e.g. debugger and automatic code reloads.
 oidc
-  Lists the OpenID Connect entries. The key used will be the text on the log in button in the frontend.
+  Lists the OpenID Connect entries. The key used will be the text on the log in button in the frontend. Example: ``Google``
 oidc.<entry>.client_secret
-  The client secret of the OpenID Connect entry
+  The client secret of the OpenID Connect entry, e.g. ``_sXt7JawgD4Jnz7zDHEW65OPko9oTRT4``
 oidc.<entry>.client_id
-  The client id of the OpenID Connect entry
+  The client id of the OpenID Connect entry, e.g. ``TP4PdbcZJ1pDicpkU7UzjOP2GfhK_Ld7XaZG4qtMjdAHICJ-y6A7CTTUlDQE``
 oidc.<entry>.server_metadata_url
-  The url for the configuration of the OpenID Connect entry
+  The url for the configuration of the OpenID Connect entry, e.g. ``https://accounts.google.com/.well-known/openid-configuration``
