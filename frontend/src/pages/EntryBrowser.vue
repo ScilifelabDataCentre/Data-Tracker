@@ -24,6 +24,8 @@
       <q-input rounded
                outlined
                dense
+               id="entry-browser-search"
+               type="search"
                debounce="300"
                v-model="filter"
                placeholder="Search">
