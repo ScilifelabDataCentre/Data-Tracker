@@ -121,10 +121,10 @@ export default {
 
       loginLinks: [
         {
-          title: 'Login',
+          title: 'Log in',
           caption: 'Log in using OpenID or API Key',
           icon: 'login',
-          link: { 'name': 'Login'}
+          link: { 'name': 'Log in'}
         },
       ],
 
