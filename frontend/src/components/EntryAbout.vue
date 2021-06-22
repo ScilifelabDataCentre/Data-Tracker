@@ -56,9 +56,9 @@
     </q-list>
   </div>
   
-  <div class="q-my-md" v-if="['collection', 'order'].includes(dataType)">
+  <div class="q-my-md">
     <q-list bordered>
-      <div v-if="dataType === 'order'">
+      <div v-if="dataType === 'order' || dataType == 'dataset'">
         <div v-show="entry.authors.length">
           <list-header title="Authors"
                        explanation="The ones who provided the sample, e.g. a researcher" />
