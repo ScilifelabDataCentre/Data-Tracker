@@ -35,7 +35,7 @@ def migrate_v2_to_v3(db):
     * Remove the ``DATA_LIST`` and ``STATISTICS`` permissions from all users.
     """
     logging.info("Remove the DATA_LIST and STATISTICS permissions")
-    db["users"].update_many({}, {"$pull": {"permissions": {$in: ["STATISTICS", "DATA_LIST"]}}})
+    db["users"].update_many({}, {"$pull": {"permissions": {"$in": ["STATISTICS", "DATA_LIST"]}}})
 
 
 # Position 0 is empty since the first release is 1
