@@ -121,10 +121,10 @@ export default {
 
       loginLinks: [
         {
-          title: 'Log in',
+          title: 'Log In',
           caption: 'Log in using OpenID or API Key',
           icon: 'login',
-          link: { 'name': 'Log in'}
+          link: { 'name': 'Login'}
         },
       ],
 
@@ -136,7 +136,7 @@ export default {
           link:  { 'name': 'About'}
         },
         {
-          title: 'User guide',
+          title: 'User Guide',
           caption: 'How to use the Data Tracker',
           icon: 'fas fa-map-signs',
           link:  { 'name': 'User Guide'}
