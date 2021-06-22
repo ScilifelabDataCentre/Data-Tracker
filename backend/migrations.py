@@ -28,5 +28,15 @@ def migrate_v1_to_v2(db):
     db["datasets"].update_many({}, {"$unset": {"cross_references": ""}})
 
 
+def migrate_v2_to_v3(db):
+    """
+    Update the database fields to match the changes in the data structure.
+
+    * Remove the ``DATA_LIST`` and ``STATISTICS`` permissions from all users.
+    """
+    logging.info("Remove the DATA_LIST and STATISTICS permissions")
+    db["users"].update_many({}, {"$pull": {"permissions": {$in: ["STATISTICS", "DATA_LIST"]}}})
+
+
 # Position 0 is empty since the first release is 1
-MIGRATIONS = [None, migrate_v1_to_v2]
+MIGRATIONS = [None, migrate_v1_to_v2, migrate_v2_to_v3]
