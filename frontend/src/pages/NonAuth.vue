@@ -11,12 +11,12 @@
   <div v-if="Object.keys(toPath).length !== 0">
     Page: {{ toPath.name }} ({{ toPath.path }})
   </div>
-    
+  
   <q-btn class="q-mt-xl"
          color="white"
          text-color="blue"
          unelevated
-         :to="fixedFrom.url"
+         :to="{'name': fixedFrom.name}"
          :label="'Go back to ' + fixedFrom.name"
          no-caps />
 </q-page>
