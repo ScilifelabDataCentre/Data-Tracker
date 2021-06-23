@@ -342,7 +342,7 @@ def gen_frontend_test_entries(db):
             "email": f"organisation@frontend.dev",
             "contact": f"organisation@frontend.dev",
             "name": f"Frontend Organisation",
-            "permissions": ["DATA_MANAGEMENT"],
+            "permissions": ["DATA_MANAGEMENT", "USER_MANAGEMENT"],
             "url": "https://www.example.com/frontend_organisation",
         },
         {
@@ -354,7 +354,7 @@ def gen_frontend_test_entries(db):
             "email": f"editor@frontend.dev",
             "contact": f"editor@frontend.dev",
             "name": f"Frontend Editor",
-            "permissions": ["DATA_MANAGEMENT", "USER_MANAGEMENT"],
+            "permissions": ["DATA_EDIT"],
             "url": "https://www.example.com/frontend_editor",
         },
     ]
@@ -375,9 +375,9 @@ def gen_frontend_test_entries(db):
     changes = {
         "_id": uuid.UUID("d4467732-8ddd-43a6-a904-5b7376f60e5c"),
         "authors": [uuid.UUID("4f2418f7-2609-43f1-8c7f-82c08e6daf26")],
-        "generators": [("4f2418f7-2609-43f1-8c7f-82c08e6daf26")],
+        "generators": [uuid.UUID("d54dc97d-ff9e-4e73-86bb-9c7a029e1b43")],
         "organisation": uuid.UUID("a5a7534b-1b49-41a5-b909-738e49cd137d"),
-        "editors": [uuid.UUID("a5a7534b-1b49-41a5-b909-738e49cd137d")],
+        "editors": [uuid.UUID("3a9a19a7-cd30-4c7b-b280-e35220e1a611")],
         "description": "An order added for frontend tests",
         "title": f"Frontend Test Order",
         "properties": {"Type": "Frontend Test Entry"},
@@ -416,7 +416,7 @@ def gen_frontend_test_entries(db):
 
     changes = {
         "_id": uuid.UUID("21c8ecd1-9908-462f-ba84-3ca399074b36"),
-        "editors": [uuid.UUID("a5a7534b-1b49-41a5-b909-738e49cd137d")],
+        "editors": [uuid.UUID("3a9a19a7-cd30-4c7b-b280-e35220e1a611")],
         "description": "A collection added for frontend tests",
         "title": f"Frontend Test Collection",
         "properties": {"Type": "Frontend Test Entry"},
