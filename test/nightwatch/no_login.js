@@ -1,6 +1,6 @@
 describe('Data Tracker - not logged in', function() {
 
-  test('Test Basic Details', function (browser) {
+  test('Test basic details', function (browser) {
     browser
       .url('http://localhost:5000/')
       .waitForElementVisible('body')
@@ -10,7 +10,7 @@ describe('Data Tracker - not logged in', function() {
       .assert.elementPresent('.q-page');
   });
 
-  test('Check First Page Content', function (browser) {
+  test('Check first page content', function (browser) {
     browser
       .url('http://localhost:5000/')
       .waitForElementVisible('body')
@@ -25,7 +25,7 @@ describe('Data Tracker - not logged in', function() {
       .assert.urlEquals('http://localhost:5000/collections/');
   });
 
-  test('Check Drawer Content and Navigation', function (browser) {
+  test('Check drawer content and navigation', function (browser) {
     browser
       .url('http://localhost:5000/')
       .waitForElementVisible('body')
@@ -66,7 +66,7 @@ describe('Data Tracker - not logged in', function() {
       .assert.not.elementPresent('#drawer-entry-log-out');
   });
   
-  test('Test Dataset Browser and Info Page', function (browser) {
+  test('Test dataset browser and info page', function (browser) {
     browser
       .url('http://localhost:5000/datasets')
       .waitForElementVisible('.q-table--grid')
@@ -135,7 +135,7 @@ describe('Data Tracker - not logged in', function() {
       .assert.containsText('#entry-about-title-identifier', '21c8ecd1-9908-462f-ba84-3ca399074b36')
   });
 
-  test('Test Collection Browser and Info Page', function (browser) {
+  test('Test collection browser and info page', function (browser) {
     browser
       .url('http://localhost:5000/collections')
       .waitForElementVisible('.q-table--grid')
