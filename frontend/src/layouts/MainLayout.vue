@@ -7,6 +7,7 @@
                round
                icon="menu"
                aria-label="Menu"
+               id="header-toggle-drawer"
                @click="leftDrawerOpen = !leftDrawerOpen" />
         <q-toolbar-title>
           Data Tracker
