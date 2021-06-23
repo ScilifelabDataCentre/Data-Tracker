@@ -13,9 +13,10 @@
            :no-results-label="filter + ' does not match any entries'">
 
     <template v-slot:top-left>
-      <q-btn v-show="showAdd"
+      <q-btn v-if="showAdd"
              color="primary"
              icon="add"
+             id="entry-browser-add"
              :label="'Add ' + dataType"
              :to="{ 'name': pageNew }" />
     </template>

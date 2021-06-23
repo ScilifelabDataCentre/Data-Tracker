@@ -1,39 +1,59 @@
 describe('Data Tracker - basic user', function() {
 
-  before(browser => {
-    browser.url('http://localhost:5000/api/v1/developer/login/base::testers');
-    browser.url('http://localhost:5000/')
+  test('Test API key login', function (browser) {
+    browser
+      .url('http://localhost:5000/login')
+      .waitForElementVisible('body')
+      .setValue('input[type=text]', 'author::frontend')
+      .setValue('input[type=password]', 'frontend')
+      .click('button[type=submit]')
+      .assert.urlEquals('http://localhost:5000/')
   });
 
-  test('Test Basic Details', function (browser) {
+  test('Check drawer content and navigation', function (browser) {
     browser
+      .url('http://localhost:5000/')
       .waitForElementVisible('body')
-      .assert.titleContains('Data Tracker')
-      .assert.elementPresent('.q-header')
-      .assert.elementPresent('.q-drawer')
-      .assert.elementPresent('.q-page');
+
+      .assert.not.elementPresent('#drawer-entry-orders')
+      .assert.elementPresent('#drawer-entry-datasets')
+      .assert.elementPresent('#drawer-entry-collections')
+      .assert.not.elementPresent('#drawer-entry-users')
+      .assert.elementPresent('#drawer-entry-about')
+      .assert.elementPresent('#drawer-entry-guide')
+      .assert.elementPresent('#drawer-entry-current-user')
+      .click('#drawer-entry-current-user')
+      .assert.urlEquals('http://localhost:5000/account/')
+      .assert.not.elementPresent('#drawer-entry-log-in')
+      .assert.elementPresent('#drawer-entry-log-out');
   });
 
-  test('Check First Page Content', function (browser) {
+  test('Check first page content', function (browser) {
     browser
+      .url('http://localhost:5000/')
       .waitForElementVisible('body')
-      .assert.containsText('.q-page', 'Datasets')
-      .assert.containsText('.q-page', 'Collections')
-      .assert.not.containsText('.q-page', 'Orders');
+      .assert.elementPresent('#index-card-datasets')
+      .assert.elementPresent('#index-card-collections')
+      .assert.not.elementPresent('#index-card-orders')
   });
 
-  test('Check Drawer Content', function (browser) {
+  test('Confirm no "Add X" buttons are shown', function (browser) {
     browser
+      .url('http://localhost:5000/datasets')
+      .waitForElementVisible('.q-table--grid')
+      .assert.not.elementPresent('#entry-browser-add')
+
+      .url('http://localhost:5000/collections')
+      .waitForElementVisible('.q-table--grid')
+      .assert.not.elementPresent('#entry-browser-add')
+  });
+  
+  test('Test log out', function (browser) {
+    browser
+      .url('http://localhost:5000/datasets')
       .waitForElementVisible('body')
-      .assert.not.containsText('.q-drawer', 'Orders')
-      .assert.containsText('.q-drawer', 'Datasets')
-      .assert.containsText('.q-drawer', 'Collections')
-      .assert.not.containsText('.q-drawer', 'Users')
-      .assert.containsText('.q-drawer', 'About the Data Tracker')
-      .assert.containsText('.q-drawer', 'User Guide')
-      .assert.containsText('.q-drawer', 'Current User')
-      .assert.not.containsText('.q-drawer', 'Log In')
-      .assert.containsText('.q-drawer', 'Log Out')
+      .click('#drawer-entry-log-out')
+      .assert.urlEquals('http://localhost:5000/')
   });
   
   after(browser => browser.end());
