@@ -382,7 +382,7 @@ def gen_frontend_test_entries(db):
         "title": f"Frontend Test Order",
         "properties": {"Type": "Frontend Test Entry"},
         "tags": ["Frontend", "Test"],
-        "datasets": [uuid.UUID("79a755f1-69b0-4734-9977-ac945c4c51c1")]
+        "datasets": [uuid.UUID("79a755f1-69b0-4734-9977-ac945c4c51c1"), uuid.UUID("27cc1144-67bf-45b2-af21-425f9bfc7333")]
     }
     order.update(changes)
     db["orders"].insert_one(order)
@@ -413,6 +413,24 @@ def gen_frontend_test_entries(db):
         comment="Generated",
         user="system",
     )
+    dataset = structure.dataset()
+    changes = {
+        "_id": uuid.UUID("27cc1144-67bf-45b2-af21-425f9bfc7333"),
+        "description": "A dataset added for frontend tests 2",
+        "title": f"Frontend Test Dataset 2",
+        "properties": {"Type": "Frontend Test Entry"},
+        "tags": ["Frontend", "Test"],
+    }
+    dataset.update(changes)
+    db["datasets"].insert_one(dataset)
+    make_log(
+        db,
+        action="add",
+        data=dataset,
+        data_type="dataset",
+        comment="Generated",
+        user="system",
+    )
 
     changes = {
         "_id": uuid.UUID("21c8ecd1-9908-462f-ba84-3ca399074b36"),
@@ -421,7 +439,7 @@ def gen_frontend_test_entries(db):
         "title": f"Frontend Test Collection",
         "properties": {"Type": "Frontend Test Entry"},
         "tags": ["Frontend", "Test"],
-        "datasets": [uuid.UUID("79a755f1-69b0-4734-9977-ac945c4c51c1")]
+        "datasets": [uuid.UUID("79a755f1-69b0-4734-9977-ac945c4c51c1"), uuid.UUID("27cc1144-67bf-45b2-af21-425f9bfc7333")]
     }
     order.update(changes)
     db["collections"].insert_one(order)
