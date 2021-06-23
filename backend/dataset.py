@@ -246,7 +246,7 @@ def build_dataset_info(identifier: str):
     )
     dataset["related"].remove({"_id": dataset["_id"], "title": dataset["title"]})
     dataset["collections"] = list(
-        flask.g.db["projects"].find({"datasets": dataset_uuid}, {"title": 1})
+        flask.g.db["projects"].find({"datasets": dataset["_id"]}, {"title": 1})
     )
     for field in ("editors", "generators", "authors"):
         if field == "editors" and (
