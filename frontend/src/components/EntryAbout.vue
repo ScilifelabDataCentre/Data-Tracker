@@ -92,6 +92,32 @@
     </q-list>
   </div>
 
+    <div class="q-my-md"
+       v-if="dataType == 'dataset' && entry.collections.length > 0">
+    <q-list bordered
+            id="entry-about-collections">
+      <list-header title="Collections"
+                   explanation="Collections containg the dataset" />
+      <q-item clickable
+              v-for="collection, i in entry.collections"
+              :key="collection.id"
+              :id="'entry-about-collections-' + i"
+              @click="$router.push({ 'name': 'Collection About', 'params': { 'uuid': collection.id } })">
+        <q-item-section avatar>
+          <q-icon name="fas fa-chart-area" />
+        </q-item-section>
+        <q-item-section>
+          <q-item-label>
+            {{ collection.title }}
+          </q-item-label>
+          <q-item-label caption>
+            {{ collection.id }}
+          </q-item-label>
+        </q-item-section>
+      </q-item>
+    </q-list>
+  </div>
+
   <div class="q-my-md">
     <q-list bordered>
       <div v-if="dataType === 'order' || dataType == 'dataset'">
