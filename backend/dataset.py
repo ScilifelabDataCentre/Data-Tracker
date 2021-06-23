@@ -227,18 +227,18 @@ def build_dataset_info(identifier: str):
     Returns:
         dict: The prepared dataset entry.
     """
-    try:
-        dataset_uuid = utils.str_to_uuid(identifier)
-    except ValueError:
-        return None
-    dataset = flask.g.db["datasets"].find_one({"_id": dataset_uuid})
+    dataset = utils.req_get_entry("datasets", identifier)
     if not dataset:
         return None
-    order = flask.g.db["orders"].find_one({"datasets": dataset_uuid})
+    order = flask.g.db["orders"].find_one({"datasets": dataset["_id"]})
+    if flask.g.db.current_user:
+        curr_user = flask.g.db.current_user["_id"]
+    else:
+        curr_user = None
 
     if (
         utils.req_has_permission("DATA_MANAGEMENT")
-        or flask.g.db.current_user["id"] in order["editors"]
+        or curr_user in order["editors"]
     ):
         dataset["order"] = order["_id"]
     dataset["related"] = list(
@@ -251,7 +251,7 @@ def build_dataset_info(identifier: str):
     for field in ("editors", "generators", "authors"):
         if field == "editors" and (
             not utils.req_has_permission("DATA_MANAGEMENT")
-            and flask.g.db.current_user["id"] not in order[field]
+            and curr_user not in order[field]
         ):
             continue
         dataset[field] = utils.user_uuid_data(order[field], flask.g.db)
