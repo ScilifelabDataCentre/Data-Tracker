@@ -304,6 +304,137 @@ def gen_users(db, nr_users: int = 100):
     return uuids
 
 
+def gen_frontend_test_entries(db):
+    # author
+    apikey = {"salt": "abc", "key": "frontend"}
+    apihash = utils.gen_api_key_hash(apikey["key"], apikey["salt"])
+    changes = [
+        {
+            "_id": uuid.UUID("4f2418f7-2609-43f1-8c7f-82c08e6daf26"),
+            "affiliation": "Frontend Test University",
+            "api_key": apihash,
+            "api_salt": apikey["salt"],
+            "auth_ids": [f"author::frontend"],
+            "email": f"author@frontend.dev",
+            "contact": f"author@frontend.dev",
+            "name": f"Frontend Author",
+            "permissions": [],
+            "url": "https://www.example.com/frontend_author",
+        },
+        {
+            "_id": uuid.UUID("d54dc97d-ff9e-4e73-86bb-9c7a029e1b43"),
+            "affiliation": "Frontend Test University",
+            "api_key": apihash,
+            "api_salt": apikey["salt"],
+            "auth_ids": [f"generator::frontend"],
+            "email": f"generator@frontend.dev",
+            "contact": f"generator@frontend.dev",
+            "name": f"Frontend Generator",
+            "permissions": ["DATA_EDIT"],
+            "url": "https://www.example.com/frontend_generator",
+        },
+        {
+            "_id": uuid.UUID("a5a7534b-1b49-41a5-b909-738e49cd137d"),
+            "affiliation": "Frontend Test University",
+            "api_key": apihash,
+            "api_salt": apikey["salt"],
+            "auth_ids": [f"organisation::frontend"],
+            "email": f"organisation@frontend.dev",
+            "contact": f"organisation@frontend.dev",
+            "name": f"Frontend Organisation",
+            "permissions": ["DATA_MANAGEMENT"],
+            "url": "https://www.example.com/frontend_organisation",
+        },
+        {
+            "_id": uuid.UUID("3a9a19a7-cd30-4c7b-b280-e35220e1a611"),
+            "affiliation": "Frontend Test University",
+            "api_key": apihash,
+            "api_salt": apikey["salt"],
+            "auth_ids": [f"editor::frontend"],
+            "email": f"editor@frontend.dev",
+            "contact": f"editor@frontend.dev",
+            "name": f"Frontend Editor",
+            "permissions": ["DATA_MANAGEMENT", "USER_MANAGEMENT"],
+            "url": "https://www.example.com/frontend_editor",
+        },
+    ]
+    for entry in changes:
+        user = structure.user()
+        user.update(entry)
+        db["users"].insert_one(user)
+        make_log(
+            db,
+            action="add",
+            data=user,
+            data_type="user",
+            comment="Generated",
+            user="system",
+        )
+
+    order = structure.order()
+    changes = {
+        "_id": uuid.UUID("d4467732-8ddd-43a6-a904-5b7376f60e5c"),
+        "authors": [uuid.UUID("4f2418f7-2609-43f1-8c7f-82c08e6daf26")],
+        "generators": [("4f2418f7-2609-43f1-8c7f-82c08e6daf26")],
+        "organisation": uuid.UUID("a5a7534b-1b49-41a5-b909-738e49cd137d"),
+        "editors": [uuid.UUID("a5a7534b-1b49-41a5-b909-738e49cd137d")],
+        "description": "An order added for frontend tests",
+        "title": f"Frontend Test Order",
+        "properties": {"Type": "Frontend Test Entry"},
+        "tags": ["Frontend", "Test"],
+        "datasets": [uuid.UUID("79a755f1-69b0-4734-9977-ac945c4c51c1")]
+    }
+    order.update(changes)
+    db["orders"].insert_one(order)
+    make_log(
+        db,
+        action="add",
+        data=order,
+        data_type="order",
+        comment="Generated",
+        user="system",
+    )
+
+    dataset = structure.dataset()
+    changes = {
+        "_id": uuid.UUID("79a755f1-69b0-4734-9977-ac945c4c51c1"),
+        "description": "A dataset added for frontend tests",
+        "title": f"Frontend Test Dataset",
+        "properties": {"Type": "Frontend Test Entry"},
+        "tags": ["Frontend", "Test"],
+    }
+    dataset.update(changes)
+    db["datasets"].insert_one(dataset)
+    make_log(
+        db,
+        action="add",
+        data=dataset,
+        data_type="dataset",
+        comment="Generated",
+        user="system",
+    )
+
+    changes = {
+        "_id": uuid.UUID("21c8ecd1-9908-462f-ba84-3ca399074b36"),
+        "editors": [uuid.UUID("a5a7534b-1b49-41a5-b909-738e49cd137d")],
+        "description": "A collection added for frontend tests",
+        "title": f"Frontend Test Collection",
+        "properties": {"Type": "Frontend Test Entry"},
+        "tags": ["Frontend", "Test"],
+        "datasets": [uuid.UUID("79a755f1-69b0-4734-9977-ac945c4c51c1")]
+    }
+    order.update(changes)
+    db["collections"].insert_one(order)
+    make_log(
+        db,
+        action="add",
+        data=dataset,
+        data_type="dataset",
+        comment="Generated",
+        user="system",
+    )
+
+
 if __name__ == "__main__":
     CONF = config.read_config()
     DBSERVER = pymongo.MongoClient(
@@ -322,3 +453,4 @@ if __name__ == "__main__":
     gen_orders(DB)
     gen_datasets(DB)
     gen_collections(DB)
+    gen_frontend_test_entries(DB)
