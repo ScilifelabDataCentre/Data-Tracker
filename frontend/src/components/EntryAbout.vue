@@ -42,12 +42,14 @@
   
   <div class="q-my-md"
        v-if="['collection', 'order'].includes(dataType) && entry.datasets.length > 0">
-    <q-list bordered>
+    <q-list bordered
+            id="entry-about-datasets">
       <list-header title="Datasets"
                    :explanation="'Datasets associated with this ' + dataType" />
       <q-item clickable
-              v-for="dataset in entry.datasets"
+              v-for="dataset, i in entry.datasets"
               :key="dataset.id"
+              :id="'entry-about-datasets-' + i"
               @click="$router.push({ 'name': 'Dataset About', 'params': { 'uuid': dataset.id } })">
         <q-item-section avatar>
           <q-icon name="fas fa-chart-area" />
@@ -63,7 +65,33 @@
       </q-item>
     </q-list>
   </div>
-  
+
+  <div class="q-my-md"
+       v-if="dataType == 'dataset' && entry.related.length > 0">
+    <q-list bordered
+            id="entry-about-related">
+      <list-header title="Related Datasets"
+                   explanation="Other datasets originating from the same order" />
+      <q-item clickable
+              v-for="dataset, i in entry.related"
+              :key="dataset.id"
+              :id="'entry-about-related-' + i"
+              @click="$router.push({ 'name': 'Dataset About', 'params': { 'uuid': dataset.id } })">
+        <q-item-section avatar>
+          <q-icon name="fas fa-chart-area" />
+        </q-item-section>
+        <q-item-section>
+          <q-item-label>
+            {{ dataset.title }}
+          </q-item-label>
+          <q-item-label caption>
+            {{ dataset.id }}
+          </q-item-label>
+        </q-item-section>
+      </q-item>
+    </q-list>
+  </div>
+
   <div class="q-my-md">
     <q-list bordered>
       <div v-if="dataType === 'order' || dataType == 'dataset'">
