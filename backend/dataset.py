@@ -256,6 +256,6 @@ def build_dataset_info(identifier: str):
             continue
         dataset[field] = utils.user_uuid_data(order[field], flask.g.db)
 
-    dataset["organisation"] = utils.user_uuid_data(order[field], flask.g.db)
+    dataset["organisation"] = utils.user_uuid_data(order["organisation"], flask.g.db)
     dataset["organisation"] = dataset["organisation"][0] if dataset["organisation"] else ""
     return dataset
