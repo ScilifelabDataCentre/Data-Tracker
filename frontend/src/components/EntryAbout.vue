@@ -1,13 +1,18 @@
 <template>
 <div v-if="Object.keys(entry).length">
   <div class="text-center q-mb-lg">
-    <h1 class="text-h2 q-mb-xs ">{{ entry.title }}</h1>
-    <div class="text-subtitle1 text-italic">
+    <h1 class="text-h2 q-mb-xs"
+        id="entry-about-title-text">
+      {{ entry.title }}
+    </h1>
+    <div class="text-subtitle1 text-italic"
+         id="entry-about-title-identifier">
       {{ entry.id }}
     </div>
   </div>
   
   <div class="q-my-md q-mx-sm"
+       id="entry-about-properties"
        v-show="Object.keys(entry.properties).length">
     <q-chip square
             color="grey-3"
@@ -18,6 +23,7 @@
   </div>
   
   <div class="q-my-sm q-mx-sm"
+       id="entry-about-tags"
        v-show="entry.tags.length">
     <q-chip square
             color="grey-3"
@@ -28,7 +34,9 @@
     </q-chip>
   </div>
   
-  <div class="q-my-md" v-show="entry.description.length">
+  <div class="q-my-md"
+       v-show="entry.description.length"
+       id="entry-about-description">
     <q-markdown :src="entry.description" />
   </div>
   
@@ -59,31 +67,39 @@
   <div class="q-my-md">
     <q-list bordered>
       <div v-if="dataType === 'order' || dataType == 'dataset'">
-        <div v-show="entry.authors.length">
+        <div v-if="entry.authors.length"
+             id="entry-about-authors">
           <list-header title="Authors"
                        explanation="The ones who provided the sample, e.g. a researcher" />
-          <user-entry v-for="author in entry.authors"
+          <user-entry v-for="author, i in entry.authors"
                       :key="author._id"
+                      :id="'entry-about-authors-' + i"
                       v-bind="author" />
         </div>
-        <div v-show="entry.generators.length">
+        <div v-if="entry.generators.length"
+             id="entry-about-generators">
           <list-header title="Generators"
                        explanation="The ones who generated the data, e.g. a facility" />
-          <user-entry v-for="generator in entry.generators"
+          <user-entry v-for="generator, i in entry.generators"
                       :key="generator._id"
+                      :id="'entry-about-generators-' + i"
                       v-bind="generator" />
         </div>
-        <div v-if="Object.keys(entry.organisation).length">
+        <div v-if="Object.keys(entry.organisation).length"
+             id="entry-about-organisation">
           <list-header title="Organisation"
                        explanation="The data owner, e.g. a university" />
-          <user-entry v-bind="entry.organisation" />
+          <user-entry v-bind="entry.organisation"
+                      id="entry-about-organisation-entry" />
         </div>
       </div>
-      <div v-show="'editors' in entry && entry.editors.length">
+      <div v-if="'editors' in entry && entry.editors.length"
+           id="entry-about-editors">
         <list-header title="Editors"
                      explanation="Users that may edit this entry" />
-        <user-entry v-for="editor in entry.editors"
+        <user-entry v-for="editor, i in entry.editors"
                     :key="editor.id"
+                    :id="'entry-about-editors-' + i"
                     v-bind="editor" />
       </div>
     </q-list>
