@@ -102,7 +102,7 @@ def test_get_dataset(mdb):
       * Confirm that the dataset is not listed in ``related``
     """
     session = requests.Session()
-    for _ in range(10):
+    for _ in range(2):
         orig = mdb["datasets"].aggregate([{"$sample": {"size": 1}}]).next()
         response = helpers.make_request(session, f'/api/v1/dataset/{orig["_id"]}')
         assert response[1] == 200
