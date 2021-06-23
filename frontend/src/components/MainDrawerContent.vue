@@ -28,7 +28,7 @@
   <q-item-label header> User </q-item-label>
   <div v-if="currentUser.name !== ''">
     <NavEntry v-bind="currentUserLink"
-              id="drawer-entry-current"/>
+              id="drawer-entry-current-user"/>
     <q-item clickable
             id="drawer-entry-log-out"
             @click="logOut">
