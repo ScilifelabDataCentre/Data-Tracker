@@ -41,80 +41,94 @@
   </div>
   
   <div class="q-my-md"
-       v-if="['collection', 'order'].includes(dataType) && entry.datasets.length > 0">
+       id="entry-about-cross-refs"
+       v-if="('related' in entry && entry.related.length) ||
+             ('datasets' in entry && entry.datasets.length) ||
+             ('order' in entry && Object.keys(entry.order).length)">
     <q-list bordered
             id="entry-about-datasets">
-      <list-header title="Datasets"
-                   :explanation="'Datasets associated with this ' + dataType" />
-      <q-item clickable
-              v-for="dataset, i in entry.datasets"
-              :key="dataset.id"
-              :id="'entry-about-datasets-' + i"
-              @click="$router.push({ 'name': 'Dataset About', 'params': { 'uuid': dataset.id } })">
-        <q-item-section avatar>
-          <q-icon name="fas fa-chart-area" />
-        </q-item-section>
-        <q-item-section>
-          <q-item-label>
-            {{ dataset.title }}
-          </q-item-label>
-          <q-item-label caption>
-            {{ dataset.id }}
-          </q-item-label>
-        </q-item-section>
-      </q-item>
-    </q-list>
-  </div>
-
-  <div class="q-my-md"
-       v-if="dataType == 'dataset' && entry.related.length > 0">
-    <q-list bordered
-            id="entry-about-related">
-      <list-header title="Related Datasets"
-                   explanation="Other datasets originating from the same order" />
-      <q-item clickable
-              v-for="dataset, i in entry.related"
-              :key="dataset.id"
-              :id="'entry-about-related-' + i"
-              @click="$router.push({ 'name': 'Dataset About', 'params': { 'uuid': dataset.id } })">
-        <q-item-section avatar>
-          <q-icon name="fas fa-chart-area" />
-        </q-item-section>
-        <q-item-section>
-          <q-item-label>
-            {{ dataset.title }}
-          </q-item-label>
-          <q-item-label caption>
-            {{ dataset.id }}
-          </q-item-label>
-        </q-item-section>
-      </q-item>
-    </q-list>
-  </div>
-
-    <div class="q-my-md"
-       v-if="dataType == 'dataset' && entry.collections.length > 0">
-    <q-list bordered
-            id="entry-about-collections">
-      <list-header title="Collections"
-                   explanation="Collections containg the dataset" />
-      <q-item clickable
-              v-for="collection, i in entry.collections"
-              :key="collection.id"
-              :id="'entry-about-collections-' + i"
-              @click="$router.push({ 'name': 'Collection About', 'params': { 'uuid': collection.id } })">
-        <q-item-section avatar>
-          <q-icon name="fas fa-chart-area" />
-        </q-item-section>
-        <q-item-section>
-          <q-item-label>
-            {{ collection.title }}
-          </q-item-label>
-          <q-item-label caption>
-            {{ collection.id }}
-          </q-item-label>
-        </q-item-section>
-      </q-item>
+      <div v-if="'datasets' in entry && entry.datasets.length">
+        <list-header title="Datasets"
+                     :explanation="'Datasets associated with this ' + dataType" />
+        <q-item clickable
+                v-for="dataset, i in entry.datasets"
+                :key="dataset.id"
+                :id="'entry-about-datasets-' + i"
+                @click="$router.push({ 'name': 'Dataset About', 'params': { 'uuid': dataset.id } })">
+          <q-item-section avatar>
+            <q-icon name="fas fa-chart-area" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>
+              {{ dataset.title }}
+            </q-item-label>
+            <q-item-label caption>
+              {{ dataset.id }}
+            </q-item-label>
+          </q-item-section>
+        </q-item>
+      </div>
+      <div v-if="dataType == 'dataset' && 'order' in entry">
+        <list-header title="Order"
+                     explanation="The order the dataset originates from" />
+        <q-item clickable
+                id="entry-about-order"
+                @click="$router.push({ 'name': 'Order About', 'params': { 'uuid': entry.order.id } })">
+          <q-item-section avatar>
+            <q-icon name="fas fa-chart-area" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>
+              {{ entry.order.title }}
+            </q-item-label>
+            <q-item-label caption>
+              {{ entry.order.id }}
+            </q-item-label>
+          </q-item-section>
+        </q-item>
+      </div>
+      <div v-if="dataType == 'dataset' && entry.related.length > 0">
+        <list-header title="Related Datasets"
+                     explanation="Other datasets originating from the same order" />
+        <q-item clickable
+                v-for="dataset, i in entry.related"
+                :key="dataset.id"
+                :id="'entry-about-related-' + i"
+                @click="$router.push({ 'name': 'Dataset About', 'params': { 'uuid': dataset.id } })">
+          <q-item-section avatar>
+            <q-icon name="fas fa-chart-area" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>
+              {{ dataset.title }}
+            </q-item-label>
+            <q-item-label caption>
+              {{ dataset.id }}
+            </q-item-label>
+          </q-item-section>
+        </q-item>
+      </div>
+      <div v-if="dataType == 'dataset' && entry.collections.length > 0">
+        <list-header title="Collections"
+                     explanation="Collections containg the dataset" />
+        <q-item clickable
+                v-for="collection, i in entry.collections"
+                :key="collection.id"
+                :id="'entry-about-collections-' + i"
+                @click="$router.push({ 'name': 'Collection About', 'params': { 'uuid': collection.id } })">
+          <q-item-section avatar>
+            <q-icon name="fas fa-chart-area" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>
+              {{ collection.title }}
+            </q-item-label>
+            <q-item-label caption>
+              {{ collection.id }}
+            </q-item-label>
+          </q-item-section>
+        </q-item>
+      </div>
     </q-list>
   </div>
 
