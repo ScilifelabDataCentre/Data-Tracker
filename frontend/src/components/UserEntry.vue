@@ -3,10 +3,10 @@
                   icon="far fa-user"
                   :label="name">
   <q-list dense>
-    <q-item v-show="contact.length === 0 
-                    && affiliation.length === 0 
-                    && url.length === 0
-                    && orcid.length === 0">
+    <q-item v-if="contact.length === 0 
+                  && affiliation.length === 0 
+                  && url.length === 0
+                  && orcid.length === 0">
       <q-item-section>
         <span class="text-grey">No extra information available</span>
       </q-item-section>

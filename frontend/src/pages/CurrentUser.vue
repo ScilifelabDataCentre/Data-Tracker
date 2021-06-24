@@ -7,6 +7,7 @@
       <q-input outlined
                filled
                stack-label
+               for="curr-user-uuid"
                label="UUID"
                :value="currentUser.id"
                class="q-my-sm"
@@ -14,43 +15,58 @@
       <q-input outlined
                filled
                stack-label
+               for="curr-user-email"
                label="Email"
                :value="currentUser.email"
                disable />
       <q-input outlined
+               for="curr-user-name"
                class="q-my-sm"
                label="Name"
                v-model="userData.name"/>
       <q-input outlined
+               for="curr-user-affiliation"
                class="q-my-sm"
                label="Affiliation"
                v-model="userData.affiliation"/>
       <q-input outlined
                class="q-my-sm"
+               for="curr-user-contact"
                label="Contact"
                v-model="userData.contact"/>
       <q-input outlined
                class="q-my-sm"
+               for="curr-user-orcid"
                label="ORCID"
                v-model="userData.orcid"/>
       <q-input outlined
                class="q-my-sm"
+               for="curr-user-url"
                label="URL"
                v-model="userData.url"/>
       <div class="row">
       <q-btn color="positive"
              class="q-mt-md"
+             type="submit"
              :label="'Save settings'"
              @click="saveSettings"
              :loading="userDataSaveWaiting">
       </q-btn>
-        <span v-show="userDataSaveSuccess" class="text-positive q-ml-md q-mt-md self-center">Settings saved</span>
-        <span v-show="userDataSaveError" class="text-negative q-ml-md q-mt-md self-center">Failed to save settings</span>
+      <span v-show="userDataSaveSuccess"
+            id="curr-user-save-good"
+            class="text-positive q-ml-md q-mt-md self-center">
+        Settings saved
+      </span>
+      <span v-show="userDataSaveError"
+            id="curr-user-save-bad"
+            class="text-negative q-ml-md q-mt-md self-center">
+        Failed to save settings
+      </span>
       </div>
   </div>
-  <div class="q-my-md">
+  <div id="curr-user-permissions" class="q-my-md">
     <span class="text-h6">Permissions:</span>
-    <div class="row">
+    <div class="row" v-if="currentUser.permissions.length">
       <q-chip square
               color="blue-9"
               text-color="white"
@@ -58,14 +74,19 @@
               :key="perm"
               :label="perm" />
     </div>
+    <div v-else>
+      No extra permissions.
+    </div>
   </div>
 
   <div class="q-my-md">
     <q-btn label="Logs"
+           id="curr-user-logs-button"
            color="primary"
            class="q-mx-sm"
            @click="showLogs = true"/>
     <q-btn label="Actions"
+           id="curr-user-actions-button"
            color="primary"
            class="q-mx-sm"
            @click="showActions = true"/>
@@ -77,10 +98,11 @@
                    :uuid="currentUser.id" />
   </div>
 
-  <div class="q-my-md">
+  <div class="q-my-md"
+       id="curr-user-auth-ids">
       <span class="text-h6">Available Authentication IDs:</span>
       <q-list>
-        <q-item v-for="authId in currentUser.authIds"
+        <q-item v-for="authId in currentUser.auth_ids"
                 :key="authId">
           <q-chip square
                   color="grey-2"
@@ -91,13 +113,14 @@
       <div>
       <q-btn color="positive"
              label="Generate new API key"
+             id="curr-user-gen-key-button"
              :loading="newApiKeyWaiting"
              @click="generateNewApiKey" />
       <span v-if="newApiKeyError" class="text-negative">API key generation failed</span>
-      <q-input v-else
+      <q-input v-if="newApiKey.length"
                outlined
                stack-label
-               v-show="newApiKey.length > 0"
+               for="curr-user-new-key-listing"
                label="New API Key"
                class="q-my-sm"
                :value="newApiKey"

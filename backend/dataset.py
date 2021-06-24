@@ -236,22 +236,18 @@ def build_dataset_info(identifier: str):
     else:
         curr_user = None
 
-    if (
-        utils.req_has_permission("DATA_MANAGEMENT")
-        or curr_user in order["editors"]
-    ):
-        dataset["order"] = order["_id"]
+    if utils.req_has_permission("DATA_MANAGEMENT") or curr_user in order["editors"]:
+        dataset["order"] = {"_id": order["_id"], "title": order["title"]}
     dataset["related"] = list(
         flask.g.db["datasets"].find({"_id": {"$in": order["datasets"]}}, {"title": 1})
     )
     dataset["related"].remove({"_id": dataset["_id"], "title": dataset["title"]})
     dataset["collections"] = list(
-        flask.g.db["projects"].find({"datasets": dataset["_id"]}, {"title": 1})
+        flask.g.db["collections"].find({"datasets": dataset["_id"]}, {"title": 1})
     )
     for field in ("editors", "generators", "authors"):
         if field == "editors" and (
-            not utils.req_has_permission("DATA_MANAGEMENT")
-            and curr_user not in order[field]
+            not utils.req_has_permission("DATA_MANAGEMENT") and curr_user not in order[field]
         ):
             continue
         dataset[field] = utils.user_uuid_data(order[field], flask.g.db)
