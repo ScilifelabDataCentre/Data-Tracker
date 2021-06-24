@@ -45,9 +45,9 @@
        v-if="('related' in entry && entry.related.length) ||
              ('datasets' in entry && entry.datasets.length) ||
              ('order' in entry && Object.keys(entry.order).length)">
-    <q-list bordered
-            id="entry-about-datasets">
-      <div v-if="'datasets' in entry && entry.datasets.length">
+    <q-list bordered>
+      <div id="entry-about-datasets"
+           v-if="'datasets' in entry && entry.datasets.length">
         <list-header title="Datasets"
                      :explanation="'Datasets associated with this ' + dataType" />
         <q-item clickable
@@ -68,7 +68,8 @@
           </q-item-section>
         </q-item>
       </div>
-      <div v-if="dataType == 'dataset' && 'order' in entry">
+      <div id="entry-about-order"
+           v-if="dataType == 'dataset' && 'order' in entry">
         <list-header title="Order"
                      explanation="The order the dataset originates from" />
         <q-item clickable
@@ -87,7 +88,8 @@
           </q-item-section>
         </q-item>
       </div>
-      <div v-if="dataType == 'dataset' && entry.related.length > 0">
+      <div id="entry-about-related"
+           v-if="dataType == 'dataset' && entry.related.length > 0">
         <list-header title="Related Datasets"
                      explanation="Other datasets originating from the same order" />
         <q-item clickable
@@ -108,7 +110,8 @@
           </q-item-section>
         </q-item>
       </div>
-      <div v-if="dataType == 'dataset' && entry.collections.length > 0">
+      <div id="entry-about-collections"
+           v-if="dataType == 'dataset' && entry.collections.length > 0">
         <list-header title="Collections"
                      explanation="Collections containg the dataset" />
         <q-item clickable
