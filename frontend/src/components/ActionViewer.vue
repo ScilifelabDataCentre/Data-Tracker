@@ -1,7 +1,7 @@
 <template>
 <q-dialog :value="value"
           @input="updateVisibility">
-  <q-card>
+  <q-card id="action-viewer-dialog">
     <q-card-section class="text-h5 text-center">
       User Actions
     </q-card-section>
@@ -35,7 +35,7 @@
                   </q-field>
                 </q-item-section>
               </q-item>
-              <q-item v-if="entry.dataType !== 'user'">
+              <q-item v-if="entry.data_type !== 'user'">
                 <q-item-section>
                   <q-btn flat
                          color="primary"
