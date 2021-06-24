@@ -9,7 +9,7 @@ module.exports = class SetInputValue {
         .getValue(locator, function (result) {
           const length = result.value.length;
           for (let i = 0; i < length; i++) {
-            browser.keys('\uE003');
+            browser.keys('\uE003'); // backspace button
           }
           browser.setValue(locator, value, function () {
             browser.keys([browser.Keys.TAB]);
