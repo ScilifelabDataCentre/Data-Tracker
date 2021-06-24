@@ -85,6 +85,7 @@ describe('Data Tracker - not logged in', function() {
       .assert.containsText('#entry-about-properties .q-chip__content', 'Frontend Test Entry')
       .assert.containsText('#entry-about-description', 'A dataset added for frontend tests')
 
+      .assert.not.elementPresent('#entry-about-order')
       .assert.not.elementPresent('#entry-about-datasets')
 
       .assert.containsText('#entry-about-related-0', 'Frontend Test Dataset 2')
