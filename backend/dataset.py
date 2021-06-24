@@ -240,7 +240,7 @@ def build_dataset_info(identifier: str):
         utils.req_has_permission("DATA_MANAGEMENT")
         or curr_user in order["editors"]
     ):
-        dataset["order"] = order["_id"]
+        dataset["order"] = {"_id": order["_id"], "title": order["title"]}
     dataset["related"] = list(
         flask.g.db["datasets"].find({"_id": {"$in": order["datasets"]}}, {"title": 1})
     )
