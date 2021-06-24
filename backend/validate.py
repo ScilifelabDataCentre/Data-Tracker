@@ -187,7 +187,7 @@ def validate_orcid(data: str) -> bool:
     """
     if not isinstance(data, str):
         raise ValueError(f"Not a str ({data})")
-    if not ORCID_REGEX.fullmatch(data):
+    if data and not ORCID_REGEX.fullmatch(data):
         raise ValueError(f"Not an orcid ({data})")
     return True
 
