@@ -305,7 +305,6 @@ def gen_users(db, nr_users: int = 100):
 
 
 def gen_frontend_test_entries(db):
-    # author
     apikey = {"salt": "abc", "key": "frontend"}
     apihash = utils.gen_api_key_hash(apikey["key"], apikey["salt"])
     changes = [
