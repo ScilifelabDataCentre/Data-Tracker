@@ -76,6 +76,22 @@ describe('Data Tracker - Datasets', function() {
       .assert.containsText('#entry-about-title-text', 'Frontend Test Collection')
       .assert.containsText('#entry-about-title-identifier', '21c8ecd1-9908-462f-ba84-3ca399074b36')
   });
+
+  test('Test adding dataset', function (browser) {
+    browser
+      .url('http://localhost:5000/datasets')
+      .waitForElementVisible('.q-table--grid')
+      .click('#entry-browser-add')
+      .assert.urlEquals('http://localhost:5000/datasets/add')
+  });
+
+  test('Test editing dataset', function (browser) {
+    browser
+      .url('http://localhost:5000/collections')
+      .waitForElementVisible('.q-table--grid')
+      .click('#entry-browser-add')
+      .assert.urlEquals('http://localhost:5000/collections/add')
+  });
   
   after(browser => browser.end());
 });
