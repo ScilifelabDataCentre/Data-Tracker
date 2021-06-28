@@ -1,4 +1,4 @@
-describe('Data Tracker - not logged in', function() {
+describe('Data Tracker - Front Page', function() {
 
   test('Test basic details', function (browser) {
     browser
