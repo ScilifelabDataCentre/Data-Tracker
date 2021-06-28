@@ -19,6 +19,7 @@
              dense
              debounce="300"
              v-model="filter"
+             type="search"
              placeholder="Search">
       <template v-slot:append>
         <q-icon name="search" />
