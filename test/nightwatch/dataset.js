@@ -4,6 +4,8 @@ describe('Data Tracker - Datasets', function() {
       .url('http://localhost:5000/api/v1/logout')
       .url('http://localhost:5000/datasets')
       .waitForElementVisible('.q-table--grid')
+      .assert.not.elementPresent('#entry-browser-add')
+
       .setValue('input[type=search]', 'Frontend Test Dataset')
       .waitForElementVisible('#entry-79a755f1-69b0-4734-9977-ac945c4c51c1')
       .assert.containsText('#entry-79a755f1-69b0-4734-9977-ac945c4c51c1', 'Frontend Test Dataset')

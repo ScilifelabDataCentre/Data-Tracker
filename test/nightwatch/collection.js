@@ -4,6 +4,8 @@ describe('Data Tracker - Collections', function() {
       .url('http://localhost:5000/api/v1/logout')
       .url('http://localhost:5000/collections')
       .waitForElementVisible('.q-table--grid')
+      .assert.not.elementPresent('#entry-browser-add')
+
       .setValue('input[type=search]', 'Frontend Test Collection')
       .waitForElementVisible('#entry-21c8ecd1-9908-462f-ba84-3ca399074b36')
       .assert.containsText('#entry-21c8ecd1-9908-462f-ba84-3ca399074b36', 'Frontend Test Collection')
