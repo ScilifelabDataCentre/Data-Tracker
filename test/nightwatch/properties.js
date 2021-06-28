@@ -2,7 +2,7 @@ describe('Data Tracker - Property Editor', function() {
 
   before((browser) => browser.url('http://localhost:5000/api/v1/developer/login/generator::frontend'))
 
-  test('Test tag editor', function (browser) {
+  test('Open property editor', function (browser) {
     browser
       .url('http://localhost:5000/orders')
       .waitForElementVisible('#entry-browser-add')
@@ -11,6 +11,10 @@ describe('Data Tracker - Property Editor', function() {
    
       .assert.not.visible('#entry-edit-properties input')
       .click('#entry-edit-properties .q-item--clickable')
+  });
+
+  test('Add propeties', function (browser) {
+    browser
       .setInputValue('#entry-edit-properties input', 'Key1')
       .keys('\uE006')
       .setInputValue('#entry-edit-properties input', 'Key2')
@@ -24,11 +28,17 @@ describe('Data Tracker - Property Editor', function() {
       .assert.containsText('#entry-edit-properties .flex .q-chip', 'Value1')
       .assert.containsText('#entry-edit-properties .flex .q-chip:nth-of-type(2)', 'Key2')
       .assert.containsText('#entry-edit-properties .flex .q-chip:nth-of-type(2)', 'Value2')
+  });
 
+  test('Remove propeties', function (browser) {
+    browser  
       .click('#entry-edit-properties .q-chip__icon--remove')
       .assert.not.containsText('#entry-edit-properties .q-chip', 'Key1')
       .assert.containsText('#entry-edit-properties .q-chip', 'Key2')
-        
+  });
+
+  test('Test property key evaluation', function (browser) {
+    browser
       .setInputValue('#entry-edit-properties input', '')
       .assert.not.containsText('#entry-edit-properties .q-field__append', 'error')
       .assert.not.visible('#entry-edit-properties .q-field__append .fa-plus')
@@ -47,7 +57,10 @@ describe('Data Tracker - Property Editor', function() {
       .assert.containsText('#property-editor-new-key .q-field__messages', 'no whitespace at beginning')
       .assert.containsText('#property-editor-new-key .q-field__append .material-icons', 'error')
       .setInputValue('#property-editor-new-key input', '')
+  });
 
+  test('Test property value evaluation', function (browser) {
+    browser
       .setInputValue('#property-editor-key-list input', '')
       .assert.containsText('#property-editor-key-list .q-field__append .material-icons', 'error')
       .assert.elementPresent('#property-editor-key-list .q-field__messages:empty')
@@ -64,7 +77,10 @@ describe('Data Tracker - Property Editor', function() {
       .setInputValue('#property-editor-key-list input', 'ba')
       .assert.not.elementPresent('#property-editor-key-list .q-field__messages:empty')
       .assert.containsText('#property-editor-key-list .q-field__append .material-icons', 'error')
-    
+  });
+
+  test('Close property editor', function (browser) {
+    browser
       .click('#entry-edit-properties .q-item--clickable')
       .assert.not.visible('#entry-edit-properties input')
   });
