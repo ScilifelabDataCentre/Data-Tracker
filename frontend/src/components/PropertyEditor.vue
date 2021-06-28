@@ -28,7 +28,7 @@
                  @input="setProperty(propertyKey, $event)"
                  :value="fieldEntries[propertyKey]">
           <template v-slot:append>
-            <q-icon name="fas fa-minus-circle"
+            <q-icon name="fas fa-trash"
                     color="negative"
                     @click="deleteProperty(propertyKey)"
                     class="cursor-pointer" />
