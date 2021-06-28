@@ -199,6 +199,10 @@ export default {
   watch: {
     $route() {
       this.loadData();
+      if (this.uuid === '') {
+        this.editMode = true;
+        this.currentTab = 'edit';
+      }
     },
   },
 
@@ -329,6 +333,5 @@ export default {
       this.currentTab = 'edit';
     }
   }
-
 }
 </script>
