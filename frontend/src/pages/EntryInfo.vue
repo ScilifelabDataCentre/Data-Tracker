@@ -14,7 +14,8 @@
   <div v-else>
     <div class="row justify-between">
       <div class="flex">
-        <q-btn-dropdown v-show="uuid !== '' && 'editors' in entry"
+        <q-btn-dropdown v-if="uuid !== '' && 'editors' in entry"
+                        id="entry-info-menu"
                         class="q-mr-sm"
                         color="secondary"
                         icon="fas fa-cog"
@@ -59,7 +60,9 @@
         
         <q-btn class="q-mx-sm"
                v-show="editMode"
+               id="entry-save-button"
                icon="save"
+               type="submit"
                label="Save"
                color="positive"
                :loading="isSaving"
@@ -67,6 +70,7 @@
                @click="saveEdit" />
         
         <q-btn class="q-ml-sm q-mr-lg"
+               id="entry-cancel-button"
                v-show="editMode"
                icon="cancel"
                label="Cancel"
@@ -91,11 +95,13 @@
              label="JSON (API)" />
     </div>
     <q-tab-panels v-model="currentTab">
-      <q-tab-panel name="preview">
+      <q-tab-panel name="preview"
+                   id="entry-tab-preview">
         <entry-about :isLoading="isLoading" :dataType="dataType" />
       </q-tab-panel>
       
-      <q-tab-panel name="edit">
+      <q-tab-panel name="edit"
+                   id="entry-tab-edit">
         <entry-edit :isLoading="isLoading"
                     :dataType="dataType"
                     :newEntry="newEntry" />
