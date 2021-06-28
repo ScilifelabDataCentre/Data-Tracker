@@ -39,5 +39,21 @@ describe('Data Tracker - Collections', function() {
       .assert.not.elementPresent('#entry-about-editors')
   });
   
+  test('Test adding collection', function (browser) {
+    browser
+      .url('http://localhost:5000/collections')
+      .waitForElementVisible('.q-table--grid')
+      .click('#entry-browser-add')
+      .assert.urlEquals('http://localhost:5000/collections/add')
+  });
+
+  test('Test editing collection', function (browser) {
+    browser
+      .url('http://localhost:5000/collections')
+      .waitForElementVisible('.q-table--grid')
+      .click('#entry-browser-add')
+      .assert.urlEquals('http://localhost:5000/collections/add')
+  });
+
   after(browser => browser.end());
 });
