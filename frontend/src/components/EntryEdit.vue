@@ -1,6 +1,7 @@
 <template>
 <div>
   <div v-if="this.newEntry && this.dataType === 'dataset'"
+       id="entry-edit-order-select"
        class="q-my-sm">
     <q-table flat
              title="Parent order for the dataset"
@@ -39,7 +40,8 @@
   </div>
 
   <div v-if="dataType !== 'dataset' || entry.order || parentOrder.length">
-    <q-field v-if="!newEntry"
+    <q-field id="entry-edit-uuid"
+             v-if="!newEntry"
              label="UUID"
              class="q-mb-lg"
 	     stack-label
@@ -52,7 +54,7 @@
       </template>
     </q-field>
     
-    <q-input id="entry-title"
+    <q-input for="entry-edit-title"
              class="q-my-md"
              label="Title"
              v-model="title"
@@ -64,7 +66,7 @@
     </q-input>
     
     <div class="q-my-md">
-      <q-input id="entry-description"
+      <q-input for="entry-edit-description"
                type="textarea"
                label="Description"
                v-model="description"
@@ -87,6 +89,7 @@
             class="q-my-lg">
       <q-expansion-item expand-separator
                         icon="fas fa-tags"
+                        id="entry-edit-tags"
                         label="Tags"
                         caption="Set labels (tags)">
         <q-card>
@@ -99,6 +102,7 @@
       
       <q-expansion-item expand-separator
                         icon="fas fa-tags"
+                        id="entry-edit-properties"
                         label="Properties"
                         caption="Set properties (key: value)">
         <q-card>
