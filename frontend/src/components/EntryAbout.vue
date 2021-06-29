@@ -44,6 +44,7 @@
        id="entry-about-cross-refs"
        v-if="('related' in entry && entry.related.length) ||
              ('datasets' in entry && entry.datasets.length) ||
+             ('collections' in entry && entry.collections.length) ||
              ('order' in entry && Object.keys(entry.order).length)">
     <q-list bordered>
       <div id="entry-about-datasets"
@@ -135,7 +136,10 @@
     </q-list>
   </div>
 
-  <div class="q-my-md">
+  <div class="q-my-md" v-if="('authors' in entry && entry.authors.length) ||
+                             ('generators' in entry && entry.generators.length) ||
+                             ('organisation' in entry && Object.keys(entry.organisation).length) ||
+                             ('editors' in entry && entry.editors.length)">
     <q-list bordered>
       <div v-if="dataType === 'order' || dataType == 'dataset'">
         <div v-if="entry.authors.length"
