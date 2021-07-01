@@ -22,6 +22,7 @@
                         label="Options">
           <q-list dense>
             <q-item :disable="editMode"
+                    id="entry-info-menu-edit"
                     v-close-popup
                     clickable
                     @click="toggleEditMode">
@@ -35,6 +36,7 @@
             </q-item>
             
             <q-item clickable
+                    id="entry-info-menu-delete"
                     v-close-popup
                     @click="confirmDelete">
               <q-item-section avatar>
@@ -46,6 +48,7 @@
             </q-item>
             
             <q-item clickable
+                    id="entry-info-menu-logs"
                     v-close-popup
                     @click="showLogs = true">
               <q-item-section avatar>
@@ -95,13 +98,11 @@
              label="JSON (API)" />
     </div>
     <q-tab-panels v-model="currentTab">
-      <q-tab-panel name="preview"
-                   id="entry-tab-preview">
+      <q-tab-panel name="preview">
         <entry-about :isLoading="isLoading" :dataType="dataType" />
       </q-tab-panel>
       
-      <q-tab-panel name="edit"
-                   id="entry-tab-edit">
+      <q-tab-panel name="edit">
         <entry-edit :isLoading="isLoading"
                     :dataType="dataType"
                     :newEntry="newEntry" />
@@ -125,7 +126,7 @@
                      color="negative"
                      size="1.5em"
                      class="q-mr-sm" />
-          <q-btn flat label="Delete" color="negative" @click="deleteEntry" />
+          <q-btn flat type="submit" label="Delete" color="negative" @click="deleteEntry" />
           <q-btn flat label="Cancel" color="grey-7" v-close-popup />
         </q-card-actions>
       </q-card>
@@ -319,6 +320,8 @@ export default {
               .catch((err) => {
                 if (err.response.status === 404)
                   this.badEntry = true;
+                if (err.response.status === 403)
+                  this.$router.push({ name: 'Forbidden'});
               })
               .finally(() => this.isLoading = false);
           });
