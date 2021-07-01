@@ -154,8 +154,10 @@
           </template>
         </q-table>
       </q-expansion-item>
+
       <div v-if="dataType === 'order'">
         <q-expansion-item expand-separator
+                          id="entry-edit-authors"
                           icon="far fa-user"
                           label="Authors"
                           caption="The ones who own the sample (e.g. PI)">
@@ -168,6 +170,7 @@
         </q-expansion-item>
         
         <q-expansion-item expand-separator
+                          id="entry-edit-generators"
                           icon="far fa-user"
                           label="Generators"
                           caption="The ones who generated the data (e.g. Facility)">
@@ -180,6 +183,7 @@
         </q-expansion-item>
         
         <q-expansion-item expand-separator
+                          id="entry-edit-organisation"
                           icon="far fa-user"
                           label="Organisation"
                           caption="The data controller (e.g. university)">
@@ -192,7 +196,9 @@
                          :isLoading="isLoading"/>
         </q-expansion-item>
       </div>
+
       <q-expansion-item expand-separator
+                        id="entry-edit-editors"
                         v-if="['collection', 'order'].includes(dataType)"
                         icon="far fa-user"
                         label="Editors"
