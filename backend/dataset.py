@@ -231,8 +231,8 @@ def build_dataset_info(identifier: str):
     if not dataset:
         return None
     order = flask.g.db["orders"].find_one({"datasets": dataset["_id"]})
-    if flask.g.db.current_user:
-        curr_user = flask.g.db.current_user["_id"]
+    if flask.g.current_user:
+        curr_user = flask.g.current_user["_id"]
     else:
         curr_user = None
 
