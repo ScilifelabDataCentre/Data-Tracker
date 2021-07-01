@@ -1,6 +1,7 @@
 <template>
 <div>
-  <div class="q-my-md">
+  <div class="q-my-md"
+       id="property-editor-new-key">
     <q-input stack-label
              outlined
              label="New Property Name"
@@ -18,7 +19,8 @@
         </template>
     </q-input>
   </div>
-  <q-list dense>
+  <q-list dense
+          id="property-editor-key-list">
     <q-item v-for="propertyKey of Object.keys(propertyEntries)" :key="propertyKey">
       <q-item-section>
         <q-input stack-label
