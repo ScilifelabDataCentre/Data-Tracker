@@ -82,9 +82,17 @@ def add_collection():
     if not validation.result:
         flask.abort(status=validation.status)
 
-    # add current user to editors if no editors are defined
     if not indata.get("editors"):
         indata["editors"] = [flask.g.current_user["_id"]]
+    # add current user if missing and only DATA_EDIT
+    elif (
+        not utils.req_has_permission("DATA_MANAGEMENT")
+        and flask.g.current_user["_id"] not in indata["editors"]
+    ):
+        indata["editors"].append(flask.g.current_user["_id"])
+
+    # convert all incoming uuids to uuid.UUID
+    indata = utils.prepare_for_db(indata)
 
     # convert entries to uuids
     for field in ("datasets", "editors"):
@@ -176,6 +184,17 @@ def update_collection(identifier):
     validation = utils.basic_check_indata(indata, collection, prohibited=["_id"])
     if not validation.result:
         flask.abort(status=validation.status)
+
+    # DATA_EDIT may not delete itself from editors
+    if (
+        not utils.req_has_permission("DATA_MANAGEMENT")
+        and indata.get("editors")
+        and str(flask.g.current_user["_id"]) not in indata["editors"]
+    ):
+        flask.abort(status=400)
+
+    # convert all incoming uuids to uuid.UUID
+    indata = utils.prepare_for_db(indata)
 
     # convert entries to uuids
     for field in ("datasets", "editors"):
