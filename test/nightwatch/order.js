@@ -51,6 +51,8 @@ describe('Data Tracker - Orders', function() {
       .click('#entry-edit-properties .q-item--clickable')
       .assert.not.visible('#entry-edit-properties input')
 
+      .assert.not.elementPresent('#entry-edit-datasets')
+
       .assert.not.visible('#entry-edit-authors .q-table')
       .click('#entry-edit-authors .q-item--clickable')
       .assert.visible('#entry-edit-authors .q-table')
@@ -150,7 +152,7 @@ describe('Data Tracker - Orders', function() {
       .expect.url().to.match(/http:\/\/localhost:5000\/orders\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/);
   });
 
-  test('About order page - editor', function (browser) {
+  test('About order page', function (browser) {
     browser
       .assert.not.visible('#entry-save-button')
       .waitForElementVisible('#entry-about-title-text')
