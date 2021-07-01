@@ -6,7 +6,8 @@
       {{ entry.title }}
     </h1>
     <div class="text-subtitle1 text-italic"
-         id="entry-about-title-identifier">
+         id="entry-about-uuid"
+         v-if="entry.id.length">
       {{ entry.id }}
     </div>
   </div>
