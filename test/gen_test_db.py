@@ -431,6 +431,7 @@ def gen_frontend_test_entries(db):
         user="system",
     )
 
+    collection = structure.collection()
     changes = {
         "_id": uuid.UUID("21c8ecd1-9908-462f-ba84-3ca399074b36"),
         "editors": [uuid.UUID("3a9a19a7-cd30-4c7b-b280-e35220e1a611")],
@@ -440,13 +441,13 @@ def gen_frontend_test_entries(db):
         "tags": ["Frontend", "Test"],
         "datasets": [uuid.UUID("79a755f1-69b0-4734-9977-ac945c4c51c1"), uuid.UUID("27cc1144-67bf-45b2-af21-425f9bfc7333")]
     }
-    order.update(changes)
-    db["collections"].insert_one(order)
+    collection.update(changes)
+    db["collections"].insert_one(collection)
     make_log(
         db,
         action="add",
         data=dataset,
-        data_type="dataset",
+        data_type="collection",
         comment="Generated",
         user="system",
     )
