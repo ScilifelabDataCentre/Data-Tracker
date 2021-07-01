@@ -19,7 +19,7 @@ describe('Data Tracker - Collections', function() {
       .url('http://localhost:5000/collections/21c8ecd1-9908-462f-ba84-3ca399074b36')
       .waitForElementVisible('#entry-about-title-text')
       .assert.containsText('#entry-about-title-text', 'Frontend Test Collection')
-      .assert.containsText('#entry-about-title-identifier', '21c8ecd1-9908-462f-ba84-3ca399074b36')
+      .assert.containsText('#entry-about-uuid', '21c8ecd1-9908-462f-ba84-3ca399074b36')
       .assert.containsText('#entry-about-tags', 'Frontend')
       .assert.containsText('#entry-about-tags', 'Test')
       .assert.containsText('#entry-about-properties .q-chip__content span', 'Type')

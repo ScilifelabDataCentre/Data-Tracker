@@ -19,7 +19,7 @@ describe('Data Tracker - Datasets', function() {
       .url('http://localhost:5000/datasets/79a755f1-69b0-4734-9977-ac945c4c51c1')
       .waitForElementVisible('#entry-about-title-text')
       .assert.containsText('#entry-about-title-text', 'Frontend Test Dataset')
-      .assert.containsText('#entry-about-title-identifier', '79a755f1-69b0-4734-9977-ac945c4c51c1')
+      .assert.containsText('#entry-about-uuid', '79a755f1-69b0-4734-9977-ac945c4c51c1')
       .assert.containsText('#entry-about-tags', 'Frontend')
       .assert.containsText('#entry-about-tags', 'Test')
       .assert.containsText('#entry-about-properties .q-chip__content span', 'Type')
@@ -68,13 +68,13 @@ describe('Data Tracker - Datasets', function() {
       .waitForElementVisible('#entry-about-title-text')
       .assert.urlEquals('http://localhost:5000/datasets/27cc1144-67bf-45b2-af21-425f9bfc7333')
       .assert.containsText('#entry-about-title-text', 'Frontend Test Dataset 2')
-      .assert.containsText('#entry-about-title-identifier', '27cc1144-67bf-45b2-af21-425f9bfc7333')
+      .assert.containsText('#entry-about-uuid', '27cc1144-67bf-45b2-af21-425f9bfc7333')
 
       .click('#entry-about-collections-0')
       .waitForElementVisible('#entry-about-title-text')
       .assert.urlEquals('http://localhost:5000/collections/21c8ecd1-9908-462f-ba84-3ca399074b36')
       .assert.containsText('#entry-about-title-text', 'Frontend Test Collection')
-      .assert.containsText('#entry-about-title-identifier', '21c8ecd1-9908-462f-ba84-3ca399074b36')
+      .assert.containsText('#entry-about-uuid', '21c8ecd1-9908-462f-ba84-3ca399074b36')
   });
 
   test('Test adding dataset', function (browser) {
