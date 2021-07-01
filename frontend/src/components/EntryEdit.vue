@@ -118,6 +118,7 @@
       <q-separator />
       
       <q-expansion-item expand-separator
+                        id="entry-edit-datasets"
                         v-if="dataType === 'collection'"
                         icon="fas fa-chart-area"
                         label="Datasets"
@@ -140,6 +141,7 @@
                        dense
                        debounce="300"
                        v-model="filter"
+                       type="search"
                        placeholder="Search">
                 <template v-slot:append>
                   <q-icon name="search" />
