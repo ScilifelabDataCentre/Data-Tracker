@@ -14,28 +14,28 @@
   :no-results-label="filter + ' does not match any entries'">
   <template v-slot:top-left>
     <div class="row">
-    <q-input rounded
-             outlined
-             dense
-             debounce="300"
-             v-model="filter"
-             type="search"
-             placeholder="Search">
-      <template v-slot:append>
-        <q-icon name="search" />
-      </template>
-    </q-input>
-    <q-toggle class="q-mx-sm"
-              left-label
-              v-model="onlySelected"
-              label="Show selected only"
-              color="primary"/>
-    <q-btn flat
-           no-caps
-           icon="fas fa-user-plus"
-           color="primary"
-           @click="showAddUser = true"
-           label="Add User" />
+      <q-input rounded
+               outlined
+               dense
+               debounce="300"
+               v-model="filter"
+               type="search"
+               placeholder="Search">
+        <template v-slot:append>
+          <q-icon name="search" />
+        </template>
+      </q-input>
+      <q-toggle left-label
+                class="q-mx-sm"
+                v-model="onlySelected"
+                label="Show selected only"
+                color="primary"/>
+      <q-btn flat
+             no-caps
+             icon="fas fa-user-plus"
+             color="primary"
+             @click="showAddUser = true"
+             label="Add User" />
     </div>
   </template>
   <template v-slot:top-right>
