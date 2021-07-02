@@ -87,7 +87,7 @@ def add_collection():
     # add current user if missing and only DATA_EDIT
     elif (
         not utils.req_has_permission("DATA_MANAGEMENT")
-        and flask.g.current_user["_id"] not in indata["editors"]
+        and str(flask.g.current_user["_id"]) not in indata["editors"]
     ):
         indata["editors"].append(flask.g.current_user["_id"])
 
