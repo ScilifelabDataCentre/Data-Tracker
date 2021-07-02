@@ -169,6 +169,8 @@ describe('Data Tracker - Collections', function() {
   
   test('Edit mode - data loaded correctly', function (browser) {
     browser
+      .expect.element('#entry-about-uuid').text.to.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/);
+    browser
       .assert.value('#entry-edit-title', 'Collection from frontend test')
       .assert.value('#entry-edit-description', 'A collection created during a frontend test run')
 
@@ -204,9 +206,12 @@ describe('Data Tracker - Collections', function() {
       .setInputValue('#entry-edit-title', 'Collection from frontend test - updated')
       .click('#entry-save-button')
       .expect.url().to.match(/http:\/\/localhost:5000\/collections\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/);
+    browser.
+      .waitForElementVisible('#entry-about-title-text')
+      .assert.containsText('#entry-about-title-text', 'Dataset from frontend test - updated')
   });
   
-  test('Test deleting order', function (browser) {
+  test('Test deleting collection', function (browser) {
     browser
       .waitForElementVisible('#entry-about-uuid')
       .click('#entry-info-menu')
