@@ -15,7 +15,7 @@
           style="width: 400em">
     <q-card-section>
       <q-list>
-        <q-item v-show="uuid !== ''">
+        <q-item v-if="uuid !== ''">
           <q-item-section>
             <q-input outlined
                      filled
@@ -92,7 +92,7 @@
             </div>
           </q-item>
           <q-item-label caption>API Key</q-item-label>
-          <q-item>
+          <q-item id="user-edit-api-key">
             <q-item-section>
               <q-btn color="positive"
                      label="Generate new API key"
@@ -116,11 +116,11 @@
                     align="left">
       <q-btn label="Logs"
              color="primary"
-             class="q-mx-sm"
+             class="q-mx-sm user-edit-logs"
              @click="showLogs = true"/>
       <q-btn label="Actions"
              color="primary"
-             class="q-mx-sm"
+             class="q-mx-sm user-edit-actions"
              @click="showActions = true"/>
       <log-viewer v-model="showLogs"
                   dataType="user"
@@ -133,18 +133,23 @@
       <span v-show="userDataSaveError" class="text-negative">Save failed</span>
     </q-card-actions>
     <q-card-actions align="right">
-      <q-btn v-show="uuid !== ''"
+      <q-btn v-if="uuid !== ''"
              label="Delete"
              color="negative"
              @click="showConfirmDelete = true"
              :loading="userDataSaveWaiting"
-             class="text-negative q-mr-xl" />
+             class="text-negative q-mr-xl user-edit-delete" />
 
       <q-btn label="Save"
              color="positive"
+             class="user-edit-save"
+             type="submit"
              @click="saveUser"
              :loading="userDataSaveWaiting"/>
-      <q-btn label="Cancel" color="grey-6" v-close-popup />
+      <q-btn class="user-edit-cancel"
+             label="Cancel"
+             color="grey-6"
+             v-close-popup />
     </q-card-actions>
 
     <q-inner-loading :showing="isLoading">
@@ -164,6 +169,7 @@
                :loading="isDeleting"
                label="Delete"
                color="negative"
+               class="user-edit-confirm-delete"
                @click="deleteEntry" />
         <q-btn flat label="Cancel" color="grey-7" v-close-popup />
       </q-card-actions>

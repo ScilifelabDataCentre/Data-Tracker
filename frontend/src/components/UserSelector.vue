@@ -42,6 +42,7 @@
     <q-btn round
            flat
            dense
+           class="reload-users"
            color="primary"
            icon="cached"
            @click="loadData" />
