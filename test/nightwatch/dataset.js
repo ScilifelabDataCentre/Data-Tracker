@@ -126,6 +126,7 @@ describe('Data Tracker - Datasets', function() {
       .click('#entry-edit-properties .q-item--clickable')
       .assert.value('#entry-edit-description', 'An order added for frontend tests')
   });
+
   test('Add dataset - set fields', function (browser) {
     browser
       .setInputValue('#entry-edit-title', 'Dataset from frontend test')
@@ -161,32 +162,128 @@ describe('Data Tracker - Datasets', function() {
       .expect.url().to.match(/http:\/\/localhost:5000\/datasets\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/);
   });
 
-  test('About dataset page - editor', function (browser) {
+  test('Add/about dataset - validate fields', function (browser) {
     browser
       .waitForElementVisible('#entry-about-title-text')
-      .assert.not.visible('#entry-save-button')
-      .assert.visible('#entry-info-menu')
       .assert.containsText('#entry-about-title-text', 'Dataset from frontend test')
       .expect.element('#entry-about-uuid').text.to.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/);
     browser
+      .assert.containsText('#entry-about-tags .q-chip', 'Frontend')
+      .assert.containsText('#entry-about-tags .q-chip:nth-of-type(2)', 'Test')
+      .assert.containsText('#entry-about-tags .q-chip:nth-of-type(3)', 'New Tag1')
+      .assert.containsText('#entry-about-tags .q-chip:nth-of-type(4)', 'New Tag2')
+
+      .assert.containsText('#entry-about-properties', 'Type')
+      .assert.containsText('#entry-about-properties', 'Frontend Test Entry')
+      .assert.containsText('#entry-about-properties', 'Key1')
+      .assert.containsText('#entry-about-properties', 'Value1')
+      .assert.containsText('#entry-about-properties', 'Key2')
+      .assert.containsText('#entry-about-properties', 'Value2')
       .assert.containsText('#entry-about-description', 'A dataset created during a frontend test run')
-      .assert.containsText('#entry-about-title-text', 'Dataset from frontend test')
-      .assert.containsText('#entry-about-tags', 'New Tag1')
-      .assert.containsText('#entry-about-tags', 'New Tag2')
-      .assert.containsText('#entry-about-properties .q-chip span', 'Key1')
-      .assert.containsText('#entry-about-properties .q-chip', 'Value1')
-      .assert.containsText('#entry-about-properties .q-chip:nth-of-type(2) span', 'Key2')
-      .assert.containsText('#entry-about-properties .q-chip:nth-of-type(2)', 'Value2')
 
-      .assert.elementPresent('#entry-about-order')
-      .assert.elementPresent('#entry-about-related')
-      .assert.elementPresent('#entry-about-authors')
-      .assert.elementPresent('#entry-about-generators')
-      .assert.elementPresent('#entry-about-organisation')
-      .assert.elementPresent('#entry-about-editors')
+      .assert.containsText('#entry-about-order', 'Frontend Test Order')
+      .assert.containsText('#entry-about-order', 'd4467732-8ddd-43a6-a904-5b7376f60e5c')
 
+      .assert.containsText('#entry-about-related', 'Frontend Test Dataset')
+      .assert.containsText('#entry-about-related', '79a755f1-69b0-4734-9977-ac945c4c51c1')
+      .assert.containsText('#entry-about-related', 'Frontend Test Dataset 2')
+      .assert.containsText('#entry-about-related', '27cc1144-67bf-45b2-af21-425f9bfc7333')
+    
       .assert.not.elementPresent('#entry-about-datasets')
+      .assert.not.elementPresent('#entry-about-collections')
+    
+      .assert.containsText('#entry-about-authors-0', 'Frontend Author')
+      .assert.not.containsText('#entry-about-authors-0', 'author@frontend.dev')
+      .click('#entry-about-authors-0 .q-focusable')
+      .assert.containsText('#entry-about-authors-0', 'author@frontend.dev')
+      .assert.containsText('#entry-about-authors-0', 'Frontend Test University')
+      .assert.containsText('#entry-about-authors-0', 'https://www.example.com/frontend_author')
+      .click('#entry-about-authors-0 .q-focusable')
+      .assert.not.containsText('#entry-about-authors-0', 'author@frontend.dev')
+
+      .assert.containsText('#entry-about-generators', 'Frontend Generator')
+      .assert.not.containsText('#entry-about-generators', 'generator@frontend.dev')
+      .click('#entry-about-generators-0 .q-focusable')
+      .assert.containsText('#entry-about-generators', 'generator@frontend.dev')
+      .assert.containsText('#entry-about-generators', 'Frontend Test University')
+      .assert.containsText('#entry-about-generators', 'https://www.example.com/frontend_generator')
+      .click('#entry-about-generators-0 .q-focusable')
+      .assert.not.containsText('#entry-about-generators', 'generator@frontend.dev')
+
+      .assert.containsText('#entry-about-organisation', 'Frontend Organisation')
+      .assert.not.containsText('#entry-about-organisation', 'organisation@frontend.dev')
+      .click('#entry-about-organisation .q-focusable')
+      .assert.containsText('#entry-about-organisation', 'organisation@frontend.dev')
+      .assert.containsText('#entry-about-organisation', 'Frontend Test University')
+      .assert.containsText('#entry-about-organisation', 'https://www.example.com/frontend_organisation')
+      .click('#entry-about-organisation .q-focusable')
+      .assert.not.containsText('#entry-about-organisation', 'organisation@frontend.dev')
+
+      .assert.not.containsText('#entry-about-editors', 'editor@frontend.dev')
+      .click('#entry-about-editors-0 .q-focusable')
+      .assert.containsText('#entry-about-editors-0', 'editor@frontend.dev')
+      .assert.containsText('#entry-about-editors-0', 'Frontend Test University')
+      .assert.containsText('#entry-about-editors-0', 'https://www.example.com/frontend_editor')
+      .click('#entry-about-editors-0 .q-focusable')
   });
 
+  test('Enter edit mode', function (browser) {
+    browser
+      .click('#entry-info-menu')
+      .click('#entry-info-menu-edit')
+      .waitForElementVisible('#entry-edit-uuid')
+      .assert.visible('#entry-save-button')
+      .assert.visible('#entry-cancel-button')
+      .assert.visible('div[role=tablist]')
+  });
+  
+  test('Edit mode - data loaded correctly', function (browser) {
+    browser
+      .expect.element('#entry-edit-uuid').text.to.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/);
+    browser
+      .assert.value('#entry-edit-title', 'Dataset from frontend test')
+      .assert.value('#entry-edit-description', 'A dataset created during a frontend test run')    
+
+      .click('#entry-edit-tags .q-item--clickable')
+      .assert.containsText('#entry-edit-tags .q-chip', 'Frontend')
+      .assert.containsText('#entry-edit-tags .q-chip:nth-of-type(2)', 'Test')
+      .assert.containsText('#entry-edit-tags .q-chip:nth-of-type(3)', 'New Tag')
+      .assert.containsText('#entry-edit-tags .q-chip:nth-of-type(4)', 'New Tag2')
+      .click('#entry-edit-tags .q-item--clickable')
+
+      .click('#entry-edit-properties .q-item--clickable')
+      .assert.containsText('#entry-edit-properties', 'Type')
+      .assert.containsText('#entry-edit-properties', 'Frontend Test Entry')
+      .assert.containsText('#entry-edit-properties', 'Key1')
+      .assert.containsText('#entry-edit-properties', 'Value1')
+      .assert.containsText('#entry-edit-properties', 'Key2')
+      .assert.containsText('#entry-edit-properties', 'Value2')
+      .click('#entry-edit-properties .q-item--clickable')
+  });
+
+  test('Test editing and saving collection', function (browser) {
+    browser
+      .setInputValue('#entry-edit-title', 'Dataset from frontend test - updated')
+      .click('#entry-save-button')
+      .expect.url().to.match(/http:\/\/localhost:5000\/datasets\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/);
+    browser
+      .waitForElementVisible('#entry-about-title-text')
+      .assert.containsText('#entry-about-title-text', 'Dataset from frontend test - updated')
+  });
+
+  test('Test deleting dataset', function (browser) {
+    browser
+      .waitForElementVisible('#entry-about-uuid')
+      .click('#entry-info-menu')
+      .click('#entry-info-menu-delete')
+      .waitForElementVisible('.q-dialog button')
+      .click('.q-dialog button:nth-of-type(2)')
+      .click('#entry-info-menu')
+      .click('#entry-info-menu-delete')
+      .waitForElementVisible('.q-dialog button')
+      .click('.q-dialog button')
+      .assert.urlEquals('http://localhost:5000/datasets/')
+  });
+  
   after(browser => browser.end());
 });

@@ -34,6 +34,7 @@
     <q-btn class="q-mt-sm"
            label="Load data from order"
            color="primary"
+           type="submit"
            @click="confirmOrder"
            :disable="parentOrder.length === 0"
            :loading="isLoadingOrderData"/>
