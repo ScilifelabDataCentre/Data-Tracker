@@ -206,7 +206,7 @@ describe('Data Tracker - Collections', function() {
       .setInputValue('#entry-edit-title', 'Collection from frontend test - updated')
       .click('#entry-save-button')
       .expect.url().to.match(/http:\/\/localhost:5000\/collections\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/);
-    browser.
+    browser
       .waitForElementVisible('#entry-about-title-text')
       .assert.containsText('#entry-about-title-text', 'Dataset from frontend test - updated')
   });
