@@ -99,8 +99,6 @@ def add_collection():
         if field in indata:
             indata[field] = [utils.str_to_uuid(value) for value in indata[field]]
 
-    collection["description"] = utils.secure_description(collection["description"])
-
     collection.update(indata)
 
     # add to db
@@ -200,9 +198,6 @@ def update_collection(identifier):
     for field in ("datasets", "editors"):
         if field in indata:
             indata[field] = [utils.str_to_uuid(value) for value in indata[field]]
-
-    if "description" in indata:
-        indata["description"] = utils.secure_description(indata["description"])
 
     is_different = False
     for field in indata:
