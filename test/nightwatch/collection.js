@@ -169,7 +169,7 @@ describe('Data Tracker - Collections', function() {
   
   test('Edit mode - data loaded correctly', function (browser) {
     browser
-      .expect.element('#entry-about-uuid').text.to.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/);
+      .expect.element('#entry-edit-uuid').text.to.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/);
     browser
       .assert.value('#entry-edit-title', 'Collection from frontend test')
       .assert.value('#entry-edit-description', 'A collection created during a frontend test run')
