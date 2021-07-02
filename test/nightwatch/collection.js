@@ -208,7 +208,7 @@ describe('Data Tracker - Collections', function() {
       .expect.url().to.match(/http:\/\/localhost:5000\/collections\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/);
     browser
       .waitForElementVisible('#entry-about-title-text')
-      .assert.containsText('#entry-about-title-text', 'Dataset from frontend test - updated')
+      .assert.containsText('#entry-about-title-text', 'Collection from frontend test - updated')
   });
   
   test('Test deleting collection', function (browser) {
