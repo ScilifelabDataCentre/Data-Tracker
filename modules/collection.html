@@ -115,16 +115,22 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">validation</span><span class="o">.</span><span class="n">result</span><span class="p">:</span>
         <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="n">validation</span><span class="o">.</span><span class="n">status</span><span class="p">)</span>
 
-    <span class="c1"># add current user to editors if no editors are defined</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">indata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;editors&quot;</span><span class="p">):</span>
         <span class="n">indata</span><span class="p">[</span><span class="s2">&quot;editors&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]]</span>
+    <span class="c1"># add current user if missing and only DATA_EDIT</span>
+    <span class="k">elif</span> <span class="p">(</span>
+        <span class="ow">not</span> <span class="n">utils</span><span class="o">.</span><span class="n">req_has_permission</span><span class="p">(</span><span class="s2">&quot;DATA_MANAGEMENT&quot;</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="nb">str</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">])</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">indata</span><span class="p">[</span><span class="s2">&quot;editors&quot;</span><span class="p">]</span>
+    <span class="p">):</span>
+        <span class="n">indata</span><span class="p">[</span><span class="s2">&quot;editors&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">])</span>
+
+    <span class="c1"># convert all incoming uuids to uuid.UUID</span>
+    <span class="n">indata</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">prepare_for_db</span><span class="p">(</span><span class="n">indata</span><span class="p">)</span>
 
     <span class="c1"># convert entries to uuids</span>
     <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;datasets&quot;</span><span class="p">,</span> <span class="s2">&quot;editors&quot;</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">indata</span><span class="p">:</span>
             <span class="n">indata</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">utils</span><span class="o">.</span><span class="n">str_to_uuid</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">indata</span><span class="p">[</span><span class="n">field</span><span class="p">]]</span>
-
-    <span class="n">collection</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">secure_description</span><span class="p">(</span><span class="n">collection</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">])</span>
 
     <span class="n">collection</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">indata</span><span class="p">)</span>
 
@@ -210,13 +216,21 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">validation</span><span class="o">.</span><span class="n">result</span><span class="p">:</span>
         <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="n">validation</span><span class="o">.</span><span class="n">status</span><span class="p">)</span>
 
+    <span class="c1"># DATA_EDIT may not delete itself from editors</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="ow">not</span> <span class="n">utils</span><span class="o">.</span><span class="n">req_has_permission</span><span class="p">(</span><span class="s2">&quot;DATA_MANAGEMENT&quot;</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="n">indata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;editors&quot;</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="nb">str</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">])</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">indata</span><span class="p">[</span><span class="s2">&quot;editors&quot;</span><span class="p">]</span>
+    <span class="p">):</span>
+        <span class="n">flask</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+
+    <span class="c1"># convert all incoming uuids to uuid.UUID</span>
+    <span class="n">indata</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">prepare_for_db</span><span class="p">(</span><span class="n">indata</span><span class="p">)</span>
+
     <span class="c1"># convert entries to uuids</span>
     <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;datasets&quot;</span><span class="p">,</span> <span class="s2">&quot;editors&quot;</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">indata</span><span class="p">:</span>
             <span class="n">indata</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">utils</span><span class="o">.</span><span class="n">str_to_uuid</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">indata</span><span class="p">[</span><span class="n">field</span><span class="p">]]</span>
-
-    <span class="k">if</span> <span class="s2">&quot;description&quot;</span> <span class="ow">in</span> <span class="n">indata</span><span class="p">:</span>
-        <span class="n">indata</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">secure_description</span><span class="p">(</span><span class="n">indata</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">])</span>
 
     <span class="n">is_different</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">indata</span><span class="p">:</span>

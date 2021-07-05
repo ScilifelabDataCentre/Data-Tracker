@@ -4,5 +4,6 @@ Development
 .. toctree::
    :maxdepth: 4
 
-   development.quick_environment.rst
+   development.quick_environment.md
+   development.testing.md
    modules
