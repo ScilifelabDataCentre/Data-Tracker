@@ -1,7 +1,7 @@
 <template>
 <q-dialog :value="value"
           @input="updateVisibility">
-  <q-card>
+  <q-card id="log-viewer-dialog">
     <q-card-section class="text-h5 text-center">
       Entry History
     </q-card-section>

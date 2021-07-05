@@ -54,6 +54,7 @@
     </q-card-section>
     <q-card-section>
       <q-btn label="Submit"
+             type="submit"
              @click="submitKeyLogin"
              color="primary"/>
       <p v-show="badKeyLogin" class="text-caption text-negative">Bad login credentials</p>

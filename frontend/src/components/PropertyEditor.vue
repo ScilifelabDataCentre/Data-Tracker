@@ -1,6 +1,7 @@
 <template>
 <div>
-  <div class="q-my-md">
+  <div class="q-my-md"
+       id="property-editor-new-key">
     <q-input stack-label
              outlined
              label="New Property Name"
@@ -18,21 +19,16 @@
         </template>
     </q-input>
   </div>
-  <q-list dense>
-    <q-item v-for="propertyKey of Object.keys(fieldEntries)" :key="propertyKey">
+  <q-list dense
+          id="property-editor-key-list">
+    <q-item v-for="propertyKey of Object.keys(propertyEntries)" :key="propertyKey">
       <q-item-section>
         <q-input stack-label
                  outlined
                  :label="propertyKey"
-                 :rules="[ function (val) { return (evaluateField(val) || val.length === 0) || 'At least three characters, no whitespace at beginning nor end.' }]"
+                 :rules="[ function (val) { return evaluateField(val) || 'At least three characters, no whitespace at beginning nor end.' }]"
                  @input="setProperty(propertyKey, $event)"
-                 :value="fieldEntries[propertyKey]">
-          <template v-slot:append>
-            <q-icon name="fas fa-minus-circle"
-                    color="negative"
-                    @click="deleteProperty(propertyKey)"
-                    class="cursor-pointer" />
-          </template>
+                 :value="propertyEntries[propertyKey]">
           <template v-slot:prepend>
             <q-icon name="fas fa-tag"
                     color="primary"/>
@@ -41,6 +37,18 @@
       </q-item-section>
     </q-item>
   </q-list>
+  <div class="flex">
+    <q-chip square
+            removable
+            color="grey-3"
+            v-for="propertyKey of Object.keys(propertyEntries)"
+            :key="propertyKey"
+            :rules="[ function (val) { return (evaluateField(val) || val.length === 0) || 'At least three characters, no whitespace at beginning nor end.' }]"
+            @remove="deleteProperty(propertyKey)">
+      <span class="text-bold text-capitalize text-blue-9 q-mr-sm">{{ propertyKey }}</span> {{ propertyEntries[propertyKey] }}
+    </q-chip>
+  </div>
+
   <q-inner-loading :showing="isLoading">
     <q-spinner-gears size="100px" color="primary" />
   </q-inner-loading>
@@ -58,7 +66,7 @@ export default {
       },
     },
 
-    fieldEntries: {
+    propertyEntries: {
       get () {
         if (!this.isLoading)
           return this.$store.state.entries.entry[this.fieldDataName];
@@ -90,7 +98,7 @@ export default {
     },
 
     evaluateKey (val) {
-      return this.evaluateField(val) && !Object.keys(this.fieldEntries).includes(val);
+      return this.evaluateField(val) && !Object.keys(this.propertyEntries).includes(val);
     },
     
     addProperty(event) {

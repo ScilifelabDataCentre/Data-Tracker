@@ -1,6 +1,7 @@
 <template>
 <div>
   <div v-if="this.newEntry && this.dataType === 'dataset'"
+       id="entry-edit-order-select"
        class="q-my-sm">
     <q-table flat
              title="Parent order for the dataset"
@@ -33,13 +34,15 @@
     <q-btn class="q-mt-sm"
            label="Load data from order"
            color="primary"
+           type="submit"
            @click="confirmOrder"
            :disable="parentOrder.length === 0"
            :loading="isLoadingOrderData"/>
   </div>
 
   <div v-if="dataType !== 'dataset' || entry.order || parentOrder.length">
-    <q-field v-if="!newEntry"
+    <q-field id="entry-edit-uuid"
+             v-if="!newEntry"
              label="UUID"
              class="q-mb-lg"
 	     stack-label
@@ -52,7 +55,7 @@
       </template>
     </q-field>
     
-    <q-input id="entry-title"
+    <q-input for="entry-edit-title"
              class="q-my-md"
              label="Title"
              v-model="title"
@@ -64,7 +67,7 @@
     </q-input>
     
     <div class="q-my-md">
-      <q-input id="entry-description"
+      <q-input for="entry-edit-description"
                type="textarea"
                label="Description"
                v-model="description"
@@ -87,6 +90,7 @@
             class="q-my-lg">
       <q-expansion-item expand-separator
                         icon="fas fa-tags"
+                        id="entry-edit-tags"
                         label="Tags"
                         caption="Set labels (tags)">
         <q-card>
@@ -99,6 +103,7 @@
       
       <q-expansion-item expand-separator
                         icon="fas fa-tags"
+                        id="entry-edit-properties"
                         label="Properties"
                         caption="Set properties (key: value)">
         <q-card>
@@ -114,6 +119,7 @@
       <q-separator />
       
       <q-expansion-item expand-separator
+                        id="entry-edit-datasets"
                         v-if="dataType === 'collection'"
                         icon="fas fa-chart-area"
                         label="Datasets"
@@ -136,6 +142,7 @@
                        dense
                        debounce="300"
                        v-model="filter"
+                       type="search"
                        placeholder="Search">
                 <template v-slot:append>
                   <q-icon name="search" />
@@ -150,8 +157,10 @@
           </template>
         </q-table>
       </q-expansion-item>
+
       <div v-if="dataType === 'order'">
         <q-expansion-item expand-separator
+                          id="entry-edit-authors"
                           icon="far fa-user"
                           label="Authors"
                           caption="The ones who own the sample (e.g. PI)">
@@ -164,6 +173,7 @@
         </q-expansion-item>
         
         <q-expansion-item expand-separator
+                          id="entry-edit-generators"
                           icon="far fa-user"
                           label="Generators"
                           caption="The ones who generated the data (e.g. Facility)">
@@ -176,6 +186,7 @@
         </q-expansion-item>
         
         <q-expansion-item expand-separator
+                          id="entry-edit-organisation"
                           icon="far fa-user"
                           label="Organisation"
                           caption="The data controller (e.g. university)">
@@ -188,7 +199,9 @@
                          :isLoading="isLoading"/>
         </q-expansion-item>
       </div>
+
       <q-expansion-item expand-separator
+                        id="entry-edit-editors"
                         v-if="['collection', 'order'].includes(dataType)"
                         icon="far fa-user"
                         label="Editors"

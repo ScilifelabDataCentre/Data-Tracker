@@ -13,12 +13,19 @@
     :no-results-label="filter + ' does not match any entries'">
     <template v-slot:top-left>
       <q-btn color="primary"
+             id="user-manager-add"
              icon="add"
              label="Add user"
              @click="activateUserEdit('')" />
     </template>
     <template v-slot:top-right>
-      <q-input rounded outlined dense debounce="300" v-model="filter" placeholder="Search">
+      <q-input rounded
+               outlined
+               dense
+               type="search"
+               debounce="300"
+               v-model="filter"
+               placeholder="Search">
         <template v-slot:append>
           <q-icon name="search" />
         </template>

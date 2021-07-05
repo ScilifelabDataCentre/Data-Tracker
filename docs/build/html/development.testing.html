@@ -1,0 +1,141 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Testing &#8212; Data Tracker  documentation</title>
+    <link rel="stylesheet" type="text/css" href="static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="static/documentation_options.js"></script>
+    <script src="static/jquery.js"></script>
+    <script src="static/underscore.js"></script>
+    <script src="static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Code reference" href="modules.html" />
+    <link rel="prev" title="System for development" href="development.quick_environment.html" />
+   
+  <link rel="stylesheet" href="static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="testing">
+<h1>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h1>
+<p>All tests require an active setup of the Data Tracker via docker-compose and test data in the database (See <a class="reference internal" href="development.quick_environment.html"><span class="doc">System for development</span></a>)</p>
+<p>Most tests are not deterministic and do not restore the state of the db afterwards.</p>
+<div class="section" id="backend">
+<h2>Backend<a class="headerlink" href="#backend" title="Permalink to this headline">¶</a></h2>
+<p>The tests are found in <code class="docutils literal notranslate"><span class="pre">backend/tests</span></code>. Use the same <code class="docutils literal notranslate"><span class="pre">venv</span></code> used to add data to the database.</p>
+<p>From the root of the repository:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PYTHONPATH</span><span class="o">=</span><span class="n">backend</span> <span class="n">pytest</span> <span class="n">backend</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="frontend">
+<h2>Frontend<a class="headerlink" href="#frontend" title="Permalink to this headline">¶</a></h2>
+<p>Frontend testing is implemented using the end-to-end testing solution Nightwatch.</p>
+<p>Go to <code class="docutils literal notranslate"><span class="pre">test/nighwatch</span></code> and run <code class="docutils literal notranslate"><span class="pre">yarn</span> <span class="pre">install</span></code> to install the required packages.</p>
+<p>Nightwatch can use multiple different browsers, but the tests have only been confirmed to work with Chrome.</p>
+<p>To run the tests (in the <code class="docutils literal notranslate"><span class="pre">test/nighwatch</span></code> folder):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">npx</span> <span class="n">nightwatch</span> <span class="n">collection</span><span class="o">.</span><span class="n">js</span> <span class="o">--</span><span class="n">env</span> <span class="n">chrome</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="static/SciLifeLab_symbol_green.svg" alt="Logo"/>
+            </a></p>
+<h1 class="logo"><a href="index.html">Data Tracker</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="design.html">System Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_structure.html">Data Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="development.html">Development</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="development.quick_environment.html">System for development</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules.html">Code reference</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="development.html">Development</a><ul>
+      <li>Previous: <a href="development.quick_environment.html" title="previous chapter">System for development</a></li>
+      <li>Next: <a href="modules.html" title="next chapter">Code reference</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019-2021, SciLifeLab Data Centre.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="sources/development.testing.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

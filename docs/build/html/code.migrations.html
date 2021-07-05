@@ -51,6 +51,15 @@ Version 1 to 2 should run <code class="docutils literal notranslate"><span class
 </ul>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="migrations.migrate_v2_to_v3">
+<span class="sig-prename descclassname"><span class="pre">migrations.</span></span><span class="sig-name descname"><span class="pre">migrate_v2_to_v3</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="modules/migrations.html#migrate_v2_to_v3"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#migrations.migrate_v2_to_v3" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the database fields to match the changes in the data structure.</p>
+<ul class="simple">
+<li><p>Remove the <code class="docutils literal notranslate"><span class="pre">DATA_LIST</span></code> and <code class="docutils literal notranslate"><span class="pre">STATISTICS</span></code> permissions from all users.</p></li>
+</ul>
+</dd></dl>
+
 </div>
 
 
@@ -80,6 +89,7 @@ Version 1 to 2 should run <code class="docutils literal notranslate"><span class
 <li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="development.html">Development</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="development.quick_environment.html">System for development</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development.testing.html">Testing</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="modules.html">Code reference</a></li>
 </ul>
 </li>

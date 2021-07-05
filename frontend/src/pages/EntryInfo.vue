@@ -14,13 +14,15 @@
   <div v-else>
     <div class="row justify-between">
       <div class="flex">
-        <q-btn-dropdown v-show="uuid !== '' && 'editors' in entry"
+        <q-btn-dropdown v-if="uuid !== '' && 'editors' in entry"
+                        id="entry-info-menu"
                         class="q-mr-sm"
                         color="secondary"
                         icon="fas fa-cog"
                         label="Options">
           <q-list dense>
             <q-item :disable="editMode"
+                    id="entry-info-menu-edit"
                     v-close-popup
                     clickable
                     @click="toggleEditMode">
@@ -34,6 +36,7 @@
             </q-item>
             
             <q-item clickable
+                    id="entry-info-menu-delete"
                     v-close-popup
                     @click="confirmDelete">
               <q-item-section avatar>
@@ -45,6 +48,7 @@
             </q-item>
             
             <q-item clickable
+                    id="entry-info-menu-logs"
                     v-close-popup
                     @click="showLogs = true">
               <q-item-section avatar>
@@ -59,7 +63,9 @@
         
         <q-btn class="q-mx-sm"
                v-show="editMode"
+               id="entry-save-button"
                icon="save"
+               type="submit"
                label="Save"
                color="positive"
                :loading="isSaving"
@@ -67,6 +73,7 @@
                @click="saveEdit" />
         
         <q-btn class="q-ml-sm q-mr-lg"
+               id="entry-cancel-button"
                v-show="editMode"
                icon="cancel"
                label="Cancel"
@@ -119,7 +126,7 @@
                      color="negative"
                      size="1.5em"
                      class="q-mr-sm" />
-          <q-btn flat label="Delete" color="negative" @click="deleteEntry" />
+          <q-btn flat type="submit" label="Delete" color="negative" @click="deleteEntry" />
           <q-btn flat label="Cancel" color="grey-7" v-close-popup />
         </q-card-actions>
       </q-card>
@@ -193,6 +200,10 @@ export default {
   watch: {
     $route() {
       this.loadData();
+      if (this.uuid === '') {
+        this.editMode = true;
+        this.currentTab = 'edit';
+      }
     },
   },
 
@@ -309,6 +320,8 @@ export default {
               .catch((err) => {
                 if (err.response.status === 404)
                   this.badEntry = true;
+                if (err.response.status === 403)
+                  this.$router.push({ name: 'Forbidden'});
               })
               .finally(() => this.isLoading = false);
           });
@@ -323,6 +336,5 @@ export default {
       this.currentTab = 'edit';
     }
   }
-
 }
 </script>

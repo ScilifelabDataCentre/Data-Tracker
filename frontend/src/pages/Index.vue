@@ -8,9 +8,9 @@
   </div>
   <div class="row flex flex-center">
     <div class="col-md-4 col-lg-4 col-xs-10 col-sm-10"
-         v-show="currentUser.permissions.includes('DATA_EDIT')">
+         v-if="currentUser.permissions.includes('DATA_EDIT')">
       <q-card class="q-pa-lg text-center box-shadow q-ma-md"
-              id="index-q-card-orders"
+              id="index-card-orders"
               @click="$router.push({ name: 'Order Browser' })">
 	<q-card-section>
           <q-icon size="150px" name="assignment" style="color: #045C64;"/>
@@ -20,7 +20,7 @@
     </div>
     <div class="col-md-4 col-lg-4 col-xs-10 col-sm-10">
       <q-card class="q-pa-lg text-center box-shadow q-ma-md"
-              id="index-q-card-datasets"
+              id="index-card-datasets"
               @click="$router.push({ name: 'Dataset Browser' })">
 	<q-card-section>
           <q-icon size="150px" name="fas fa-chart-area" style="color: #045C64;"/>
@@ -30,7 +30,7 @@
     </div>
     <div class="col-md-4 col-lg-4 col-xs-10 col-sm-10">
       <q-card class="q-pa-lg text-center box-shadow q-ma-md"
-              id="index-q-card-collections"
+              id="index-card-collections"
               @click="$router.push({ name: 'Collection Browser' })">
 	<q-card-section>
           <q-icon size="150px" name="fas fa-layer-group" style="color: #045C64;" />

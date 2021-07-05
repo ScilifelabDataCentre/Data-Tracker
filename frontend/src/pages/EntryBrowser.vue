@@ -13,9 +13,10 @@
            :no-results-label="filter + ' does not match any entries'">
 
     <template v-slot:top-left>
-      <q-btn v-show="showAdd"
+      <q-btn v-if="showAdd"
              color="primary"
              icon="add"
+             id="entry-browser-add"
              :label="'Add ' + dataType"
              :to="{ 'name': pageNew }" />
     </template>
@@ -37,7 +38,9 @@
 
     <template v-slot:item="props">
       <div class="col-xs-12 col-md-6 col-lg-4 col-xl-3 row self-stretch">
-        <q-card class="q-ma-xs bg-grey-1 col" @click="gotoEntry(props.row.id)">
+        <q-card class="q-ma-xs bg-grey-1 col"
+                :id="'entry-' + props.row.id"
+                @click="gotoEntry(props.row.id)">
           <q-card-section class="text-center">
             <div class="text-h6 bg-grey-4 q-mb-xs q-pa-xs">
               {{ props.row.title }}
