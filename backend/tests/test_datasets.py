@@ -102,13 +102,49 @@ def test_get_dataset(mdb):
       * Confirm that the dataset is not listed in ``related``
     """
     session = requests.Session()
-    for _ in range(2):
-        orig = mdb["datasets"].aggregate([{"$sample": {"size": 1}}]).next()
-        response = helpers.make_request(session, f'/api/v1/dataset/{orig["_id"]}')
-        assert response[1] == 200
-        requested = response[0]["dataset"]
-        assert str(orig["_id"]) == requested["id"]
-        assert requested["id"] not in requested["related"]
+
+    order_id = helpers.add_order()
+    ds_id = helpers.add_dataset(order_id)
+    ds_id2 = helpers.add_dataset(order_id)
+    coll_id = helpers.add_collection([ds_id])
+    coll_id2 = helpers.add_collection([ds_id])
+
+    helpers.as_user(session, helpers.USERS["edit"])
+    user_data = mdb['orders'].find_one({'auth_ids': helpers.USERS['edit']})
+    order_data = mdb['orders'].find_one({'_id': order_id})
+
+    response = helpers.make_request(session, f'/api/v1/dataset/{ds_id}')
+    assert response.code == 200
+    result = response.data['dataset']
+    assert result['order']['id'] == str(order_id)
+    assert set(entry['id'] for entry in result['related']) == {str(ds_id2)}
+    assert set(entry['id'] for entry in result['collections']) == {str(coll_id), str(coll_id2)}
+    assert set(entry['id'] for entry in result['authors']) == set(str(entry) for entry in order_data['authors'])
+    assert set(entry['id'] for entry in result['generators']) == set(str(entry) for entry in order_data['generators'])
+    assert result['organisation']['id'] == str(order_data['organisation'])
+    assert set(entry['id'] for entry in result['editors']) == set(str(entry) for entry in order_data['editors'])
+
+    helpers.as_user(session, helpers.USERS["base"])
+    user_data = mdb['orders'].find_one({'authids': helpers.USERS['base']})
+    order_data = mdb['orders'].find_one({'_id': order_id})
+
+    response = helpers.make_request(session, f'/api/v1/dataset/{ds_id}')
+    assert response.code == 200
+    result = response.data['dataset']
+    assert 'order' not in result
+    assert set(entry['id'] for entry in result['related']) == {str(ds_id2)}
+    assert set(entry['id'] for entry in result['collections']) == {str(coll_id), str(coll_id2)}
+    assert set(entry['id'] for entry in result['authors']) == set(str(entry) for entry in order_data['authors'])
+    assert set(entry['id'] for entry in result['generators']) == set(str(entry) for entry in order_data['generators'])
+    assert result['organisation']['id'] == str(order_data['organisation'])
+    assert 'editors' not in result
+
+    mdb['orders'].delete_one({'_id': order_id})
+    mdb['datasets'].delete_one({'_id': ds_id})
+    mdb['datasets'].delete_one({'_id': ds_id2})
+    mdb['collections'].delete_one({'_id': coll_id})
+    mdb['collections'].delete_one({'_id': coll_id2})
+                    
 
 
 def test_get_dataset_bad():
