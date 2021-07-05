@@ -169,7 +169,7 @@
     <span class="c1"># add current user if missing and only DATA_EDIT</span>
     <span class="k">elif</span> <span class="p">(</span>
         <span class="ow">not</span> <span class="n">utils</span><span class="o">.</span><span class="n">req_has_permission</span><span class="p">(</span><span class="s2">&quot;DATA_MANAGEMENT&quot;</span><span class="p">)</span>
-        <span class="ow">and</span> <span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">indata</span><span class="p">[</span><span class="s2">&quot;editors&quot;</span><span class="p">]</span>
+        <span class="ow">and</span> <span class="nb">str</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">])</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">indata</span><span class="p">[</span><span class="s2">&quot;editors&quot;</span><span class="p">]</span>
     <span class="p">):</span>
         <span class="n">indata</span><span class="p">[</span><span class="s2">&quot;editors&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">current_user</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">])</span>
 
