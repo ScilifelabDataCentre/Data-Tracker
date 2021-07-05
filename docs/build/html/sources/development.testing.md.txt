@@ -27,3 +27,11 @@ To run the tests (in the `test/nighwatch` folder):
 ```
 npx nightwatch collection.js --env chrome
 ```
+
+## Continous integration
+
+Automated backend testing is set up at Travis for any commits/pull requests. As Travis now have a credit system, it will need to be replaced with Github Actions at some point.
+
+See `/.travis.yml` and `test/travis_script.sh` for information about what is run.
+
+Frontend tests are currently *not* automated.
