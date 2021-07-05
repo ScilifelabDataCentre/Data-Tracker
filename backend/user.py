@@ -376,6 +376,12 @@ def get_user_log(identifier: str):
         del log["data_type"]
 
     utils.incremental_logs(user_logs)
+    for i in range(len(user_logs)):
+        flask.current_app.logger.error(user_logs[i]['data'])
+        for key in ('api_key', 'api_salt'):
+            if key in user_logs[i]['data']:
+                flask.current_app.logger.error('match')
+                user_logs[i]['data'][key] = '<hidden>'
 
     return utils.response_json({"entry_id": user_uuid, "data_type": "user", "logs": user_logs})
 
