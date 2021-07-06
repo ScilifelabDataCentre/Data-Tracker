@@ -15,7 +15,7 @@ def dataset():
         dict: The data structure for a dataset.
     """
     return {
-        "_id": utils.new_uuid(),
+        "_id": 'd.' + utils.new_uuid(),
         "description": "",
         "title": "",
         "properties": {},
@@ -31,7 +31,7 @@ def order():
         dict: The data structure for an order.
     """
     return {
-        "_id": utils.new_uuid(),
+        "_id": 'o.' + utils.new_uuid(),
         "title": "",
         "description": "",
         "authors": [],
@@ -52,7 +52,7 @@ def collection():
         dict: The data structure for a project.
     """
     return {
-        "_id": utils.new_uuid(),
+        "_id": 'c.' + utils.new_uuid(),
         "datasets": [],
         "description": "",
         "properties": {},
@@ -70,7 +70,7 @@ def user():
         dict: The data structure for a user.
     """
     return {
-        "_id": utils.new_uuid(),
+        "_id": 'u.' + utils.new_uuid(),
         "affiliation": "",
         "api_key": "",
         "api_salt": "",
@@ -83,6 +83,25 @@ def user():
         "url": "",
     }
 
+def team():
+    """
+    Provide a basic data structure for a team document.
+
+    Returns:
+        dict: The data structure for a team.
+    """
+    return {
+        "_id": 't.' + utils.new_uuid(),
+        "affiliation": "",
+        "email": "",
+        "contact": "",
+        "name": "",
+        "url": "",
+        "members": [],
+        "admins": [],
+    }
+
+
 
 def log():
     """
@@ -92,7 +111,7 @@ def log():
         dict: The data structure for a log.
     """
     return {
-        "_id": utils.new_uuid(),
+        "_id": 'l.' + utils.new_uuid(),
         "action": "",
         "comment": "",
         "data_type": "",
