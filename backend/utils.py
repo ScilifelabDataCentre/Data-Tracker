@@ -185,14 +185,14 @@ def get_db(dbserver: pymongo.mongo_client.MongoClient, conf) -> pymongo.database
     return dbserver.get_database(conf["mongo"]["db"], codec_options=(codec_options))
 
 
-def new_uuid() -> uuid.UUID:
+def new_uuid() -> str:
     """
     Generate a uuid for a field in a MongoDB document.
 
     Returns:
-        uuid.UUID: The new uuid in binary format.
+        str: The new uuid in binary format.
     """
-    return uuid.uuid4()
+    return str(uuid.uuid4())
 
 
 def list_to_uuid(uuids: list) -> list:
@@ -409,7 +409,7 @@ def incremental_logs(logs: list):
             del logs[i]["data"][key]
 
 
-def check_email_uuid(user_identifier: str) -> Union[str, uuid.UUID]:
+def check_email_uuid(user_identifier: str) -> str:
     """
     Check if the provided user is found in the db as email or _id.
 
@@ -424,25 +424,21 @@ def check_email_uuid(user_identifier: str) -> Union[str, uuid.UUID]:
         user_identifier (str): The identifier to look up.
 
     Returns:
-        Union[str, uuid.UUID]: The new value for the field.
+        str: The new value for the field.
     """
     if is_email(user_identifier):
         user_entry = flask.g.db["users"].find_one({"email": user_identifier})
         if user_entry:
             return user_entry["_id"]
         return user_identifier
-    try:
-        user_uuid = str_to_uuid(user_identifier)
-    except ValueError:
-        return ""
-    user_entry = flask.g.db["users"].find_one({"_id": user_uuid})
+    user_entry = flask.g.db["users"].find_one({"_id": user_identifier})
     if user_entry:
         return user_entry["_id"]
     return ""
 
 
 def user_uuid_data(
-    user_ids: Union[str, list, uuid.UUID], mongodb: pymongo.database.Database
+    user_ids: Union[str, list], mongodb: pymongo.database.Database
 ) -> list:
     """
     Retrieve some extra information about a user using a uuid as input.
@@ -450,22 +446,18 @@ def user_uuid_data(
     Note that ``_id``` will be returned as ``str``, not ``uuid.UUID``.
 
     Args:
-        user_ids (str, list, or uuid.UUID): UUID of the user(s).
+        user_ids (str, list): UUID of the user(s).
         mongodb (pymongo.database.Database): The Mongo database to use for the query.
 
     Returns:
         list: The matching entries.
     """
-    if isinstance(user_ids, str):
-        user_uuids = [str_to_uuid(user_ids)]
-    elif isinstance(user_ids, list):
-        user_uuids = [str_to_uuid(entry) for entry in user_ids]
-    else:
-        user_uuids = [user_ids]
-    data = mongodb["users"].find({"_id": {"$in": user_uuids}})
+    if not isinstance(user_ids, list):
+        user_ids = [user_ids]
+    data = mongodb["users"].find({"_id": {"$in": user_ids}})
     return [
         {
-            "_id": str(entry["_id"]),
+            "_id": entry["_id"],
             "affiliation": entry["affiliation"],
             "name": entry["name"],
             "contact": entry["contact"],
@@ -476,11 +468,17 @@ def user_uuid_data(
     ]
 
 
-def req_check_permissions(permissions):
+def req_check_permissions(permissions: list):
     """
     Call ``check_permissions`` from inside a Flask request.
 
     Convenience function to use the Flask variables.
+    
+    Args:
+        permissions (list): The required permissions.
+
+    Returns:
+        int: The suggested status code.
     """
     return check_permissions(
         permissions=permissions,
@@ -506,7 +504,7 @@ def check_permissions(permissions: list, user_permissions: list, logged_in: bool
     Returns:
         int: The suggested status code.
     """
-    if permissions and not logged_in:
+    if not logged_in:
         return 401
     if not user_permissions and permissions:
         return 403
@@ -687,11 +685,7 @@ def get_entry(db, dbcollection: str, identifier: str) -> dict:
     Returns:
         dict: The response from the db commit.
     """
-    try:
-        entry_uuid = str_to_uuid(identifier)
-    except ValueError:
-        return {}
-    entry = db[dbcollection].find_one({"_id": entry_uuid})
+    entry = db[dbcollection].find_one({"_id": identifier})
     return entry
 
 
@@ -798,11 +792,7 @@ def prepare_for_db(data: dict) -> dict:
     """
     prepared = copy.deepcopy(data)
     for key in prepared:
-        if key in ("editors", "authors", "generators", "datasets"):
-            prepared[key] = [str_to_uuid(entry) for entry in prepared[key]]
-        elif key == "organisation":
-            prepared[key] = str_to_uuid(prepared[key])
-        elif key == "description":
+        if key == "description":
             prepared[key] = html.escape(prepared[key])
     return prepared
 
