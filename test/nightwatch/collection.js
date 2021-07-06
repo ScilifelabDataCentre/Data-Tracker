@@ -7,19 +7,19 @@ describe('Data Tracker - Collections', function() {
       .assert.not.elementPresent('#entry-browser-add')
 
       .setValue('input[type=search]', 'Frontend Test Collection')
-      .waitForElementVisible('#entry-c.21c8ecd1-9908-462f-ba84-3ca399074b36')
-      .assert.containsText('#entry-c.21c8ecd1-9908-462f-ba84-3ca399074b36', 'Frontend Test Collection')
-      .click('#entry-c.21c8ecd1-9908-462f-ba84-3ca399074b36')
+      .waitForElementVisible('#entry-c-21c8ecd1-9908-462f-ba84-3ca399074b36')
+      .assert.containsText('#entry-c-21c8ecd1-9908-462f-ba84-3ca399074b36', 'Frontend Test Collection')
+      .click('#entry-c-21c8ecd1-9908-462f-ba84-3ca399074b36')
       .waitForElementVisible('#entry-about-title-text')
-      .assert.urlEquals('http://localhost:5000/collections/c.21c8ecd1-9908-462f-ba84-3ca399074b36');
+      .assert.urlEquals('http://localhost:5000/collections/c-21c8ecd1-9908-462f-ba84-3ca399074b36');
   });
 
   test('Collection info page - not logged in', function (browser) {
     browser
-      .url('http://localhost:5000/collections/c.21c8ecd1-9908-462f-ba84-3ca399074b36')
+      .url('http://localhost:5000/collections/c-21c8ecd1-9908-462f-ba84-3ca399074b36')
       .waitForElementVisible('#entry-about-title-text')
       .assert.containsText('#entry-about-title-text', 'Frontend Test Collection')
-      .assert.containsText('#entry-about-uuid', 'c.21c8ecd1-9908-462f-ba84-3ca399074b36')
+      .assert.containsText('#entry-about-uuid', 'c-21c8ecd1-9908-462f-ba84-3ca399074b36')
       .assert.containsText('#entry-about-tags', 'Frontend')
       .assert.containsText('#entry-about-tags', 'Test')
       .assert.containsText('#entry-about-properties .q-chip__content span', 'Type')
@@ -27,9 +27,9 @@ describe('Data Tracker - Collections', function() {
       .assert.containsText('#entry-about-description', 'A collection added for frontend tests')
 
       .assert.containsText('#entry-about-datasets-0', 'Frontend Test Dataset')
-      .assert.containsText('#entry-about-datasets-0', 'd.79a755f1-69b0-4734-9977-ac945c4c51c1')
+      .assert.containsText('#entry-about-datasets-0', 'd-79a755f1-69b0-4734-9977-ac945c4c51c1')
       .assert.containsText('#entry-about-datasets-1', 'Frontend Test Dataset 2')
-      .assert.containsText('#entry-about-datasets-1', 'd.27cc1144-67bf-45b2-af21-425f9bfc7333')
+      .assert.containsText('#entry-about-datasets-1', 'd-27cc1144-67bf-45b2-af21-425f9bfc7333')
 
       .assert.not.elementPresent('#entry-about-related')
       .assert.not.elementPresent('#entry-about-collections')
@@ -42,7 +42,7 @@ describe('Data Tracker - Collections', function() {
   test('Collection info page - logged in (not editor)', function (browser) {
     browser
       .url('http://localhost:5000/api/v1/developer/login/generator::frontend')
-      .url('http://localhost:5000/collections/c.21c8ecd1-9908-462f-ba84-3ca399074b36')
+      .url('http://localhost:5000/collections/c-21c8ecd1-9908-462f-ba84-3ca399074b36')
       .waitForElementVisible('#entry-about-title-text')
       .assert.not.elementPresent('#entry-info-menu')
       .assert.not.elementPresent('#entry-about-editors')
@@ -51,7 +51,7 @@ describe('Data Tracker - Collections', function() {
   test('Collection info page - logged in (editor)', function (browser) {
     browser
       .url('http://localhost:5000/api/v1/developer/login/editor::frontend')
-      .url('http://localhost:5000/collections/c.21c8ecd1-9908-462f-ba84-3ca399074b36')
+      .url('http://localhost:5000/collections/c-21c8ecd1-9908-462f-ba84-3ca399074b36')
       .waitForElementVisible('#entry-about-title-text')
       .assert.visible('#entry-info-menu')
       .assert.visible('#entry-about-editors')
@@ -112,7 +112,7 @@ describe('Data Tracker - Collections', function() {
   test('Test saving collection', function (browser) {
     browser
       .click('#entry-save-button')
-      .expect.url().to.match(/http:\/\/localhost:5000\/collections\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/);
+      .expect.url().to.match(/http:\/\/localhost:5000\/collections\/c-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/);
   });
 
   test('About collection page - editor', function (browser) {
@@ -121,7 +121,7 @@ describe('Data Tracker - Collections', function() {
       .assert.not.visible('#entry-save-button')
       .assert.visible('#entry-info-menu')
       .assert.containsText('#entry-about-title-text', 'Collection from frontend test')
-      .expect.element('#entry-about-uuid').text.to.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/);
+      .expect.element('#entry-about-uuid').text.to.match(/c-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/);
     browser
       .assert.containsText('#entry-about-description', 'A collection created during a frontend test run')
       .assert.containsText('#entry-about-title-text', 'Collection from frontend test')
@@ -133,9 +133,9 @@ describe('Data Tracker - Collections', function() {
       .assert.containsText('#entry-about-properties .q-chip:nth-of-type(2)', 'Value2')
 
       .assert.containsText('#entry-about-datasets-0', 'Frontend Test Dataset')
-      .assert.containsText('#entry-about-datasets-0', 'd.79a755f1-69b0-4734-9977-ac945c4c51c1')
+      .assert.containsText('#entry-about-datasets-0', 'd-79a755f1-69b0-4734-9977-ac945c4c51c1')
       .assert.containsText('#entry-about-datasets-1', 'Frontend Test Dataset 2')
-      .assert.containsText('#entry-about-datasets-1', 'd.27cc1144-67bf-45b2-af21-425f9bfc7333')
+      .assert.containsText('#entry-about-datasets-1', 'd-27cc1144-67bf-45b2-af21-425f9bfc7333')
 
       .assert.not.elementPresent('#entry-about-order')
       .assert.not.elementPresent('#entry-about-related')
