@@ -110,7 +110,6 @@ def test_get_dataset(mdb):
     coll_id2 = helpers.add_collection([ds_id])
 
     helpers.as_user(session, helpers.USERS["edit"])
-    user_data = mdb["orders"].find_one({"auth_ids": helpers.USERS["edit"]})
     order_data = mdb["orders"].find_one({"_id": order_id})
 
     response = helpers.make_request(session, f"/api/v1/dataset/{ds_id}")
@@ -131,7 +130,6 @@ def test_get_dataset(mdb):
     )
 
     helpers.as_user(session, helpers.USERS["base"])
-    user_data = mdb["orders"].find_one({"authids": helpers.USERS["base"]})
     order_data = mdb["orders"].find_one({"_id": order_id})
 
     response = helpers.make_request(session, f"/api/v1/dataset/{ds_id}")

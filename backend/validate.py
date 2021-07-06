@@ -5,7 +5,6 @@ Indata can be sent to ``validate_field``, which will use the corresponding
 functions to check each field.
 """
 import re
-import uuid
 from typing import Any
 
 import flask

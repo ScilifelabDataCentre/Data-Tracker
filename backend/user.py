@@ -55,9 +55,7 @@ def get_permission_info():
 
 @blueprint.route("")
 def list_users():
-    """
-    List all users.
-    """
+    """List all users."""
     perm_status = utils.req_check_permissions(["USER_SEARCH"])
     if perm_status != 200:
         flask.abort(status=perm_status)
