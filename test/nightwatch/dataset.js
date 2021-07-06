@@ -7,19 +7,19 @@ describe('Data Tracker - Datasets', function() {
       .assert.not.elementPresent('#entry-browser-add')
 
       .setValue('input[type=search]', 'Frontend Test Dataset')
-      .waitForElementVisible('#entry-79a755f1-69b0-4734-9977-ac945c4c51c1')
-      .assert.containsText('#entry-79a755f1-69b0-4734-9977-ac945c4c51c1', 'Frontend Test Dataset')
-      .click('#entry-79a755f1-69b0-4734-9977-ac945c4c51c1')
+      .waitForElementVisible('#entry-d.79a755f1-69b0-4734-9977-ac945c4c51c1')
+      .assert.containsText('#entry-d.79a755f1-69b0-4734-9977-ac945c4c51c1', 'Frontend Test Dataset')
+      .click('#entry-d.79a755f1-69b0-4734-9977-ac945c4c51c1')
       .waitForElementVisible('#entry-about-title-text')
-      .assert.urlEquals('http://localhost:5000/datasets/79a755f1-69b0-4734-9977-ac945c4c51c1')
+      .assert.urlEquals('http://localhost:5000/datasets/d.79a755f1-69b0-4734-9977-ac945c4c51c1')
   });
 
   test('Dataset info page - not logged in', function (browser) {
     browser
-      .url('http://localhost:5000/datasets/79a755f1-69b0-4734-9977-ac945c4c51c1')
+      .url('http://localhost:5000/datasets/d.79a755f1-69b0-4734-9977-ac945c4c51c1')
       .waitForElementVisible('#entry-about-title-text')
       .assert.containsText('#entry-about-title-text', 'Frontend Test Dataset')
-      .assert.containsText('#entry-about-uuid', '79a755f1-69b0-4734-9977-ac945c4c51c1')
+      .assert.containsText('#entry-about-uuid', 'd.79a755f1-69b0-4734-9977-ac945c4c51c1')
       .assert.containsText('#entry-about-tags', 'Frontend')
       .assert.containsText('#entry-about-tags', 'Test')
       .assert.containsText('#entry-about-properties .q-chip__content span', 'Type')
@@ -30,10 +30,10 @@ describe('Data Tracker - Datasets', function() {
       .assert.not.elementPresent('#entry-about-datasets')
 
       .assert.containsText('#entry-about-related-0', 'Frontend Test Dataset 2')
-      .assert.containsText('#entry-about-related-0', '27cc1144-67bf-45b2-af21-425f9bfc7333')
+      .assert.containsText('#entry-about-related-0', 'd.27cc1144-67bf-45b2-af21-425f9bfc7333')
 
       .assert.containsText('#entry-about-collections-0', 'Frontend Test Collection')
-      .assert.containsText('#entry-about-collections-0', '21c8ecd1-9908-462f-ba84-3ca399074b36')
+      .assert.containsText('#entry-about-collections-0', 'c.21c8ecd1-9908-462f-ba84-3ca399074b36')
     
       .assert.containsText('#entry-about-authors-0', 'Frontend Author')
       .assert.not.containsText('#entry-about-authors-0', 'author@frontend.dev')
@@ -66,21 +66,21 @@ describe('Data Tracker - Datasets', function() {
 
       .click('#entry-about-related-0')
       .waitForElementVisible('#entry-about-title-text')
-      .assert.urlEquals('http://localhost:5000/datasets/27cc1144-67bf-45b2-af21-425f9bfc7333')
+      .assert.urlEquals('http://localhost:5000/datasets/d.27cc1144-67bf-45b2-af21-425f9bfc7333')
       .assert.containsText('#entry-about-title-text', 'Frontend Test Dataset 2')
-      .assert.containsText('#entry-about-uuid', '27cc1144-67bf-45b2-af21-425f9bfc7333')
+      .assert.containsText('#entry-about-uuid', 'd.27cc1144-67bf-45b2-af21-425f9bfc7333')
 
       .click('#entry-about-collections-0')
       .waitForElementVisible('#entry-about-title-text')
-      .assert.urlEquals('http://localhost:5000/collections/21c8ecd1-9908-462f-ba84-3ca399074b36')
+      .assert.urlEquals('http://localhost:5000/collections/c.21c8ecd1-9908-462f-ba84-3ca399074b36')
       .assert.containsText('#entry-about-title-text', 'Frontend Test Collection')
-      .assert.containsText('#entry-about-uuid', '21c8ecd1-9908-462f-ba84-3ca399074b36')
+      .assert.containsText('#entry-about-uuid', 'c.21c8ecd1-9908-462f-ba84-3ca399074b36')
   });
 
   test('Dataset info page - logged in (not editor)', function (browser) {
     browser
       .url('http://localhost:5000/api/v1/developer/login/generator::frontend')
-      .url('http://localhost:5000/datasets/79a755f1-69b0-4734-9977-ac945c4c51c1')
+      .url('http://localhost:5000/datasets/d.79a755f1-69b0-4734-9977-ac945c4c51c1')
       .waitForElementVisible('#entry-about-title-text')
       .assert.not.elementPresent('#entry-info-menu')
       .assert.not.elementPresent('#entry-about-editors')
@@ -92,7 +92,7 @@ describe('Data Tracker - Datasets', function() {
   test('Dataset info page - logged in (editor)', function (browser) {
     browser
       .url('http://localhost:5000/api/v1/developer/login/editor::frontend')
-      .url('http://localhost:5000/datasets/79a755f1-69b0-4734-9977-ac945c4c51c1')
+      .url('http://localhost:5000/datasets/d.79a755f1-69b0-4734-9977-ac945c4c51c1')
       .waitForElementVisible('#entry-about-title-text')
       .assert.elementPresent('#entry-info-menu')
       .assert.elementPresent('#entry-about-editors')
@@ -182,12 +182,12 @@ describe('Data Tracker - Datasets', function() {
       .assert.containsText('#entry-about-description', 'A dataset created during a frontend test run')
 
       .assert.containsText('#entry-about-order', 'Frontend Test Order')
-      .assert.containsText('#entry-about-order', 'd4467732-8ddd-43a6-a904-5b7376f60e5c')
+      .assert.containsText('#entry-about-order', 'o.d4467732-8ddd-43a6-a904-5b7376f60e5c')
 
       .assert.containsText('#entry-about-related', 'Frontend Test Dataset')
-      .assert.containsText('#entry-about-related', '79a755f1-69b0-4734-9977-ac945c4c51c1')
+      .assert.containsText('#entry-about-related', 'd.79a755f1-69b0-4734-9977-ac945c4c51c1')
       .assert.containsText('#entry-about-related', 'Frontend Test Dataset 2')
-      .assert.containsText('#entry-about-related', '27cc1144-67bf-45b2-af21-425f9bfc7333')
+      .assert.containsText('#entry-about-related', 'd.27cc1144-67bf-45b2-af21-425f9bfc7333')
     
       .assert.not.elementPresent('#entry-about-datasets')
       .assert.not.elementPresent('#entry-about-collections')
