@@ -169,7 +169,7 @@ describe('Data Tracker - Collections', function() {
   
   test('Edit mode - data loaded correctly', function (browser) {
     browser
-      .expect.element('#entry-edit-uuid').text.to.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/);
+      .expect.element('#entry-edit-uuid').text.to.match(/c-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/);
     browser
       .assert.value('#entry-edit-title', 'Collection from frontend test')
       .assert.value('#entry-edit-description', 'A collection created during a frontend test run')
@@ -205,7 +205,7 @@ describe('Data Tracker - Collections', function() {
     browser
       .setInputValue('#entry-edit-title', 'Collection from frontend test - updated')
       .click('#entry-save-button')
-      .expect.url().to.match(/http:\/\/localhost:5000\/collections\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/);
+      .expect.url().to.match(/http:\/\/localhost:5000\/collections\/c-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/);
     browser
       .waitForElementVisible('#entry-about-title-text')
       .assert.containsText('#entry-about-title-text', 'Collection from frontend test - updated')

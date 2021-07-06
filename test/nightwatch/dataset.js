@@ -239,7 +239,7 @@ describe('Data Tracker - Datasets', function() {
   
   test('Edit mode - data loaded correctly', function (browser) {
     browser
-      .expect.element('#entry-edit-uuid').text.to.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/);
+      .expect.element('#entry-edit-uuid').text.to.match(/d-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/);
     browser
       .assert.value('#entry-edit-title', 'Dataset from frontend test')
       .assert.value('#entry-edit-description', 'A dataset created during a frontend test run')    
@@ -265,7 +265,7 @@ describe('Data Tracker - Datasets', function() {
     browser
       .setInputValue('#entry-edit-title', 'Dataset from frontend test - updated')
       .click('#entry-save-button')
-      .expect.url().to.match(/http:\/\/localhost:5000\/datasets\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/);
+      .expect.url().to.match(/http:\/\/localhost:5000\/datasets\/d-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/);
     browser
       .waitForElementVisible('#entry-about-title-text')
       .assert.containsText('#entry-about-title-text', 'Dataset from frontend test - updated')

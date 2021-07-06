@@ -278,7 +278,7 @@ describe('Data Tracker - Orders', function() {
     browser
       .setInputValue('#entry-edit-title', 'Order from frontend test - updated')
       .click('#entry-save-button')
-      .expect.url().to.match(/http:\/\/localhost:5000\/orders\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/);
+      .expect.url().to.match(/http:\/\/localhost:5000\/orders\/o-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/);
   });
 
   test('Test deleting order', function (browser) {
