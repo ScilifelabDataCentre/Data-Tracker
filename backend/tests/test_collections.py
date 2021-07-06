@@ -51,7 +51,7 @@ def test_add_collection_permissions():
         if response.role in ("edit", "data", "root"):
             assert response.code == 200
             assert "id" in response.data
-            assert len(response.data["id"]) == 36
+            assert len(response.data["id"]) == 38
         elif response.role == "no-login":
             assert response.code == 401
             assert not response.data
@@ -93,9 +93,9 @@ def test_add_collection_data(mdb):
     )
     assert response.code == 200
     assert "id" in response.data
-    assert len(response.data["id"]) == 36
+    assert len(response.data["id"]) == 38
 
-    added_id = uuid.UUID(response.data["id"])
+    added_id = response.data["id"]
 
     # validate added data
     collection = mdb["collections"].find_one({"_id": added_id})
@@ -333,7 +333,7 @@ def test_get_collection_bad():
     """
     session = requests.Session()
     for _ in range(2):
-        response = make_request(session, f"/api/v1/collection/{uuid.uuid4().hex}")
+        response = make_request(session, f"/api/v1/collection/{uuid.uuid4()}")
         assert response.code == 404
         assert not response.data
 
