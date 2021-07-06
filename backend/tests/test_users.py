@@ -19,7 +19,7 @@ def test_list_users(mdb):
     """
     Retrieve list of users.
 
-    Assert that USER_MANAGEMENT is required.
+    Assert that USER_SEARCH is required.
     """
     responses = make_request_all_roles("/api/v1/user", ret_json=True)
     for response in responses:
@@ -34,8 +34,8 @@ def test_list_users(mdb):
             assert not response.data
 
 
-def test_list_info():
-    """Retrieve info about current user."""
+def test_list_current_user_info():
+    """Retrieve info about the current user."""
     responses = make_request_all_roles("/api/v1/user/me", ret_json=True)
     for response in responses:
         assert response.code == 200
@@ -268,7 +268,7 @@ def test_add_user(mdb):
         if role in ("users", "root", "edit"):
             assert response.code == 200
             assert "id" in response.data
-            new_user_info = mdb["users"].find_one({"_id": uuid.UUID(response.data["id"])})
+            new_user_info = mdb["users"].find_one({"_id": response.data["id"]})
             assert indata["user"]["email"] == new_user_info["email"]
             indata["user"]["email"] = "new_" + indata["user"]["email"]
         elif role == "no-login":
@@ -295,7 +295,7 @@ def test_add_user(mdb):
     response = make_request(session, "/api/v1/user", ret_json=True, method="POST", data=indata)
     assert response.code == 200
     assert "id" in response.data
-    new_user_info = mdb["users"].find_one({"_id": uuid.UUID(response.data["id"])})
+    new_user_info = mdb["users"].find_one({"_id": response.data["id"]})
     for key in indata["user"]:
         assert new_user_info[key] == indata["user"][key]
 
