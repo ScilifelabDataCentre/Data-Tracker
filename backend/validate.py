@@ -51,7 +51,7 @@ def validate_datasets(data: list, db=None) -> bool:
     """
     Validate input for the ``datasets`` field.
 
-    * It must be a list of strings. 
+    * It must be a list of strings.
     * Validate that the datasets exist in the db.
 
     Args:

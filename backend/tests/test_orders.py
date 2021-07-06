@@ -373,9 +373,7 @@ def test_add_order_log(mdb):
     assert "id" in response.data
     assert len(response.data["id"]) == 38
     order = mdb["orders"].find_one({"_id": response.data["id"]})
-    logs = list(
-        mdb["logs"].find({"data_type": "order", "data._id": response.data["id"]})
-    )
+    logs = list(mdb["logs"].find({"data_type": "order", "data._id": response.data["id"]}))
     assert len(logs) == 1
     assert logs[0]["data"] == order
     assert logs[0]["action"] == "add"

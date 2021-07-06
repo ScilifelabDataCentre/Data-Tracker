@@ -437,9 +437,7 @@ def check_email_uuid(user_identifier: str) -> str:
     return ""
 
 
-def user_uuid_data(
-    user_ids: Union[str, list], mongodb: pymongo.database.Database
-) -> list:
+def user_uuid_data(user_ids: Union[str, list], mongodb: pymongo.database.Database) -> list:
     """
     Retrieve some extra information about a user using a uuid as input.
 
@@ -473,7 +471,7 @@ def req_check_permissions(permissions: list):
     Call ``check_permissions`` from inside a Flask request.
 
     Convenience function to use the Flask variables.
-    
+
     Args:
         permissions (list): The required permissions.
 
