@@ -51,7 +51,8 @@ def validate_datasets(data: list, db=None) -> bool:
     """
     Validate input for the ``datasets`` field.
 
-    It must be a list of uuids. Validate that the datasets exist in the db.
+    * It must be a list of strings. 
+    * Validate that the datasets exist in the db.
 
     Args:
         data (str): The data to be validated.
@@ -70,12 +71,8 @@ def validate_datasets(data: list, db=None) -> bool:
     for ds_entry in data:
         if not isinstance(ds_entry, str):
             raise ValueError(f"Must be str ({ds_entry})")
-        try:
-            ds_uuid = uuid.UUID(ds_entry)
-        except ValueError as err:
-            raise ValueError(f"Not a valid uuid ({data})") from err
-        if not db["datasets"].find_one({"_id": ds_uuid}):
-            raise ValueError(f"Uuid not in db ({data})")
+        if not db["datasets"].find_one({"_id": ds_entry}):
+            raise ValueError(f"Identifier not in db ({ds_entry})")
     return True
 
 
@@ -298,7 +295,7 @@ def validate_url(data: str) -> bool:
 
 def validate_user(data: str, db=None) -> bool:
     """
-    Validate input for a field containing a single user uuid string.
+    Validate input for a field containing a single user identifier string.
 
     All users must exist in the database.
 
@@ -318,12 +315,8 @@ def validate_user(data: str, db=None) -> bool:
         raise ValueError(f"Bad data type (must be str): {data}")
     if not data:
         return True
-    try:
-        user_uuid = uuid.UUID(data)
-    except ValueError as err:
-        raise ValueError(f"Not a valid uuid ({data})") from err
-    if not db["users"].find_one({"_id": user_uuid}):
-        raise ValueError(f"Uuid not in db ({data})")
+    if not db["users"].find_one({"_id": data}):
+        raise ValueError(f"Identifier not in db ({data})")
     return True
 
 
@@ -351,15 +344,11 @@ def validate_user_list(data: list, db=None) -> bool:
     if not isinstance(data, list):
         raise ValueError(f"Bad data type (must be list): {data}")
 
-    for u_uuid in data:
-        if not isinstance(u_uuid, str):
-            raise ValueError(f"Bad entry data type (must be a string): {u_uuid}")
-        try:
-            user_uuid = uuid.UUID(u_uuid)
-        except ValueError as err:
-            raise ValueError(f"Not a valid uuid ({data})") from err
-        if not db["users"].find_one({"_id": user_uuid}):
-            raise ValueError(f"Uuid not in db ({data})")
+    for identifier in data:
+        if not isinstance(identifier, str):
+            raise ValueError("Bad identifier (should be str)")
+        if not db["users"].find_one({"_id": identifier}):
+            raise ValueError("Identifier not in db")
     return True
 
 
