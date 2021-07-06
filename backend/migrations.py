@@ -52,15 +52,15 @@ def migrate_v3_to_v4(db):
     entries = list(db["orders"].find({}))
     if entries:
         for entry in entries:
-            entry['_id'] = 'o-' + str(entry['_id'])
+            entry["_id"] = "o-" + str(entry["_id"])
         db["orders"].delete_many({})
         db["orders"].insert_many(entries)
-    
+
     logging.info("Add prefix to datasets")
     entries = list(db["datasets"].find({}))
     if entries:
         for entry in entries:
-            entry['_id'] = 'd-' + str(entry['_id'])
+            entry["_id"] = "d-" + str(entry["_id"])
         db["datasets"].delete_many({})
         db["datasets"].insert_many(entries)
 
@@ -68,7 +68,7 @@ def migrate_v3_to_v4(db):
     entries = list(db["collections"].find({}))
     if entries:
         for entry in entries:
-            entry['_id'] = 'c-' + str(entry['_id'])
+            entry["_id"] = "c-" + str(entry["_id"])
         db["collections"].delete_many({})
         db["collections"].insert_many(entries)
 
@@ -76,7 +76,7 @@ def migrate_v3_to_v4(db):
     entries = list(db["users"].find({}))
     if entries:
         for entry in entries:
-            entry['_id'] = 'u-' + str(entry['_id'])
+            entry["_id"] = "u-" + str(entry["_id"])
         db["users"].delete_many({})
         db["users"].insert_many(entries)
 
@@ -84,10 +84,10 @@ def migrate_v3_to_v4(db):
     entries = list(db["logs"].find({}))
     if entries:
         for entry in entries:
-            entry['_id'] = 'l-' + str(entry['_id'])
+            entry["_id"] = "l-" + str(entry["_id"])
         db["logs"].delete_many({})
         db["logs"].insert_many(entries)
-    
+
 
 # Position 0 is empty since the first release is 1
 MIGRATIONS = [None, migrate_v1_to_v2, migrate_v2_to_v3, migrate_v3_to_v4]
