@@ -6,7 +6,7 @@ import structure
 import utils
 from migrations import MIGRATIONS
 
-DB_VERSION = 3
+DB_VERSION = 4
 
 
 def check_db(config: dict):

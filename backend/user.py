@@ -54,15 +54,13 @@ def get_permission_info():
 
 
 @blueprint.route("")
-@login_required
 def list_users():
     """
     List all users.
-
-    Admin access should be required.
     """
-    if not utils.req_has_permission("USER_SEARCH"):
-        flask.abort(403)
+    perm_status = utils.req_check_permissions(["USER_SEARCH"])
+    if perm_status != 200:
+        flask.abort(status=perm_status)
 
     fields = {"api_key": 0, "api_salt": 0}
 
@@ -98,8 +96,7 @@ def get_current_user_info():
     }
     if data:
         for field in outstructure:
-            if field in data:
-                outstructure[field] = data[field]
+            outstructure[field] = data[field]
     outstructure["permissions"] = utils.prepare_permissions(outstructure["permissions"])
     return utils.response_json({"user": outstructure})
 
@@ -112,15 +109,15 @@ def gen_new_api_key(identifier: str = None):
     Generate a new API key for the provided or current user.
 
     Args:
-        identifier (str): The uuid of the user.
+        identifier (str): The user identifier.
 
     Returns:
         flask.Response: The new API key
     """
-    if identifier != str(flask.g.current_user["_id"]) and not utils.req_has_permission(
-        "USER_MANAGEMENT"
-    ):
-        flask.abort(403)
+    if identifier != flask.g.current_user["_id"]:
+        perm_status = utils.req_check_permissions(["USER_MANAGEMENT"])
+        if perm_status != 200:
+            flask.abort(status=perm_status)
 
     user_data = utils.req_get_entry("users", identifier)
     if not user_data:
@@ -130,9 +127,9 @@ def gen_new_api_key(identifier: str = None):
     new_hash = utils.gen_api_key_hash(apikey.key, apikey.salt)
     new_values = {"api_key": new_hash, "api_salt": apikey.salt}
     user_data.update(new_values)
-    result = flask.g.db["users"].update_one({"_id": user_data["_id"]}, {"$set": new_values})
+    result = flask.g.db["users"].update_one({"_id": identifier}, {"$set": new_values})
     if not result.acknowledged:
-        flask.current_app.logger.error("Updating API key for user %s failed", user_data["_id"])
+        flask.current_app.logger.error("Updating API key for user %s failed", identifier)
         flask.Response(status=500)
     else:
         utils.make_log("user", "edit", "New API key", user_data)
@@ -141,28 +138,22 @@ def gen_new_api_key(identifier: str = None):
 
 
 @blueprint.route("/<identifier>", methods=["GET"])
-@login_required
 def get_user_data(identifier: str):
     """
     Get information about a user.
 
     Args:
-        identifier (str): The uuid of the user.
+        identifier (str): The user identifier.
 
     Returns:
         flask.Response: Information about the user as json.
     """
-    if not utils.req_has_permission("USER_MANAGEMENT"):
-        flask.abort(403)
+    perm_status = utils.req_check_permissions(["USER_MANAGEMENT"])
+    if perm_status != 200:
+        flask.abort(status=perm_status)
 
-    try:
-        user_uuid = utils.str_to_uuid(identifier)
-    except ValueError:
-        flask.abort(status=404)
-
-    if not (
-        user_info := flask.g.db["users"].find_one({"_id": user_uuid})
-    ):  # pylint: disable=superfluous-parens
+    user_info = utils.req_get_entry("users", identifier)
+    if not user_info:
         flask.abort(status=404)
 
     # The hash and salt should never leave the system
@@ -175,7 +166,6 @@ def get_user_data(identifier: str):
 
 
 @blueprint.route("", methods=["POST"])
-@login_required
 def add_user():
     """
     Add a user.
@@ -183,8 +173,9 @@ def add_user():
     Returns:
         flask.Response: Information about the user as json.
     """
-    if not utils.req_has_permission("USER_ADD"):
-        flask.abort(403)
+    perm_status = utils.req_check_permissions(["USER_ADD"])
+    if perm_status != 200:
+        flask.abort(status=perm_status)
 
     new_user = structure.user()
     jsondata = flask.request.json
@@ -227,13 +218,12 @@ def add_user():
 
 
 @blueprint.route("/<identifier>", methods=["DELETE"])
-@login_required
 def delete_user(identifier: str):
     """
     Delete a user.
 
     Args:
-        identifier (str): The uuid of the user to modify.
+        identifier (str): The user identifier.
 
     Returns:
         flask.Response: Response code.
@@ -246,7 +236,7 @@ def delete_user(identifier: str):
     if not user_info:
         flask.abort(status=404)
 
-    result = utils.req_commit_to_db("users", "delete", {"_id": user_info["_id"]})
+    result = utils.req_commit_to_db("users", "delete", {"_id": identifier})
     if not result.log or not result.data:
         flask.abort(status=500)
 
@@ -292,7 +282,6 @@ def update_current_user_info():
 
 
 @blueprint.route("/<identifier>", methods=["PATCH"])
-@login_required
 def update_user_info(identifier: str):
     """
     Update the information about a user.
@@ -355,66 +344,51 @@ def get_user_log(identifier: str):
     Can be accessed by actual user and admin (USER_MANAGEMENT).
 
     Args:
-        identifier (str): The uuid of the user.
+        identifier (str): The user identifier.
 
     Returns:
         flask.Response: Information about the user as json.
     """
-    if str(flask.g.current_user["_id"]) != identifier and not utils.req_has_permission(
-        "USER_MANAGEMENT"
-    ):
-        flask.abort(403)
+    if identifier != (flask.g.current_user["_id"] or None):
+        perm_status = utils.req_check_permissions(["USER_MANAGEMENT"])
+        if perm_status != 200:
+            flask.abort(status=perm_status)
 
-    try:
-        user_uuid = utils.str_to_uuid(identifier)
-    except ValueError:
-        flask.abort(status=404)
-
-    user_logs = list(flask.g.db["logs"].find({"data_type": "user", "data._id": user_uuid}))
+    user_logs = list(flask.g.db["logs"].find({"data_type": "user", "data._id": identifier}))
 
     for log in user_logs:
         del log["data_type"]
 
     utils.incremental_logs(user_logs)
     for i in range(len(user_logs)):
-        flask.current_app.logger.error(user_logs[i]['data'])
-        for key in ('api_key', 'api_salt'):
-            if key in user_logs[i]['data']:
-                flask.current_app.logger.error('match')
-                user_logs[i]['data'][key] = '<hidden>'
+        for key in ("api_key", "api_salt"):
+            if key in user_logs[i]["data"]:
+                user_logs[i]["data"][key] = "<hidden>"
 
-    return utils.response_json({"entry_id": user_uuid, "data_type": "user", "logs": user_logs})
+    return utils.response_json({"entry_id": identifier, "data_type": "user", "logs": user_logs})
 
 
 @blueprint.route("/<identifier>/actions", methods=["GET"])
 @login_required
 def get_user_actions(identifier: str):
     """
-    Get a list of actions (changes) by the user entry with uuid ``identifier``.
+    Get a list of actions (changes) by the user entry with ``identifier``.
 
-    Can be accessed by actual user and admin (USER_MANAGEMENT).
+    Can be accessed by actual user and USER_MANAGEMENT.
 
     Args:
-        identifier (str): The uuid of the user.
+        identifier (str): The user identifier.
 
     Returns:
         flask.Response: Information about the user as json.
     """
-    if identifier == "me":
-        identifier = str(flask.g.current_user["_id"])
-
-    if str(flask.g.current_user["_id"]) != identifier and not utils.req_has_permission(
-        "USER_MANAGEMENT"
-    ):
-        flask.abort(403)
-
-    try:
-        user_uuid = utils.str_to_uuid(identifier)
-    except ValueError:
-        flask.abort(status=404)
+    if identifier != (flask.g.current_user["_id"] or None):
+        perm_status = utils.req_check_permissions(["USER_MANAGEMENT"])
+        if perm_status != 200:
+            flask.abort(status=perm_status)
 
     # only report a list of actions, not the actual data
-    user_logs = list(flask.g.db["logs"].find({"user": user_uuid}, {"user": 0}))
+    user_logs = list(flask.g.db["logs"].find({"user": identifier}, {"user": 0}))
 
     for entry in user_logs:
         entry["entry_id"] = entry["data"]["_id"]
