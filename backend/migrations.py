@@ -48,26 +48,49 @@ def migrate_v3_to_v4(db):
     * Add u- to users
     * Add l- to logs
     """
-    logging.info("Add prefix to orders")
+    logging.info("Orders - update identifiers to new format")
     entries = list(db["orders"].find({}))
     if entries:
         for entry in entries:
+            if entry["_id"].startswith('o-'):
+                continue
             entry["_id"] = "o-" + str(entry["_id"])
+            entry["authors"] = ['u-' + uentry for uentry in entry['authors']]
+            entry["generators"] = ['u-' + uentry for uentry in entry['generators']]
+            entry["organisation"] = "u-" + str(entry["organisation"])
+            entry["editors"] = ['u-' + uentry for uentry in entry['editors']]
+            entry["datasets"] = ['d-' + dentry for dentry in entry['datasets']]
         db["orders"].delete_many({})
         db["orders"].insert_many(entries)
 
-    logging.info("Add prefix to datasets")
+    logging.info("Datasets - update identifiers to new format")
     entries = list(db["datasets"].find({}))
     if entries:
         for entry in entries:
+            if entry["_id"].startswith('d-'):
+                continue
             entry["_id"] = "d-" + str(entry["_id"])
         db["datasets"].delete_many({})
         db["datasets"].insert_many(entries)
 
-    logging.info("Add prefix to collections")
+    logging.info("Collections - update identifiers to new format")
     entries = list(db["collections"].find({}))
     if entries:
         for entry in entries:
+            if entry["_id"].startswith('c-'):
+                continue
+            entry["_id"] = "c-" + str(entry["_id"])
+            entry["editors"] = ['u-' + uentry for uentry in entry['editors']]
+            entry["datasets"] = ['d-' + dentry for dentry in entry['datasets']]
+        db["collections"].delete_many({})
+        db["collections"].insert_many(entries)
+
+    logging.info("Collections - update identifiers to new format")
+    entries = list(db["collections"].find({}))
+    if entries:
+        for entry in entries:
+            if entry["_id"].startswith('c-'):
+                continue
             entry["_id"] = "c-" + str(entry["_id"])
         db["collections"].delete_many({})
         db["collections"].insert_many(entries)
@@ -85,6 +108,21 @@ def migrate_v3_to_v4(db):
     if entries:
         for entry in entries:
             entry["_id"] = "l-" + str(entry["_id"])
+            if entry["data_type"] == 'dataset':
+                entry["data"]["_id"] = "d-" + str(entry["_id"])
+            elif entry["data_type"] == 'order':
+                entry["data"]["_id"] = "o-" + str(entry["_id"])
+                entry["data"]["authors"] = ['u-' + uentry for uentry in entry["data"]['authors']]
+                entry["data"]["generators"] = ['u-' + uentry for uentry in entry["data"]['generators']]
+                entry["data"]["organisation"] = "u-" + str(entry["data"]["organisation"])
+                entry["data"]["editors"] = ['u-' + uentry for uentry in entry["data"]['editors']]
+                entry["data"]["datasets"] = ['d-' + dentry for dentry in entry["data"]['datasets']]
+            elif entry["data_type"] == 'collection':
+                entry["data"]["_id"] = "o-" + str(entry["_id"])
+                entry["data"]["editors"] = ['u-' + uentry for uentry in entry["data"]['editors']]
+                entry["data"]["datasets"] = ['d-' + dentry for dentry in entry["data"]['datasets']]
+            elif entry["data_type"] == 'user':
+                entry["data"]["_id"] = "u-" + str(entry["_id"])
         db["logs"].delete_many({})
         db["logs"].insert_many(entries)
 
