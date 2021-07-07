@@ -114,27 +114,29 @@ def migrate_v3_to_v4(db):
                 entry["data"]["_id"] = "d-" + str(entry["_id"])
             elif entry["data_type"] == "order":
                 entry["data"]["_id"] = "o-" + str(entry["_id"])
-                entry["data"]["authors"] = [
-                    "u-" + str(uentry) for uentry in entry["data"]["authors"]
-                ]
-                entry["data"]["generators"] = [
-                    "u-" + str(uentry) for uentry in entry["data"]["generators"]
-                ]
-                entry["data"]["organisation"] = "u-" + str(entry["data"]["organisation"])
-                entry["data"]["editors"] = [
-                    "u-" + str(uentry) for uentry in entry["data"]["editors"]
-                ]
-                entry["data"]["datasets"] = [
-                    "d-" + str(dentry) for dentry in entry["data"]["datasets"]
-                ]
+                if entry["data"]["authors"]:  # if more than _id exists, all should exist
+                    entry["data"]["authors"] = [
+                        "u-" + str(uentry) for uentry in entry["data"]["authors"]
+                    ]
+                    entry["data"]["generators"] = [
+                        "u-" + str(uentry) for uentry in entry["data"]["generators"]
+                    ]
+                    entry["data"]["organisation"] = "u-" + str(entry["data"]["organisation"])
+                    entry["data"]["editors"] = [
+                        "u-" + str(uentry) for uentry in entry["data"]["editors"]
+                    ]
+                    entry["data"]["datasets"] = [
+                        "d-" + str(dentry) for dentry in entry["data"]["datasets"]
+                    ]
             elif entry["data_type"] == "collection":
-                entry["data"]["_id"] = "o-" + str(entry["_id"])
-                entry["data"]["editors"] = [
-                    "u-" + str(uentry) for uentry in entry["data"]["editors"]
-                ]
-                entry["data"]["datasets"] = [
-                    "d-" + str(dentry) for dentry in entry["data"]["datasets"]
-                ]
+                if entry["data"]["editors"]:  # if more than _id exists, all should exist
+                    entry["data"]["_id"] = "o-" + str(entry["_id"])
+                    entry["data"]["editors"] = [
+                        "u-" + str(uentry) for uentry in entry["data"]["editors"]
+                    ]
+                    entry["data"]["datasets"] = [
+                        "d-" + str(dentry) for dentry in entry["data"]["datasets"]
+                    ]
             elif entry["data_type"] == "user":
                 entry["data"]["_id"] = "u-" + str(entry["_id"])
         db["logs"].delete_many({})
