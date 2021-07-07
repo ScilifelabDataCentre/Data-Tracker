@@ -52,14 +52,14 @@ def migrate_v3_to_v4(db):
     entries = list(db["orders"].find({}))
     if entries:
         for entry in entries:
-            if str(entry["_id"]).startswith('o-'):
+            if str(entry["_id"]).startswith("o-"):
                 continue
             entry["_id"] = "o-" + str(entry["_id"])
-            entry["authors"] = ['u-' + str(uentry) for str(uentry) in entry['authors']]
-            entry["generators"] = ['u-' + str(uentry) for str(uentry) in entry['generators']]
+            entry["authors"] = ["u-" + str(uentry) for uentry in entry["authors"]]
+            entry["generators"] = ["u-" + str(uentry) for uentry in entry["generators"]]
             entry["organisation"] = "u-" + str(entry["organisation"])
-            entry["editors"] = ['u-' + str(uentry) for str(uentry) in entry['editors']]
-            entry["datasets"] = ['d-' + str(dentry) for str(dentry) in entry['datasets']]
+            entry["editors"] = ["u-" + str(uentry) for uentry in entry["editors"]]
+            entry["datasets"] = ["d-" + str(dentry) for dentry in entry["datasets"]]
         db["orders"].delete_many({})
         db["orders"].insert_many(entries)
 
@@ -67,7 +67,7 @@ def migrate_v3_to_v4(db):
     entries = list(db["datasets"].find({}))
     if entries:
         for entry in entries:
-            if str(entry["_id"]).startswith('d-'):
+            if str(entry["_id"]).startswith("d-"):
                 continue
             entry["_id"] = "d-" + str(entry["_id"])
         db["datasets"].delete_many({})
@@ -77,11 +77,11 @@ def migrate_v3_to_v4(db):
     entries = list(db["collections"].find({}))
     if entries:
         for entry in entries:
-            if str(entry["_id"]).startswith('c-'):
+            if str(entry["_id"]).startswith("c-"):
                 continue
             entry["_id"] = "c-" + str(entry["_id"])
-            entry["editors"] = ['u-' + str(uentry) for str(uentry) in entry['editors']]
-            entry["datasets"] = ['d-' + str(dentry) for str(dentry) in entry['datasets']]
+            entry["editors"] = ["u-" + str(uentry) for uentry in entry["editors"]]
+            entry["datasets"] = ["d-" + str(dentry) for dentry in entry["datasets"]]
         db["collections"].delete_many({})
         db["collections"].insert_many(entries)
 
@@ -89,7 +89,7 @@ def migrate_v3_to_v4(db):
     entries = list(db["collections"].find({}))
     if entries:
         for entry in entries:
-            if str(entry["_id"]).startswith('c-'):
+            if str(entry["_id"]).startswith("c-"):
                 continue
             entry["_id"] = "c-" + str(entry["_id"])
         db["collections"].delete_many({})
@@ -107,23 +107,35 @@ def migrate_v3_to_v4(db):
     entries = list(db["logs"].find({}))
     if entries:
         for entry in entries:
-            if str(entry["_id"]).startswith('l-'):
+            if str(entry["_id"]).startswith("l-"):
                 continue
             entry["_id"] = "l-" + str(entry["_id"])
-            if entry["data_type"] == 'dataset':
+            if entry["data_type"] == "dataset":
                 entry["data"]["_id"] = "d-" + str(entry["_id"])
-            elif entry["data_type"] == 'order':
+            elif entry["data_type"] == "order":
                 entry["data"]["_id"] = "o-" + str(entry["_id"])
-                entry["data"]["authors"] = ['u-' + str(uentry) for str(uentry) in entry["data"]['authors']]
-                entry["data"]["generators"] = ['u-' + str(uentry) for str(uentry) in entry["data"]['generators']]
+                entry["data"]["authors"] = [
+                    "u-" + str(uentry) for uentry in entry["data"]["authors"]
+                ]
+                entry["data"]["generators"] = [
+                    "u-" + str(uentry) for uentry in entry["data"]["generators"]
+                ]
                 entry["data"]["organisation"] = "u-" + str(entry["data"]["organisation"])
-                entry["data"]["editors"] = ['u-' + str(uentry) for str(uentry) in entry["data"]['editors']]
-                entry["data"]["datasets"] = ['d-' + str(dentry) for str(dentry) in entry["data"]['datasets']]
-            elif entry["data_type"] == 'collection':
+                entry["data"]["editors"] = [
+                    "u-" + str(uentry) for uentry in entry["data"]["editors"]
+                ]
+                entry["data"]["datasets"] = [
+                    "d-" + str(dentry) for dentry in entry["data"]["datasets"]
+                ]
+            elif entry["data_type"] == "collection":
                 entry["data"]["_id"] = "o-" + str(entry["_id"])
-                entry["data"]["editors"] = ['u-' + str(uentry) for str(uentry) in entry["data"]['editors']]
-                entry["data"]["datasets"] = ['d-' + str(dentry) for str(dentry) in entry["data"]['datasets']]
-            elif entry["data_type"] == 'user':
+                entry["data"]["editors"] = [
+                    "u-" + str(uentry) for uentry in entry["data"]["editors"]
+                ]
+                entry["data"]["datasets"] = [
+                    "d-" + str(dentry) for dentry in entry["data"]["datasets"]
+                ]
+            elif entry["data_type"] == "user":
                 entry["data"]["_id"] = "u-" + str(entry["_id"])
         db["logs"].delete_many({})
         db["logs"].insert_many(entries)
