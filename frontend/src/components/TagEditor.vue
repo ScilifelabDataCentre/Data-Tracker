@@ -7,12 +7,12 @@
              v-model="newTag"
              @keyup.enter="addTag"
              :rules="[ function (val) { return (evaluateTag(val) || val.length === 0) || 'Must contain at least 3 characters, no whitespace at beginning nor end, and must not already exist.' }]">
-      <template v-slot:append>
+      <template v-slot:after>
         <q-btn icon="fas fa-plus"
                dense
-               round
-               size="sm"
-               v-show="enableAdd"
+               rounded
+               size="md"
+               :disabled="!enableAdd"
                color="positive"
                @click="addTag" />
       </template>

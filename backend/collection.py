@@ -57,7 +57,6 @@ def get_collection(identifier):
 
 
 @blueprint.route("", methods=["POST"])
-@user.login_required
 def add_collection():
     """
     Add a collection.
@@ -91,13 +90,7 @@ def add_collection():
     ):
         indata["editors"].append(flask.g.current_user["_id"])
 
-    # convert all incoming uuids to uuid.UUID
     indata = utils.prepare_for_db(indata)
-
-    # convert entries to uuids
-    for field in ("datasets", "editors"):
-        if field in indata:
-            indata[field] = [utils.str_to_uuid(value) for value in indata[field]]
 
     collection.update(indata)
 
@@ -191,13 +184,7 @@ def update_collection(identifier):
     ):
         flask.abort(status=400)
 
-    # convert all incoming uuids to uuid.UUID
     indata = utils.prepare_for_db(indata)
-
-    # convert entries to uuids
-    for field in ("datasets", "editors"):
-        if field in indata:
-            indata[field] = [utils.str_to_uuid(value) for value in indata[field]]
 
     is_different = False
     for field in indata:

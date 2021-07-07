@@ -267,7 +267,7 @@ def test_add_order_permissions():
         if response.role in ("edit", "data", "root"):
             assert response.code == 200
             assert "id" in response.data
-            assert len(response.data["id"]) == 36
+            assert len(response.data["id"]) == 38
         elif response.role == "no-login":
             assert response.code == 401
             assert not response.data
@@ -307,8 +307,8 @@ def test_add_order(mdb):
         indata = indata["order"]
         assert response.code == 200
         assert "id" in response.data
-        assert len(response.data["id"]) == 36
-        order = mdb["orders"].find_one({"_id": uuid.UUID(response.data["id"])})
+        assert len(response.data["id"]) == 38
+        order = mdb["orders"].find_one({"_id": response.data["id"]})
         assert order["description"] == indata["description"]
         assert order["title"] == indata["title"]
         # if editors is empty, current user should be editor
@@ -333,8 +333,8 @@ def test_add_order(mdb):
         indata = indata["order"]
         assert response.code == 200
         assert "id" in response.data
-        assert len(response.data["id"]) == 36
-        order = mdb["orders"].find_one({"_id": uuid.UUID(response.data["id"])})
+        assert len(response.data["id"]) == 38
+        order = mdb["orders"].find_one({"_id": response.data["id"]})
 
         user_list = [root_user["_id"]]
         assert order["title"] == indata["title"]
@@ -371,11 +371,9 @@ def test_add_order_log(mdb):
     )
     assert response.code == 200
     assert "id" in response.data
-    assert len(response.data["id"]) == 36
-    order = mdb["orders"].find_one({"_id": uuid.UUID(response.data["id"])})
-    logs = list(
-        mdb["logs"].find({"data_type": "order", "data._id": uuid.UUID(response.data["id"])})
-    )
+    assert len(response.data["id"]) == 38
+    order = mdb["orders"].find_one({"_id": response.data["id"]})
+    logs = list(mdb["logs"].find({"data_type": "order", "data._id": response.data["id"]}))
     assert len(logs) == 1
     assert logs[0]["data"] == order
     assert logs[0]["action"] == "add"
@@ -870,11 +868,11 @@ def test_add_dataset_data(mdb):
     )
     assert response.code == 200
     assert "id" in response.data
-    assert len(response.data["id"]) == 36
+    assert len(response.data["id"]) == 38
     order_info = mdb["orders"].find_one({"_id": order_id})
     assert len(order_info["datasets"]) == 1
 
-    added_ds = mdb["datasets"].find_one({"_id": uuid.UUID(response.data["id"])})
+    added_ds = mdb["datasets"].find_one({"_id": response.data["id"]})
     for key in indata["dataset"]:
         if key == "description":
             assert added_ds[key] == "&lt;br /&gt;"
@@ -890,7 +888,7 @@ def test_add_dataset_data(mdb):
     )
     assert response.code == 200
     assert "id" in response.data
-    assert len(response.data["id"]) == 36
+    assert len(response.data["id"]) == 38
     order_info = mdb["orders"].find_one({"_id": order_id})
     assert len(order_info["datasets"]) == 2
 
@@ -928,7 +926,7 @@ def test_add_dataset_log(mdb):
     ds_add_log_count = mdb["logs"].count_documents(
         {
             "data_type": "dataset",
-            "data._id": uuid.UUID(response.data["id"]),
+            "data._id": response.data["id"],
             "action": "add",
         }
     )

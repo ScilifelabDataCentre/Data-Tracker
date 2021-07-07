@@ -149,7 +149,7 @@ describe('Data Tracker - Orders', function() {
   test('Test saving order', function (browser) {
     browser
       .click('#entry-save-button')
-      .expect.url().to.match(/http:\/\/localhost:5000\/orders\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/);
+      .expect.url().to.match(/http:\/\/localhost:5000\/orders\/o-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/);
   });
 
   test('About order page', function (browser) {
@@ -157,7 +157,7 @@ describe('Data Tracker - Orders', function() {
       .assert.not.visible('#entry-save-button')
       .waitForElementVisible('#entry-about-title-text')
       .assert.containsText('#entry-about-title-text', 'Order from frontend test')
-      .expect.element('#entry-about-uuid').text.to.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/);
+      .expect.element('#entry-about-uuid').text.to.match(/o-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/);
     browser
       .assert.containsText('#entry-about-tags', 'New Tag1')
       .assert.containsText('#entry-about-tags', 'New Tag2')
@@ -278,7 +278,7 @@ describe('Data Tracker - Orders', function() {
     browser
       .setInputValue('#entry-edit-title', 'Order from frontend test - updated')
       .click('#entry-save-button')
-      .expect.url().to.match(/http:\/\/localhost:5000\/orders\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/);
+      .expect.url().to.match(/http:\/\/localhost:5000\/orders\/o-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/);
   });
 
   test('Test deleting order', function (browser) {
@@ -297,7 +297,7 @@ describe('Data Tracker - Orders', function() {
 
   test('About order page - forbidden', function (browser) {
     browser
-      .url('http://localhost:5000/orders/d4467732-8ddd-43a6-a904-5b7376f60e5c')
+      .url('http://localhost:5000/orders/o-d4467732-8ddd-43a6-a904-5b7376f60e5c')
       .assert.urlEquals('http://localhost:5000/forbidden/')
       .assert.containsText('.q-page', 'Not Authorised');
   });

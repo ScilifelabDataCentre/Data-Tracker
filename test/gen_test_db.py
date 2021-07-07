@@ -309,7 +309,7 @@ def gen_frontend_test_entries(db):
     apihash = utils.gen_api_key_hash(apikey["key"], apikey["salt"])
     changes = [
         {
-            "_id": uuid.UUID("4f2418f7-2609-43f1-8c7f-82c08e6daf26"),
+            "_id": "u-4f2418f7-2609-43f1-8c7f-82c08e6daf26",
             "affiliation": "Frontend Test University",
             "api_key": apihash,
             "api_salt": apikey["salt"],
@@ -321,7 +321,7 @@ def gen_frontend_test_entries(db):
             "url": "https://www.example.com/frontend_author",
         },
         {
-            "_id": uuid.UUID("d54dc97d-ff9e-4e73-86bb-9c7a029e1b43"),
+            "_id": "u-d54dc97d-ff9e-4e73-86bb-9c7a029e1b43",
             "affiliation": "Frontend Test University",
             "api_key": apihash,
             "api_salt": apikey["salt"],
@@ -333,7 +333,7 @@ def gen_frontend_test_entries(db):
             "url": "https://www.example.com/frontend_generator",
         },
         {
-            "_id": uuid.UUID("a5a7534b-1b49-41a5-b909-738e49cd137d"),
+            "_id": "u-a5a7534b-1b49-41a5-b909-738e49cd137d",
             "affiliation": "Frontend Test University",
             "api_key": apihash,
             "api_salt": apikey["salt"],
@@ -345,7 +345,7 @@ def gen_frontend_test_entries(db):
             "url": "https://www.example.com/frontend_organisation",
         },
         {
-            "_id": uuid.UUID("3a9a19a7-cd30-4c7b-b280-e35220e1a611"),
+            "_id": "u-3a9a19a7-cd30-4c7b-b280-e35220e1a611",
             "affiliation": "Frontend Test University",
             "api_key": apihash,
             "api_salt": apikey["salt"],
@@ -372,16 +372,17 @@ def gen_frontend_test_entries(db):
 
     order = structure.order()
     changes = {
-        "_id": uuid.UUID("d4467732-8ddd-43a6-a904-5b7376f60e5c"),
-        "authors": [uuid.UUID("4f2418f7-2609-43f1-8c7f-82c08e6daf26")],
-        "generators": [uuid.UUID("d54dc97d-ff9e-4e73-86bb-9c7a029e1b43")],
-        "organisation": uuid.UUID("a5a7534b-1b49-41a5-b909-738e49cd137d"),
-        "editors": [uuid.UUID("3a9a19a7-cd30-4c7b-b280-e35220e1a611")],
+        "_id": "o-d4467732-8ddd-43a6-a904-5b7376f60e5c",
+        "authors": ["u-4f2418f7-2609-43f1-8c7f-82c08e6daf26"],
+        "generators": ["u-d54dc97d-ff9e-4e73-86bb-9c7a029e1b43"],
+        "organisation": "u-a5a7534b-1b49-41a5-b909-738e49cd137d",
+        "editors": ["u-3a9a19a7-cd30-4c7b-b280-e35220e1a611"],
         "description": "An order added for frontend tests",
         "title": f"Frontend Test Order",
         "properties": {"Type": "Frontend Test Entry"},
         "tags": ["Frontend", "Test"],
-        "datasets": [uuid.UUID("79a755f1-69b0-4734-9977-ac945c4c51c1"), uuid.UUID("27cc1144-67bf-45b2-af21-425f9bfc7333")]
+        "datasets": ["d-79a755f1-69b0-4734-9977-ac945c4c51c1",
+                     "d-27cc1144-67bf-45b2-af21-425f9bfc7333"]
     }
     order.update(changes)
     db["orders"].insert_one(order)
@@ -396,7 +397,7 @@ def gen_frontend_test_entries(db):
 
     dataset = structure.dataset()
     changes = {
-        "_id": uuid.UUID("79a755f1-69b0-4734-9977-ac945c4c51c1"),
+        "_id": "d-79a755f1-69b0-4734-9977-ac945c4c51c1",
         "description": "A dataset added for frontend tests",
         "title": f"Frontend Test Dataset",
         "properties": {"Type": "Frontend Test Entry"},
@@ -414,7 +415,7 @@ def gen_frontend_test_entries(db):
     )
     dataset = structure.dataset()
     changes = {
-        "_id": uuid.UUID("27cc1144-67bf-45b2-af21-425f9bfc7333"),
+        "_id": "d-27cc1144-67bf-45b2-af21-425f9bfc7333",
         "description": "A dataset added for frontend tests 2",
         "title": f"Frontend Test Dataset 2",
         "properties": {"Type": "Frontend Test Entry"},
@@ -433,13 +434,14 @@ def gen_frontend_test_entries(db):
 
     collection = structure.collection()
     changes = {
-        "_id": uuid.UUID("21c8ecd1-9908-462f-ba84-3ca399074b36"),
-        "editors": [uuid.UUID("3a9a19a7-cd30-4c7b-b280-e35220e1a611")],
+        "_id": "c-21c8ecd1-9908-462f-ba84-3ca399074b36",
+        "editors": ["u-3a9a19a7-cd30-4c7b-b280-e35220e1a611"],
         "description": "A collection added for frontend tests",
         "title": f"Frontend Test Collection",
         "properties": {"Type": "Frontend Test Entry"},
         "tags": ["Frontend", "Test"],
-        "datasets": [uuid.UUID("79a755f1-69b0-4734-9977-ac945c4c51c1"), uuid.UUID("27cc1144-67bf-45b2-af21-425f9bfc7333")]
+        "datasets": ["d-79a755f1-69b0-4734-9977-ac945c4c51c1",
+                     "d-27cc1144-67bf-45b2-af21-425f9bfc7333"]
     }
     collection.update(changes)
     db["collections"].insert_one(collection)

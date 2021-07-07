@@ -8,12 +8,12 @@
              v-model="key"
              @keyup.enter="addProperty"
              :rules="[ function (val) { return (enableAdd || val.length === 0) || 'Must contain at least 3 characters, no whitespace at beginning nor end, and must not already exist.' }]">
-      <template v-slot:append>
+      <template v-slot:after>
         <q-btn icon="fas fa-plus"
                dense
-               round
-               size="sm"
-               v-show="enableAdd"
+               rounded
+               size="md"
+               :disabled="!enableAdd"
                color="positive"
                @click="addProperty" />
         </template>

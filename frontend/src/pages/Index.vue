@@ -39,6 +39,20 @@
         </q-card-section>
       </q-card>
     </div>
+      <q-input class="col-md-6 col-xs-10 q-mt-lg"
+               outlined
+               dense
+               v-model="searchEntry"
+               placeholder="Entry identifier"
+               @keyup.enter="findEntry"
+               :rules="[ function (val) { return (['o-', 'd-', 'c-'].includes(val.slice(0, 2)) || val.length === 0) || 'Identifiers start with o-, d-, or c-' }]">
+        <template v-slot:after>
+          <q-btn color="primary"
+                 icon="fas fa-arrow-right"
+                 type="submit"
+                 @click="findEntry" />
+        </template>
+      </q-input>
   </div>
 </q-page>
 </template>
@@ -56,7 +70,29 @@ export default {
 
   data () {
     return {
+      searchEntry: '',
+      searchError: false,
     }
   },
+
+  methods: {
+    findEntry() {
+      let target = ''
+      if (this.searchEntry.slice(0, 2) == 'o-')
+        target = 'Order'
+      else if (this.searchEntry.slice(0, 2) == 'd-')
+        target = 'Dataset'
+      else if (this.searchEntry.slice(0, 2) == 'c-')
+        target = 'Collection'
+      else {
+        target = ''
+        this.searchError = true
+        setTimeout(function(){ this.searchError = false }.bind(this), 800);
+      }
+      if (target.length)
+        this.$router.push({ name: target + ' About', params: { 'uuid': this.searchEntry,
+                                                               'dataType': target.toLowerCase()} });
+    }
+  }
 }
 </script>
