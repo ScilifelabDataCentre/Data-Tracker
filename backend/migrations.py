@@ -52,7 +52,7 @@ def migrate_v3_to_v4(db):
     entries = list(db["orders"].find({}))
     if entries:
         for entry in entries:
-            if entry["_id"].startswith('o-'):
+            if str(entry["_id"]).startswith('o-'):
                 continue
             entry["_id"] = "o-" + str(entry["_id"])
             entry["authors"] = ['u-' + uentry for uentry in entry['authors']]
@@ -67,7 +67,7 @@ def migrate_v3_to_v4(db):
     entries = list(db["datasets"].find({}))
     if entries:
         for entry in entries:
-            if entry["_id"].startswith('d-'):
+            if str(entry["_id"]).startswith('d-'):
                 continue
             entry["_id"] = "d-" + str(entry["_id"])
         db["datasets"].delete_many({})
@@ -77,7 +77,7 @@ def migrate_v3_to_v4(db):
     entries = list(db["collections"].find({}))
     if entries:
         for entry in entries:
-            if entry["_id"].startswith('c-'):
+            if str(entry["_id"]).startswith('c-'):
                 continue
             entry["_id"] = "c-" + str(entry["_id"])
             entry["editors"] = ['u-' + uentry for uentry in entry['editors']]
@@ -89,7 +89,7 @@ def migrate_v3_to_v4(db):
     entries = list(db["collections"].find({}))
     if entries:
         for entry in entries:
-            if entry["_id"].startswith('c-'):
+            if str(entry["_id"]).startswith('c-'):
                 continue
             entry["_id"] = "c-" + str(entry["_id"])
         db["collections"].delete_many({})
@@ -107,6 +107,8 @@ def migrate_v3_to_v4(db):
     entries = list(db["logs"].find({}))
     if entries:
         for entry in entries:
+            if str(entry["_id"]).startswith('l-'):
+                continue
             entry["_id"] = "l-" + str(entry["_id"])
             if entry["data_type"] == 'dataset':
                 entry["data"]["_id"] = "d-" + str(entry["_id"])
