@@ -23,7 +23,7 @@
     </q-input>
   </div>
   <div class="row flex flex-center">
-    <div class="col-md-4 col-lg-4 col-xs-10 col-sm-10"
+    <div class="col-md-3 col-lg-3 col-xs-10 col-sm-10"
          v-if="currentUser.permissions.includes('DATA_EDIT')">
       <q-card class="q-pa-lg text-center box-shadow q-ma-md"
               id="index-card-orders"
@@ -34,7 +34,7 @@
         </q-card-section>
       </q-card>
     </div>
-    <div class="col-md-4 col-lg-4 col-xs-10 col-sm-10">
+    <div class="col-md-3 col-lg-3 col-xs-10 col-sm-10">
       <q-card class="q-pa-lg text-center box-shadow q-ma-md"
               id="index-card-datasets"
               @click="$router.push({ name: 'Dataset Browser' })">
@@ -44,7 +44,7 @@
         </q-card-section>
       </q-card>
     </div>
-    <div class="col-md-4 col-lg-4 col-xs-10 col-sm-10">
+    <div class="col-md-3 col-lg-3 col-xs-10 col-sm-10">
       <q-card class="q-pa-lg text-center box-shadow q-ma-md"
               id="index-card-collections"
               @click="$router.push({ name: 'Collection Browser' })">
