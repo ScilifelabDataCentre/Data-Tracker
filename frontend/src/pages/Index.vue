@@ -7,6 +7,22 @@
     </div>
   </div>
   <div class="row flex flex-center">
+    <q-input class="col-md-6 col-xs-10 q-my-xl"
+             outlined
+             dense
+             v-model="searchEntry"
+             placeholder="Entry identifier"
+             @keyup.enter="findEntry"
+             :rules="[ function (val) { return (['o-', 'd-', 'c-'].includes(val.slice(0, 2)) || val.length === 0) || 'Identifiers start with o-, d-, or c-' }]">
+      <template v-slot:after>
+        <q-btn color="primary"
+               icon="fas fa-arrow-right"
+               type="submit"
+               @click="findEntry" />
+      </template>
+    </q-input>
+  </div>
+  <div class="row flex flex-center">
     <div class="col-md-4 col-lg-4 col-xs-10 col-sm-10"
          v-if="currentUser.permissions.includes('DATA_EDIT')">
       <q-card class="q-pa-lg text-center box-shadow q-ma-md"
@@ -39,20 +55,6 @@
         </q-card-section>
       </q-card>
     </div>
-      <q-input class="col-md-6 col-xs-10 q-mt-lg"
-               outlined
-               dense
-               v-model="searchEntry"
-               placeholder="Entry identifier"
-               @keyup.enter="findEntry"
-               :rules="[ function (val) { return (['o-', 'd-', 'c-'].includes(val.slice(0, 2)) || val.length === 0) || 'Identifiers start with o-, d-, or c-' }]">
-        <template v-slot:after>
-          <q-btn color="primary"
-                 icon="fas fa-arrow-right"
-                 type="submit"
-                 @click="findEntry" />
-        </template>
-      </q-input>
   </div>
 </q-page>
 </template>
