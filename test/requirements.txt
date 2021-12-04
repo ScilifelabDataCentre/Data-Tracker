@@ -17,7 +17,7 @@ lazy-object-proxy==1.6.0
 lorem==0.1.1
 mccabe==0.6.1
 mypy-extensions==0.4.3
-networkx==2.5.1
+networkx==2.6
 ninja==1.10.0.post2
 packaging==20.9
 pathspec==0.8.1
