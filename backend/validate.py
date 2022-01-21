@@ -63,7 +63,7 @@ def validate_datasets(data: list, db=None) -> bool:
     Raises:
         ValueError: Validation failed.
     """
-    if not db:
+    if db is None:
         db = flask.g.db
     if not isinstance(data, list):
         raise ValueError(f"Must be list ({data})")
@@ -308,7 +308,7 @@ def validate_user(data: str, db=None) -> bool:
     Raises:
         ValueError: Validation failed.
     """
-    if not db:
+    if db is None:
         db = flask.g.db
     if not isinstance(data, str):
         raise ValueError(f"Bad data type (must be str): {data}")
@@ -338,7 +338,7 @@ def validate_user_list(data: list, db=None) -> bool:
     Raises:
         ValueError: Validation failed.
     """
-    if not db:
+    if db is None:
         db = flask.g.db
     if not isinstance(data, list):
         raise ValueError(f"Bad data type (must be list): {data}")
