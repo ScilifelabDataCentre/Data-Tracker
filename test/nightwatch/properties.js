@@ -40,8 +40,8 @@ describe('Data Tracker - Property Editor', function() {
   test('Test property key evaluation', function (browser) {
     browser
       .setInputValue('#entry-edit-properties input', '')
-      .assert.not.containsText('#entry-edit-properties .q-field__append', 'error')
-      .assert.not.visible('#entry-edit-properties .q-field__append .fa-plus')
+      .assert.not.elementPresent('#entry-edit-properties .q-field__append')
+      .assert.elementPresent('.property-editor .fa-plus')
       .assert.not.containsText('#entry-edit-properties .q-field__messages', 'no whitespace at beginning')
 
       .setInputValue('#property-editor-new-key input', ' bad')
