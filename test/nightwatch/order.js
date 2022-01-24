@@ -297,7 +297,7 @@ describe('Data Tracker - Orders', function() {
 
   test('About order page - forbidden', function (browser) {
     browser
-      .url('http://localhost:5000/orders/o-3f6709b8-5595-4f70-9318-9f30e912d55e')
+      .url('http://localhost:5000/orders/o-d4467732-8ddd-43a6-a904-5b7376f60e5c')
       .assert.urlEquals('http://localhost:5000/forbidden')
       .assert.containsText('.q-page', 'Not Authorised');
   });
