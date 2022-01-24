@@ -20,7 +20,7 @@ const routes = [
     path: '/',
     component: MainLayout,
     children: [
-      { path: '', component: Index },
+      { path: '', component: Index, name: 'Home' },
       { path: 'about', component: About, name: 'About' },
       { path: 'guide', component: UserGuide, name: 'User Guide' },
       {
