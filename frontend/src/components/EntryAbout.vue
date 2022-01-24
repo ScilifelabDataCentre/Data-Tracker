@@ -161,11 +161,11 @@
                       :id="'entry-about-generators-' + i"
                       v-bind="generator" />
         </div>
-        <div v-if="Object.keys(entry.organisation).length"
+        <div v-if="Object.keys(organisation).length"
              id="entry-about-organisation">
           <list-header title="Organisation"
                        explanation="The data owner, e.g. a university" />
-          <user-entry v-bind="entry.organisation"
+          <user-entry v-bind="organisation"
                       id="entry-about-organisation-entry" />
         </div>
       </div>
@@ -212,6 +212,15 @@ export default {
         return this.$store.state.entries.entry;
       },
     },
+
+    organisation: {
+      get () {
+	if (Array.isArray(this.entry.organisation))
+	  return this.entry.organisation[0]
+	else
+	  return this.entry.organisation
+      }
+    }
   },
 
   data () {
