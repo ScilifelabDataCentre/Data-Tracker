@@ -36,7 +36,7 @@ def order():
         "description": "",
         "authors": [],
         "generators": [],
-        "organisation": "",
+        "organisation": {},
         "editors": [],
         "datasets": [],
         "properties": {},
