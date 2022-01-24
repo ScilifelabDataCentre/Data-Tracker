@@ -1,5 +1,5 @@
 <template>
-<div>
+<div v-if="Object.keys(entry).length > 0">
   <div v-if="this.newEntry && this.dataType === 'dataset'"
        id="entry-edit-order-select"
        class="q-my-sm">
