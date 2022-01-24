@@ -85,7 +85,7 @@ export default {
     },
 
     deleteTag(tagName) {
-      this.$emit('input', this.value.filter((entry) => entry !== tagName))
+      this.$emit('update:modelValue', this.modelValue.filter((entry) => entry !== tagName))
     },
   },
 }
