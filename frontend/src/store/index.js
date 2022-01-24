@@ -1,22 +1,33 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
+import { store } from 'quasar/wrappers'
+import { createStore } from 'vuex'
 
 import adminUsers from './adminUsers'
 import currentUser from './currentUser'
 import entries from './entries'
 
-Vue.use(Vuex)
+// import example from './module-example'
 
-export default function () {
-  const Store = new Vuex.Store({
+/*
+ * If not building with SSR mode, you can
+ * directly export the Store instantiation;
+ *
+ * The function below can be async too; either use
+ * async/await or return a Promise which resolves
+ * with the Store instance.
+ */
+
+export default store(function (/* { ssrContext } */) {
+  const Store = createStore({
     modules: {
       adminUsers,
       currentUser,
-      entries,
+      entries
     },
 
-    strict: process.env.DEV
+    // enable strict mode (adds overhead!)
+    // for dev mode and --debug builds only
+    strict: process.env.DEBUGGING
   })
 
   return Store
-}
+})

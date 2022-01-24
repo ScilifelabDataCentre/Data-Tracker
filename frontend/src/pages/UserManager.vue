@@ -3,10 +3,10 @@
   <h2 class="text-capitalize">Users</h2>
   <q-table
     flat
-    :data="userList"
+    :rows="userList"
     :columns="columns"
     row-key="id"
-    :pagination.sync="pagination"
+    :pagination="pagination"
     :filter="filter"
     :loading="loading"
     no-data-label="No entries found"

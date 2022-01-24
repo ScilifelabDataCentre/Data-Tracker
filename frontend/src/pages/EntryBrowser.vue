@@ -2,10 +2,10 @@
 <q-page padding>
   <h2 class="text-capitalize">{{ dataType + 's' }}</h2>
   <q-table flat
-           :data="entries"
+           :rows="entries"
            :columns="columns"
            row-key="id"
-           :pagination.sync="pagination"
+           :pagination="pagination"
            :filter="filter"
            grid
            :loading="loading"

@@ -19,7 +19,7 @@
     </q-input>
   </div>
   <div class="flex q-ma-sm">
-    <q-chip v-for="tag of value"
+    <q-chip v-for="tag of modelValue"
             :key="tag"
             square
             removable
@@ -53,7 +53,7 @@ export default {
       default: false,
     },
 
-    value: {
+    modelValue: {
       type: Array,
       required: true,
     },
@@ -66,16 +66,17 @@ export default {
     }
   },
 
+  emits: ['update:modelValue'],
   methods: {
     evaluateTag (val) {
-      return (val.length >= 3 && val.trim() === val && !this.value.includes(this.newTag));
+      return (val.length >= 3 && val.trim() === val && !this.modelValue.includes(this.newTag));
     },
 
     addTag() {
       if (this.enableAdd) {
         this.tagExistsError = false;
-        if (!this.value.includes(this.newTag)) {
-          this.$emit('input', this.value.concat(this.newTag))
+        if (!this.modelValue.includes(this.newTag)) {
+          this.$emit('update:modelValue', this.modelValue.concat(this.newTag))
           this.newTag = '';
         }
         else
