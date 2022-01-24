@@ -85,7 +85,7 @@ export default {
   },
 
   watch: {
-    value: function(val) {
+    modelValue: function(val) {
       if (val)
         if (val && (this.uuid !== '')) {
           this.$store.dispatch('entries/resetEntryLog')
