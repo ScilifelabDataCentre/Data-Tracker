@@ -270,8 +270,10 @@ export default {
       dataToSubmit.properties = this.entry.properties;
       dataToSubmit.tags = this.entry.tags;
       if (this.dataType === 'order') {
-        if (this.entry.organisation.length)
-          dataToSubmit.organisation = this.entry.organisation[0].id;
+        if (Array.isArray(this.entry.organisation))
+          dataToSubmit.organisation = this.entry.organisation[0];
+	else
+	  dataToSubmit.organisation = this.entry.organisation;
         for (const key of ['authors', 'generators', 'editors']) {
           dataToSubmit[key] = this.entry[key].map(item => item.id);
         }
@@ -294,11 +296,18 @@ export default {
                                                  dataType: dataType})
         .then((response) => {
           if (this.uuid === '') {
-            this.$router.push({ name: capitalize(this.dataType) + ' About', params: { 'uuid': response.data.id } });
+            this.$router.push({ name: capitalize(this.dataType) + ' About', params: { 'uuid': response.data.id } })
+	      .then(() => {
+		this.loadData();
+		this.editMode = false;
+		this.currentTab = "preview";
+	      });
           }
-          this.loadData();
-          this.editMode = false;
-          this.currentTab = "preview";
+	  else {
+	    this.loadData();
+            this.editMode = false;
+            this.currentTab = "preview";
+	  }
         })
         .catch((err) => {
           this.error = true;
