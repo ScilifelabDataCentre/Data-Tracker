@@ -23,11 +23,11 @@ describe('Data Tracker - Side Drawer', function() {
 
       .assert.elementPresent('#drawer-entry-datasets')
       .click('#drawer-entry-datasets')
-      .assert.urlEquals('http://localhost:5000/datasets/')
+      .assert.urlEquals('http://localhost:5000/datasets')
 
       .assert.elementPresent('#drawer-entry-collections')
       .click('#drawer-entry-collections')
-      .assert.urlEquals('http://localhost:5000/collections/')
+      .assert.urlEquals('http://localhost:5000/collections')
 
       .assert.not.elementPresent('#drawer-entry-users')
 
@@ -63,7 +63,7 @@ describe('Data Tracker - Side Drawer', function() {
 
       .assert.elementPresent('#drawer-entry-current-user')
       .click('#drawer-entry-current-user')
-      .assert.urlEquals('http://localhost:5000/account/')
+      .assert.urlEquals('http://localhost:5000/account')
 
       .assert.not.elementPresent('#drawer-entry-log-in')
       .assert.elementPresent('#drawer-entry-log-out');
@@ -77,7 +77,7 @@ describe('Data Tracker - Side Drawer', function() {
 
       .assert.elementPresent('#drawer-entry-orders')
       .click('#drawer-entry-orders')
-      .assert.urlEquals('http://localhost:5000/orders/')
+      .assert.urlEquals('http://localhost:5000/orders')
 
       .assert.elementPresent('#drawer-entry-datasets')
       .assert.elementPresent('#drawer-entry-collections')
