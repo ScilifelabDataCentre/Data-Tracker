@@ -74,6 +74,7 @@ def secure_description(data: str):
     Returns:
         str: The processed description.
     """
+    data = html.unescape(data)
     return html.escape(data)
 
 
