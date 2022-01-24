@@ -792,7 +792,7 @@ def prepare_for_db(data: dict) -> dict:
     prepared = copy.deepcopy(data)
     for key in prepared:
         if key == "description":
-            prepared[key] = html.escape(prepared[key])
+            prepared[key] = secure_description(prepared[key])
     return prepared
 
 
