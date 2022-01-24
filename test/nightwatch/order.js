@@ -23,7 +23,7 @@ describe('Data Tracker - Orders', function() {
       .assert.enabled('#entry-save-button')
       .setInputValue('#entry-edit-description', 'An order created during a frontend test run')
       .click('#entry-cancel-button')
-      .assert.urlEquals('http://localhost:5000/orders/')
+      .assert.urlEquals('http://localhost:5000/orders')
   });
 
   test('Fill in add order', function (browser) {
@@ -109,22 +109,22 @@ describe('Data Tracker - Orders', function() {
       .assert.not.elementPresent('#entry-about-related')
       .assert.not.elementPresent('#entry-about-collections')
     
-      .assert.containsText('#entry-about-authors-0', 'Frontend Author')
-      .assert.not.containsText('#entry-about-authors-0', 'author@frontend.dev')
-      .click('#entry-about-authors-0 .q-focusable')
-      .assert.containsText('#entry-about-authors-0', 'author@frontend.dev')
-      .assert.containsText('#entry-about-authors-0', 'Frontend Test University')
-      .assert.containsText('#entry-about-authors-0', 'https://www.example.com/frontend_author')
-      .click('#entry-about-authors-0 .q-focusable')
-      .assert.not.containsText('#entry-about-authors-0', 'author@frontend.dev')
+      .assert.containsText('#entry-about-authors', 'Frontend Author')
+      .assert.not.containsText('#entry-about-authors', 'author@frontend.dev')
+      .click('#entry-about-authors .q-focusable')
+      .assert.containsText('#entry-about-authors', 'author@frontend.dev')
+      .assert.containsText('#entry-about-authors', 'Frontend Test University')
+      .assert.containsText('#entry-about-authors', 'https://www.example.com/frontend_author')
+      .click('#entry-about-authors .q-focusable')
+      .assert.not.containsText('#entry-about-authors', 'author@frontend.dev')
 
       .assert.containsText('#entry-about-generators', 'Frontend Generator')
       .assert.not.containsText('#entry-about-generators', 'generator@frontend.dev')
-      .click('#entry-about-generators-0 .q-focusable')
+      .click('#entry-about-generators .q-focusable')
       .assert.containsText('#entry-about-generators', 'generator@frontend.dev')
       .assert.containsText('#entry-about-generators', 'Frontend Test University')
       .assert.containsText('#entry-about-generators', 'https://www.example.com/frontend_generator')
-      .click('#entry-about-generators-0 .q-focusable')
+      .click('#entry-about-generators .q-focusable')
       .assert.not.containsText('#entry-about-generators', 'generator@frontend.dev')
 
       .assert.containsText('#entry-about-organisation', 'Frontend Organisation')
@@ -138,11 +138,11 @@ describe('Data Tracker - Orders', function() {
 
       .assert.containsText('#entry-about-editors', 'Frontend Editor')
       .assert.not.containsText('#entry-about-editors', 'editor@frontend.dev')
-      .click('#entry-about-editors-0 .q-focusable')
+      .click('#entry-about-editors .q-focusable')
       .assert.containsText('#entry-about-editors', 'editor@frontend.dev')
       .assert.containsText('#entry-about-editors', 'Frontend Test University')
       .assert.containsText('#entry-about-editors', 'https://www.example.com/frontend_editor')
-      .click('#entry-about-editors-0 .q-focusable')
+      .click('#entry-about-editors .q-focusable')
       .assert.not.containsText('#entry-about-editors', 'editor@frontend.dev')
   });
 
@@ -172,22 +172,22 @@ describe('Data Tracker - Orders', function() {
       .assert.not.elementPresent('#entry-about-related')
       .assert.not.elementPresent('#entry-about-collections')
     
-      .assert.containsText('#entry-about-authors-0', 'Frontend Author')
-      .assert.not.containsText('#entry-about-authors-0', 'author@frontend.dev')
-      .click('#entry-about-authors-0 .q-focusable')
-      .assert.containsText('#entry-about-authors-0', 'author@frontend.dev')
-      .assert.containsText('#entry-about-authors-0', 'Frontend Test University')
-      .assert.containsText('#entry-about-authors-0', 'https://www.example.com/frontend_author')
-      .click('#entry-about-authors-0 .q-focusable')
-      .assert.not.containsText('#entry-about-authors-0', 'author@frontend.dev')
+      .assert.containsText('#entry-about-authors', 'Frontend Author')
+      .assert.not.containsText('#entry-about-authors', 'author@frontend.dev')
+      .click('#entry-about-authors .q-focusable')
+      .assert.containsText('#entry-about-authors', 'author@frontend.dev')
+      .assert.containsText('#entry-about-authors', 'Frontend Test University')
+      .assert.containsText('#entry-about-authors', 'https://www.example.com/frontend_author')
+      .click('#entry-about-authors .q-focusable')
+      .assert.not.containsText('#entry-about-authors', 'author@frontend.dev')
 
       .assert.containsText('#entry-about-generators', 'Frontend Generator')
       .assert.not.containsText('#entry-about-generators', 'generator@frontend.dev')
-      .click('#entry-about-generators-0 .q-focusable')
+      .click('#entry-about-generators .q-focusable')
       .assert.containsText('#entry-about-generators', 'generator@frontend.dev')
       .assert.containsText('#entry-about-generators', 'Frontend Test University')
       .assert.containsText('#entry-about-generators', 'https://www.example.com/frontend_generator')
-      .click('#entry-about-generators-0 .q-focusable')
+      .click('#entry-about-generators .q-focusable')
       .assert.not.containsText('#entry-about-generators', 'generator@frontend.dev')
 
       .assert.containsText('#entry-about-organisation', 'Frontend Organisation')
@@ -201,11 +201,11 @@ describe('Data Tracker - Orders', function() {
 
       .assert.containsText('#entry-about-editors', 'Frontend Editor')
       .assert.not.containsText('#entry-about-editors', 'editor@frontend.dev')
-      .click('#entry-about-editors-0 .q-focusable')
+      .click('#entry-about-editors .q-focusable')
       .assert.containsText('#entry-about-editors', 'editor@frontend.dev')
       .assert.containsText('#entry-about-editors', 'Frontend Test University')
       .assert.containsText('#entry-about-editors', 'https://www.example.com/frontend_editor')
-      .click('#entry-about-editors-0 .q-focusable')
+      .click('#entry-about-editors .q-focusable')
       .assert.not.containsText('#entry-about-editors', 'editor@frontend.dev');
   });
 
@@ -292,13 +292,13 @@ describe('Data Tracker - Orders', function() {
       .click('#entry-info-menu-delete')
       .waitForElementVisible('.q-dialog button')
       .click('.q-dialog button')
-      .assert.urlEquals('http://localhost:5000/orders/')
+      .assert.urlEquals('http://localhost:5000/orders')
   });
 
   test('About order page - forbidden', function (browser) {
     browser
-      .url('http://localhost:5000/orders/o-d4467732-8ddd-43a6-a904-5b7376f60e5c')
-      .assert.urlEquals('http://localhost:5000/forbidden/')
+      .url('http://localhost:5000/orders/o-3f6709b8-5595-4f70-9318-9f30e912d55e')
+      .assert.urlEquals('http://localhost:5000/forbidden')
       .assert.containsText('.q-page', 'Not Authorised');
   });
 
