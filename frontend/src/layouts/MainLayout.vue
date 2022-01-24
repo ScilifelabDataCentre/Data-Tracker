@@ -83,9 +83,5 @@ export default {
     let splitPath = this.$route.path.split('/').slice(1);
     if (splitPath[0]) this.breadcrumbs = splitPath; else this.breadcrumbs = [];
   },
-  
-  created () {
-    this.$store.dispatch('currentUser/getInfo');
-  },
 }
 </script>
