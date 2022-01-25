@@ -1,5 +1,5 @@
 <template>
-<div>
+<div class="property-editor">
   <div class="q-my-md"
        id="property-editor-new-key">
     <q-input stack-label

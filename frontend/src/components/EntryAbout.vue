@@ -53,9 +53,8 @@
         <list-header title="Datasets"
                      :explanation="'Datasets associated with this ' + dataType" />
         <q-item clickable
-                v-for="dataset, i in entry.datasets"
+                v-for="dataset in entry.datasets"
                 :key="dataset.id"
-                :id="'entry-about-datasets-' + i"
                 @click="$router.push({ 'name': 'Dataset About', 'params': { 'uuid': dataset.id } })">
           <q-item-section avatar>
             <q-icon name="fas fa-chart-area" />
@@ -75,7 +74,6 @@
         <list-header title="Order"
                      explanation="The order the dataset originates from" />
         <q-item clickable
-                id="entry-about-order"
                 @click="$router.push({ 'name': 'Order About', 'params': { 'uuid': entry.order.id } })">
           <q-item-section avatar>
             <q-icon name="fas fa-chart-area" />
@@ -95,9 +93,8 @@
         <list-header title="Related Datasets"
                      explanation="Other datasets originating from the same order" />
         <q-item clickable
-                v-for="dataset, i in entry.related"
+                v-for="dataset in entry.related"
                 :key="dataset.id"
-                :id="'entry-about-related-' + i"
                 @click="$router.push({ 'name': 'Dataset About', 'params': { 'uuid': dataset.id } })">
           <q-item-section avatar>
             <q-icon name="fas fa-chart-area" />
@@ -117,9 +114,8 @@
         <list-header title="Collections"
                      explanation="Collections containg the dataset" />
         <q-item clickable
-                v-for="collection, i in entry.collections"
+                v-for="collection in entry.collections"
                 :key="collection.id"
-                :id="'entry-about-collections-' + i"
                 @click="$router.push({ 'name': 'Collection About', 'params': { 'uuid': collection.id } })">
           <q-item-section avatar>
             <q-icon name="fas fa-chart-area" />
@@ -147,18 +143,16 @@
              id="entry-about-authors">
           <list-header title="Authors"
                        explanation="The ones who provided the sample, e.g. a researcher" />
-          <user-entry v-for="author, i in entry.authors"
-                      :key="author._id"
-                      :id="'entry-about-authors-' + i"
+          <user-entry v-for="author in entry.authors"
+                      :key="author.id"
                       v-bind="author" />
         </div>
         <div v-if="entry.generators.length"
              id="entry-about-generators">
           <list-header title="Generators"
                        explanation="The ones who generated the data, e.g. a facility" />
-          <user-entry v-for="generator, i in entry.generators"
-                      :key="generator._id"
-                      :id="'entry-about-generators-' + i"
+          <user-entry v-for="generator in entry.generators"
+                      :key="generator.id"
                       v-bind="generator" />
         </div>
         <div v-if="Object.keys(organisation).length"
@@ -173,9 +167,8 @@
            id="entry-about-editors">
         <list-header title="Editors"
                      explanation="Users that may edit this entry" />
-        <user-entry v-for="editor, i in entry.editors"
+        <user-entry v-for="editor in entry.editors"
                     :key="editor.id"
-                    :id="'entry-about-editors-' + i"
                     v-bind="editor" />
       </div>
     </q-list>

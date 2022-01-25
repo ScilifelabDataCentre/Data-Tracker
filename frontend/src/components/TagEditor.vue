@@ -1,5 +1,5 @@
 <template>
-<div>
+<div class="tag-editor">
   <div class="q-my-md">
     <q-input stack-label
              outlined

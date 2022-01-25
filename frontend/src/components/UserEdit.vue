@@ -274,15 +274,13 @@ export default {
           if (this.uuid !== '' && this.uuid !== 'default') {
             let key;
             for (key of data) {
-              this.$set(this.permissions, key,
-                        this.userData.permissions.includes(key));
+              this.permissions[key] = this.userData.permissions.includes(key);
             }
           }
           else {
             let key;
             for (key of data) {
-              this.$set(this.permissions, key,
-                        false);
+	      this.permissions[key] = false;
             }
           }
           })

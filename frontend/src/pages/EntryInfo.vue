@@ -271,9 +271,9 @@ export default {
       dataToSubmit.tags = this.entry.tags;
       if (this.dataType === 'order') {
         if (Array.isArray(this.entry.organisation))
-          dataToSubmit.organisation = this.entry.organisation[0];
+          dataToSubmit.organisation = this.entry.organisation[0].id;
 	else
-	  dataToSubmit.organisation = this.entry.organisation;
+	  dataToSubmit.organisation = this.entry.organisation.id;
         for (const key of ['authors', 'generators', 'editors']) {
           dataToSubmit[key] = this.entry[key].map(item => item.id);
         }
