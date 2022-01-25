@@ -3,11 +3,11 @@ describe('Data Tracker - User manager', function() {
     browser
       .url('http://localhost:5000/api/v1/logout')
       .url('http://localhost:5000/admin/user')
-      .assert.urlEquals('http://localhost:5000/forbidden/')
+      .assert.urlEquals('http://localhost:5000/forbidden')
       .assert.containsText('.q-page', 'Not Authorised')
       .url('http://localhost:5000/api/v1/developer/login/generator::frontend')
       .url('http://localhost:5000/admin/user')
-      .assert.urlEquals('http://localhost:5000/forbidden/')
+      .assert.urlEquals('http://localhost:5000/forbidden')
       .assert.containsText('.q-page', 'Not Authorised');
   });
 
