@@ -1,6 +1,6 @@
 <template>
-<q-dialog :value="value"
-          @input="updateVisibility">
+<q-dialog :model-value="modelValue"
+          @update:model-value="updateVisibility">
   <q-card v-if="loadingError">
     <q-card-section class="row items-center">
       <q-avatar icon="fas fa-exclamation-triangle" text-color="red" />
@@ -104,7 +104,7 @@
                        v-show="newApiKey.length > 0"
                        label="New API Key"
                        class="q-my-sm"
-                       :value="newApiKey"
+                       v-model="newApiKey"
                        disable />
             </q-item-section>
           </q-item>
@@ -190,12 +190,14 @@ export default {
       type: String,
       required: true,
     },
-    value: {
+    modelValue: {
       // visibility for v-model
       type: Boolean,
       required: true,
     },
   },
+
+  emits: ['update:modelValue'],
 
   watch: {
     uuid () {
@@ -272,15 +274,13 @@ export default {
           if (this.uuid !== '' && this.uuid !== 'default') {
             let key;
             for (key of data) {
-              this.$set(this.permissions, key,
-                        this.userData.permissions.includes(key));
+              this.permissions[key] = this.userData.permissions.includes(key);
             }
           }
           else {
             let key;
             for (key of data) {
-              this.$set(this.permissions, key,
-                        false);
+	      this.permissions[key] = false;
             }
           }
           })
@@ -289,7 +289,7 @@ export default {
     },
 
     updateVisibility (value) {
-      this.$emit('input', value)
+      this.$emit('update:modelValue', value)
     },
 
     deleteEntry() {

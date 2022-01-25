@@ -1,10 +1,10 @@
-import MainLayout from 'layouts/MainLayout.vue'
-
+const MainLayout = () => import(/* webpackChunkName: "base" */ 'layouts/MainLayout.vue')
 const Index = () => import(/* webpackChunkName: "base" */ 'pages/Index.vue')
 const About = () => import(/* webpackChunkName: "base" */ 'pages/About.vue')
 const UserGuide = () => import(/* webpackChunkName: "base" */ 'pages/UserGuide.vue')
 const Login = () => import(/* webpackChunkName: "base" */ 'pages/Login.vue')
-const CurrentUser = () => import(/* webpackChunkName: "base" */ 'pages/CurrentUser.vue')
+
+const CurrentUser = () => import(/* webpackChunkName: "user" */ 'pages/CurrentUser.vue')
 
 const Page404 = () => import(/* webpackChunkName: "errors" */ 'pages/Error404.vue')
 const NonAuth = () => import(/* webpackChunkName: "errors" */ 'pages/NonAuth.vue')
@@ -20,7 +20,7 @@ const routes = [
     path: '/',
     component: MainLayout,
     children: [
-      { path: '', component: Index, name: 'Home'},
+      { path: '', component: Index, name: 'Home' },
       { path: 'about', component: About, name: 'About' },
       { path: 'guide', component: UserGuide, name: 'User Guide' },
       {
@@ -29,10 +29,11 @@ const routes = [
         name: 'Login',
         props: true
       },
+
     ]
   },
 
-  {
+    {
     path: '/collections',
     component: MainLayout,
     children: [
@@ -90,22 +91,7 @@ const routes = [
     ]
   },
 
-  {
-    path: '/account',
-    component: MainLayout,
-    meta: {
-      'loginRequired': true,
-    },
-    children: [
-      {
-        path: '',
-        component: CurrentUser,
-        name: 'About Current User',
-      },
-    ]
-  },
-  
-  {
+    {
     path: '/orders',
     component: MainLayout,
     meta: {
@@ -136,6 +122,21 @@ const routes = [
         name: 'Order About'
       },
 
+    ]
+  },
+
+  {
+    path: '/account',
+    component: MainLayout,
+    meta: {
+      'loginRequired': true,
+    },
+    children: [
+      {
+        path: '',
+        component: CurrentUser,
+        name: 'About Current User',
+      },
     ]
   },
 
@@ -171,12 +172,11 @@ const routes = [
     ]
   },
 
+  // Always leave this as last one,
+  // but you can also remove it
   {
-    path: '*',
-    component: MainLayout,
-    children: [
-      { path: '', component: Page404, name: '404' }
-    ]
+    path: '/:catchAll(.*)*',
+    component: Page404,
   }
 ]
 

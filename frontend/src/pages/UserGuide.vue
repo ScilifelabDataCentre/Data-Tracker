@@ -150,11 +150,11 @@
     <q-card-section>
       <h4>Users</h4>
       <ul>
-        <li>Accessing user information requires USER_ADD, USER_SEARCH, and/or USER_MANAGEMENT depending on the operation
+        <li>Accessing user information requires USER_ADD, USER_SEARCH, and/or USER_MANAGEMENT depending on the operation</li>
         <li>A list of all users is available in the <router-link class="text-link" :to="{name: 'User Manager'}">User Manager</router-link></li>
         <ul>
           <li>New users can be created by clicking "+"</li>
-          <li>Click on the pen for a user to access more information (requires USER_MANAGEMENT)
+          <li>Click on the pen for a user to access more information (requires USER_MANAGEMENT)</li>
           <li>Email must be provided for all added users</li>
           <li>Only users with USER_MANAGEMENT can set permissions</li>
         </ul>

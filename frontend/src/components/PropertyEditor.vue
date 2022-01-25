@@ -1,5 +1,5 @@
 <template>
-<div>
+<div class="property-editor">
   <div class="q-my-md"
        id="property-editor-new-key">
     <q-input stack-label
@@ -27,8 +27,8 @@
                  outlined
                  :label="propertyKey"
                  :rules="[ function (val) { return evaluateField(val) || 'At least three characters, no whitespace at beginning nor end.' }]"
-                 @input="setProperty(propertyKey, $event)"
-                 :value="propertyEntries[propertyKey]">
+                 @update:model-value="setProperty(propertyKey, $event)"
+                 :model-value="propertyEntries[propertyKey]">
           <template v-slot:prepend>
             <q-icon name="fas fa-tag"
                     color="primary"/>

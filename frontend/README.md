@@ -1,6 +1,6 @@
-# Data Tracker (frontend-quasar)
+# Data Tracker (data-tracker)
 
-A system for tracking datasets
+Dataset tracking for SciLifeLab
 
 ## Install the dependencies
 ```bash

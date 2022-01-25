@@ -1,18 +1,18 @@
 <template>
-<div>
+<div v-if="Object.keys(entry).length > 0">
   <div v-if="this.newEntry && this.dataType === 'dataset'"
        id="entry-edit-order-select"
        class="q-my-sm">
     <q-table flat
              title="Parent order for the dataset"
-             :data="onlySelectedOrder ? parentOrder : orders"
+             :rows="onlySelectedOrder ? parentOrder : orders"
              :columns="columns"
              row-key="id"
              :loading="isLoadingOrders"
              :filter="filter"
              selection="single"
-             :selected.sync="parentOrder"
-             :pagination.sync="pagination"
+             v-model:selected="parentOrder"
+             pagination="pagination"
              no-data-label="No entries found"
              :no-results-label="filter + ' does not match any entries'">
       <template v-slot:top-right>
@@ -125,14 +125,14 @@
                         label="Datasets"
                         caption="Datasets to include in the entry">
         <q-table flat
-                 :data="onlySelectedDatasets ? selectedDatasets : datasets"
+                 :rows="onlySelectedDatasets ? selectedDatasets : datasets"
                  :columns="columns"
                  row-key="id"
                  :loading="isLoadingDatasets"
                  :filter="filter"
                  selection="multiple"
-                 :selected.sync="selectedDatasets"
-                 :pagination.sync="pagination"
+                 v-model:selected="selectedDatasets"
+                 :pagination="pagination"
                  no-data-label="No entries found"
                  :no-results-label="filter + ' does not match any entries'">
           <template v-slot:top-left>

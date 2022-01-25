@@ -2,14 +2,14 @@
 <div>
   <q-table
     flat
-  :data="onlySelected ? selected : users"
+  :rows="onlySelected ? selected : users"
   :columns="columns"
   row-key="id"
   :loading="isLoadingUsers"
   :filter="filter"
   :selection="selectType"
-  :selected.sync="selected"
-  :pagination.sync="pagination"
+  v-model:selected="selected"
+  :pagination="pagination"
   no-data-label="No entries found"
   :no-results-label="filter + ' does not match any entries'">
   <template v-slot:top-left>

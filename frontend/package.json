@@ -1,28 +1,29 @@
 {
-  "name": "frontend-quasar",
+  "name": "data-tracker",
   "version": "0.0.1",
-  "description": "A system for tracking datasets",
+  "description": "Dataset tracking for SciLifeLab",
   "productName": "Data Tracker",
-  "author": "SciLifeLab Data Centre",
+  "author": "Linus Östberg <linus.ostberg@scilifelab.uu.se>",
   "private": true,
   "scripts": {
     "lint": "eslint --ext .js,.vue ./",
     "test": "echo \"No test specified\" && exit 0"
   },
   "dependencies": {
-    "@quasar/extras": "^1.10.2",
+    "@quasar/extras": "^1.0.0",
     "axios": "^0.21.1",
-    "core-js": "^3.10.0",
-    "quasar": "^1.15.10"
+    "core-js": "^3.6.5",
+    "quasar": "^2.0.0",
+    "vuex": "^4.0.1"
   },
   "devDependencies": {
-    "@quasar/app": "^2.2.4",
-    "@quasar/quasar-app-extension-qmarkdown": "^1.4.1",
-    "babel-eslint": "^10.1.0",
+    "@babel/eslint-parser": "^7.13.14",
+    "@quasar/app": "^3.0.0",
+    "@quasar/quasar-app-extension-qmarkdown": "^2.0.0-beta.2",
     "eslint": "^7.14.0",
-    "eslint-config-prettier": "^6.15.0",
-    "eslint-loader": "^4.0.2",
-    "eslint-plugin-vue": "^7.1.0"
+    "eslint-config-prettier": "^8.1.0",
+    "eslint-plugin-vue": "^7.0.0",
+    "eslint-webpack-plugin": "^2.4.0"
   },
   "browserslist": [
     "last 10 Chrome versions",
@@ -36,7 +37,7 @@
     "last 5 Opera versions"
   ],
   "engines": {
-    "node": ">= 10.18.1",
+    "node": ">= 12.22.1",
     "npm": ">= 6.13.4",
     "yarn": ">= 1.21.1"
   }

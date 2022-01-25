@@ -15,8 +15,8 @@ describe('Data Tracker - Tag Editor', function() {
   test('Test adding tags', function (browser) {
     browser
       .setInputValue('#entry-edit-tags input', 'New Tag1')
-      .assert.elementPresent('#entry-edit-tags .q-field__append .fa-plus')
-      .assert.elementPresent('#entry-edit-tags .q-field__messages:empty')
+      .assert.elementPresent('.tag-editor .fa-plus')
+      .assert.elementPresent('.tag-editor .q-field__messages:empty')
       .keys('\uE006')
       .assert.containsText('#entry-edit-tags .q-chip', 'New Tag1')
       .setInputValue('#entry-edit-tags input', 'New Tag2')
@@ -34,8 +34,8 @@ describe('Data Tracker - Tag Editor', function() {
   test('Test tag style evaluation', function (browser) {
     browser  
       .setInputValue('#entry-edit-tags input', '')
-      .assert.not.containsText('#entry-edit-tags .q-field__append', 'error')
-      .assert.not.visible('#entry-edit-tags .q-field__append .fa-plus')
+      .assert.not.elementPresent('#entry-edit-tags .q-field__append')
+      .assert.not.enabled('.tag-editor .q-field__after button')
       .assert.elementPresent('#entry-edit-tags .q-field__messages:empty')
 
       .setInputValue('#entry-edit-tags input', ' bad')

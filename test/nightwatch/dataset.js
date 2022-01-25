@@ -29,28 +29,28 @@ describe('Data Tracker - Datasets', function() {
       .assert.not.elementPresent('#entry-about-order')
       .assert.not.elementPresent('#entry-about-datasets')
 
-      .assert.containsText('#entry-about-related-0', 'Frontend Test Dataset 2')
-      .assert.containsText('#entry-about-related-0', 'd-27cc1144-67bf-45b2-af21-425f9bfc7333')
+      .assert.containsText('#entry-about-related', 'Frontend Test Dataset 2')
+      .assert.containsText('#entry-about-related', 'd-27cc1144-67bf-45b2-af21-425f9bfc7333')
 
-      .assert.containsText('#entry-about-collections-0', 'Frontend Test Collection')
-      .assert.containsText('#entry-about-collections-0', 'c-21c8ecd1-9908-462f-ba84-3ca399074b36')
+      .assert.containsText('#entry-about-collections', 'Frontend Test Collection')
+      .assert.containsText('#entry-about-collections', 'c-21c8ecd1-9908-462f-ba84-3ca399074b36')
     
-      .assert.containsText('#entry-about-authors-0', 'Frontend Author')
-      .assert.not.containsText('#entry-about-authors-0', 'author@frontend.dev')
-      .click('#entry-about-authors-0 .q-focusable')
-      .assert.containsText('#entry-about-authors-0', 'author@frontend.dev')
-      .assert.containsText('#entry-about-authors-0', 'Frontend Test University')
-      .assert.containsText('#entry-about-authors-0', 'https://www.example.com/frontend_author')
-      .click('#entry-about-authors-0 .q-focusable')
-      .assert.not.containsText('#entry-about-authors-0', 'author@frontend.dev')
+      .assert.containsText('#entry-about-authors', 'Frontend Author')
+      .assert.not.containsText('#entry-about-authors', 'author@frontend.dev')
+      .click('#entry-about-authors .q-focusable')
+      .assert.containsText('#entry-about-authors', 'author@frontend.dev')
+      .assert.containsText('#entry-about-authors', 'Frontend Test University')
+      .assert.containsText('#entry-about-authors', 'https://www.example.com/frontend_author')
+      .click('#entry-about-authors .q-focusable')
+      .assert.not.containsText('#entry-about-authors', 'author@frontend.dev')
 
       .assert.containsText('#entry-about-generators', 'Frontend Generator')
       .assert.not.containsText('#entry-about-generators', 'generator@frontend.dev')
-      .click('#entry-about-generators-0 .q-focusable')
+      .click('#entry-about-generators .q-focusable')
       .assert.containsText('#entry-about-generators', 'generator@frontend.dev')
       .assert.containsText('#entry-about-generators', 'Frontend Test University')
       .assert.containsText('#entry-about-generators', 'https://www.example.com/frontend_generator')
-      .click('#entry-about-generators-0 .q-focusable')
+      .click('#entry-about-generators .q-focusable')
       .assert.not.containsText('#entry-about-generators', 'generator@frontend.dev')
 
       .assert.containsText('#entry-about-organisation', 'Frontend Organisation')
@@ -64,13 +64,13 @@ describe('Data Tracker - Datasets', function() {
 
       .assert.not.elementPresent('#entry-about-editors')
 
-      .click('#entry-about-related-0')
+      .click('#entry-about-related')
       .waitForElementVisible('#entry-about-title-text')
       .assert.urlEquals('http://localhost:5000/datasets/d-27cc1144-67bf-45b2-af21-425f9bfc7333')
       .assert.containsText('#entry-about-title-text', 'Frontend Test Dataset 2')
       .assert.containsText('#entry-about-uuid', 'd-27cc1144-67bf-45b2-af21-425f9bfc7333')
 
-      .click('#entry-about-collections-0')
+      .click('#entry-about-collections')
       .waitForElementVisible('#entry-about-title-text')
       .assert.urlEquals('http://localhost:5000/collections/c-21c8ecd1-9908-462f-ba84-3ca399074b36')
       .assert.containsText('#entry-about-title-text', 'Frontend Test Collection')
@@ -192,22 +192,22 @@ describe('Data Tracker - Datasets', function() {
       .assert.not.elementPresent('#entry-about-datasets')
       .assert.not.elementPresent('#entry-about-collections')
     
-      .assert.containsText('#entry-about-authors-0', 'Frontend Author')
-      .assert.not.containsText('#entry-about-authors-0', 'author@frontend.dev')
-      .click('#entry-about-authors-0 .q-focusable')
-      .assert.containsText('#entry-about-authors-0', 'author@frontend.dev')
-      .assert.containsText('#entry-about-authors-0', 'Frontend Test University')
-      .assert.containsText('#entry-about-authors-0', 'https://www.example.com/frontend_author')
-      .click('#entry-about-authors-0 .q-focusable')
-      .assert.not.containsText('#entry-about-authors-0', 'author@frontend.dev')
+      .assert.containsText('#entry-about-authors', 'Frontend Author')
+      .assert.not.containsText('#entry-about-authors', 'author@frontend.dev')
+      .click('#entry-about-authors .q-focusable')
+      .assert.containsText('#entry-about-authors', 'author@frontend.dev')
+      .assert.containsText('#entry-about-authors', 'Frontend Test University')
+      .assert.containsText('#entry-about-authors', 'https://www.example.com/frontend_author')
+      .click('#entry-about-authors .q-focusable')
+      .assert.not.containsText('#entry-about-authors', 'author@frontend.dev')
 
       .assert.containsText('#entry-about-generators', 'Frontend Generator')
       .assert.not.containsText('#entry-about-generators', 'generator@frontend.dev')
-      .click('#entry-about-generators-0 .q-focusable')
+      .click('#entry-about-generators .q-focusable')
       .assert.containsText('#entry-about-generators', 'generator@frontend.dev')
       .assert.containsText('#entry-about-generators', 'Frontend Test University')
       .assert.containsText('#entry-about-generators', 'https://www.example.com/frontend_generator')
-      .click('#entry-about-generators-0 .q-focusable')
+      .click('#entry-about-generators .q-focusable')
       .assert.not.containsText('#entry-about-generators', 'generator@frontend.dev')
 
       .assert.containsText('#entry-about-organisation', 'Frontend Organisation')
@@ -220,11 +220,11 @@ describe('Data Tracker - Datasets', function() {
       .assert.not.containsText('#entry-about-organisation', 'organisation@frontend.dev')
 
       .assert.not.containsText('#entry-about-editors', 'editor@frontend.dev')
-      .click('#entry-about-editors-0 .q-focusable')
-      .assert.containsText('#entry-about-editors-0', 'editor@frontend.dev')
-      .assert.containsText('#entry-about-editors-0', 'Frontend Test University')
-      .assert.containsText('#entry-about-editors-0', 'https://www.example.com/frontend_editor')
-      .click('#entry-about-editors-0 .q-focusable')
+      .click('#entry-about-editors .q-focusable')
+      .assert.containsText('#entry-about-editors', 'editor@frontend.dev')
+      .assert.containsText('#entry-about-editors', 'Frontend Test University')
+      .assert.containsText('#entry-about-editors', 'https://www.example.com/frontend_editor')
+      .click('#entry-about-editors .q-focusable')
   });
 
   test('Enter edit mode', function (browser) {
@@ -282,7 +282,7 @@ describe('Data Tracker - Datasets', function() {
       .click('#entry-info-menu-delete')
       .waitForElementVisible('.q-dialog button')
       .click('.q-dialog button')
-      .assert.urlEquals('http://localhost:5000/datasets/')
+      .assert.urlEquals('http://localhost:5000/datasets')
   });
   
   after(browser => browser.end());

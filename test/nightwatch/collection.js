@@ -26,10 +26,10 @@ describe('Data Tracker - Collections', function() {
       .assert.containsText('#entry-about-properties .q-chip__content', 'Frontend Test Entry')
       .assert.containsText('#entry-about-description', 'A collection added for frontend tests')
 
-      .assert.containsText('#entry-about-datasets-0', 'Frontend Test Dataset')
-      .assert.containsText('#entry-about-datasets-0', 'd-79a755f1-69b0-4734-9977-ac945c4c51c1')
-      .assert.containsText('#entry-about-datasets-1', 'Frontend Test Dataset 2')
-      .assert.containsText('#entry-about-datasets-1', 'd-27cc1144-67bf-45b2-af21-425f9bfc7333')
+      .assert.containsText('#entry-about-datasets .q-item:nth-of-type(2)', 'Frontend Test Dataset')
+      .assert.containsText('#entry-about-datasets .q-item:nth-of-type(2)', 'd-79a755f1-69b0-4734-9977-ac945c4c51c1')
+      .assert.containsText('#entry-about-datasets .q-item:nth-of-type(3)', 'Frontend Test Dataset 2')
+      .assert.containsText('#entry-about-datasets .q-item:nth-of-type(3)', 'd-27cc1144-67bf-45b2-af21-425f9bfc7333')
 
       .assert.not.elementPresent('#entry-about-related')
       .assert.not.elementPresent('#entry-about-collections')
@@ -132,10 +132,10 @@ describe('Data Tracker - Collections', function() {
       .assert.containsText('#entry-about-properties .q-chip:nth-of-type(2) span', 'Key2')
       .assert.containsText('#entry-about-properties .q-chip:nth-of-type(2)', 'Value2')
 
-      .assert.containsText('#entry-about-datasets-0', 'Frontend Test Dataset')
-      .assert.containsText('#entry-about-datasets-0', 'd-79a755f1-69b0-4734-9977-ac945c4c51c1')
-      .assert.containsText('#entry-about-datasets-1', 'Frontend Test Dataset 2')
-      .assert.containsText('#entry-about-datasets-1', 'd-27cc1144-67bf-45b2-af21-425f9bfc7333')
+      .assert.containsText('#entry-about-datasets .q-item:nth-of-type(2)', 'Frontend Test Dataset')
+      .assert.containsText('#entry-about-datasets .q-item:nth-of-type(2)', 'd-79a755f1-69b0-4734-9977-ac945c4c51c1')
+      .assert.containsText('#entry-about-datasets .q-item:nth-of-type(3)', 'Frontend Test Dataset 2')
+      .assert.containsText('#entry-about-datasets .q-item:nth-of-type(3)', 'd-27cc1144-67bf-45b2-af21-425f9bfc7333')
 
       .assert.not.elementPresent('#entry-about-order')
       .assert.not.elementPresent('#entry-about-related')
@@ -143,18 +143,12 @@ describe('Data Tracker - Collections', function() {
     
       .assert.containsText('#entry-about-editors', 'Frontend Editor')
       .assert.not.containsText('#entry-about-editors', 'editor@frontend.dev')
-      .click('#entry-about-editors-0 .q-focusable')
-      .assert.containsText('#entry-about-editors-0', 'editor@frontend.dev')
-      .assert.containsText('#entry-about-editors-0', 'Frontend Test University')
-      .assert.containsText('#entry-about-editors-0', 'https://www.example.com/frontend_editor')
-      .click('#entry-about-editors-0 .q-focusable')
-      .assert.not.containsText('#entry-about-editors-0', 'editor@frontend.dev')
-      .click('#entry-about-editors-1 .q-focusable')
-      .assert.containsText('#entry-about-editors-1', 'generator@frontend.dev')
-      .assert.containsText('#entry-about-editors-1', 'Frontend Test University')
-      .assert.containsText('#entry-about-editors-1', 'https://www.example.com/frontend_generator')
-      .click('#entry-about-editors-1 .q-focusable')
-      .assert.not.containsText('#entry-about-editors-1', 'generator@frontend.dev');
+      .click('#entry-about-editors .q-item.q-focusable')
+      .assert.containsText('#entry-about-editors .q-list', 'editor@frontend.dev')
+      .assert.containsText('#entry-about-editors .q-list', 'Frontend Test University')
+      .assert.containsText('#entry-about-editors .q-list', 'https://www.example.com/frontend_editor')
+      .click('#entry-about-editors .q-item.q-focusable')
+      .assert.not.visible('#entry-about-editors .q-list')
   });
 
   test('Enter edit mode', function (browser) {
@@ -222,7 +216,7 @@ describe('Data Tracker - Collections', function() {
       .click('#entry-info-menu-delete')
       .waitForElementVisible('.q-dialog button')
       .click('.q-dialog button')
-      .assert.urlEquals('http://localhost:5000/collections/')
+      .verify.urlEquals('http://localhost:5000/collections')
   });
 
   after(browser => browser.end());

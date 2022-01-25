@@ -18,11 +18,11 @@ describe('Data Tracker - Front Page', function() {
       .assert.elementPresent('#index-card-collections')
       .assert.not.elementPresent('#index-card-orders')
       .click('#index-card-datasets')
-      .assert.urlEquals('http://localhost:5000/datasets/')
+      .assert.urlEquals('http://localhost:5000/datasets')
       .url('http://localhost:5000/')
       .waitForElementVisible('.q-page')
       .click('#index-card-collections')
-      .assert.urlEquals('http://localhost:5000/collections/');
+      .assert.urlEquals('http://localhost:5000/collections');
   });
 
   test('Basic User', function (browser) {
@@ -67,7 +67,7 @@ describe('Data Tracker - Front Page', function() {
       .setInputValue('.q-page input', 'o-d4467732-8ddd-43a6-a904-5b7376f60e5c')
       .assert.not.containsText('.q-field .q-field__messages', 'Identifiers start with o-, d-, or c-')
       .click('.q-page .q-btn')
-      .assert.urlEquals('http://localhost:5000/forbidden/')
+      .assert.urlEquals('http://localhost:5000/forbidden')
 
       .url('http://localhost:5000/api/v1/developer/login/editor::frontend')
       .url('http://localhost:5000/')

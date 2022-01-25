@@ -1,6 +1,6 @@
 <template>
-<q-dialog :value="value"
-          @input="updateVisibility">
+<q-dialog :model-value="modelValue"
+          @update:model-value="updateVisibility">
   <q-card id="log-viewer-dialog">
     <q-card-section class="text-h5 text-center">
       Entry History
@@ -68,11 +68,13 @@ export default {
       type: String,
       default: '',
     },
-    value: {
+    modelValue: {
       type: Boolean,
       required: true,
     },
   },
+
+  emits: ['update:modelValue'],
 
   computed: {
     logs: {
@@ -83,7 +85,7 @@ export default {
   },
 
   watch: {
-    value: function(val) {
+    modelValue: function(val) {
       if (val)
         if (val && (this.uuid !== '')) {
           this.$store.dispatch('entries/resetEntryLog')
@@ -104,7 +106,7 @@ export default {
 
   methods: {
     updateVisibility(value) {
-      this.$emit('input', value)
+      this.$emit('update:modelValue', value)
     },
 
     'capitalize': capitalize,
