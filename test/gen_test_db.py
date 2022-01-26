@@ -5,7 +5,6 @@ Generate a test dataset.
 import random
 import re
 import string
-import uuid
 
 import bson
 import lorem
@@ -299,10 +298,10 @@ def gen_frontend_test_entries(db):
             "affiliation": "Frontend Test University",
             "api_key": apihash,
             "api_salt": apikey["salt"],
-            "auth_ids": [f"author::frontend"],
-            "email": f"author@frontend.dev",
-            "contact": f"author@frontend.dev",
-            "name": f"Frontend Author",
+            "auth_ids": ["author::frontend"],
+            "email": "author@frontend.dev",
+            "contact": "author@frontend.dev",
+            "name": "Frontend Author",
             "permissions": [],
             "url": "https://www.example.com/frontend_author",
         },
@@ -311,10 +310,10 @@ def gen_frontend_test_entries(db):
             "affiliation": "Frontend Test University",
             "api_key": apihash,
             "api_salt": apikey["salt"],
-            "auth_ids": [f"generator::frontend"],
-            "email": f"generator@frontend.dev",
-            "contact": f"generator@frontend.dev",
-            "name": f"Frontend Generator",
+            "auth_ids": ["generator::frontend"],
+            "email": "generator@frontend.dev",
+            "contact": "generator@frontend.dev",
+            "name": "Frontend Generator",
             "permissions": ["DATA_EDIT"],
             "url": "https://www.example.com/frontend_generator",
         },
@@ -323,10 +322,10 @@ def gen_frontend_test_entries(db):
             "affiliation": "Frontend Test University",
             "api_key": apihash,
             "api_salt": apikey["salt"],
-            "auth_ids": [f"organisation::frontend"],
-            "email": f"organisation@frontend.dev",
-            "contact": f"organisation@frontend.dev",
-            "name": f"Frontend Organisation",
+            "auth_ids": ["organisation::frontend"],
+            "email": "organisation@frontend.dev",
+            "contact": "organisation@frontend.dev",
+            "name": "Frontend Organisation",
             "permissions": ["DATA_MANAGEMENT", "USER_MANAGEMENT"],
             "url": "https://www.example.com/frontend_organisation",
         },
@@ -335,10 +334,10 @@ def gen_frontend_test_entries(db):
             "affiliation": "Frontend Test University",
             "api_key": apihash,
             "api_salt": apikey["salt"],
-            "auth_ids": [f"editor::frontend"],
-            "email": f"editor@frontend.dev",
-            "contact": f"editor@frontend.dev",
-            "name": f"Frontend Editor",
+            "auth_ids": ["editor::frontend"],
+            "email": "editor@frontend.dev",
+            "contact": "editor@frontend.dev",
+            "name": "Frontend Editor",
             "permissions": ["DATA_EDIT"],
             "url": "https://www.example.com/frontend_editor",
         },
@@ -364,7 +363,7 @@ def gen_frontend_test_entries(db):
         "organisation": "u-a5a7534b-1b49-41a5-b909-738e49cd137d",
         "editors": ["u-3a9a19a7-cd30-4c7b-b280-e35220e1a611"],
         "description": "An order added for frontend tests",
-        "title": f"Frontend Test Order",
+        "title": "Frontend Test Order",
         "properties": {"Type": "Frontend Test Entry"},
         "tags": ["Frontend", "Test"],
         "datasets": [
@@ -387,7 +386,7 @@ def gen_frontend_test_entries(db):
     changes = {
         "_id": "d-79a755f1-69b0-4734-9977-ac945c4c51c1",
         "description": "A dataset added for frontend tests",
-        "title": f"Frontend Test Dataset",
+        "title": "Frontend Test Dataset",
         "properties": {"Type": "Frontend Test Entry"},
         "tags": ["Frontend", "Test"],
     }
@@ -405,7 +404,7 @@ def gen_frontend_test_entries(db):
     changes = {
         "_id": "d-27cc1144-67bf-45b2-af21-425f9bfc7333",
         "description": "A dataset added for frontend tests 2",
-        "title": f"Frontend Test Dataset 2",
+        "title": "Frontend Test Dataset 2",
         "properties": {"Type": "Frontend Test Entry"},
         "tags": ["Frontend", "Test"],
     }
@@ -425,7 +424,7 @@ def gen_frontend_test_entries(db):
         "_id": "c-21c8ecd1-9908-462f-ba84-3ca399074b36",
         "editors": ["u-3a9a19a7-cd30-4c7b-b280-e35220e1a611"],
         "description": "A collection added for frontend tests",
-        "title": f"Frontend Test Collection",
+        "title": "Frontend Test Collection",
         "properties": {"Type": "Frontend Test Entry"},
         "tags": ["Frontend", "Test"],
         "datasets": [
