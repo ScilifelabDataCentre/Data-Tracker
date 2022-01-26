@@ -36,7 +36,7 @@ def read_config(path: str = ""):
                 path = fpath
                 break
 
-    with open(path, "r", encoding='utf-8') as in_file:
+    with open(path, "r", encoding="utf-8") as in_file:
         return yaml.load(in_file, Loader=yaml.FullLoader)
 
 
