@@ -8,7 +8,7 @@ import secrets
 import uuid
 from collections import namedtuple
 from itertools import chain
-from typing import Any, Union
+from typing import Any, Union, Optional
 
 import argon2
 import bson
@@ -342,10 +342,10 @@ def make_log(
     data_type: str,
     action: str,
     comment: str,
-    data: dict = None,
+    data: Optional[dict] = None,
     no_user: bool = False,
     dbsession=None,
-):
+) -> bool:
     """
     Log a change in the system.
 
@@ -388,7 +388,7 @@ def make_log(
             f"Log failed: A:{action} C:{comment} D:{data} "
             + f'DT: {data_type} U: {flask.g.current_user["_id"]}'
         )
-    return result.acknowledged
+    return bool(result.acknowledged)
 
 
 def incremental_logs(logs: list):
@@ -691,9 +691,9 @@ def get_entry(db, dbcollection: str, identifier: str) -> dict:
 def req_commit_to_db(
     dbcollection: str,
     operation: str,
-    data: dict = None,
+    data: Optional[dict] = None,
     comment: str = "",
-) -> bool:
+) -> CommitResult:
     """
     Commit to one entry in the database from a Flask request.
 
