@@ -161,12 +161,16 @@ def gen_orders(db, nr_orders: int = 300):
     for i in range(1, nr_orders + 1):
         order = structure.order()
         changes = {
-            "authors": [random.choice(users)["_id"] for _ in range(random.randint(0, 4))],
-            "generators": [random.choice(facilities)["_id"] for _ in range(random.randint(0, 4))],
+            "authors": list(
+                set(random.choice(users + facilities)["_id"] for _ in range(random.randint(0, 4)))
+            ),
+            "generators": list(
+                set(random.choice(users + facilities)["_id"] for _ in range(random.randint(0, 4)))
+            ),
             "organisation": random.choice(organisations)["_id"],
-            "editors": [
-                random.choice(users + facilities)["_id"] for _ in range(random.randint(1, 5))
-            ],
+            "editors": list(
+                set(random.choice(users + facilities)["_id"] for _ in range(random.randint(1, 5)))
+            ),
             "description": make_description(),
             "title": f"Order {i} Title {lorem.sentence()[:-1]}",
         }
@@ -199,10 +203,12 @@ def gen_collections(db, nr_collections: int = 300):
         collection = structure.collection()
         changes = {
             "description": make_description(),
-            "datasets": [random.choice(datasets)["_id"] for _ in range(random.randint(0, 5))],
-            "editors": [
-                random.choice(users + facilities)["_id"] for _ in range(random.randint(1, 5))
-            ],
+            "datasets": list(
+                set(random.choice(datasets)["_id"] for _ in range(random.randint(0, 5)))
+            ),
+            "editors": list(
+                set(random.choice(users + facilities)["_id"] for _ in range(random.randint(1, 5)))
+            ),
             "title": f"Collection {i} Title",
         }
         if random.random() > 0.4:
