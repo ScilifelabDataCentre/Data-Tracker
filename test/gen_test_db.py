@@ -158,22 +158,15 @@ def gen_orders(db, nr_orders: int = 300):
     user_re = re.compile(".*::local")
     facilities = tuple(db["users"].find({"auth_ids": facility_re}))
     organisations = tuple(db["users"].find({"auth_ids": organisation_re}))
-    users = tuple(
-        db["users"].find({"$and": [{"auth_ids": user_re}, {"permissions": "DATA_EDIT"}]})
-    )
+    users = tuple(db["users"].find({"$and": [{"auth_ids": user_re}, {"permissions": "DATA_EDIT"}]}))
     for i in range(1, nr_orders + 1):
         order = structure.order()
         changes = {
-            "authors": [
-                random.choice(users)["_id"] for _ in range(random.randint(0, 4))
-            ],
-            "generators": [
-                random.choice(facilities)["_id"] for _ in range(random.randint(0, 4))
-            ],
+            "authors": [random.choice(users)["_id"] for _ in range(random.randint(0, 4))],
+            "generators": [random.choice(facilities)["_id"] for _ in range(random.randint(0, 4))],
             "organisation": random.choice(organisations)["_id"],
             "editors": [
-                random.choice(users + facilities)["_id"]
-                for _ in range(random.randint(1, 5))
+                random.choice(users + facilities)["_id"] for _ in range(random.randint(1, 5))
             ],
             "description": make_description(),
             "title": f"Order {i} Title {lorem.sentence()[:-1]}",
@@ -202,19 +195,14 @@ def gen_collections(db, nr_collections: int = 300):
     user_re = re.compile(".*::local")
     facility_re = re.compile("facility[0-9]*::local")
     facilities = tuple(db["users"].find({"auth_ids": facility_re}))
-    users = tuple(
-        db["users"].find({"$and": [{"auth_ids": user_re}, {"permissions": "DATA_EDIT"}]})
-    )
+    users = tuple(db["users"].find({"$and": [{"auth_ids": user_re}, {"permissions": "DATA_EDIT"}]}))
     for i in range(1, nr_collections + 1):
         collection = structure.collection()
         changes = {
             "description": make_description(),
-            "datasets": [
-                random.choice(datasets)["_id"] for _ in range(random.randint(0, 5))
-            ],
+            "datasets": [random.choice(datasets)["_id"] for _ in range(random.randint(0, 5))],
             "editors": [
-                random.choice(users + facilities)["_id"]
-                for _ in range(random.randint(1, 5))
+                random.choice(users + facilities)["_id"] for _ in range(random.randint(1, 5))
             ],
             "title": f"Collection {i} Title",
         }
@@ -286,9 +274,7 @@ def gen_users(db, nr_users: int = 100):
             "contact": f"pub_user{i}@place{i}.se",
             "orcid": "-".join(f"{random.randint(0,10000):04}" for _ in range(4)),
             "name": f"First Last {i}",
-            "permissions": list(
-                set(random.choice(perm_keys) for _ in range(random.randint(0, 2)))
-            ),
+            "permissions": list(set(random.choice(perm_keys) for _ in range(random.randint(0, 2)))),
             "url": f"https://www.example.com/user{i}",
         }
         user.update(changes)
@@ -381,8 +367,10 @@ def gen_frontend_test_entries(db):
         "title": f"Frontend Test Order",
         "properties": {"Type": "Frontend Test Entry"},
         "tags": ["Frontend", "Test"],
-        "datasets": ["d-79a755f1-69b0-4734-9977-ac945c4c51c1",
-                     "d-27cc1144-67bf-45b2-af21-425f9bfc7333"]
+        "datasets": [
+            "d-79a755f1-69b0-4734-9977-ac945c4c51c1",
+            "d-27cc1144-67bf-45b2-af21-425f9bfc7333",
+        ],
     }
     order.update(changes)
     db["orders"].insert_one(order)
@@ -440,8 +428,10 @@ def gen_frontend_test_entries(db):
         "title": f"Frontend Test Collection",
         "properties": {"Type": "Frontend Test Entry"},
         "tags": ["Frontend", "Test"],
-        "datasets": ["d-79a755f1-69b0-4734-9977-ac945c4c51c1",
-                     "d-27cc1144-67bf-45b2-af21-425f9bfc7333"]
+        "datasets": [
+            "d-79a755f1-69b0-4734-9977-ac945c4c51c1",
+            "d-27cc1144-67bf-45b2-af21-425f9bfc7333",
+        ],
     }
     collection.update(changes)
     db["collections"].insert_one(collection)
@@ -463,9 +453,7 @@ if __name__ == "__main__":
         username=CONF["mongo"]["user"],
         password=CONF["mongo"]["password"],
     )
-    codec_options = bson.codec_options.CodecOptions(
-        uuid_representation=bson.binary.STANDARD
-    )
+    codec_options = bson.codec_options.CodecOptions(uuid_representation=bson.binary.STANDARD)
     DB = DBSERVER.get_database(CONF["mongo"]["db"], codec_options=(codec_options))
     gen_facilities(DB)
     gen_organisations(DB)
