@@ -1,3 +1,4 @@
+---
 name: Black formatting
 on:
   push:
@@ -15,4 +16,4 @@ jobs:
       - name: Check code lints with Black
         uses: jpetrucciani/black-check@master
         with:
-	  black_flags: '-l 100'
+          black_flags: '-l 100'
