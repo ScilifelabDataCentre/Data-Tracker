@@ -9,7 +9,7 @@
                stack-label
                for="curr-user-uuid"
                label="UUID"
-               :value="currentUser.id"
+               v-model="currentUser.id"
                class="q-my-sm"
                disable />
       <q-input outlined
@@ -17,7 +17,7 @@
                stack-label
                for="curr-user-email"
                label="Email"
-               :value="currentUser.email"
+               v-model="currentUser.email"
                disable />
       <q-input outlined
                for="curr-user-name"
