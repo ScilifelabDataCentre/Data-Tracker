@@ -123,7 +123,7 @@
                for="curr-user-new-key-listing"
                label="New API Key"
                class="q-my-sm"
-               :value="newApiKey"
+               v-model="newApiKey"
                disable />
       </div>
   </div>
