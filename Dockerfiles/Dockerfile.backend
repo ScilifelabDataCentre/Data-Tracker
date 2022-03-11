@@ -1,18 +1,24 @@
-FROM python:alpine
+FROM python:alpine as base
+
+RUN apk update && apk upgrade
 
 RUN apk add gcc musl-dev python3-dev libffi-dev openssl-dev rust cargo
 
 COPY ./backend/requirements.txt /requirements.txt
-
 RUN pip3 install -r /requirements.txt
-RUN pip3 install gunicorn
-
 COPY ./backend/ /code/
 WORKDIR /code/
 ENV PYTHONPATH /code
 
+
+FROM base as dev
+
+COPY config.yaml.sample /config.yaml
+CMD ["python3", "app.py", "--config_file", "/config.yaml"]
+
+
+FROM base as production
+
+RUN pip install gunicorn
 ENV GUNICORN_CMD_ARGS "--bind=0.0.0.0:8000 --workers=2 --thread=4 --worker-class=gthread --forwarded-allow-ips='*' --access-logfile -"
-
-# Must mount the file /config.yaml before starting
-
 CMD ["gunicorn", "app:app"]
