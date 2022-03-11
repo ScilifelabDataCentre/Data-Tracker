@@ -23,7 +23,8 @@ services:
   frontend:
     build:
       context: ./
-      dockerfile: Dockerfiles/Dockerfile.frontend.dev
+      dockerfile: Dockerfiles/Dockerfile.frontend
+      target: dev
     ports:
       - 127.0.0.1:8080:8080
     restart: on-failure
