@@ -1,12 +1,7 @@
 ---
 name: Black formatting
-on:
-  push:
-    paths:
-      - "**.py"
-  pull_request:
-    paths:
-      - "**.py"
+
+on: [push, pull_request]
 
 jobs:
   BlackFormatting:
@@ -14,8 +9,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Check code lints with Black
+      - name: Check code formatting with Black
         uses: psf/black@stable
         with:
-	  black_args: "-l 100"
-	  
+          options: "-l 100 --check"
+          src: "./backend"
