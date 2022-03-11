@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "chromedriver": "^91.0.1",
+    "chromedriver": "^97.0.0",
     "geckodriver": "^2.0.0",
     "nightwatch": "^1.7.6"
   }
