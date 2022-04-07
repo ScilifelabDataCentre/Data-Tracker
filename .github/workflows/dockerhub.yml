@@ -9,7 +9,7 @@ on:
 jobs:
   push_to_registry:
     if: github.repository == 'ScilifelabDataCentre/Data-Tracker'
-    name: Push Docker image to Docker Hub
+    name: Publish Docker Image
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
@@ -19,21 +19,41 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - id: docker-tag
-        uses: yuya-takeyama/docker-tag-from-github-ref-action@v1
+      - name: Log in to Github Container Repository
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.GHCR_USER }}
+          password: ${{ secrets.GHCR_TOKEN }}
+      - name: Docker meta - backend
+        id: meta-backend
+        uses: docker/metadata-action@v3
+        with:
+          images: |
+            scilifelabdatacentre/data-tracker-backend
+            ghcr.io/scilifelabdatacentre/data-tracker-backend
+      - name: Docker meta - frontend
+        id: meta-frontend
+        uses: docker/metadata-action@v3
+        with:
+          images: |
+            scilifelabdatacentre/data-tracker-frontend
+            ghcr.io/scilifelabdatacentre/data-tracker-frontend
       - name: Push backend to Docker Hub
         uses: docker/build-push-action@v2
         with:
           file: Dockerfiles/Dockerfile.backend
           context: .
-          target: production
           push: true
-          tags: scilifelabdatacentre/data-tracker-backend:${{ steps.docker-tag.outputs.tag }}
-      - name: Push frontend to Docker Hub
+	  target: production
+          tags: ${{ steps.meta-backend.outputs.tags }}
+          labels: ${{ steps.meta-backend.outputs.labels }}
+      - name: Push backend to Docker Hub
         uses: docker/build-push-action@v2
         with:
           file: Dockerfiles/Dockerfile.frontend
           context: .
-          target: production
+	  target: production
           push: true
-          tags: scilifelabdatacentre/data-tracker-frontend:${{ steps.docker-tag.outputs.tag }}
+          tags: ${{ steps.meta-frontend.outputs.tags }}
+          labels: ${{ steps.meta-frontend.outputs.labels }}
