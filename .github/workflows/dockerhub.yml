@@ -45,7 +45,7 @@ jobs:
           file: Dockerfiles/Dockerfile.backend
           context: .
           push: true
-	  target: production
+          target: production
           tags: ${{ steps.meta-backend.outputs.tags }}
           labels: ${{ steps.meta-backend.outputs.labels }}
       - name: Push backend to Docker Hub
@@ -53,7 +53,7 @@ jobs:
         with:
           file: Dockerfiles/Dockerfile.frontend
           context: .
-	  target: production
+          target: production
           push: true
           tags: ${{ steps.meta-frontend.outputs.tags }}
           labels: ${{ steps.meta-frontend.outputs.labels }}
