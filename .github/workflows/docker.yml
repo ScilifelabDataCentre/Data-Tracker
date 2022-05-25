@@ -12,6 +12,17 @@ jobs:
     if: github.repository == 'ScilifelabDataCentre/Data-Tracker'
     name: Publish Docker Image
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+       include:
+         - dockerfile: Dockerfiles/Dockerfile.backend
+           images: |
+             scilifelabdatacentre/data-tracker-backend
+             ghcr.io/scilifelabdatacentre/data-tracker-backend
+         - dockerfile: Dockerfiles/Dockerfile.frontend
+           images: |
+             scilifelabdatacentre/data-tracker-frontend
+             ghcr.io/scilifelabdatacentre/data-tracker-frontend
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
@@ -34,61 +45,24 @@ jobs:
           # will run as the user who triggered the action, using its token
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-  build_publish_backend:
-    if: github.repository == 'ScilifelabDataCentre/Data-Tracker'
-    name: Build and Publish Backend Image
-    runs-on: ubuntu-latest
-    needs: [setup]
-    steps:
-      - name: Docker Meta - Backend
-        id: meta-backend
+      - name: Docker Meta
+        id: meta
         uses: docker/metadata-action@v4
         with:
-          images: |
-            scilifelabdatacentre/data-tracker-backend
-            ghcr.io/scilifelabdatacentre/data-tracker-backend
+          images: {{ matrix.images }}
           tags: |
             type=sha,format=long
             type=ref,event=branch
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
-      - name: Build and Publish Backend
+      - name: Build and Publish
         uses: docker/build-push-action@v2
         with:
-          file: Dockerfiles/Dockerfile.backend
+          file: {{ matrix.dockerfile }}
           context: .
           push: true
           target: production
-          tags: ${{ steps.meta-backend.outputs.tags }}
-          labels: ${{ steps.meta-backend.outputs.labels }}
-          platforms: linux/amd64,linux/arm64
-  build_publish_frontend:
-    if: github.repository == 'ScilifelabDataCentre/Data-Tracker'
-    name: Build and Publish Frontend Image
-    runs-on: ubuntu-latest
-    needs: [setup]
-    steps:
-      - name: Docker Meta - Frontend
-        id: meta-frontend
-        uses: docker/metadata-action@v4
-        with:
-          images: |
-            scilifelabdatacentre/data-tracker-frontend
-            ghcr.io/scilifelabdatacentre/data-tracker-frontend
-          tags: |
-            type=sha,format=long
-            type=ref,event=branch
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{major}}
-      - name: Build and Publish Frontend
-        uses: docker/build-push-action@v2
-        with:
-          file: Dockerfiles/Dockerfile.frontend
-          context: .
-          target: production
-          push: true
-          tags: ${{ steps.meta-frontend.outputs.tags }}
-          labels: ${{ steps.meta-frontend.outputs.labels }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           platforms: linux/amd64,linux/arm64
