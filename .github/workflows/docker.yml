@@ -14,15 +14,15 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-       include:
-         - dockerfile: Dockerfiles/Dockerfile.backend
-           images: |
-             scilifelabdatacentre/data-tracker-backend
-             ghcr.io/scilifelabdatacentre/data-tracker-backend
-         - dockerfile: Dockerfiles/Dockerfile.frontend
-           images: |
-             scilifelabdatacentre/data-tracker-frontend
-             ghcr.io/scilifelabdatacentre/data-tracker-frontend
+        include:
+          - dockerfile: Dockerfiles/Dockerfile.backend
+            images: |
+              scilifelabdatacentre/data-tracker-backend
+              ghcr.io/scilifelabdatacentre/data-tracker-backend
+          - dockerfile: Dockerfiles/Dockerfile.frontend
+            images: |
+              scilifelabdatacentre/data-tracker-frontend
+              ghcr.io/scilifelabdatacentre/data-tracker-frontend
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
@@ -49,7 +49,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: {{ matrix.images }}
+          images: ${{ matrix.images }}
           tags: |
             type=sha,format=long
             type=ref,event=branch
@@ -59,7 +59,7 @@ jobs:
       - name: Build and Publish
         uses: docker/build-push-action@v2
         with:
-          file: {{ matrix.dockerfile }}
+          file: ${{ matrix.dockerfile }}
           context: .
           push: true
           target: production
