@@ -7,7 +7,7 @@ on:
   release:
     types: [published]
 jobs:
-  push_to_registry:
+  setup:
     if: github.repository == 'ScilifelabDataCentre/Data-Tracker'
     name: Publish Docker Image
     runs-on: ubuntu-latest
@@ -33,6 +33,11 @@ jobs:
           # will run as the user who triggered the action, using its token
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+  build_publish_backend:
+    if: github.repository == 'ScilifelabDataCentre/Data-Tracker'
+    name: Build and Publish Backend Image
+    runs-on: ubuntu-latest
+    needs: [setup]
       - name: Docker Meta - Backend
         id: meta-backend
         uses: docker/metadata-action@v4
@@ -46,13 +51,6 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
-      - name: Docker Meta - Frontend
-        id: meta-frontend
-        uses: docker/metadata-action@v4
-        with:
-          images: |
-            scilifelabdatacentre/data-tracker-frontend
-            ghcr.io/scilifelabdatacentre/data-tracker-frontend
       - name: Build and Publish Backend
         uses: docker/build-push-action@v2
         with:
@@ -63,6 +61,24 @@ jobs:
           tags: ${{ steps.meta-backend.outputs.tags }}
           labels: ${{ steps.meta-backend.outputs.labels }}
           platforms: linux/amd64,linux/arm64
+  build_publish_frontend:
+    if: github.repository == 'ScilifelabDataCentre/Data-Tracker'
+    name: Build and Publish Frontend Image
+    runs-on: ubuntu-latest
+    needs: [setup]
+      - name: Docker Meta - Frontend
+        id: meta-frontend
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            scilifelabdatacentre/data-tracker-frontend
+            ghcr.io/scilifelabdatacentre/data-tracker-frontend
+          tags: |
+            type=sha,format=long
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
       - name: Build and Publish Frontend
         uses: docker/build-push-action@v2
         with:
