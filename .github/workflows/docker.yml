@@ -19,7 +19,7 @@ jobs:
   push_to_registry:
     # only generate images when in the named repo
     # (to avoid running the action in forks)
-    if: github.repository == 'scilifelabdatacentre/data-tracker'
+    if: github.repository == 'scilifelabdatacentre/Data-Tracker'
     name: Publish Docker Image
     runs-on: ubuntu-latest
     # Cancel earlier job if there is a new one for the same branch/release
@@ -83,7 +83,7 @@ jobs:
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@0.7.1
         with:
-          image-ref: 'ghcr.io/scilifelabdatacentre/data-tracker-backend:latest'
+          image-ref: 'ghcr.io/${{ env.IMAGE_REPOSITORY }}:sha-${{ github.sha }}'
           format: 'sarif'
           output: 'trivy-results.sarif'
           severity: 'CRITICAL,HIGH'
