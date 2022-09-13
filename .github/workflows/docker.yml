@@ -91,6 +91,7 @@ jobs:
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: 'trivy-results.sarif'
+          category: Trivy
       - name: Build and Publish
         uses: docker/build-push-action@v3
         with:
